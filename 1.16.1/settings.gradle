@@ -1,0 +1,9 @@
+pluginManagement {
+    repositories {
+        maven { url = "https://maven.fabricmc.net/" }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = "AntiCrash-1.16.1"
+include("adapter-core")
+include("supervisor")

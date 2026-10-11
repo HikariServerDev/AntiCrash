@@ -1,0 +1,150 @@
+# class	field	classification	risk	note
+net.minecraft.world.entity.Entity	syncPosition	VISUAL_ONLY	NONE	26.2 ServerEntity.sendChanges consumes/reset flag to force client position sync; fresh tracker sends initial position
+net.minecraft.world.entity.Entity	type	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	level	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	uuid	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	stringUUID	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	dimensions	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	eyeHeight	DERIVED_ON_LOAD	NONE	constructed with the entity
+net.minecraft.world.entity.Entity	random	UNSUPPORTED	MEDIUM	per-entity java.util.Random; part of the unsupported RNG state
+net.minecraft.world.entity.Entity	id	OBSERVE_ONLY	MEDIUM	network id, handed out again at every load. ItemEntity's (age + id) % 4 move phase and ExperienceOrbEntity's (id difference) % 40 merge rule are kept by AntiCrash (IdPhase), and the id counter continues with the checkpoint's remainder modulo 40 so entities created after a restore keep both rules; other uses are unsupported
+net.minecraft.world.entity.Entity	passengers	PERSISTED_BY_VANILLA	NONE	Passengers
+net.minecraft.world.entity.Entity	vehicle	PERSISTED_BY_VANILLA	NONE	Passengers
+net.minecraft.world.entity.Entity	boardingCooldown	RESTORABLE_TRANSIENT	MEDIUM	60 ticks after leaving a vehicle; AntiCrash extension RidingCooldown
+net.minecraft.world.entity.Entity	xo	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	yo	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	zo	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	yRotO	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	xRotO	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	xOld	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	yOld	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	zOld	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	packetPositionCodec	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	crystalSoundIntensity	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	lastCrystalSoundPlayTick	VISUAL_ONLY	NONE	interpolation, tracking or sound
+net.minecraft.world.entity.Entity	position	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	deltaMovement	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	yRot	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	xRot	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	onGround	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	fallDistance	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	remainingFireTicks	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	portalCooldown	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	invulnerable	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	hasGlowingTag	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	tags	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	noPhysics	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	hasVisualFire	PERSISTED_BY_VANILLA	NONE	Pos, Motion, Rotation, OnGround, FallDistance, Fire, PortalCooldown, Invulnerable, Glowing, Tags, (noClip per type), HasVisualFire
+net.minecraft.world.entity.Entity	blockPosition	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	chunkPosition	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	bb	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	inBlockState	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	entityData	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	levelCallback	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	removalReason	DERIVED_ON_LOAD	NONE	derived from position/type on load
+net.minecraft.world.entity.Entity	blocksBuilding	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	horizontalCollision	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	verticalCollision	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	verticalCollisionBelow	RESTORABLE_TRANSIENT	MEDIUM	AntiCrash GroundCollision extension
+net.minecraft.world.entity.Entity	mainSupportingBlockPos	RESTORABLE_TRANSIENT	HIGH	cached supporting block affects movement/slipperiness; AntiCrash SupportingBlock extension
+net.minecraft.world.entity.Entity	onGroundNoBlocks	RESTORABLE_TRANSIENT	HIGH	AntiCrash ForceSupportUpdate extension
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecart	onRails	TICK_LOCAL	LOW	recomputed from current block before moveOnRail in tick
+net.minecraft.world.entity.Entity	minorHorizontalCollision	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	hurtMarked	RESTORABLE_TRANSIENT	MEDIUM	velocity sync flag; MotionFrame preserves exact value
+net.minecraft.world.entity.Entity	lastKnownSpeed	RESTORABLE_TRANSIENT	HIGH	kinetic attack movement history, distinct from velocity
+net.minecraft.world.entity.Entity	lastKnownPosition	RESTORABLE_TRANSIENT	HIGH	next tick movement delta depends on previous position; MotionFrame preserves nullable value
+net.minecraft.world.entity.Entity	stuckSpeedMultiplier	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	needsSync	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	pistonDeltas	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	pistonDeltasGameTime	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	isInPowderSnow	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	wasInPowderSnow	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	flyDist	TICK_LOCAL	NONE	rewritten by the entity's own move/baseTick before it is read; pistonMovement* is keyed by world time
+net.minecraft.world.entity.Entity	moveDist	UNSUPPORTED	LOW	walk distance accumulators: decide when the next step sound/STEP game event happens (a sculk sensor can hear it)
+net.minecraft.world.entity.Entity	nextStep	UNSUPPORTED	LOW	walk distance accumulators: decide when the next step sound/STEP game event happens (a sculk sensor can hear it)
+net.minecraft.world.entity.Entity	tickCount	RESTORABLE_TRANSIENT	MEDIUM	not saved. Restored for ItemEntity and ExperienceOrbEntity (merge and target cadence). UNSUPPORTED for other entities: saving it would rewrite every entity chunk at every checkpoint
+net.minecraft.world.entity.Entity	wasTouchingWater	RESTORABLE_TRANSIENT	MEDIUM	a loaded entity is 'new' for one tick: isInLava() is false and water entry splashes (a SPLASH game event). AntiCrash extension Ticked/Water
+net.minecraft.world.entity.Entity	firstTick	RESTORABLE_TRANSIENT	MEDIUM	a loaded entity is 'new' for one tick: isInLava() is false and water entry splashes (a SPLASH game event). AntiCrash extension Ticked/Water
+net.minecraft.world.entity.Entity	fluidInteraction	RESTORABLE_TRANSIENT	HIGH	26.1 semantic fluid trackers (height/eyes/current/count) captured by FluidInteractionSnapshot; no map replacement
+net.minecraft.world.entity.Entity	wasEyeInWater	TICK_LOCAL	NONE	recomputed at the start of baseTick
+net.minecraft.world.entity.Entity	invulnerableTime	RESTORABLE_TRANSIENT	MEDIUM	damage immunity window; AntiCrash extension Regen (+ LastDamage)
+net.minecraft.world.entity.Entity	portalProcess	RESTORABLE_TRANSIENT	HIGH	semantic Portal type/pos/ticks/in flag; non-block implementations unsupported
+net.minecraft.world.entity.item.PrimedTnt	usedPortal	RESTORABLE_TRANSIENT	HIGH	explosion behavior flag; AntiCrash extension TeleportedTnt
+net.minecraft.world.entity.item.FallingBlockEntity	forceTickAfterTeleportToDuplicate	RESTORABLE_TRANSIENT	HIGH	post-teleport duplication flag; AntiCrash extension ShouldDupe
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	leashData	PERSISTED_BY_VANILLA	NONE	Leashable writeLeashNbt/readLeashNbt
+net.minecraft.world.entity.projectile.Projectile	lastDeflectedBy	UNSUPPORTED	HIGH	identity-dependent deflection guard; explicitly PROJECTILE_DEFLECTION_RUNTIME when active
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	firedFromWeapon	PERSISTED_BY_VANILLA	NONE	weapon item/components NBT
+net.minecraft.world.entity.item.ItemEntity	age	PERSISTED_BY_VANILLA	NONE	Age
+net.minecraft.world.entity.item.ItemEntity	pickupDelay	PERSISTED_BY_VANILLA	NONE	PickupDelay
+net.minecraft.world.entity.item.ItemEntity	health	PERSISTED_BY_VANILLA	NONE	Health
+net.minecraft.world.entity.item.ItemEntity	thrower	PERSISTED_BY_VANILLA	NONE	LazyEntityReference writes Thrower; resolution stays Vanilla-owned
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	pickupItemStack	PERSISTED_BY_VANILLA	NONE	item NBT
+net.minecraft.world.entity.item.ItemEntity	target	PERSISTED_BY_VANILLA	NONE	Owner
+net.minecraft.world.entity.item.ItemEntity	bobOffs	VISUAL_ONLY	NONE	bobbing offset
+net.minecraft.world.entity.item.PrimedTnt	owner	UNSUPPORTED	LOW	who lit it; attribution of the explosion only
+net.minecraft.world.entity.item.FallingBlockEntity	blockState	PERSISTED_BY_VANILLA	NONE	BlockState
+net.minecraft.world.entity.item.FallingBlockEntity	time	PERSISTED_BY_VANILLA	NONE	Time
+net.minecraft.world.entity.item.FallingBlockEntity	dropItem	PERSISTED_BY_VANILLA	NONE	DropItem
+net.minecraft.world.entity.item.FallingBlockEntity	cancelDrop	TICK_LOCAL	NONE	set and read while landing, in one tick
+net.minecraft.world.entity.item.FallingBlockEntity	hurtEntities	PERSISTED_BY_VANILLA	NONE	HurtEntities
+net.minecraft.world.entity.item.FallingBlockEntity	fallDamageMax	PERSISTED_BY_VANILLA	NONE	FallHurtMax
+net.minecraft.world.entity.item.FallingBlockEntity	fallDamagePerDistance	PERSISTED_BY_VANILLA	NONE	FallHurtAmount
+net.minecraft.world.entity.item.FallingBlockEntity	blockData	PERSISTED_BY_VANILLA	NONE	TileEntityData
+net.minecraft.world.entity.ExperienceOrb	age	PERSISTED_BY_VANILLA	NONE	Age
+net.minecraft.world.entity.ExperienceOrb	health	PERSISTED_BY_VANILLA	NONE	Health
+net.minecraft.world.entity.ExperienceOrb	count	PERSISTED_BY_VANILLA	NONE	Count
+net.minecraft.world.entity.ExperienceOrb	followingPlayer	DERIVED_ON_LOAD	LOW	searched again when age % 20 == 1; age is restored by AntiCrash
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecart	flipped	PERSISTED_BY_VANILLA	NONE	1.21.2 FlippedRotation
+net.minecraft.world.entity.vehicle.minecart.MinecartHopper	enabled	PERSISTED_BY_VANILLA	NONE	Enabled
+net.minecraft.world.entity.vehicle.minecart.MinecartFurnace	fuel	PERSISTED_BY_VANILLA	NONE	Fuel
+net.minecraft.world.entity.vehicle.minecart.MinecartTNT	fuse	PERSISTED_BY_VANILLA	NONE	TNTFuse
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer	itemStacks	PERSISTED_BY_VANILLA	NONE	Items
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer	lootTable	PERSISTED_BY_VANILLA	NONE	LootTable
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer	lootTableSeed	PERSISTED_BY_VANILLA	NONE	LootTableSeed
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	paddlePositions	CLIENT_ONLY	NONE	animation / client interpolation
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	bubbleMultiplier	CLIENT_ONLY	NONE	animation / client interpolation
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	bubbleAngle	CLIENT_ONLY	NONE	animation / client interpolation
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	bubbleAngleO	CLIENT_ONLY	NONE	animation / client interpolation
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	inputLeft	TICK_LOCAL	NONE	input of the riding player
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	inputRight	TICK_LOCAL	NONE	input of the riding player
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	inputUp	TICK_LOCAL	NONE	input of the riding player
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	inputDown	TICK_LOCAL	NONE	input of the riding player
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	waterLevel	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	landFriction	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	status	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	oldStatus	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	lastYd	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	isAboveBubbleColumn	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	bubbleColumnDirectionIsDown	TICK_LOCAL	LOW	recomputed from the surroundings at the start of every tick
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	outOfControlTicks	UNSUPPORTED	LOW	60-tick underwater eject timer and residual turn speed
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	deltaRotation	UNSUPPORTED	LOW	60-tick underwater eject timer and residual turn speed
+net.minecraft.world.entity.projectile.Projectile	owner	PERSISTED_BY_VANILLA	NONE	LazyEntityReference writes Owner; resolution stays Vanilla-owned
+net.minecraft.world.entity.projectile.Projectile	leftOwner	PERSISTED_BY_VANILLA	NONE	LeftOwner
+net.minecraft.world.entity.projectile.Projectile	leftOwnerChecked	RESTORABLE_TRANSIENT	HIGH	Per-tick owner collision guard; entity extension preserves exact boundary value
+net.minecraft.world.entity.projectile.Projectile	hasBeenShot	PERSISTED_BY_VANILLA	NONE	HasBeenShot
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	lastState	PERSISTED_BY_VANILLA	NONE	inBlockState
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	inGroundTime	UNSUPPORTED	LOW	ticks stuck in a block; only the 'fell out of the block' check
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	pickup	PERSISTED_BY_VANILLA	NONE	pickup
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	shakeTime	PERSISTED_BY_VANILLA	NONE	shake
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	life	PERSISTED_BY_VANILLA	NONE	life
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	baseDamage	PERSISTED_BY_VANILLA	NONE	damage
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	soundEvent	PERSISTED_BY_VANILLA	NONE	SoundEvent
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	piercingIgnoreEntityIds	UNSUPPORTED	LOW	entities a piercing arrow already hit
+net.minecraft.world.entity.projectile.arrow.AbstractArrow	piercedAndKilledEntities	UNSUPPORTED	LOW	advancement bookkeeping
+net.minecraft.world.entity.Entity	movementThisTick	UNSUPPORTED	HIGH	pending movement collision checks; STRICT blocks a non-empty queue
+net.minecraft.world.entity.Entity	visitedBlocks	TICK_LOCAL	NONE	checkBlockCollision clears its dedup scratch set at return
+net.minecraft.world.entity.vehicle.minecart.AbstractMinecart	behavior	UNSUPPORTED	HIGH	experimental server interpolation requires separate controller-state support; default controller has client interpolation only
+net.minecraft.world.entity.item.PrimedTnt	explosionPower	PERSISTED_BY_VANILLA	NONE	explosion_power
+net.minecraft.world.entity.vehicle.minecart.MinecartTNT	explosionPowerBase	PERSISTED_BY_VANILLA	NONE	explosion_power
+net.minecraft.world.entity.vehicle.minecart.MinecartHopper	consumedItemThisFrame	UNSUPPORTED	HIGH	transfer dedup boolean omitted from NBT; STRICT blocks a hopper cart
+net.minecraft.world.entity.vehicle.minecart.MinecartFurnace	push	PERSISTED_BY_VANILLA	NONE	PushX/PushZ restored with zero Y
+net.minecraft.world.entity.vehicle.boat.Boat	-	DERIVED_ON_LOAD	NONE	all instance state moved to AbstractBoatEntity
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	dropItem	DERIVED_ON_LOAD	NONE	entity-type constructor supplies boat item
+net.minecraft.world.entity.vehicle.minecart.MinecartTNT	explosionSpeedFactor	PERSISTED_BY_VANILLA	NONE	explosion_speed_factor
+net.minecraft.world.entity.vehicle.minecart.MinecartTNT	ignitionSource	UNSUPPORTED	HIGH	primeTnt stores attacker attribution omitted from NBT; non-null blocks STRICT
+net.minecraft.world.entity.vehicle.boat.AbstractBoat	interpolation	CLIENT_ONLY	NONE	position interpolation moved into EntityInterpolator
+net.minecraft.world.entity.ExperienceOrb	interpolation	CLIENT_ONLY	NONE	client position interpolation; value now persisted through tracked data
+net.minecraft.world.entity.Entity	finalMovementsThisTick	TICK_LOCAL	NONE	cleared at start of tickBlockCollision; queuedCollisionChecks remains unsupported when nonempty
+net.minecraft.world.entity.Entity	insideEffectCollector	TICK_LOCAL	NONE	runCallbacks drains callbacks and active events within tickBlockCollisions
+net.minecraft.world.entity.Entity	customData	PERSISTED_BY_VANILLA	NONE	writeNbt/readNbt data key via NbtComponent.CODEC
+net.minecraft.world.entity.Entity	requiresPrecisePosition	OBSERVE_ONLY	LOW	network absolute-position sync policy, not simulation state

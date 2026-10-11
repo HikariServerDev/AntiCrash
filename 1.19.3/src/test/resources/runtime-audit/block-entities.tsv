@@ -1,0 +1,162 @@
+# class	field	classification	risk	note
+ChiseledBookshelfBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items list through Inventories.writeNbt
+ChiseledBookshelfBlockEntity	lastInteractedSlot	PERSISTED_BY_VANILLA	MEDIUM	last_interacted_slot drives comparator output
+HangingSignBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no instance fields; inherited sign NBT
+SkullBlockEntity	noteBlockSound	PERSISTED_BY_VANILLA	NONE	note_block_sound identifier
+AbstractFurnaceBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+AbstractFurnaceBlockEntity	burnTime	PERSISTED_BY_VANILLA	NONE	BurnTime; AntiCrash marks the chunk dirty while it changes
+AbstractFurnaceBlockEntity	fuelTime	DERIVED_ON_LOAD	NONE	recomputed from the fuel item in readNbt
+AbstractFurnaceBlockEntity	cookTime	PERSISTED_BY_VANILLA	NONE	CookTime; dirty-marked by AntiCrash
+AbstractFurnaceBlockEntity	cookTimeTotal	PERSISTED_BY_VANILLA	NONE	CookTimeTotal
+AbstractFurnaceBlockEntity	propertyDelegate	DERIVED_ON_LOAD	NONE	view of the fields above
+AbstractFurnaceBlockEntity	recipesUsed	PERSISTED_BY_VANILLA	NONE	RecipesUsed
+AbstractFurnaceBlockEntity	matchGetter	RESTORABLE_TRANSIENT	MEDIUM	cached matched recipe identifier influences ambiguous recipes; AntiCrash saves RecipeMatch
+BannerBlockEntity	customName	PERSISTED_BY_VANILLA	NONE	CustomName
+BannerBlockEntity	baseColor	DERIVED_ON_LOAD	NONE	from the block
+BannerBlockEntity	patternListNbt	PERSISTED_BY_VANILLA	NONE	Patterns
+BannerBlockEntity	patterns	CLIENT_ONLY	NONE	render cache
+BarrelBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+BarrelBlockEntity	stateManager	OBSERVE_ONLY	LOW	viewer count of open screens; see CONTAINER_SESSION
+BeaconBlockEntity	beamSegments	DERIVED_ON_LOAD	LOW	rescanned from the column above over the first ticks; an effect application can be skipped once
+BeaconBlockEntity	field_19178	DERIVED_ON_LOAD	LOW	scan buffer for beamSegments
+BeaconBlockEntity	level	DERIVED_ON_LOAD	LOW	recomputed every 80 ticks of world time
+BeaconBlockEntity	minY	DERIVED_ON_LOAD	LOW	scan cursor
+BeaconBlockEntity	primary	PERSISTED_BY_VANILLA	NONE	Primary
+BeaconBlockEntity	secondary	PERSISTED_BY_VANILLA	NONE	Secondary
+BeaconBlockEntity	customName	PERSISTED_BY_VANILLA	NONE	CustomName
+BeaconBlockEntity	lock	PERSISTED_BY_VANILLA	NONE	Lock
+BeaconBlockEntity	propertyDelegate	DERIVED_ON_LOAD	NONE	view
+BedBlockEntity	color	DERIVED_ON_LOAD	NONE	from the block
+BeehiveBlockEntity	bees	PERSISTED_BY_VANILLA	MEDIUM	Bees incl. TicksInHive; the count advanced without marking the chunk dirty, AntiCrash now marks it
+BeehiveBlockEntity	flowerPos	PERSISTED_BY_VANILLA	NONE	FlowerPos
+BellBlockEntity	lastRingTime	UNSUPPORTED	LOW	rate limit for notifying villagers (60 ticks)
+BellBlockEntity	ringTicks	UNSUPPORTED	LOW	ring lasts 50 ticks; raider glow is applied during it
+BellBlockEntity	ringing	UNSUPPORTED	LOW	see ringTicks
+BellBlockEntity	lastSideHit	VISUAL_ONLY	NONE	animation direction
+BellBlockEntity	hearingEntities	UNSUPPORTED	LOW	entity references collected when the ring started; not restorable without them
+BellBlockEntity	resonating	UNSUPPORTED	LOW	raider glow after 40 ticks
+BellBlockEntity	resonateTime	UNSUPPORTED	LOW	see resonating
+BlastFurnaceBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+BlockEntity	type	DERIVED_ON_LOAD	NONE	from the block
+BlockEntity	world	DERIVED_ON_LOAD	NONE	set when the chunk loads
+BlockEntity	pos	PERSISTED_BY_VANILLA	NONE	x/y/z
+BlockEntity	removed	TICK_LOCAL	NONE	a removed block entity is not saved
+BlockEntity	cachedState	DERIVED_ON_LOAD	NONE	cache of the block state
+BrewingStandBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+BrewingStandBlockEntity	brewTime	PERSISTED_BY_VANILLA	NONE	BrewTime; dirty-marked by AntiCrash
+BrewingStandBlockEntity	slotsEmptyLastTick	DERIVED_ON_LOAD	NONE	only decides whether to rewrite the same block state
+BrewingStandBlockEntity	itemBrewing	RESTORABLE_TRANSIENT	HIGH	not saved: the first tick after a load sees a changed ingredient and resets the brew; AntiCrash extension ItemBrewing
+BrewingStandBlockEntity	fuel	PERSISTED_BY_VANILLA	NONE	Fuel
+BrewingStandBlockEntity	propertyDelegate	DERIVED_ON_LOAD	NONE	view
+CampfireBlockEntity	itemsBeingCooked	PERSISTED_BY_VANILLA	NONE	Items
+CampfireBlockEntity	matchGetter	RESTORABLE_TRANSIENT	MEDIUM	cached matched recipe identifier; AntiCrash saves RecipeMatch
+CampfireBlockEntity	cookingTimes	PERSISTED_BY_VANILLA	NONE	CookingTimes; Vanilla marks dirty while cooking
+CampfireBlockEntity	cookingTotalTimes	PERSISTED_BY_VANILLA	NONE	CookingTotalTimes
+ChestBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+ChestBlockEntity	stateManager	OBSERVE_ONLY	MEDIUM	viewer count; a trapped chest's redstone output. Belongs to an open player screen: CONTAINER_SESSION
+ChestBlockEntity	lidAnimator	CLIENT_ONLY	NONE	lid animation
+CommandBlockBlockEntity	powered	PERSISTED_BY_VANILLA	NONE	powered
+CommandBlockBlockEntity	auto	PERSISTED_BY_VANILLA	NONE	auto
+CommandBlockBlockEntity	conditionMet	PERSISTED_BY_VANILLA	NONE	conditionMet
+CommandBlockBlockEntity	commandExecutor	PERSISTED_BY_VANILLA	NONE	Command, SuccessCount, LastExecution, ...
+ComparatorBlockEntity	outputSignal	PERSISTED_BY_VANILLA	NONE	OutputSignal; dirty-marked by AntiCrash
+ConduitBlockEntity	ticks	VISUAL_ONLY	NONE	animation counter
+ConduitBlockEntity	ticksActive	VISUAL_ONLY	NONE	animation
+ConduitBlockEntity	active	DERIVED_ON_LOAD	LOW	recomputed when world time % 40 == 0, the same tick effects are applied
+ConduitBlockEntity	eyeOpen	VISUAL_ONLY	NONE	animation
+ConduitBlockEntity	activatingBlocks	DERIVED_ON_LOAD	LOW	rescanned with active
+ConduitBlockEntity	targetEntity	DERIVED_ON_LOAD	NONE	looked up from targetUuid
+ConduitBlockEntity	targetUuid	PERSISTED_BY_VANILLA	NONE	Target
+ConduitBlockEntity	nextAmbientSoundTime	VISUAL_ONLY	LOW	sound only, but draws from the world RNG
+DaylightDetectorBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+DispenserBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+DropperBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+EnchantingTableBlockEntity	ticks	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	nextPageAngle	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	pageAngle	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	flipRandom	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	flipTurn	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	nextPageTurningSpeed	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	pageTurningSpeed	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	bookRotation	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	lastBookRotation	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	targetBookRotation	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	customName	PERSISTED_BY_VANILLA	NONE	CustomName
+EndGatewayBlockEntity	age	PERSISTED_BY_VANILLA	MEDIUM	Age; advanced without marking the chunk dirty, AntiCrash now marks it. age % 2400 starts a cooldown
+EndGatewayBlockEntity	teleportCooldown	RESTORABLE_TRANSIENT	HIGH	not saved: a gateway on cooldown teleports at once after a load; AntiCrash extension TeleportCooldown
+EndGatewayBlockEntity	exitPortalPos	PERSISTED_BY_VANILLA	NONE	ExitPortal
+EndGatewayBlockEntity	exactTeleport	PERSISTED_BY_VANILLA	NONE	ExactTeleport
+EndPortalBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+EnderChestBlockEntity	lidAnimator	CLIENT_ONLY	NONE	lid animation
+EnderChestBlockEntity	stateManager	VISUAL_ONLY	NONE	viewer count drives only the lid
+FurnaceBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+HopperBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+HopperBlockEntity	transferCooldown	PERSISTED_BY_VANILLA	NONE	TransferCooldown; dirty-marked by AntiCrash
+HopperBlockEntity	lastTickTime	DERIVED_ON_LOAD	NONE	only compared with another hopper's value to learn whether that hopper already ticked this tick; the load default 0 means 'not yet', which is true at a tick boundary. See docs and HopperLastTickTimeTest
+JigsawBlockEntity	name	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	target	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	pool	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	joint	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	finalState	PERSISTED_BY_VANILLA	NONE	saved
+JukeboxBlockEntity	record	PERSISTED_BY_VANILLA	NONE	RecordItem
+JukeboxBlockEntity	isPlaying	PERSISTED_BY_VANILLA	MEDIUM	IsPlaying; AntiCrash marks playback tick dirty
+JukeboxBlockEntity	recordStartTick	PERSISTED_BY_VANILLA	MEDIUM	RecordStartTick
+JukeboxBlockEntity	tickCount	PERSISTED_BY_VANILLA	MEDIUM	TickCount; AntiCrash marks playback tick dirty
+JukeboxBlockEntity	ticksThisSecond	RESTORABLE_TRANSIENT	HIGH	periodic JUKEBOX_PLAY game-event phase; AntiCrash extension JukeboxEventPhase
+LecternBlockEntity	inventory	DERIVED_ON_LOAD	NONE	view of book
+LecternBlockEntity	propertyDelegate	DERIVED_ON_LOAD	NONE	view
+LecternBlockEntity	book	PERSISTED_BY_VANILLA	NONE	Book
+LecternBlockEntity	currentPage	PERSISTED_BY_VANILLA	NONE	Page
+LecternBlockEntity	pageCount	DERIVED_ON_LOAD	NONE	from the book
+LockableContainerBlockEntity	lock	PERSISTED_BY_VANILLA	NONE	Lock
+LockableContainerBlockEntity	customName	PERSISTED_BY_VANILLA	NONE	CustomName
+LootableContainerBlockEntity	lootTableId	PERSISTED_BY_VANILLA	NONE	LootTable
+LootableContainerBlockEntity	lootTableSeed	PERSISTED_BY_VANILLA	NONE	LootTableSeed
+MobSpawnerBlockEntity	logic	PERSISTED_BY_VANILLA	NONE	Delay and spawn settings; Delay dirty-marked by AntiCrash
+PistonBlockEntity	pushedBlock	PERSISTED_BY_VANILLA	NONE	blockState
+PistonBlockEntity	facing	PERSISTED_BY_VANILLA	NONE	facing
+PistonBlockEntity	extending	PERSISTED_BY_VANILLA	NONE	extending
+PistonBlockEntity	source	PERSISTED_BY_VANILLA	NONE	source
+PistonBlockEntity	progress	RESTORABLE_TRANSIENT	CRITICAL	not saved (Vanilla loads lastProgress into it): the piston arrives one tick late; AntiCrash extension Progress
+PistonBlockEntity	lastProgress	PERSISTED_BY_VANILLA	NONE	saved under the key progress
+PistonBlockEntity	savedWorldTime	RESTORABLE_TRANSIENT	MEDIUM	tick of the last advance, compared with world time by PistonBlock; AntiCrash extension SavedWorldTime
+PistonBlockEntity	field_26705	CLIENT_ONLY	NONE	client-side removal delay
+SculkSensorBlockEntity	listener	PERSISTED_BY_VANILLA	HIGH	1.19 listener codec saves vibration, source UUIDs, float distance and delay; AntiCrash marks countdown dirty
+SculkCatalystBlockEntity	positionSource	DERIVED_ON_LOAD	NONE	block position source created in constructor
+SculkCatalystBlockEntity	spreadManager	PERSISTED_BY_VANILLA	HIGH	cursors codec with charge/decay/delay; AntiCrash marks each tick and accepted death event dirty
+SculkShriekerBlockEntity	warningLevel	PERSISTED_BY_VANILLA	MEDIUM	warning_level
+SculkShriekerBlockEntity	vibrationListener	PERSISTED_BY_VANILLA	HIGH	listener codec; shared VibrationListener hook marks dirty
+SculkSensorBlockEntity	lastVibrationFrequency	PERSISTED_BY_VANILLA	NONE	last_vibration_frequency
+ShulkerBoxBlockEntity	inventory	PERSISTED_BY_VANILLA	NONE	Items
+ShulkerBoxBlockEntity	viewerCount	OBSERVE_ONLY	LOW	belongs to an open player screen: CONTAINER_SESSION
+ShulkerBoxBlockEntity	animationStage	UNSUPPORTED	LOW	reset to CLOSED; an opening box pushes entities for 10 ticks
+ShulkerBoxBlockEntity	animationProgress	UNSUPPORTED	LOW	see animationStage
+ShulkerBoxBlockEntity	prevAnimationProgress	VISUAL_ONLY	NONE	interpolation
+ShulkerBoxBlockEntity	cachedColor	DERIVED_ON_LOAD	NONE	from the block
+SignBlockEntity	texts	PERSISTED_BY_VANILLA	NONE	Text1-4
+SignBlockEntity	filteredTexts	PERSISTED_BY_VANILLA	NONE	FilteredText1-4
+SignBlockEntity	editable	TICK_LOCAL	NONE	only while a player edits
+SignBlockEntity	editor	TICK_LOCAL	NONE	editing player
+SignBlockEntity	textsBeingEdited	CLIENT_ONLY	NONE	render cache
+SignBlockEntity	filterText	CLIENT_ONLY	NONE	render cache
+SignBlockEntity	textColor	PERSISTED_BY_VANILLA	NONE	Color
+SignBlockEntity	glowingText	PERSISTED_BY_VANILLA	NONE	GlowingText
+SkullBlockEntity	owner	PERSISTED_BY_VANILLA	NONE	SkullOwner
+SkullBlockEntity	poweredTicks	VISUAL_ONLY	NONE	dragon head animation
+SkullBlockEntity	powered	VISUAL_ONLY	NONE	read from the world every tick
+SmokerBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+StructureBlockBlockEntity	templateName	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	author	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	metadata	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	offset	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	size	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	mirror	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	rotation	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	mode	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	ignoreEntities	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	powered	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	showAir	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	showBoundingBox	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	integrity	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockBlockEntity	seed	PERSISTED_BY_VANILLA	NONE	saved
+TrappedChestBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own

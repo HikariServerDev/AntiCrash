@@ -1,0 +1,11 @@
+{
+  "minecraft": "1.16.1",
+  "released": true,
+  "minimum_game_java": 8,
+  "yarn_latest": "1.16.1+build.21",
+  "mojang_metadata": "https://piston-meta.mojang.com/v1/packages/54fa3af57d041d2771e66d390197b2c0288e697c/1.16.1.json",
+  "status": "PORT_IN_PROGRESS",
+  "integration_verified": false,
+  "source_base": "1.18.2",
+  "blocker": "Legacy tick-ledger core implemented; Minecraft capture/restore, merged entity/chunk IO, Mixin and full baseline integration remain"
+}

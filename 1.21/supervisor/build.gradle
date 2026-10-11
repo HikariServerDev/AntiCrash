@@ -1,0 +1,36 @@
+plugins {
+    id "java"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.release = 17
+}
+
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+}
+
+jar {
+    archiveBaseName = "AntiCrash-Supervisor"
+    archiveVersion = "${rootProject.mod_version}+mc${rootProject.minecraft_version}"
+    from(rootProject.file("LICENSE")) {
+        rename { "LICENSE_AntiCrash-Supervisor" }
+    }
+    manifest {
+        attributes("Main-Class": "com.atsukimc.anticrash.supervisor.SupervisorMain")
+    }
+}

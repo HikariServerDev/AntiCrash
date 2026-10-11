@@ -1,0 +1,29 @@
+{
+  "schemaVersion": 1,
+  "id": "anticrash",
+  "version": "${version}",
+  "name": "AntiCrash",
+  "description": "Checkpoint and safe recovery for Technical Minecraft servers.",
+  "authors": ["AtsukiMC"],
+  "license": "LGPL-3.0-only",
+  "icon": "assets/anticrash/icon.jpg",
+  "environment": "server",
+  "entrypoints": {
+    "main": ["com.atsukimc.anticrash.AntiCrashMod"]
+  },
+  "mixins": [
+    {
+      "config": "anticrash.mixins.json",
+      "environment": "server"
+    }
+  ],
+  "depends": {
+    "fabricloader": ">=0.18.4",
+    "minecraft": "=${minecraft_version}",
+    "java": ">=21"
+  },
+  "suggests": {
+    "fabric-api": "*",
+    "carpet": "*"
+  }
+}

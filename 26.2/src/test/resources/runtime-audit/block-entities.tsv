@@ -1,0 +1,199 @@
+# class	field	classification	risk	note
+DecoratedPotBlockEntity	decorations	PERSISTED_BY_VANILLA	NONE	sherds codec
+BlockEntity	components	PERSISTED_BY_VANILLA	NONE	registry-aware components NBT in createNbt
+HopperBlockEntity	facing	DERIVED_ON_LOAD	NONE	cached state facing
+SkullBlockEntity	customName	PERSISTED_BY_VANILLA	NONE	CustomName
+VaultBlockEntity	serverData	PERSISTED_BY_VANILLA	HIGH	server_data codec; lastFailedUnlockTime unsupported explicitly marked VAULT_RUNTIME
+VaultBlockEntity	sharedData	PERSISTED_BY_VANILLA	NONE	shared_data codec
+VaultBlockEntity	clientData	CLIENT_ONLY	NONE	client animation runtime
+VaultBlockEntity	config	PERSISTED_BY_VANILLA	NONE	config codec
+DecoratedPotBlockEntity	wobbleStartedAtTick	CLIENT_ONLY	NONE	client wobble animation
+DecoratedPotBlockEntity	lastWobbleStyle	CLIENT_ONLY	NONE	client wobble animation
+DecoratedPotBlockEntity	lootTable	PERSISTED_BY_VANILLA	NONE	LootTable
+DecoratedPotBlockEntity	lootTableSeed	PERSISTED_BY_VANILLA	NONE	LootTableSeed
+DecoratedPotBlockEntity	item	PERSISTED_BY_VANILLA	NONE	item
+JigsawBlockEntity	placementPriority	PERSISTED_BY_VANILLA	NONE	placement_priority
+JigsawBlockEntity	selectionPriority	PERSISTED_BY_VANILLA	NONE	selection_priority
+CrafterBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+CrafterBlockEntity	craftingTicksRemaining	PERSISTED_BY_VANILLA	NONE	crafting_ticks_remaining; explicit dirty hook
+CrafterBlockEntity	containerData	PERSISTED_BY_VANILLA	NONE	disabled_slots and triggered values; not delegate identity
+TrialSpawnerBlockEntity	trialSpawner	PERSISTED_BY_VANILLA	NONE	Vanilla codec; custom detector and forceActivate explicitly unsupported
+BrushableBlockEntity	brushCount	RESTORABLE_TRANSIENT	HIGH	AntiCrash BrushCount extension
+BrushableBlockEntity	brushCountResetsAtTick	RESTORABLE_TRANSIENT	HIGH	AntiCrash BrushNextDust extension
+BrushableBlockEntity	coolDownEndsAtTick	RESTORABLE_TRANSIENT	HIGH	AntiCrash BrushNextUse extension
+BrushableBlockEntity	hitDirection	RESTORABLE_TRANSIENT	MEDIUM	Vanilla reads but omits writeNbt hit_direction; AntiCrash BrushDirection
+BrushableBlockEntity	item	PERSISTED_BY_VANILLA	NONE	item
+BrushableBlockEntity	lootTable	PERSISTED_BY_VANILLA	NONE	LootTable
+BrushableBlockEntity	lootTableSeed	PERSISTED_BY_VANILLA	NONE	LootTableSeed
+ChiseledBookShelfBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items list through Inventories.writeData
+ChiseledBookShelfBlockEntity	lastInteractedSlot	PERSISTED_BY_VANILLA	MEDIUM	last_interacted_slot drives comparator output
+HangingSignBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no instance fields; inherited sign NBT
+SkullBlockEntity	noteBlockSound	PERSISTED_BY_VANILLA	NONE	note_block_sound identifier
+AbstractFurnaceBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+AbstractFurnaceBlockEntity	litTimeRemaining	PERSISTED_BY_VANILLA	NONE	lit_time_remaining; dirty-marked while progress changes
+AbstractFurnaceBlockEntity	litTotalTime	PERSISTED_BY_VANILLA	NONE	lit_total_time now persisted rather than recomputed
+AbstractFurnaceBlockEntity	cookingTimer	PERSISTED_BY_VANILLA	NONE	cooking_time_spent; dirty-marked by AntiCrash
+AbstractFurnaceBlockEntity	cookingTotalTime	PERSISTED_BY_VANILLA	NONE	cooking_total_time
+AbstractFurnaceBlockEntity	dataAccess	DERIVED_ON_LOAD	NONE	view of the fields above
+AbstractFurnaceBlockEntity	recipesUsed	PERSISTED_BY_VANILLA	NONE	RecipesUsed
+AbstractFurnaceBlockEntity	quickCheck	RESTORABLE_TRANSIENT	MEDIUM	cached matched recipe identifier influences ambiguous recipes; AntiCrash saves RecipeMatch
+BannerBlockEntity	name	PERSISTED_BY_VANILLA	NONE	CustomName
+BannerBlockEntity	baseColor	DERIVED_ON_LOAD	NONE	from the block
+BannerBlockEntity	patterns	CLIENT_ONLY	NONE	render cache
+BarrelBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+BarrelBlockEntity	openersCounter	OBSERVE_ONLY	LOW	viewer count of open screens; see CONTAINER_SESSION
+BeaconBlockEntity	beamSections	DERIVED_ON_LOAD	LOW	rescanned from the column above over the first ticks; an effect application can be skipped once
+BeaconBlockEntity	checkingBeamSections	DERIVED_ON_LOAD	LOW	scan buffer for beamSegments
+BeaconBlockEntity	levels	DERIVED_ON_LOAD	LOW	recomputed every 80 ticks of world time
+BeaconBlockEntity	lastCheckY	DERIVED_ON_LOAD	LOW	scan cursor
+BeaconBlockEntity	primaryPower	PERSISTED_BY_VANILLA	NONE	Primary
+BeaconBlockEntity	secondaryPower	PERSISTED_BY_VANILLA	NONE	Secondary
+BeaconBlockEntity	name	PERSISTED_BY_VANILLA	NONE	CustomName
+BeaconBlockEntity	lockKey	PERSISTED_BY_VANILLA	NONE	Lock
+BeaconBlockEntity	dataAccess	DERIVED_ON_LOAD	NONE	view
+PotentSulfurBlockEntity	waitingCountdown	RESTORABLE_TRANSIENT	HIGH	native countdown NBT does not dirty chunk; checkpoint marker + SulfurFrame preserve and verify exact countdown
+PotentSulfurBlockEntity	eruptionTick	RESTORABLE_TRANSIENT	LOW	client sound/particle phase initialized by setLevel unless restored; SulfurFrame captures exact phase
+BeehiveBlockEntity	stored	PERSISTED_BY_VANILLA	MEDIUM	Bees incl. TicksInHive; the count advanced without marking the chunk dirty, AntiCrash now marks it
+BeehiveBlockEntity	savedFlowerPos	PERSISTED_BY_VANILLA	NONE	FlowerPos
+BellBlockEntity	lastRingTimestamp	UNSUPPORTED	LOW	rate limit for notifying villagers (60 ticks)
+BellBlockEntity	ticks	UNSUPPORTED	LOW	ring lasts 50 ticks; raider glow is applied during it
+BellBlockEntity	shaking	UNSUPPORTED	LOW	see ringTicks
+BellBlockEntity	clickDirection	VISUAL_ONLY	NONE	animation direction
+BellBlockEntity	nearbyEntities	UNSUPPORTED	LOW	entity references collected when the ring started; not restorable without them
+BellBlockEntity	resonating	UNSUPPORTED	LOW	raider glow after 40 ticks
+BellBlockEntity	resonationTicks	UNSUPPORTED	LOW	see resonating
+BlastFurnaceBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+BlockEntity	type	DERIVED_ON_LOAD	NONE	from the block
+BlockEntity	level	DERIVED_ON_LOAD	NONE	set when the chunk loads
+BlockEntity	worldPosition	PERSISTED_BY_VANILLA	NONE	x/y/z
+BlockEntity	remove	TICK_LOCAL	NONE	a removed block entity is not saved
+BlockEntity	blockState	DERIVED_ON_LOAD	NONE	cache of the block state
+BrewingStandBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+BrewingStandBlockEntity	brewTime	PERSISTED_BY_VANILLA	NONE	BrewTime; dirty-marked by AntiCrash
+BrewingStandBlockEntity	lastPotionCount	DERIVED_ON_LOAD	NONE	only decides whether to rewrite the same block state
+BrewingStandBlockEntity	ingredient	RESTORABLE_TRANSIENT	HIGH	not saved: the first tick after a load sees a changed ingredient and resets the brew; AntiCrash extension ItemBrewing
+BrewingStandBlockEntity	fuel	PERSISTED_BY_VANILLA	NONE	Fuel
+BrewingStandBlockEntity	dataAccess	DERIVED_ON_LOAD	NONE	view
+CampfireBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+CampfireBlockEntity	cookingProgress	PERSISTED_BY_VANILLA	NONE	CookingTimes; Vanilla marks dirty while cooking
+CampfireBlockEntity	cookingTime	PERSISTED_BY_VANILLA	NONE	CookingTotalTimes
+ChestBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+ChestBlockEntity	openersCounter	OBSERVE_ONLY	MEDIUM	viewer count; a trapped chest's redstone output. Belongs to an open player screen: CONTAINER_SESSION
+ChestBlockEntity	chestLidController	CLIENT_ONLY	NONE	lid animation
+CommandBlockEntity	powered	PERSISTED_BY_VANILLA	NONE	powered
+CommandBlockEntity	auto	PERSISTED_BY_VANILLA	NONE	auto
+CommandBlockEntity	conditionMet	PERSISTED_BY_VANILLA	NONE	conditionMet
+CommandBlockEntity	commandBlock	PERSISTED_BY_VANILLA	NONE	Command, SuccessCount, LastExecution, ...
+ComparatorBlockEntity	output	PERSISTED_BY_VANILLA	NONE	OutputSignal; dirty-marked by AntiCrash
+ConduitBlockEntity	tickCount	VISUAL_ONLY	NONE	animation counter
+ConduitBlockEntity	activeRotation	VISUAL_ONLY	NONE	animation
+ConduitBlockEntity	isActive	DERIVED_ON_LOAD	LOW	recomputed when world time % 40 == 0, the same tick effects are applied
+ConduitBlockEntity	isHunting	VISUAL_ONLY	NONE	animation
+ConduitBlockEntity	effectBlocks	DERIVED_ON_LOAD	LOW	rescanned with active
+ConduitBlockEntity	destroyTarget	PERSISTED_BY_VANILLA	NONE	LazyEntityReference writes Target in writeData/readData
+ConduitBlockEntity	nextAmbientSoundActivation	VISUAL_ONLY	LOW	sound only, but draws from the world RNG
+DaylightDetectorBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+DispenserBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+DropperBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+EnchantingTableBlockEntity	time	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	flip	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	oFlip	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	flipT	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	flipA	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	open	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	oOpen	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	rot	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	oRot	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	tRot	CLIENT_ONLY	NONE	book animation
+EnchantingTableBlockEntity	name	PERSISTED_BY_VANILLA	NONE	CustomName
+TheEndGatewayBlockEntity	age	PERSISTED_BY_VANILLA	MEDIUM	Age; advanced without marking the chunk dirty, AntiCrash now marks it. age % 2400 starts a cooldown
+TheEndGatewayBlockEntity	teleportCooldown	RESTORABLE_TRANSIENT	HIGH	not saved: a gateway on cooldown teleports at once after a load; AntiCrash extension TeleportCooldown
+TheEndGatewayBlockEntity	exitPortal	PERSISTED_BY_VANILLA	NONE	ExitPortal
+TheEndGatewayBlockEntity	exactTeleport	PERSISTED_BY_VANILLA	NONE	ExactTeleport
+TheEndPortalBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+EnderChestBlockEntity	chestLidController	CLIENT_ONLY	NONE	lid animation
+EnderChestBlockEntity	openersCounter	VISUAL_ONLY	NONE	viewer count drives only the lid
+FurnaceBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+HopperBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Items
+HopperBlockEntity	cooldownTime	PERSISTED_BY_VANILLA	NONE	TransferCooldown; dirty-marked by AntiCrash
+HopperBlockEntity	tickedGameTime	DERIVED_ON_LOAD	NONE	only compared with another hopper's value to learn whether that hopper already ticked this tick; the load default 0 means 'not yet', which is true at a tick boundary. See docs and HopperLastTickTimeTest
+JigsawBlockEntity	name	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	target	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	pool	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	joint	PERSISTED_BY_VANILLA	NONE	saved
+JigsawBlockEntity	finalState	PERSISTED_BY_VANILLA	NONE	saved
+JukeboxBlockEntity	item	PERSISTED_BY_VANILLA	NONE	RecordItem
+JukeboxBlockEntity	jukeboxSongPlayer	PERSISTED_BY_VANILLA	NONE	ticks_since_song_started determines periodic event phase; explicit playback dirty hook
+LecternBlockEntity	bookAccess	DERIVED_ON_LOAD	NONE	view of book
+LecternBlockEntity	dataAccess	DERIVED_ON_LOAD	NONE	view
+LecternBlockEntity	book	PERSISTED_BY_VANILLA	NONE	Book
+LecternBlockEntity	page	PERSISTED_BY_VANILLA	NONE	Page
+LecternBlockEntity	pageCount	DERIVED_ON_LOAD	NONE	from the book
+BaseContainerBlockEntity	lockKey	PERSISTED_BY_VANILLA	NONE	Lock
+BaseContainerBlockEntity	name	PERSISTED_BY_VANILLA	NONE	CustomName
+RandomizableContainerBlockEntity	lootTable	PERSISTED_BY_VANILLA	NONE	LootTable
+RandomizableContainerBlockEntity	lootTableSeed	PERSISTED_BY_VANILLA	NONE	LootTableSeed
+SpawnerBlockEntity	spawner	PERSISTED_BY_VANILLA	NONE	Delay and spawn settings; Delay dirty-marked by AntiCrash
+PistonMovingBlockEntity	movedState	PERSISTED_BY_VANILLA	NONE	blockState
+PistonMovingBlockEntity	direction	PERSISTED_BY_VANILLA	NONE	facing
+PistonMovingBlockEntity	extending	PERSISTED_BY_VANILLA	NONE	extending
+PistonMovingBlockEntity	isSourcePiston	PERSISTED_BY_VANILLA	NONE	source
+PistonMovingBlockEntity	progress	RESTORABLE_TRANSIENT	CRITICAL	not saved (Vanilla loads lastProgress into it): the piston arrives one tick late; AntiCrash extension Progress
+PistonMovingBlockEntity	progressO	PERSISTED_BY_VANILLA	NONE	saved under the key progress
+PistonMovingBlockEntity	lastTicked	RESTORABLE_TRANSIENT	MEDIUM	tick of the last advance, compared with world time by PistonBlock; AntiCrash extension SavedWorldTime
+PistonMovingBlockEntity	deathTicks	CLIENT_ONLY	NONE	client-side removal delay
+CalibratedSculkSensorBlockEntity	-	PERSISTED_BY_VANILLA	NONE	inherited sensor data; callback derives facing/redstone input
+SculkSensorBlockEntity	vibrationListener	DERIVED_ON_LOAD	NONE	listener binds the new sensor to world events
+SculkSensorBlockEntity	vibrationUser	DERIVED_ON_LOAD	NONE	constructor callback referencing sensor
+SculkSensorBlockEntity	vibrationData	PERSISTED_BY_VANILLA	HIGH	ListenerData codec including selector/delay; AntiCrash dirty hooks
+SculkCatalystBlockEntity	catalystListener	PERSISTED_BY_VANILLA	HIGH	spread-manager cursors serialized through eventListener; AntiCrash dirty hooks
+SculkShriekerBlockEntity	warningLevel	PERSISTED_BY_VANILLA	MEDIUM	warning_level
+SculkShriekerBlockEntity	vibrationListener	DERIVED_ON_LOAD	NONE	listener binds receiver
+SculkShriekerBlockEntity	vibrationUser	DERIVED_ON_LOAD	NONE	constructor callback
+SculkShriekerBlockEntity	vibrationData	PERSISTED_BY_VANILLA	HIGH	ListenerData codec; shared dirty hooks
+SculkSensorBlockEntity	lastVibrationFrequency	PERSISTED_BY_VANILLA	NONE	last_vibration_frequency
+ShulkerBoxBlockEntity	itemStacks	PERSISTED_BY_VANILLA	NONE	Items
+ShulkerBoxBlockEntity	openCount	OBSERVE_ONLY	LOW	belongs to an open player screen: CONTAINER_SESSION
+ShulkerBoxBlockEntity	animationStatus	UNSUPPORTED	LOW	reset to CLOSED; an opening box pushes entities for 10 ticks
+ShulkerBoxBlockEntity	progress	UNSUPPORTED	LOW	see animationStage
+ShulkerBoxBlockEntity	progressOld	VISUAL_ONLY	NONE	interpolation
+ShulkerBoxBlockEntity	color	DERIVED_ON_LOAD	NONE	from the block
+SignBlockEntity	frontText	PERSISTED_BY_VANILLA	NONE	front_text codec including filtered text/color/glow
+SignBlockEntity	backText	PERSISTED_BY_VANILLA	NONE	back_text codec
+SignBlockEntity	isWaxed	PERSISTED_BY_VANILLA	NONE	is_waxed
+SignBlockEntity	playerWhoMayEdit	TICK_LOCAL	NONE	editing player
+SkullBlockEntity	owner	PERSISTED_BY_VANILLA	NONE	SkullOwner
+SkullBlockEntity	animationTickCount	VISUAL_ONLY	NONE	dragon head animation
+SkullBlockEntity	isAnimating	VISUAL_ONLY	NONE	read from the world every tick
+SmokerBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+StructureBlockEntity	structureName	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	author	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	metaData	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	structurePos	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	structureSize	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	mirror	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	rotation	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	mode	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	ignoreEntities	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	powered	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	showAir	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	showBoundingBox	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	integrity	PERSISTED_BY_VANILLA	NONE	saved
+StructureBlockEntity	seed	PERSISTED_BY_VANILLA	NONE	saved
+TrappedChestBlockEntity	-	PERSISTED_BY_VANILLA	NONE	no fields of its own
+CreakingHeartBlockEntity	creakingInfo	PERSISTED_BY_VANILLA	HIGH	creaking UUID resolves the puppet; remaining timers still unsupported
+CreakingHeartBlockEntity	ticker	UNSUPPORTED	HIGH	puppet update countdown omitted from NBT
+CreakingHeartBlockEntity	emitter	UNSUPPORTED	MEDIUM	runtime timer omitted from NBT
+CreakingHeartBlockEntity	emitterTarget	UNSUPPORTED	HIGH	puppet position affects comparator output
+CreakingHeartBlockEntity	outputSignal	UNSUPPORTED	HIGH	cached output may emit comparator update on next tick
+CreakingHeartBlockEntity	ticksExisted	UNSUPPORTED	HIGH	new internal heartbeat clock omitted from NBT
+StructureBlockEntity	strict	PERSISTED_BY_VANILLA	NONE	strict key written and read by Vanilla
+TestBlockEntity	mode	PERSISTED_BY_VANILLA	NONE	mode codec
+TestBlockEntity	message	PERSISTED_BY_VANILLA	NONE	message key
+TestBlockEntity	powered	PERSISTED_BY_VANILLA	NONE	powered key
+TestBlockEntity	triggered	UNSUPPORTED	HIGH	GameTest state omitted from NBT; GAMETEST_RUNTIME blocks STRICT
+TestInstanceBlockEntity	data	PERSISTED_BY_VANILLA	HIGH	Data codec; running GameTest context outside block entity is unsupported
+TestInstanceBlockEntity	errorMarkers	PERSISTED_BY_VANILLA	NONE	Error.LIST_CODEC through readData/writeData
+CopperGolemStatueBlockEntity	-	PERSISTED_BY_VANILLA	NONE	No declared fields; inherited component state is saved by BlockEntity
+ShelfBlockEntity	items	PERSISTED_BY_VANILLA	NONE	Inventories.readData/writeData
+ShelfBlockEntity	alignItemsToBottom	PERSISTED_BY_VANILLA	NONE	align_items_to_bottom through readData/writeData

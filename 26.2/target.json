@@ -1,0 +1,19 @@
+{
+  "minecraft": "26.2",
+  "released": true,
+  "minimum_game_java": 25,
+  "yarn_latest": null,
+  "mojang_metadata": "https://piston-meta.mojang.com/v1/packages/d367f3dfbc0b3e14688df2311359deb609b234e3/26.2.json",
+  "status": "BUILD_VERIFIED",
+  "integration_verified": false,
+  "source_base": "26.1",
+  "blocker": null,
+  "java_target": 25,
+  "loader_version": "0.19.3",
+  "yarn_pinned": null,
+  "fabric_api_pinned": null,
+  "runtime_capsule_version": 8,
+  "minecraft_namespace": "MOJANG_UNOBFUSCATED",
+  "main_tests": 294,
+  "supervisor_tests": 13
+}

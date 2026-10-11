@@ -1,0 +1,21 @@
+plugins { id "java" }
+repositories { mavenCentral() }
+dependencies {
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testImplementation "org.ow2.asm:asm-tree:9.7.1"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.10.2"
+}
+tasks.withType(JavaCompile).configureEach { options.release = 17 }
+def game = providers.gradleProperty("legacyGameJar")
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    maxHeapSize = "128m"
+    doFirst {
+        if (!game.isPresent() || !file(game.get()).isFile())
+            throw new GradleException("Provide -PlegacyGameJar=/absolute/path/to/exact-1.16.1-Yarn-build.21.jar")
+        systemProperty "anticrash.legacy.gameJar", file(game.get()).absolutePath
+    }
+    if (game.isPresent()) inputs.file(game)
+}
+// Development-only model and classfile tests, NOT a Fabric mod or a distributable port.
+tasks.named("jar") { enabled = false }

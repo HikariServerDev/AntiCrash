@@ -1,0 +1,17 @@
+{
+  "minecraft": "1.21",
+  "released": true,
+  "minimum_game_java": 21,
+  "yarn_latest": "1.21+build.9",
+  "mojang_metadata": "https://piston-meta.mojang.com/v1/packages/e36b623c81c2b6d5c7ed5db4269f2e8b6e19928e/1.21.json",
+  "status": "BUILD_VERIFIED",
+  "integration_verified": false,
+  "source_base": "1.18.2",
+  "blocker": null,
+  "java_target": 21,
+  "loader_version": "0.17.3",
+  "yarn_pinned": "1.21+build.9",
+  "fabric_api_pinned": "0.102.0+1.21",
+  "main_tests": 260,
+  "supervisor_tests": 13
+}
