@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
- * The runtime state audit (docs/RUNTIME-STATE-AUDIT.md) is a correctness specification: every
+ * Runtime-state coverage is treated as a correctness specification: every
  * instance field of every block entity class, and of the entity classes machines are built from,
  * has a decision. This test reads the classes from the Minecraft jar the mod is compiled against
  * and fails when a field has no decision, so a Minecraft update cannot add state unnoticed.

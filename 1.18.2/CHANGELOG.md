@@ -30,11 +30,11 @@
 - startup candidate discoveryの256 KiB制限を16 MiB streaming metadata readへ修正。
 - streaming JSON/checksum、clone-free cache accounting、heap-aware candidate上限、16-chunk batch、rolling IO backpressureでmemory amplificationを削減。
 - OOM/親破損/予算不足のcircuit breaker、phase/headroom/failure diagnosticsを追加。intervalとheap指定は変更しない。
-- v7継続。実証範囲・残る未確認事項は[incident report](docs/CHECKPOINT-INCIDENT.md)に記載。本番変更なし。
+- v7継続。実証範囲と残る未確認事項を明記。本番変更なし。
 
 ## Unreleased - 2026-10-01
 
-実機での復旧検証（[docs/RUNTIME-QUALIFICATION.md](docs/RUNTIME-QUALIFICATION.md)）。隔離した専用Serverで「中断しなかった場合」と「checkpointから復旧した場合」をtickごとに全行比較し、見つかった差分を直した。結果はQUALIFIED。
+実機での復旧検証（runtime qualification report）。隔離した専用Serverで「中断しなかった場合」と「checkpointから復旧した場合」をtickごとに全行比較し、見つかった差分を直した。結果はQUALIFIED。
 
 - 再開の直前に、復旧用ticketを解除したうえでRuntime stateを取り直し、カテゴリごとにcheckpointと照合する（`OPTIMIZED`でも）。結果を1行でlogに出し、`/ac status`にも表示する。追加カテゴリ: `PISTON_RUNTIME`、`BREWING_RUNTIME`、`END_GATEWAY_RUNTIME`、`SCULK_RUNTIME`、`PORTAL_ENTITY_RUNTIME`、`ENTITY_TRANSIENT_RUNTIME`、`SHORT_LIVED_TICKETS`、`DIMENSION_RUNTIME`、`WEATHER_RUNTIME`、`CHUNK_RUNTIME`、`ENTITY_ID_PHASE`、`FAKEPLAYER_USE_RUNTIME`、`CONTAINER_SESSION`。古いcheckpointは`MISSING_FROM_OLD_FORMAT`になり、MATCHにはしない。
 - 修正: ChunkのInhabitedTimeがcheckpointに古い値で残っていた（Vanillaは毎tick加算するがChunkを保存対象にしない）。読み込み済みChunkの値をRuntime Capsuleに保存して戻す。
@@ -49,7 +49,7 @@
 
 保存時のラグ（エリトラの挙動など）のさらなる短縮と、復旧直後に装置が壊れる問題の修正。
 
-- Runtime State監査（`docs/RUNTIME-STATE-AUDIT.md`）。Minecraft 1.18.2がsave/reloadで保存しないがsimulationに影響する状態を、全BlockEntity 38 classと装置に使われるEntity 13 class、World、Chunk Ticket、Player/FakePlayerについて一覧化し、保存するもの・不要なもの・非対応のものを決めた。未調査は0件で、`RuntimeStateAuditCoverageTest`がMinecraftのclass定義と突き合わせる。
+- Runtime State監査。Minecraft 1.18.2がsave/reloadで保存しないがsimulationに影響する状態を、全BlockEntity 38 classと装置に使われるEntity 13 class、World、Chunk Ticket、Player/FakePlayerについて一覧化し、保存するもの・不要なもの・非対応のものを決めた。未調査は0件で、`RuntimeStateAuditCoverageTest`がMinecraftのclass定義と突き合わせる。
   - **動作中ピストンの進行度**（飛行式装置が再起動後に止まる原因）。Vanillaは1 tick前の値（`lastProgress`）だけを`progress`として保存し、読み込み時に現在値にも使うため、到着が1 tick遅れていた。実際の進行度と最後に進めたtickを追加で保存する。再開の直前に全ピストンをcheckpointの記録と照合し、`MATCH n/n`を出す。
   - **醸造台**: 醸造中の材料（`itemBrewing`）が保存されず、読み込み後の最初のtickで醸造が0からやり直しになっていた。
   - **End Gateway**: `teleportCooldown`が保存されず、cooldown中でも再起動直後に転送していた。`Age`は保存されるが毎tick進んでもChunkが保存対象にならず、古い値が残っていた。
@@ -132,7 +132,7 @@ Pingが正常なのに発生していたラグ（ロールバック、開いた�
 - Zero/Low-Pause Checkpoint Engineを追加。AUTOをPortable Generationへ切り替え、Logical Cutで独立file setと`generation-seal.json`を確定してからWorldを再開し、Runtime payload/manifest/checksum/READY/retentionをbackground finalizerへ分離。
 - BASE/DELTA世代、PRESENT/ABSENT/TOMBSTONE、親dependency-safe retention、periodic base boundary、durability mode、I/O throttle、monotonic phase/JVM/GC profiler、rolling preparation予算を追加。
 - v3 Checkpoint Manifestへgeneration seal・file set・logical cut・performance evidenceを追加。古いcheckpointは後方互換で読めるが、portable sealの欠落をMATCH扱いしない。
-- `docs/CHECKPOINT-ENGINE.md`、`docs/CHECKPOINT-CONSISTENCY.md`、`docs/CHECKPOINT-PERFORMANCE.md`を追加し、AUTO/legacy backend境界と実機検証範囲を明記。
+- Checkpoint engine、consistency、performanceの設計記録を追加し、AUTO/legacy backend境界と実機検証範囲を明記。
 - Supervisorが安定稼働後の非0終了で停止せず、短時間失敗burstの再試行回数だけを制限するよう修正。
 - Minecraft 1.18.2 / Fabric Loader 0.17.3 / Java 17向けのServer Mod基盤を追加。
 - Tick境界checkpoint、atomic commit、SHA-256 integrity、retention、Java incremental、Reflink、Btrfs、CRIU experimental backendを実装。

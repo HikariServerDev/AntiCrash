@@ -10,7 +10,7 @@ import net.minecraft.nbt.CompoundTag;
  * progress, a gateway's cooldown, an entity about to change dimension). It is stored in a single
  * versioned compound beside Vanilla's own keys and never replaces them: Vanilla's value stays the
  * authority for everything Vanilla saves, and a server without AntiCrash ignores the compound.
- * See docs/RUNTIME-STATE-AUDIT.md for every field and why it is or is not here.</p>
+ * Every serialized field is explicitly documented and intentionally scoped.</p>
  */
 public final class RuntimeExtensionNbt {
     public static final String KEY = "AntiCrash";

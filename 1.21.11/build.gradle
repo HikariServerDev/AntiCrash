@@ -34,7 +34,7 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version, "minecraft_version": project.minecraft_version
     }
-    from(rootProject.file("../assets/anticrash-icon.jpg")) {
+    from(rootProject.file("../anticrash-icon.jpg")) {
         into "assets/anticrash"
         rename { "icon.jpg" }
     }
@@ -92,7 +92,7 @@ subprojects {
 
 // Runtime qualification probe: a separate test-only Fabric mod that records the simulation state
 // every tick so a crash-and-recover run can be compared with an uninterrupted one. It is never
-// part of AntiCrash-<version>.jar; see docs/RUNTIME-QUALIFICATION.md.
+// part of AntiCrash-<version>.jar; packaging alone does not qualify runtime behavior.
 // Opt-in legacy fixture sources; not part of the version's distribution or offline test contract.
 if (providers.gradleProperty("enableRuntimeQualificationProbe").isPresent()) {
 sourceSets {

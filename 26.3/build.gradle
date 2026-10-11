@@ -23,7 +23,7 @@ processResources {
     filesMatching("fabric.mod.json") {
         expand "version": project.version, "minecraft_version": project.minecraft_version
     }
-    from(rootProject.file("../assets/anticrash-icon.jpg")) {
+    from(rootProject.file("../anticrash-icon.jpg")) {
         into "assets/anticrash"
         rename { "icon.jpg" }
     }
