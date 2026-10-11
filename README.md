@@ -16,7 +16,6 @@ The 30 versions marked **Build verified** have a version-specific Mod JAR in the
 
 | Minecraft | Mod JAR | Fabric Loader | Java | Status |
 | --- | --- | --- | --- | --- |
-| 1.16.1 | Not available | — | 8+ | Port in progress |
 | 1.18 | `AntiCrash-1.0.0+mc1.18.jar` | 0.17.3+ | 17+ | Build verified |
 | 1.18.1 | `AntiCrash-1.0.0+mc1.18.1.jar` | 0.17.3+ | 17+ | Build verified |
 | 1.18.2 | `AntiCrash-1.0.0+mc1.18.2.jar` | 0.17.3+ | 17+ | Build verified |
@@ -150,7 +149,6 @@ The source and build configuration for each Minecraft version are kept in that v
 
 | Minecraft | Mod JAR | Fabric Loader | Java | 状態 |
 | --- | --- | --- | --- | --- |
-| 1.16.1 | 利用不可 | — | 8以上 | 移植中 |
 | 1.18 | `AntiCrash-1.0.0+mc1.18.jar` | 0.17.3以上 | 17以上 | ビルド検証済み |
 | 1.18.1 | `AntiCrash-1.0.0+mc1.18.1.jar` | 0.17.3以上 | 17以上 | ビルド検証済み |
 | 1.18.2 | `AntiCrash-1.0.0+mc1.18.2.jar` | 0.17.3以上 | 17以上 | ビルド検証済み |
