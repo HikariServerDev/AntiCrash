@@ -91,6 +91,8 @@
     "PistonBlockEntityAccessorMixin",
     "PlayerEntityAccessorMixin",
     "EntityRuntimeAccessorMixin",
-    "EndGatewayBlockEntityAccessorMixin"
+    "EndGatewayBlockEntityAccessorMixin",
+    "UserCacheMixin",
+    "CarpetFakePlayerProfileMixin"
   ]
 }

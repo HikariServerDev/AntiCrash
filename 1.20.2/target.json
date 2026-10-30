@@ -12,6 +12,10 @@
   "loader_version": "0.17.3",
   "yarn_pinned": "1.20.2+build.4",
   "fabric_api_pinned": "0.91.6+1.20.2",
-  "main_tests": 253,
-  "supervisor_tests": 13
+  "main_tests": 269,
+  "supervisor_tests": 13,
+  "source_updated_on": "2026-10-30",
+  "offline_verified_on": "2026-10-30",
+  "mod_sha256": "fb02b5f61c88426c608fc24e32a6516b157d82df0a74fa987c6416c1dcb50b82",
+  "supervisor_sha256": "323d7386df94ed72ed46744a64babfe59278d907caa65162a42938c2f6b8c752"
 }

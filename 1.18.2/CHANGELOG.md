@@ -1,5 +1,16 @@
 # Changelog
 
+## Unreleased - 2026-10-30
+
+- 全版へFakePlayerのcheckpoint UUID復元・名前/UUID衝突の事前拒否・UUID不一致診断を反映。各版の実際のプロフィールキャッシュAPIに適合し、通常のログイン/認証/キャッシュ内容は変更しない。
+- 新Carpetの非同期プロフィール取得は復旧scope内だけ保存済みプロフィールで完了し、その完了済みプロフィールの生成だけServer thread上で即時登録。通常のCarpetの非同期取得/Executorは維持。Vector形式の生成引数にも対応。未知の生成APIやUUID不一致は引き続き復旧を拒否する。
+- Scope分離・後片付け・非同期完了・版別キャッシュのbytecode契約を実Server不要のテストで検証。1.16.1は引き続きPORT_IN_PROGRESSで配布不可。
+
+## Unreleased - 2026-10-24
+
+- FakePlayerの名前キャッシュがcheckpoint作成後に別UUIDへ変わると、復旧時にCarpetが別人のBotを生成してUUID検査に失敗していた問題を修正。Carpet 1.4.69の`createFake`とVanillaの`UserCache.findByName`を確認し、復旧の生成処理中だけ、対象のキャッシュ・名前・Server threadに限定してcheckpointのGameProfileを渡す。UUID検査は維持し、既存PlayerのUUID・名前と衝突する場合は生成前に拒否する。
+- FakePlayerのUUID不一致ログへ期待値と実際のUUIDを追加。通常のプロフィール検索、ログイン認証、checkpoint formatは変更しない。
+
 ## Unreleased - 2026-10-06
 
 - **変更: `policy = "ASK"`は、通常の停止のあとの起動でも質問する。** これまでは、正常終了のあとはASKでも質問せずにそのまま起動していた。Worldを開く前に、停止時のcheckpointから再開するかをServer consoleで尋ねる。`Y`は復元して再開（動作の途中だった装置がそのまま続く）、`N`は保存されたWorldを通常起動。`ask_timeout_seconds`のあいだ無回答なら`N`として通常起動する（異常終了後は従来どおり`Y`）。AUTOとMANUALは変わらない。設定fileのコメントも実際の動作に合わせた。

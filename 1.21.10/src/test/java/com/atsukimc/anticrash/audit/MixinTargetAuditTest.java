@@ -138,6 +138,13 @@ class MixinTargetAuditTest {
                 for (Object target : list(value(marker, "value"))) targets.add(((Type) target).getInternalName());
                 for (Object target : list(value(marker, "targets"))) targets.add(target.toString().replace('.', '/'));
                 for (String target : targets) {
+                    // Optional external adapters are absent in the game-only offline classpath.
+                    // Only @Pseudo Carpet targets may be absent; mandatory Minecraft targets
+                    // remain required. This is not Carpet runtime coverage.
+                    boolean pseudo = annotations(mixin.visibleAnnotations, mixin.invisibleAnnotations)
+                            .stream().anyMatch(a -> a.desc.equals("Lorg/spongepowered/asm/mixin/Pseudo;"));
+                    if (pseudo && target.startsWith("carpet/")
+                            && getClass().getClassLoader().getResource(target + ".class") == null) continue;
                     read(target);
                     audited++;
                     for (FieldNode member : mixin.fields) {

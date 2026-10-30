@@ -17,7 +17,10 @@
       "status": "PORT_IN_PROGRESS",
       "integration_verified": false,
       "source_base": "1.18.2",
-      "blocker": "Legacy tick-ledger core implemented; Minecraft capture/restore, merged entity/chunk IO, Mixin and full baseline integration remain"
+      "blocker": "Legacy tick-ledger core implemented; Minecraft capture/restore, merged entity/chunk IO, Mixin and full baseline integration remain",
+      "source_updated_on": "2026-10-30",
+      "legacy_adapter_tests": 14,
+      "legacy_adapter_verified_on": "2026-10-30"
     },
     {
       "minecraft": "1.18",
@@ -33,8 +36,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.18+build.1",
       "fabric_api_pinned": "0.46.6+1.18",
-      "main_tests": 252,
-      "supervisor_tests": 13
+      "main_tests": 268,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "e96d08212a107da85a6dba2c3e8b976ea5bfd85d902bfa991e55c1fee809b5dd",
+      "supervisor_sha256": "f07eb61bf5e2fe5143f9a26a9aeaf96f363fffc820c513ea143e896a845db3dc"
     },
     {
       "minecraft": "1.18.1",
@@ -50,8 +57,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.18.1+build.22",
       "fabric_api_pinned": "0.46.6+1.18",
-      "main_tests": 252,
-      "supervisor_tests": 13
+      "main_tests": 268,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "cda4718d24ec430bd0960d68e52e368536e1be0059709c69b323ece19b54e925",
+      "supervisor_sha256": "a9ae6c73b2021224ca44418ace4a96877bc2717a3275e8cbcc236b1675405d74"
     },
     {
       "minecraft": "1.18.2",
@@ -67,8 +78,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.18.2+build.4",
       "fabric_api_pinned": "0.77.0+1.18.2",
-      "main_tests": 250,
-      "supervisor_tests": 13
+      "main_tests": 266,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "2c5d97f163d92f65d2783183a0e61dd6adfeaa2f10d1960531751ab82c72f07a",
+      "supervisor_sha256": "7a64c2460e4118d88856570b2de979286ca9a2757cd8e3520185e229e2a7e8af"
     },
     {
       "minecraft": "1.19",
@@ -84,8 +99,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.19+build.4",
       "fabric_api_pinned": "0.58.0+1.19",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "6588ebd6e669073d621857b2b16090f47932b7d220720981741b868d2156199c",
+      "supervisor_sha256": "f29f6d1fd39f657748b2b2825b998d21587429f30d7d9d4a0887790d0c8edc94"
     },
     {
       "minecraft": "1.19.1",
@@ -101,8 +120,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.19.1+build.6",
       "fabric_api_pinned": "0.58.5+1.19.1",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "578fb3a25c26e3d904e258f29082cad9f154562f985f2c41eaf648c21cf87355",
+      "supervisor_sha256": "c768e787a81305c388831931c0b136c0df642729464ebba1813b1c42eba0be6b"
     },
     {
       "minecraft": "1.19.2",
@@ -118,8 +141,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.19.2+build.28",
       "fabric_api_pinned": "0.77.0+1.19.2",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "75c23b1b3449c430a9f7e78f46638bf130ae125f5f04f72fc37e21395b824392",
+      "supervisor_sha256": "5f3a9f90b30b74f0d883968e462c58bbf4e556621b0279495ce4b90b80761cc9"
     },
     {
       "minecraft": "1.19.3",
@@ -135,8 +162,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.19.3+build.5",
       "fabric_api_pinned": "0.76.1+1.19.3",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "65425097dfc30cdfe461f4157fcd372eb696825bf96e289e4e03f59a63f4f19f",
+      "supervisor_sha256": "787f781194461c2f47dfad7a339629c4b1d97541fc24d567e1dafee3a7bbce14"
     },
     {
       "minecraft": "1.19.4",
@@ -152,8 +183,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.19.4+build.2",
       "fabric_api_pinned": "0.87.2+1.19.4",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "818789b39e381f8ea576e0970bacb61f05de2fb6044aae861cc9ac259eff87d1",
+      "supervisor_sha256": "e8870d43beabd3bf1f3f4d3bab1a79676a02f6ca70864b0c6763392157f37265"
     },
     {
       "minecraft": "1.20",
@@ -169,8 +204,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20+build.1",
       "fabric_api_pinned": "0.83.0+1.20",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "f7aa7129029b93a07f87df59a8d0030305820ef166887547f815b250a1bfff20",
+      "supervisor_sha256": "4e03ac882c324de163783d8ddf10fa21c70ba058f34b00e9ec762c0df55b3967"
     },
     {
       "minecraft": "1.20.1",
@@ -186,8 +225,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.1+build.10",
       "fabric_api_pinned": "0.92.12+1.20.1",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "24a25837d1e73fd057548793bca8b95d737a533d26e570440d347f6998e0ed73",
+      "supervisor_sha256": "54e9cbdfb0a375fdc2878f7c95c45a5931649dddcea5ac0db98c7665949112ab"
     },
     {
       "minecraft": "1.20.2",
@@ -203,8 +246,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.2+build.4",
       "fabric_api_pinned": "0.91.6+1.20.2",
-      "main_tests": 253,
-      "supervisor_tests": 13
+      "main_tests": 269,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "fb02b5f61c88426c608fc24e32a6516b157d82df0a74fa987c6416c1dcb50b82",
+      "supervisor_sha256": "323d7386df94ed72ed46744a64babfe59278d907caa65162a42938c2f6b8c752"
     },
     {
       "minecraft": "1.20.3",
@@ -220,8 +267,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.3+build.1",
       "fabric_api_pinned": "0.91.1+1.20.3",
-      "main_tests": 256,
-      "supervisor_tests": 13
+      "main_tests": 272,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "60e1364d12fe334b9de880cdabadb1ef1da69035b5cea44be38d031a50f6809a",
+      "supervisor_sha256": "5bd334465506449a2b71ccd58f52fd3e30b387439121762e31181cb48bb10c7e"
     },
     {
       "minecraft": "1.20.4",
@@ -237,8 +288,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.4+build.3",
       "fabric_api_pinned": "0.97.3+1.20.4",
-      "main_tests": 256,
-      "supervisor_tests": 13
+      "main_tests": 272,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "a5e61dfd1771a555a011003599d493b39a3e45616b361c68e38f3ffdc1c4c9e7",
+      "supervisor_sha256": "9294f96b635fcf79e4895b517cb80362c99d0e55d8467c50358fd96710700611"
     },
     {
       "minecraft": "1.20.5",
@@ -254,8 +309,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.5+build.1",
       "fabric_api_pinned": "0.97.8+1.20.5",
-      "main_tests": 258,
-      "supervisor_tests": 13
+      "main_tests": 274,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "b11104844ea9941dfa03754b87822426a5c546e4670e7a43d6a30916da0f525c",
+      "supervisor_sha256": "63607ff9f736d0ff24c1e8902088e77351497babb1dabeee7bd5270e55175d45"
     },
     {
       "minecraft": "1.20.6",
@@ -271,8 +330,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.20.6+build.3",
       "fabric_api_pinned": "0.100.8+1.20.6",
-      "main_tests": 258,
-      "supervisor_tests": 13
+      "main_tests": 274,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "5f1242082a90d1bf70759bb361c5532339dc555fb91a0730dc37f860062ac7ce",
+      "supervisor_sha256": "183651a2ddec37f9e6bdeef1c52042acac792062a1fb2503edd1bc7caa96de0f"
     },
     {
       "minecraft": "1.21",
@@ -288,8 +351,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21+build.9",
       "fabric_api_pinned": "0.102.0+1.21",
-      "main_tests": 260,
-      "supervisor_tests": 13
+      "main_tests": 276,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "13c5eedb332bb0f7545099668d0086af3ffb99995a4a3bf5af3d4e6b5f23d44f",
+      "supervisor_sha256": "6db2e93c448e26835fd98ccf096f5fa9ee3a38192550e11e2b63165336756f2d"
     },
     {
       "minecraft": "1.21.1",
@@ -305,8 +372,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.1+build.3",
       "fabric_api_pinned": "0.116.17+1.21.1",
-      "main_tests": 260,
-      "supervisor_tests": 13
+      "main_tests": 276,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "6fd5874579e7c3aec18509a73a704b80a557e5876c35cf555c5e8a5ceab4f569",
+      "supervisor_sha256": "830cd227b95d62402e64574d89184efb0ba517d97cc86270bbbea66385a58975"
     },
     {
       "minecraft": "1.21.2",
@@ -322,8 +393,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.2+build.1",
       "fabric_api_pinned": "0.106.1+1.21.2",
-      "main_tests": 262,
-      "supervisor_tests": 13
+      "main_tests": 278,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "5018593a1cfe6890edeeaee35a2208a496b5b74cdfa88d27af6148ebcb13dbf1",
+      "supervisor_sha256": "7729e5b02c258ac51dd8cdf64089fd7ab1e05c176d075009b535e42ce67588fd"
     },
     {
       "minecraft": "1.21.3",
@@ -339,8 +414,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.3+build.2",
       "fabric_api_pinned": "0.114.1+1.21.3",
-      "main_tests": 262,
-      "supervisor_tests": 13
+      "main_tests": 278,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "9ea4d139ce14724e4f0ef7af6c14bff381beffa534fd0ab9a2491313ad7179e2",
+      "supervisor_sha256": "8f7884a28ebfcdd8eddafc0214c9c50996cbdb27d78c4b24cd1be1cadd206637"
     },
     {
       "minecraft": "1.21.4",
@@ -356,8 +435,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.4+build.8",
       "fabric_api_pinned": "0.119.4+1.21.4",
-      "main_tests": 265,
-      "supervisor_tests": 13
+      "main_tests": 281,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "3027aaf461f07e04392eddc01ac47f158fe1ce8185c1a15e0f2845fa620ed9f8",
+      "supervisor_sha256": "12da190670ec8c7acb2d327c86e949bf5d5069b19cdf3727da1582a07f48ee65"
     },
     {
       "minecraft": "1.21.5",
@@ -373,8 +456,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.5+build.1",
       "fabric_api_pinned": "0.128.2+1.21.5",
-      "main_tests": 271,
-      "supervisor_tests": 13
+      "main_tests": 287,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "3818ecd221273882ddfb3126af7490221c41114e0f9091d06ca7488038cba280",
+      "supervisor_sha256": "273ba9db849cb1137f184bc228ef3c7501bc6027e900928480b7c604dfb370af"
     },
     {
       "minecraft": "1.21.6",
@@ -390,8 +477,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.6+build.1",
       "fabric_api_pinned": "0.128.2+1.21.6",
-      "main_tests": 278,
-      "supervisor_tests": 13
+      "main_tests": 294,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "fa29fef64dfae4e85233e975f8eb40b07d43b209022a6bd10c1c75ca61d1187f",
+      "supervisor_sha256": "9ec6cb9d759567fb7cd04c12f80339cd1b2209413eb0c5f32946cd21e8ecb801"
     },
     {
       "minecraft": "1.21.7",
@@ -407,8 +498,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.7+build.8",
       "fabric_api_pinned": "0.129.0+1.21.7",
-      "main_tests": 278,
-      "supervisor_tests": 13
+      "main_tests": 294,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "e58e9e1338f160b9e57f072e3227fe8f33ad3db21ebae7588b4cf0fab98302ef",
+      "supervisor_sha256": "db908b1072d0c5ed95d4214e2fe0dda0454f08f6fd27360e414d3bcb37b67917"
     },
     {
       "minecraft": "1.21.8",
@@ -424,8 +519,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.8+build.1",
       "fabric_api_pinned": "0.136.1+1.21.8",
-      "main_tests": 278,
-      "supervisor_tests": 13
+      "main_tests": 294,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "9db50e709703f7de52759fc1aabab1d13f22273c5e295b420809200491e1b32f",
+      "supervisor_sha256": "5fda4a36f7f3a4ab401a1a948ae0e57f02885e9161606bf34032d79164ab3923"
     },
     {
       "minecraft": "1.21.9",
@@ -441,10 +540,14 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.9+build.1",
       "fabric_api_pinned": "0.134.1+1.21.9",
-      "main_tests": 280,
+      "main_tests": 296,
       "supervisor_tests": 13,
       "runtime_capsule_version": 7,
-      "minecraft_namespace": "YARN"
+      "minecraft_namespace": "YARN",
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "bc61c786e5ebc6a3f11709964f0ec184d5abae2fcb45a13bcf84a73ae268e7b6",
+      "supervisor_sha256": "7cb80e4b6b23d8d333b60d09af813fa4a6dbdcedf08a40f574eb371cdbfbbc85"
     },
     {
       "minecraft": "1.21.10",
@@ -460,8 +563,12 @@
       "loader_version": "0.17.3",
       "yarn_pinned": "1.21.10+build.3",
       "fabric_api_pinned": "0.138.4+1.21.10",
-      "main_tests": 280,
-      "supervisor_tests": 13
+      "main_tests": 296,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "843f0696e5b247616f3a865bb6581a81a59ea246cd9a8354a1767900f5007923",
+      "supervisor_sha256": "6b4ceb58226383518aef2d0439c845898779c6405f33e97f5d0672a54a084573"
     },
     {
       "minecraft": "1.21.11",
@@ -477,8 +584,12 @@
       "loader_version": "0.18.4",
       "yarn_pinned": "1.21.11+build.6",
       "fabric_api_pinned": "0.141.6+1.21.11",
-      "main_tests": 285,
-      "supervisor_tests": 13
+      "main_tests": 301,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "f1c978998e2611fd54ede8f8027ee8d977f5354d2a0cd3951d08ea98cfb68418",
+      "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
     },
     {
       "minecraft": "26.1",
@@ -496,8 +607,12 @@
       "fabric_api_pinned": null,
       "runtime_capsule_version": 8,
       "minecraft_namespace": "MOJANG_UNOBFUSCATED",
-      "main_tests": 291,
-      "supervisor_tests": 13
+      "main_tests": 307,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "138f2f49ab2286c7193aa132d0f6a7edb0a6363ecb27676ae21aef99c54f4cd5",
+      "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
     },
     {
       "minecraft": "26.2",
@@ -515,8 +630,12 @@
       "fabric_api_pinned": null,
       "runtime_capsule_version": 8,
       "minecraft_namespace": "MOJANG_UNOBFUSCATED",
-      "main_tests": 294,
-      "supervisor_tests": 13
+      "main_tests": 310,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "7da475979e517d33c014225e904845cf95be994618c40f1a36492ae9b5e2a1b6",
+      "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
     },
     {
       "minecraft": "26.3",
@@ -534,8 +653,13 @@
       "fabric_api_pinned": null,
       "runtime_capsule_version": 8,
       "minecraft_namespace": "MOJANG_UNOBFUSCATED",
-      "main_tests": 297,
-      "supervisor_tests": 13
+      "main_tests": 313,
+      "supervisor_tests": 13,
+      "source_updated_on": "2026-10-30",
+      "offline_verified_on": "2026-10-30",
+      "mod_sha256": "326b3704c85b511c171c2c2e0d26aa9d2956876aa06922c4db05590268ab572d",
+      "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
     }
-  ]
+  ],
+  "source_updated_on": "2026-10-30"
 }

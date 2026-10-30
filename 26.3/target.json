@@ -14,6 +14,10 @@
   "fabric_api_pinned": null,
   "runtime_capsule_version": 8,
   "minecraft_namespace": "MOJANG_UNOBFUSCATED",
-  "main_tests": 297,
-  "supervisor_tests": 13
+  "main_tests": 313,
+  "supervisor_tests": 13,
+  "source_updated_on": "2026-10-30",
+  "offline_verified_on": "2026-10-30",
+  "mod_sha256": "326b3704c85b511c171c2c2e0d26aa9d2956876aa06922c4db05590268ab572d",
+  "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
 }

@@ -252,7 +252,28 @@ public final class CarpetIntegration {
         Set<String> uuids=new HashSet<>();Set<String> names=new HashSet<>();boolean invalid=false;
         for(FakePlayerSnapshot data:snapshots)try{validate(data,config);if(!uuids.add(data.uuid.toLowerCase(Locale.ROOT)))throw new IllegalArgumentException("Duplicate FakePlayer UUID");if(!names.add(data.name.toLowerCase(Locale.ROOT)))throw new IllegalArgumentException("Duplicate FakePlayer name");}catch(Exception exception){invalid=true;logger.importantKey("fakeplayer.restore_failed",data==null?"<null>":data.name,exception.getMessage());}
         if(invalid){summary.failed=summary.expected;return summary;}
-        for(FakePlayerSnapshot data:snapshots){try{ServerPlayerEntity player=find(server,data);if(player==null&&config.fakePlayer.autoRejoin)player=create(server,data,logger);if(player==null||!isFakePlayer(player))throw new IllegalStateException("Carpet did not create the FakePlayer");if(!player.getUuidAsString().equalsIgnoreCase(data.uuid))throw new IllegalStateException("FakePlayer UUID does not match the checkpoint");apply(server,player,data,config);summary.ready++;logger.normalKey("fakeplayer.restored",data.name);}catch(Exception exception){summary.failed++;logger.importantKey("fakeplayer.restore_failed",data.name,exception.getMessage());}}
+        for (FakePlayerSnapshot data : snapshots) {
+            try {
+                ServerPlayerEntity player = find(server, data);
+                if (player == null && config.fakePlayer.autoRejoin) player = create(server, data);
+                if (player == null || !isFakePlayer(player)) {
+                    throw new IllegalStateException("Carpet did not create the FakePlayer");
+                }
+                if (!player.getUuidAsString().equalsIgnoreCase(data.uuid)) {
+                    throw new IllegalStateException("FakePlayer UUID does not match the checkpoint: expected "
+                            + data.uuid + ", actual " + player.getUuidAsString());
+                }
+                if (!data.name.equals(player.getGameProfile().name())) {
+                    throw new IllegalStateException("FakePlayer name does not match the checkpoint");
+                }
+                apply(server, player, data, config);
+                summary.ready++;
+                logger.normalKey("fakeplayer.restored", data.name);
+            } catch (Exception exception) {
+                summary.failed++;
+                logger.importantKey("fakeplayer.restore_failed", data.name, exception.getMessage());
+            }
+        }
         return summary;
     }
 
@@ -276,12 +297,27 @@ public final class CarpetIntegration {
 
     private static ServerPlayerEntity find(MinecraftServer server,FakePlayerSnapshot data){
         try{UUID uuid=UUID.fromString(data.uuid);ServerPlayerEntity byUuid=server.getPlayerManager().getPlayer(uuid);if(byUuid!=null&&isFakePlayer(byUuid))return byUuid;}catch(Exception ignored){}
-        for(ServerPlayerEntity player:server.getPlayerManager().getPlayerList())if(isFakePlayer(player)&&player.getGameProfile().name().equals(data.name))return player;return null;
+        for(ServerPlayerEntity player:server.getPlayerManager().getPlayerList())if(isFakePlayer(player)&&player.getGameProfile().name().equalsIgnoreCase(data.name))return player;return null;
     }
 
-    private static ServerPlayerEntity create(MinecraftServer server,FakePlayerSnapshot data,AntiCrashLogger logger){
+    private static ServerPlayerEntity create(MinecraftServer server,FakePlayerSnapshot data) throws IOException {
+        if (!server.isOnThread()) throw new IOException("FakePlayer restore must run on the server thread");
+        UUID expectedUuid = UUID.fromString(data.uuid);
+        // PlayerManager.onPlayerConnect may disconnect an existing UUID. Reject collisions before
+        // calling Carpet so restoring a bot cannot evict or overwrite a real player's session.
+        if (server.getPlayerManager().getPlayer(expectedUuid) != null
+                || server.getPlayerManager().getPlayer(data.name) != null) {
+            throw new IOException("FakePlayer checkpoint identity is already in use: " + data.name);
+        }
+        try (FakePlayerProfileScope ignored = FakePlayerProfileScope.open(
+                server.getApiServices().nameToIdCache(), server, expectedUuid, data.name)) {
+            return createWithCheckpointProfile(server, data);
+        }
+    }
+
+    private static ServerPlayerEntity createWithCheckpointProfile(MinecraftServer server,FakePlayerSnapshot data) throws IOException {
         ServerWorld world=findWorld(server,data.dimension); if(world==null)world=server.getOverworld(); GameMode mode=data.gamemode==null?GameMode.SURVIVAL:GameMode.byId(data.gamemode,GameMode.SURVIVAL);
-        for(String className:FAKE_CLASSES) try{Class<?> type=Class.forName(className);for(Method method:ReflectionUtil.allMethods(type))if(Modifier.isStatic(method.getModifiers())&&(method.getName().equals("createFake")||method.getName().equals("createFakePlayer"))){Object[] args=arguments(method.getParameterTypes(),server,world,data,mode);if(args==null)continue;Object result=method.invoke(null,args);if(result instanceof ServerPlayerEntity player)return player;ServerPlayerEntity found=find(server,data);if(found!=null)return found;}}catch(Exception|LinkageError ignored){}
+        for(String className:FAKE_CLASSES) try{Class<?> type=Class.forName(className);for(Method method:ReflectionUtil.allMethods(type))if(Modifier.isStatic(method.getModifiers())&&(method.getName().equals("createFake")||method.getName().equals("createFakePlayer"))){Object[] args=arguments(method.getParameterTypes(),server,world,data,mode);if(args==null)continue;Object result=method.invoke(null,args);if(result instanceof ServerPlayerEntity player)return player;ServerPlayerEntity found=find(server,data);return found;}}catch(java.lang.reflect.InvocationTargetException failure){throw new IOException("Carpet FakePlayer factory failed",failure.getCause());}catch(Exception|LinkageError ignored){}
         // Command fallback: only characters a Brigadier word accepts, so the name cannot alter it.
         if(data.name!=null&&data.name.matches("[A-Za-z0-9_.+-]{1,16}")){try{RecoveryCommandPolicy.runInternal(()->{server.getCommandManager().executeWithPrefix(server.getCommandSource(),"player "+data.name+" spawn");return null;});}catch(Exception|LinkageError ignored){}}
         return find(server,data);
@@ -290,7 +326,7 @@ public final class CarpetIntegration {
     private static Object[] arguments(Class<?>[] types,MinecraftServer server,ServerWorld world,FakePlayerSnapshot data,GameMode mode){
         Object[] args=new Object[types.length];int doubles=0,floats=0,booleans=0;
         double[] doubleValues={data.x,data.y,data.z,data.yaw,data.pitch};float[] floatValues={data.yaw,data.pitch};
-        for(int i=0;i<types.length;i++){Class<?> t=types[i];if(t==String.class)args[i]=data.name;else if(t==MinecraftServer.class||t.isAssignableFrom(server.getClass()))args[i]=server;else if(t==ServerWorld.class||t.isAssignableFrom(world.getClass()))args[i]=world;else if(t==RegistryKey.class)args[i]=world.getRegistryKey();else if(t==GameProfile.class)try{args[i]=new GameProfile(UUID.fromString(data.uuid),data.name);}catch(Exception e){return null;}else if(t==GameMode.class)args[i]=mode;else if(t==double.class||t==Double.class){if(doubles>=doubleValues.length)return null;args[i]=doubleValues[doubles++];}else if(t==float.class||t==Float.class){if(floats>=floatValues.length)return null;args[i]=floatValues[floats++];}else if(t==boolean.class||t==Boolean.class){args[i]=booleans++==0?data.flying:false;}else if(t==UUID.class)try{args[i]=UUID.fromString(data.uuid);}catch(Exception e){return null;}else return null;}return args;
+        for(int i=0;i<types.length;i++){Class<?> t=types[i];if(t==net.minecraft.util.math.Vec3d.class){args[i]=new net.minecraft.util.math.Vec3d(data.x,data.y,data.z);doubles=3;}else if(t==String.class)args[i]=data.name;else if(t==MinecraftServer.class||server!=null&&t.isAssignableFrom(server.getClass()))args[i]=server;else if(t==ServerWorld.class||world!=null&&t.isAssignableFrom(world.getClass()))args[i]=world;else if(t==RegistryKey.class)args[i]=world.getRegistryKey();else if(t==GameProfile.class)try{args[i]=new GameProfile(UUID.fromString(data.uuid),data.name);}catch(Exception e){return null;}else if(t==GameMode.class)args[i]=mode;else if(t==double.class||t==Double.class){if(doubles>=doubleValues.length)return null;args[i]=doubleValues[doubles++];}else if(t==float.class||t==Float.class){if(floats>=floatValues.length)return null;args[i]=floatValues[floats++];}else if(t==boolean.class||t==Boolean.class){args[i]=booleans++==0?data.flying:false;}else if(t==UUID.class)try{args[i]=UUID.fromString(data.uuid);}catch(Exception e){return null;}else return null;}return args;
     }
 
     private static void apply(MinecraftServer server,ServerPlayerEntity player,FakePlayerSnapshot data,AntiCrashConfig config) throws IOException {

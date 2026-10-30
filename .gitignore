@@ -5,4 +5,5 @@
 !/build/*.jar
 **/__pycache__/
 **/*.log
+**/logs/
 .toolchains/

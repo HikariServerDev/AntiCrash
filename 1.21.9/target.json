@@ -12,8 +12,12 @@
   "loader_version": "0.17.3",
   "yarn_pinned": "1.21.9+build.1",
   "fabric_api_pinned": "0.134.1+1.21.9",
-  "main_tests": 280,
+  "main_tests": 296,
   "supervisor_tests": 13,
   "runtime_capsule_version": 7,
-  "minecraft_namespace": "YARN"
+  "minecraft_namespace": "YARN",
+  "source_updated_on": "2026-10-30",
+  "offline_verified_on": "2026-10-30",
+  "mod_sha256": "bc61c786e5ebc6a3f11709964f0ec184d5abae2fcb45a13bcf84a73ae268e7b6",
+  "supervisor_sha256": "7cb80e4b6b23d8d333b60d09af813fa4a6dbdcedf08a40f574eb371cdbfbbc85"
 }
