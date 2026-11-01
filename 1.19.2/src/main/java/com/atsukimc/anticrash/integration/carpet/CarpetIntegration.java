@@ -284,7 +284,7 @@ public final class CarpetIntegration {
             data.forward = player.forwardSpeed;
             data.strafing = player.sidewaysSpeed;
         }
-        if (config.fakePlayer.snapshot.inventory || config.fakePlayer.snapshot.selectedSlot)
+        if (FakePlayerSnapshotOptions.inventoryRequired(config.fakePlayer.snapshot))
             data.inventory =
                     InventorySnapshot.capture(
                             player,
@@ -309,17 +309,11 @@ public final class CarpetIntegration {
         captureUseState(player, data);
         Object actionPack = findActionPack(player);
         if (actionPack == null
-                && (config.fakePlayer.snapshot.actions
-                        || config.fakePlayer.snapshot.actionInternalTiming
-                        || config.fakePlayer.snapshot.itemUseCooldown
-                        || config.fakePlayer.snapshot.blockBreakProgress)) {
+                && (FakePlayerSnapshotOptions.actionsRequired(config.fakePlayer.snapshot))) {
             throw new IOException("Carpet ActionPack is unavailable for " + data.name);
         }
         if (actionPack != null
-                && (config.fakePlayer.snapshot.actions
-                        || config.fakePlayer.snapshot.actionInternalTiming
-                        || config.fakePlayer.snapshot.itemUseCooldown
-                        || config.fakePlayer.snapshot.blockBreakProgress)) {
+                && (FakePlayerSnapshotOptions.actionsRequired(config.fakePlayer.snapshot))) {
             data.actionPackState =
                     ActionPackStateCodec.capture(
                             actionPack,
@@ -563,7 +557,7 @@ public final class CarpetIntegration {
                         "FakePlayer dimension is unavailable: " + data.dimension);
         }
         boolean inventoryEnabled =
-                config.fakePlayer.snapshot.inventory || config.fakePlayer.snapshot.selectedSlot;
+                FakePlayerSnapshotOptions.inventoryRequired(config.fakePlayer.snapshot);
         if (inventoryEnabled) {
             if (data.inventory == null)
                 throw new IOException("Enabled FakePlayer inventory snapshot is missing");
@@ -589,10 +583,7 @@ public final class CarpetIntegration {
             }
         }
         boolean actionRequested =
-                config.fakePlayer.snapshot.actions
-                        || config.fakePlayer.snapshot.actionInternalTiming
-                        || config.fakePlayer.snapshot.itemUseCooldown
-                        || config.fakePlayer.snapshot.blockBreakProgress;
+                FakePlayerSnapshotOptions.actionsRequired(config.fakePlayer.snapshot);
         Object actionPack = findActionPack(player);
         if (actionRequested && (data.actionPackState == null || actionPack == null))
             throw new IOException("Enabled FakePlayer ActionPack snapshot is missing");
@@ -939,7 +930,7 @@ public final class CarpetIntegration {
                     throw new IOException("FakePlayer effect snapshot is invalid");
             }
         boolean inventoryEnabled =
-                config.fakePlayer.snapshot.inventory || config.fakePlayer.snapshot.selectedSlot;
+                FakePlayerSnapshotOptions.inventoryRequired(config.fakePlayer.snapshot);
         if (inventoryEnabled) {
             if (data.inventory == null)
                 throw new IOException("Enabled FakePlayer inventory snapshot is missing");
@@ -950,10 +941,7 @@ public final class CarpetIntegration {
                     config.fakePlayer.snapshot.selectedSlot);
         }
         boolean actionRequested =
-                config.fakePlayer.snapshot.actions
-                        || config.fakePlayer.snapshot.actionInternalTiming
-                        || config.fakePlayer.snapshot.itemUseCooldown
-                        || config.fakePlayer.snapshot.blockBreakProgress;
+                FakePlayerSnapshotOptions.actionsRequired(config.fakePlayer.snapshot);
         if (actionRequested)
             ActionPackStateCodec.validateSnapshot(
                     data.actionPackState,

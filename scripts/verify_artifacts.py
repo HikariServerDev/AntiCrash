@@ -21,7 +21,7 @@ def asm_classpath():
     return os.pathsep.join(str(next((base / name / version).glob("*/*.jar"))) for name in ["asm", "asm-tree"])
 
 
-def verify(root, minecraft, mod, collect=False, baseline=None):
+def verify(root, minecraft, mod, collect=False, baseline=None, refactor_baseline=None):
     artifacts = []
     for supervisor in [False, True]:
         prefix = "AntiCrash-Supervisor" if supervisor else "AntiCrash"
@@ -64,6 +64,21 @@ def verify(root, minecraft, mod, collect=False, baseline=None):
                 java = Path(os.environ['JAVA_HOME']) / 'bin/java' if os.environ.get('JAVA_HOME') else 'java'
                 subprocess.run([str(java), '-Xmx512m', '-cp', asm_classpath(),
                                 str(root / 'scripts/BytecodeParity.java'), str(old), str(source)], check=True)
+            if refactor_baseline:
+                old = refactor_baseline / name
+                with zipfile.ZipFile(old) as previous:
+                    before = {entry for entry in previous.namelist() if not entry.endswith('.class') and not entry.endswith('/')}
+                    after = {entry for entry in names if not entry.endswith('.class') and not entry.endswith('/')}
+                    assert before == after, (source, 'Resource membership changed')
+                    for entry in before:
+                        expected, actual = previous.read(entry), jar.read(entry)
+                        if entry.endswith('.json'):
+                            assert json.loads(expected) == json.loads(actual), (source, entry)
+                        else:
+                            assert expected == actual, (source, entry)
+                java = Path(os.environ['JAVA_HOME']) / 'bin/java' if os.environ.get('JAVA_HOME') else 'java'
+                subprocess.run([str(java), '-Xmx512m', '-cp', asm_classpath(),
+                                str(root / 'scripts/RefactorParity.java'), str(old), str(source)], check=True)
         if collect:
             shutil.copy2(source, root / 'build' / name)
         artifacts.append(dict(name=name, sha256=hashlib.sha256(source.read_bytes()).hexdigest()))
@@ -75,7 +90,10 @@ def main():
     parser.add_argument('--version', action='append', help='Minecraft target; repeat to select multiple')
     parser.add_argument('--collect', action='store_true', help='Copy verified release JARs into root build/')
     parser.add_argument('--baseline-version', choices=['1.0.0'], help='One-time 1.0.0 → 1.0.1 refactor equivalence gate')
+    parser.add_argument('--refactor-baseline', type=Path, help='Directory of pre-cleanup 1.0.1 JARs for bounded method/resource auditing')
     args = parser.parse_args()
+    if args.baseline_version and args.refactor_baseline:
+        parser.error('Choose one baseline comparison mode')
     root = Path(__file__).resolve().parents[1]
     matrix = json.loads((root / 'versions.json').read_text())
     targets = [row['minecraft'] for row in matrix['versions'] if row['status'] == 'BUILD_VERIFIED']
@@ -83,7 +101,7 @@ def main():
     if not set(selected) <= set(targets):
         raise ValueError('Only build-verified Minecraft targets have distributable JARs')
     for target in selected:
-        print(json.dumps(verify(root, target, matrix['mod_version'], args.collect, args.baseline_version)), flush=True)
+        print(json.dumps(verify(root, target, matrix['mod_version'], args.collect, args.baseline_version, args.refactor_baseline)), flush=True)
 
 
 if __name__ == '__main__':

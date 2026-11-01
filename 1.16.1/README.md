@@ -1,6 +1,6 @@
 # AntiCrash — Minecraft 1.16.1
 
-- **Status:** Port in progress; no usable Mod or Supervisor JAR is available.
+- **Status:** Port paused at the owner's request; no usable Mod or Supervisor JAR is available.
 - **Minecraft:** 1.16.1
 - **Java baseline:** 8 or newer.
 - **Fabric Loader:** Compatible version not yet established.

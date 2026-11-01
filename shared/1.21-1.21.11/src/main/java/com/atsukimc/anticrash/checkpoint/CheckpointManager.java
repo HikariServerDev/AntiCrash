@@ -305,7 +305,8 @@ public final class CheckpointManager {
         }
         long budget = rollingBudget.budgetNanos();
         if (budget <= 0L) return;
-        if (logicalPersistentStateBlocked == null && logicalDeltaRequested()) {
+        if (logicalPersistentStateBlocked == null
+                && CheckpointEnginePolicy.logicalDeltaRequested(config)) {
             // Probe once before the first capture so a world that can never use the logical
             // engine does not spend its rolling budget on candidates in the meantime.
             try {
@@ -478,7 +479,7 @@ public final class CheckpointManager {
             saveOffReported = false;
 
             boolean explicitBase = baseRequested;
-            if (logicalDeltaRequested()
+            if (CheckpointEnginePolicy.logicalDeltaRequested(config)
                     && !explicitBase
                     && (previousWorld == null || previousManifest == null)) {
                 // Do not silently turn the first ordinary 30-second checkpoint into a full
@@ -501,7 +502,7 @@ public final class CheckpointManager {
                                     .toUpperCase(java.util.Locale.ROOT);
             boolean logicalDelta =
                     !explicitBase
-                            && logicalDeltaRequested()
+                            && CheckpointEnginePolicy.logicalDeltaRequested(config)
                             && previousWorld != null
                             && previousManifest != null;
             boolean unsupportedPersistentState = false;
@@ -509,7 +510,8 @@ public final class CheckpointManager {
             // represented by the generic semantic delta yet, but discovering their presence must
             // not add a filesystem walk to the frozen epoch.  The result is carried into the
             // PendingBarrier and is never rescanned at the cut.
-            if (logicalDelta && hasUnsafeLogicalOptions()) logicalDelta = false;
+            if (logicalDelta && CheckpointEnginePolicy.hasUnsafeLogicalOptions(config))
+                logicalDelta = false;
             if (logicalDelta) {
                 long persistentProbeStarted = System.nanoTime();
                 try {
@@ -620,7 +622,7 @@ public final class CheckpointManager {
             // save boundary, but serialize dirty chunks in tiny IO-drained batches over multiple
             // frozen server ticks. The final Vanilla flush then has no large backlog to allocate.
             boolean portableFallback =
-                    usePortableGeneration()
+                    CheckpointEnginePolicy.usesPortableGeneration(config)
                             && "PORTABLE_GENERATION"
                                     .equalsIgnoreCase(config.checkpoint.engineFallback);
             // Keep the fallback backend selected even while the first attempt is logical.  A
@@ -1559,7 +1561,7 @@ public final class CheckpointManager {
                     manifest,
                     result,
                     context.logicalDelta,
-                    checkpointDiagnostic(
+                    CheckpointDiagnostics.describe(
                             context.capsule,
                             manifest,
                             runtimeCapsuleBytes,
@@ -1592,174 +1594,6 @@ public final class CheckpointManager {
             }
             return CaptureResult.failure(exception);
         }
-    }
-
-    /**
-     * Builds the one-line evidence record operators need when a later recovery does not match. The
-     * Runtime Capsule already contains the complete values; this compact copy is emitted at commit
-     * time so the normal server log is useful without opening JSON by hand. It deliberately
-     * contains counts and hashes, not the full entity/chunk lists, to keep routine checkpoint logs
-     * bounded even for a large technical world.
-     */
-    private static String checkpointDiagnostic(
-            RuntimeCapsule capsule,
-            CheckpointManifest manifest,
-            long runtimeCapsuleBytes,
-            long heapUsedBytes,
-            long heapMaxBytes) {
-        StringBuilder result = new StringBuilder(1024);
-        result.append("fidelity=")
-                .append(manifest.fidelity)
-                .append("; dimensions=")
-                .append(dimensionDiagnostic(capsule))
-                .append("; chunks loaded/full/block/entity/forced=")
-                .append(manifest.loadedChunkCount)
-                .append('/')
-                .append(manifest.fullChunkCount)
-                .append('/')
-                .append(manifest.blockTickingChunkCount)
-                .append('/')
-                .append(manifest.entityTickingChunkCount)
-                .append('/')
-                .append(manifest.forcedChunkCount)
-                .append("; CHUNK_DOMAIN hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN))
-                .append("; BLOCK_ENTITY_TICKERS count=")
-                .append(manifest.blockEntityTickerCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory
-                                        .BLOCK_ENTITY_TICKERS))
-                .append("; ENTITIES count=")
-                .append(manifest.entityOrderCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.ENTITIES))
-                .append("; BLOCK_EVENTS count=")
-                .append(manifest.blockEventCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_EVENTS))
-                .append("; SCHEDULED_TICKS count=")
-                .append(size(capsule.scheduledTicks))
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.SCHEDULED_TICKS))
-                .append("; MOVING_PISTONS count=")
-                .append(size(capsule.movingPistonTickOrder))
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.MOVING_PISTONS))
-                .append("; TORCH_BURNOUT count=")
-                .append(manifest.torchBurnoutCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory
-                                        .REDSTONE_RUNTIME))
-                .append("; WORLD_RUNTIME hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME))
-                .append(" support=")
-                .append(worldRuntimeSupport(capsule))
-                .append("; WORLD_RNG hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG))
-                .append("; TICKET_LEDGER count=")
-                .append(manifest.ticketCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.TICKET_LEDGER))
-                .append("; CARPET status=")
-                .append(manifest.carpetCaptureStatus)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule, com.atsukimc.anticrash.runtime.EquivalenceCategory.CARPET))
-                .append("; FAKEPLAYERS count=")
-                .append(manifest.fakePlayerCount)
-                .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.FAKEPLAYERS))
-                .append("; runtimeCapsuleBytes=")
-                .append(runtimeCapsuleBytes)
-                .append("; heapUsed/max=")
-                .append(heapUsedBytes)
-                .append('/')
-                .append(heapMaxBytes)
-                .append("; unsupported=")
-                .append(capsule.unsupportedRuntimeState);
-        return result.toString();
-    }
-
-    private static String dimensionDiagnostic(RuntimeCapsule capsule) {
-        if (capsule == null || capsule.worlds == null) return "unavailable";
-        List<String> dimensions = new ArrayList<>();
-        for (RuntimeCapsule.WorldRuntime world : capsule.worlds) {
-            if (world == null) continue;
-            dimensions.add(
-                    world.dimension
-                            + "["
-                            + world.loadedChunkCount
-                            + "/"
-                            + world.fullChunkCount
-                            + "/"
-                            + world.blockTickingChunkCount
-                            + "/"
-                            + world.entityTickingChunkCount
-                            + "/"
-                            + world.forcedChunkCount
-                            + "]");
-        }
-        dimensions.sort(String::compareTo);
-        return dimensions.isEmpty() ? "[]" : '[' + String.join(";", dimensions) + ']';
-    }
-
-    private static int size(List<?> values) {
-        return values == null ? -1 : values.size();
-    }
-
-    private static String fingerprint(RuntimeCapsule capsule, String category) {
-        if (capsule == null || capsule.expectedFingerprints == null) return "missing";
-        String value = capsule.expectedFingerprints.get(category);
-        return value == null ? "missing" : value;
-    }
-
-    private static String worldRuntimeSupport(RuntimeCapsule capsule) {
-        if (capsule == null || capsule.expectedFingerprints == null) return "missing";
-        boolean rngUnsupported =
-                capsule.unsupportedRuntimeState != null
-                        && capsule.unsupportedRuntimeState.contains(
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG);
-        return "WORLD_RUNTIME="
-                + (capsule.expectedFingerprints.containsKey(
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME)
-                        ? "CAPTURED"
-                        : "MISSING")
-                + ",WORLD_RNG="
-                + (rngUnsupported ? "UNSUPPORTED" : "CAPTURED");
     }
 
     private PreviousCheckpoint loadPreviousCheckpoint() throws IOException {
@@ -2519,42 +2353,9 @@ public final class CheckpointManager {
      * seeding its ledger would only cost server-thread time every tick and at every cut.
      */
     private boolean logicalEngineUsable() {
-        return logicalDeltaRequested()
-                && !hasUnsafeLogicalOptions()
+        return CheckpointEnginePolicy.logicalDeltaRequested(config)
+                && !CheckpointEnginePolicy.hasUnsafeLogicalOptions(config)
                 && !Boolean.TRUE.equals(logicalPersistentStateBlocked);
-    }
-
-    private boolean usePortableGeneration() {
-        String backend =
-                config.snapshot.backend == null
-                        ? "AUTO"
-                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
-        return backend.equals("AUTO")
-                || backend.equals("PORTABLE_GENERATION")
-                || backend.equals("GENERATION");
-    }
-
-    private boolean logicalDeltaRequested() {
-        String mode =
-                config.checkpoint.engineMode == null
-                        ? "LOGICAL_DELTA"
-                        : config.checkpoint.engineMode.trim().toUpperCase(java.util.Locale.ROOT);
-        String backend =
-                config.snapshot.backend == null
-                        ? "AUTO"
-                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
-        return "LOGICAL_DELTA".equals(mode)
-                && ("AUTO".equals(backend)
-                        || "PORTABLE_GENERATION".equals(backend)
-                        || "GENERATION".equals(backend));
-    }
-
-    private boolean hasUnsafeLogicalOptions() {
-        // Kept as a compatibility setting, not a license to carry stale POI/data across epochs.
-        return config.checkpoint.allowUnsupportedPersistentState
-                || config.playerSnapshot.vanillaFiles.restorePlayerdata
-                || config.playerSnapshot.vanillaFiles.restoreStats
-                || config.playerSnapshot.vanillaFiles.restoreAdvancements;
     }
 
     /**

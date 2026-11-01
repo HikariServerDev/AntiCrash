@@ -133,9 +133,13 @@ java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
 
 Replace the version in the JAR name with the server's Minecraft version. The command after `--` is the child server command. A direct server launch still supports the mod's checkpoint and recovery features, but it does not provide the Supervisor's process monitoring and same-console restart behavior.
 
+### Code organization
+
+Recovery checks, checkpoint-engine policy, bounded diagnostic formatting, and FakePlayer snapshot requirements have dedicated small helpers. World mutation, ticket management, checkpoint scheduling, and resume ordering remain in their version-specific adapters. Differential tests compare the helpers against the original 1.0.1 logic, including rejection messages and diagnostic output. No extra runtime dependency or required memory setting has been added.
+
 ### Building and contributing
 
-Clone the complete repository; a version directory alone no longer includes all shared source. Run `./gradlew test build` from a version directory using its required JDK (Java 21 for older Gradle builds; Java 25 for 26.x), with JDK 17 also installed for the Supervisor toolchain. Use JDK 25 and `python3 scripts/format_java.py --check` at the repository root to check the unified Java style; omit `--check` to format. `python3 scripts/check_sources.py` rejects duplicate source/resource membership. CI derives its target matrix from `versions.json` and checks every buildable target. Minecraft 1.16.1 is still an incomplete port and has no release JAR. Older 1.0.0 artifacts remain in `build/` for comparison; use the 1.0.1 JARs for this release.
+Clone the complete repository; a version directory alone no longer includes all shared source. Run `./gradlew test build` from a version directory using its required JDK (Java 21 for older Gradle builds; Java 25 for 26.x), with JDK 17 also installed for the Supervisor toolchain. Use JDK 25 and `python3 scripts/format_java.py --check` at the repository root to check the unified Java style; omit `--check` to format. `python3 scripts/check_sources.py` rejects duplicate source/resource membership. CI derives its target matrix from `versions.json` and checks every buildable target. Minecraft 1.16.1 migration is paused at the owner's request; it has no release JAR. Older 1.0.0 artifacts remain in `build/` for comparison; use the 1.0.1 JARs for this release.
 
 ### Limitations and safety
 
@@ -143,7 +147,7 @@ Clone the complete repository; a version directory alone no longer includes all 
 - Exact recovery of every mod, TMC machine, random state, async task, and thread schedule is not guaranteed. A successful build or unit test is not proof of live-server compatibility.
 - `STRICT` intentionally stays frozen when a required state is missing or mismatched. Do not bypass this for a valuable world without understanding the reported difference.
 - Keep independent backups and test recovery on a copy of the world before using it on a valuable server.
-- The Minecraft 1.16.1 directory is incomplete and must not be used as a released build.
+- Minecraft 1.16.1 is on hold; its directory is preserved but is not a released build.
 
 Build settings and Minecraft-specific adapters remain in the version-named directories. Version-independent code lives in `common/`, identical API-family implementations in `shared/`, and the shared Supervisor source in `supervisor/`. Each target still compiles against its own Minecraft, mappings, and Java level. The prebuilt Mod and Supervisor JARs are collected in `build/`. The project is licensed under the GNU Lesser General Public License v3.0 only (SPDX: `LGPL-3.0-only`).
 
@@ -278,9 +282,13 @@ java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
 
 Supervisor JAR名のMinecraft版はサーバーに合わせます。`--`より後ろがServerの起動コマンドです。Modを直接起動してもCheckpoint・復旧機能は使えますが、Supervisorによるプロセス監視と同一コンソールでの再起動は行われません。
 
+### コード構成
+
+復旧チェック・保存方式の判定・診断文字列の組み立て・FakePlayerの保存要件は、小さな専用処理に分離しています。Worldの変更、Ticket操作、Checkpointの間隔、再開の順序は従来の版別処理に残しています。新旧比較テストで拒否理由やログ文字列も確認します。追加の実行時依存やメモリ設定の変更は不要です。
+
 ### ビルド・開発
 
-共通ソースも必要なため、版別フォルダーだけでなくリポジトリ全体を取得してください。版別フォルダーで`./gradlew test build`を実行します（旧Gradle版の実行はJava 21、26.xはJava 25。Supervisorのビルド用にJDK 17も必要です。出力のJava要件は表のとおりです）。ルートでJDK 25を使い`python3 scripts/format_java.py --check`を実行すると統一書式を検査でき、`--check`を外すと整形します。`python3 scripts/check_sources.py`はソース・リソースの重複を拒否します。CIは`versions.json`から全ビルド対象を取得します。1.16.1は引き続き移植途中で、配布用JARはありません。`build/`内の1.0.0は比較用に残しています。今回の配布物は1.0.1を選んでください。
+共通ソースも必要なため、版別フォルダーだけでなくリポジトリ全体を取得してください。版別フォルダーで`./gradlew test build`を実行します（旧Gradle版の実行はJava 21、26.xはJava 25。Supervisorのビルド用にJDK 17も必要です。出力のJava要件は表のとおりです）。ルートでJDK 25を使い`python3 scripts/format_java.py --check`を実行すると統一書式を検査でき、`--check`を外すと整形します。`python3 scripts/check_sources.py`はソース・リソースの重複を拒否します。CIは`versions.json`から全ビルド対象を取得します。1.16.1の移植は依頼により一旦中断しています。配布用JARはありません。`build/`内の1.0.0は比較用に残しています。今回の配布物は1.0.1を選んでください。
 
 ### 注意事項
 
@@ -288,6 +296,6 @@ Supervisor JAR名のMinecraft版はサーバーに合わせます。`--`より�
 - あらゆるMod、TMC装置、乱数、非同期処理、スレッド実行順を完全復元できる保証はありません。ビルド・ユニットテスト成功は実サーバーでの動作確認を意味しません。
 - `STRICT`は必須状態が欠落・不一致の場合、意図的にワールドを停止したままにします。差分の意味を確認せずに安全制限を回避しないでください。
 - 大切なサーバーでは独立バックアップを保管し、ワールド複製で復旧テストをしてから利用してください。
-- `1.16.1`は移植途中です。配布用ビルドとして使用しないでください。
+- `1.16.1`の移植作業は中断中です。既存ソースは保持しますが、配布用ビルドとして使用しないでください。
 
 版名のディレクトリには版別アダプターとビルド設定を残しています。版非依存コードは`common/`、同じAPI系統の実装は`shared/`、共通Supervisorコードは`supervisor/`です。各版はそれぞれのMinecraft・Mappings・Javaレベルで独立してコンパイルします。配布用Mod JARとSupervisor JARはルートの`build/`にあります。ライセンスはGNU Lesser General Public License v3.0 only（SPDX: `LGPL-3.0-only`）です。

@@ -12,16 +12,17 @@
   "loader_version": "0.17.3",
   "yarn_pinned": "1.21.9+build.1",
   "fabric_api_pinned": "0.134.1+1.21.9",
-  "main_tests": 302,
+  "main_tests": 307,
   "supervisor_tests": 13,
   "runtime_capsule_version": 7,
   "minecraft_namespace": "YARN",
   "source_updated_on": "2026-11-02",
   "offline_verified_on": "2026-11-02",
-  "mod_sha256": "8f95192f1a7a4bdfded17648a7b0fba9cc9c98564278099f75252f31a1cc2aad",
+  "mod_sha256": "f46b8161373a0379da371ab55ae722d1df7953a012ea19a766c4ea7946ac9c82",
   "supervisor_sha256": "eff944ec135d41449e00d56dfc1e65f7d5d5921ddb2f02c870f2f686870fe763",
   "mod_version": "1.0.1",
   "source_layout": "SHARED_WITH_ISOLATED_ADAPTERS",
-  "runtime_parity_baseline": "1.0.0",
-  "runtime_parity_status": "MATCH_DEBUG_AND_VERSION_NORMALIZED"
+  "runtime_parity_baseline": "1.0.1",
+  "runtime_parity_status": "DIFFERENTIAL_TESTS_AND_SCOPED_BYTECODE_AUDIT",
+  "runtime_parity_baseline_commit": "b6dba052a53dec079888a9d22d222ccd252722ee"
 }

@@ -69,27 +69,3 @@ jobs:
             ${{ matrix.minecraft }}/supervisor/build/reports/
             ${{ matrix.minecraft }}/build/libs/AntiCrash-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
             ${{ matrix.minecraft }}/supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
-
-  legacy-adapter:
-    needs: layout
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    defaults:
-      run:
-        working-directory: '1.16.1'
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
-        with:
-          distribution: temurin
-          java-version: |
-            17
-            21
-      - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c
-      - run: |
-          ./gradlew --no-daemon --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1024m compileLegacyIntegrationJava
-          mapped=$(./gradlew --no-daemon --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1024m -q printLegacyGameJar | tail -n 1)
-          test -f "$mapped"
-          ./gradlew --no-daemon --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1024m :adapter-core:test -PlegacyGameJar="$mapped"

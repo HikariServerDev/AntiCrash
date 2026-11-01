@@ -19,6 +19,7 @@ import com.atsukimc.anticrash.player.PlayerSnapshotManager;
 import com.atsukimc.anticrash.recovery.ChunkRecoveryManager;
 import com.atsukimc.anticrash.recovery.ChunkRecoveryPlan;
 import com.atsukimc.anticrash.recovery.PreWorldDecisionInput;
+import com.atsukimc.anticrash.recovery.RecoveryChecks;
 import com.atsukimc.anticrash.recovery.RecoveryPayloadValidator;
 import com.atsukimc.anticrash.recovery.StartupRecoveryPlan;
 import com.atsukimc.anticrash.recovery.WorldRestorer;
@@ -51,7 +52,6 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -774,7 +774,7 @@ public final class AntiCrashController {
                         "STRICT recovery requires Runtime Capsule v6 state: "
                                 + String.join(", ", missingStrict));
             }
-            validateStrictManifest(manifest, capsule);
+            RecoveryChecks.validateStrictManifest(manifest, capsule);
             if (!config.fakePlayer.restoreBeforeUnfreeze && !savedFakePlayers.isEmpty()) {
                 throw new IOException(
                         "STRICT recovery requires fakeplayer.restore_before_unfreeze=true");
@@ -816,66 +816,6 @@ public final class AntiCrashController {
                                 config.recovery.maxPreloadChunks);
         chunks.begin(server, capsule, anchors);
         if (chunks.isComplete()) finishRestoredServerPreparation();
-    }
-
-    /**
-     * The manifest is authenticated independently of the JSON capsule. In STRICT mode both records
-     * must describe the same exact capture; otherwise an old or hand-edited manifest could make a
-     * partial capsule look complete.
-     */
-    private static void validateStrictManifest(CheckpointManifest manifest, RuntimeCapsule capsule)
-            throws IOException {
-        if (manifest == null || !"STRICT".equalsIgnoreCase(manifest.fidelity)) {
-            throw new IOException("STRICT recovery requires a STRICT checkpoint manifest");
-        }
-        if (capsule == null
-                || capsule.expectedFingerprints == null
-                || capsule.chunks == null
-                || capsule.unsupportedRuntimeState == null
-                || manifest.unsupportedRuntimeState == null) {
-            throw new IOException("STRICT checkpoint manifest or Runtime Capsule state is missing");
-        }
-        String expectedDomainHash =
-                capsule.expectedFingerprints.get(EquivalenceCategory.CHUNK_DOMAIN);
-        if (expectedDomainHash == null || !expectedDomainHash.equals(manifest.chunkDomainHash)) {
-            throw new IOException(
-                    "STRICT checkpoint manifest chunk-domain fingerprint does not match");
-        }
-        int full =
-                capsule.chunks.stream()
-                        .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::fullCount)
-                        .sum();
-        int block =
-                capsule.chunks.stream()
-                        .mapToInt(
-                                com.atsukimc.anticrash.runtime.ChunkStateSnapshot
-                                        ::blockTickingCount)
-                        .sum();
-        int forced =
-                capsule.chunks.stream()
-                        .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::forcedCount)
-                        .sum();
-        if (manifest.fullChunkCount != full
-                || manifest.blockTickingChunkCount != block
-                || manifest.entityTickingChunkCount != capsule.entityTickingChunkCount()
-                || manifest.forcedChunkCount != forced
-                || manifest.blockEntityTickerCount != capsule.blockEntityTickerCount()
-                || manifest.entityOrderCount != capsule.entityOrderCount()
-                || manifest.torchBurnoutCount != capsule.redstoneTorchBurnoutCount()
-                || manifest.ticketCount != capsule.ticketCount()
-                || manifest.checkpointPlayerCount
-                        != (capsule.checkpointPlayersCaptured
-                                ? capsule.checkpointPlayers.size()
-                                : 0)
-                || !java.util.Objects.equals(
-                        manifest.checkpointPlayerHash,
-                        capsule.expectedFingerprints.get(EquivalenceCategory.PLAYERS))
-                || !java.util.Objects.equals(
-                        manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
-                || !new HashSet<>(manifest.unsupportedRuntimeState)
-                        .equals(new HashSet<>(capsule.unsupportedRuntimeState))) {
-            throw new IOException("STRICT checkpoint manifest runtime counters do not match");
-        }
     }
 
     /**
@@ -2178,7 +2118,7 @@ public final class AntiCrashController {
                                 true));
             }
         }
-        report.finalizeResult(strictAllowedUnsupportedCategories());
+        report.finalizeResult(RecoveryChecks.allowedUnsupportedCategories(config.recovery.strict));
         lastEquivalenceReport = report;
         String signature =
                 report.ready
@@ -2206,26 +2146,6 @@ public final class AntiCrashController {
         } else {
             strictBlocked = false;
         }
-    }
-
-    private Set<String> strictAllowedUnsupportedCategories() {
-        Set<String> allowed = new java.util.LinkedHashSet<>();
-        if (config.recovery.strict.allowUnsupportedRuntimeState) {
-            allowed.add(EquivalenceCategory.WORLD_RNG);
-            if (!config.recovery.strict.requireEntityOrder)
-                allowed.add(EquivalenceCategory.ENTITIES);
-            if (!config.recovery.strict.requireBlockEntityTickerOrder) {
-                allowed.add(EquivalenceCategory.BLOCK_ENTITY_TICKERS);
-            }
-            if (!config.recovery.strict.requireTicketLedger) {
-                allowed.add(EquivalenceCategory.TICKET_LEDGER);
-            }
-        }
-        if (config.recovery.strict.allowUnsupportedCarpetState) {
-            allowed.add(EquivalenceCategory.CARPET);
-            allowed.add(EquivalenceCategory.FAKEPLAYERS);
-        }
-        return allowed;
     }
 
     /** Renders the current contract report for /ac recovery verify and /ac debug equivalence. */
