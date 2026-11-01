@@ -10,13 +10,9 @@ AntiCrash is intended for Technical Minecraft, but it cannot guarantee exact rep
 
 ## English
 
-### Latest maintenance update (2026-10-30)
-
-All buildable targets include the FakePlayer checkpoint-identity repair: restoration uses the saved UUID and name, rejects collisions with online players before creation, and reports the expected and actual UUID on mismatch. Profile-cache adapters match each Minecraft version. Carpet's supported asynchronous creation paths use the saved profile only during recovery; ordinary profile lookups and logins are unchanged. Checkpoint formats and the mod version (`1.0.0`) are unchanged. These are offline-verified builds, not new live-server compatibility certifications.
-
 ### Supported versions
 
-The 30 versions marked **Build verified** have a version-specific Mod JAR in the repository's `build/` directory. Build verification means compilation, unit tests, and artifact checks passed; it is **not** live-server compatibility qualification. **Minecraft 1.16.1 is still being ported and has no usable JAR.**
+The 30 versions marked **Build verified** have a version-specific Mod JAR in the repository's `build/` directory. Build verification means compilation, unit tests, and artifact checks passed; it is **not** live-server compatibility qualification.
 
 | Minecraft | Mod JAR | Fabric Loader | Java | Status |
 | --- | --- | --- | --- | --- |
@@ -147,13 +143,9 @@ The source and build configuration for each Minecraft version are kept in that v
 
 ## 日本語
 
-### 最新の保守更新（2026-10-30）
-
-ビルド可能な全版へFakePlayerのCheckpoint本人識別の修正を反映しました。保存済みのUUID・名前で復元し、既存プレイヤーとの衝突は生成前に拒否します。不一致時は期待UUIDと実際のUUIDを表示します。Minecraft版ごとにプロフィールキャッシュAPIへ対応し、対応Carpetの非同期生成経路も復旧時だけ保存済みプロフィールを使用します。通常のプロフィール検索・ログインは変更しません。Checkpoint形式とModバージョン（`1.0.0`）は変更していません。今回の検証はオフラインであり、実サーバーでの動作保証が追加されたわけではありません。
-
 ### 対応バージョン
 
-以下のうち30版は**ビルド検証済み**で、版に対応したMod JARをリポジトリの`build/`に収録しています。ビルド検証済みとは、コンパイル・ユニットテスト・成果物検査が完了したという意味で、実Minecraftサーバーでの動作確認を意味しません。**1.16.1は移植中で、利用可能なJARはありません。**
+以下のうち30版は**ビルド検証済み**で、版に対応したMod JARをリポジトリの`build/`に収録しています。ビルド検証済みとは、コンパイル・ユニットテスト・成果物検査が完了したという意味で、実Minecraftサーバーでの動作確認を意味しません。
 
 | Minecraft | Mod JAR | Fabric Loader | Java | 状態 |
 | --- | --- | --- | --- | --- |
