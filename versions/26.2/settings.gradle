@@ -1,0 +1,10 @@
+pluginManagement {
+    repositories {
+        maven { url = "https://maven.fabricmc.net/" }
+        gradlePluginPortal()
+    }
+}
+rootProject.name = "AntiCrash-26.2"
+include(":supervisor")
+
+project(":supervisor").projectDir = file("../../supervisor")

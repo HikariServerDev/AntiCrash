@@ -1,0 +1,18 @@
+sourceSets {
+    main.java.srcDir("adapter-core/src/main/java")
+    legacyIntegration {
+        java {
+            srcDirs = ["src/main/java", "adapter-core/src/main/java"]
+            include "com/atsukimc/anticrash/legacy/**"
+            include "com/atsukimc/anticrash/mixin/Legacy*"
+        }
+        compileClasspath += sourceSets.main.compileClasspath
+    }
+}
+tasks.withType(JavaCompile).configureEach { options.compilerArgs.addAll(["-Xmaxerrs", "300"]) }
+// Keep the unfinished port unpublishable after sharing its independent source files.
+tasks.named("jar") { enabled = false }
+tasks.named("remapJar") { enabled = false }
+tasks.named("build") {
+    doFirst { throw new GradleException("AntiCrash 1.16.1: PORT_IN_PROGRESS; full legacy adapter integration is incomplete.") }
+}

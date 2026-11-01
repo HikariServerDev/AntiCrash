@@ -1,0 +1,5 @@
+plugins { id "fabric-loom" version "1.7.4" }
+
+apply from: "../../gradle/mod.gradle"
+
+apply from: "../../gradle/legacy.gradle"

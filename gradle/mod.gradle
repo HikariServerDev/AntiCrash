@@ -1,0 +1,121 @@
+def repository = rootProject.file("../..")
+def target = new groovy.json.JsonSlurper().parse(file("target.json"))
+def legacyPort = target.status == "PORT_IN_PROGRESS"
+def yarn = project.hasProperty("yarn_mappings")
+def fabricApi = project.findProperty("compileWithFabricApi") == true
+
+version = project.mod_version
+group = project.maven_group
+base { archivesName = project.archives_base_name }
+tasks.withType(AbstractArchiveTask).configureEach {
+    archiveVersion = "${project.mod_version}+mc${project.minecraft_version}"
+}
+repositories {
+    mavenCentral()
+    maven { name = "Fabric"; url = "https://maven.fabricmc.net/" }
+}
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    if (yarn) {
+        mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+        modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    } else {
+        implementation "net.fabricmc:fabric-loader:${project.loader_version}"
+    }
+    // Fabric API is compile-only where the existing target needs it.
+    if (fabricApi) compileOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+    testImplementation "org.junit.jupiter:junit-jupiter:5.10.2"
+    testRuntimeOnly "org.junit.platform:junit-platform-launcher:1.10.2"
+}
+
+apply from: new File(repository, "gradle/sources.gradle")
+
+processResources {
+    inputs.property "version", project.version
+    inputs.property "minecraft_version", project.minecraft_version
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version, "minecraft_version": project.minecraft_version
+    }
+    from(new File(repository, "anticrash-icon.jpg")) {
+        into "assets/anticrash"
+        rename { "icon.jpg" }
+    }
+}
+tasks.withType(JavaCompile).configureEach { options.release = target.java_target ?: 17 }
+tasks.withType(Test).configureEach {
+    useJUnitPlatform()
+    maxHeapSize = "512m"
+}
+subprojects {
+    group = rootProject.group
+    version = rootProject.version
+}
+
+// Keep the existing offline game access fixture out of distributable JARs.
+if (sourceSets.test.java.files.any { it.name == "OfflineGameAccessTransformer.java" }) {
+    def mappedGame = providers.provider {
+        def prefix = yarn ? "minecraft-merged-" : "minecraft-merged-deobf-"
+        sourceSets.main.compileClasspath.files.find { it.name.startsWith(prefix) && it.name.endsWith(".jar") }
+    }
+    def offlineGame = layout.buildDirectory.file("test-fixtures/minecraft-access.jar")
+    tasks.register("prepareOfflineTestGame", JavaExec) {
+        dependsOn tasks.named("compileTestJava")
+        classpath = sourceSets.test.runtimeClasspath
+        mainClass = "com.atsukimc.anticrash.audit.OfflineGameAccessTransformer"
+        inputs.file(mappedGame)
+        outputs.file(offlineGame)
+        maxHeapSize = "256m"
+        doFirst { args = [mappedGame.get().absolutePath, offlineGame.get().asFile.absolutePath] }
+    }
+    tasks.named("test", Test) {
+        dependsOn tasks.named("prepareOfflineTestGame")
+        classpath = files(offlineGame) + sourceSets.test.runtimeClasspath
+    }
+}
+
+if (!legacyPort) {
+    java { withSourcesJar() }
+    [tasks.named("jar"), tasks.named("sourcesJar")].each { archive ->
+        archive.configure {
+            from(new File(repository, "LICENSE")) { rename { "LICENSE_AntiCrash" } }
+        }
+    }
+}
+
+// Newer Yarn targets keep the existing opt-in probe policy; Mojang targets have no probe task.
+if (yarn && !legacyPort && (project.findProperty("runtimeProbeOptIn") != true
+        || providers.gradleProperty("enableRuntimeQualificationProbe").isPresent())) {
+    sourceSets {
+        probe {
+            compileClasspath += sourceSets.main.compileClasspath + sourceSets.main.output
+            runtimeClasspath += sourceSets.main.runtimeClasspath + sourceSets.main.output
+        }
+    }
+    if (!fabricApi) {
+        dependencies { probeCompileOnly "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}" }
+    }
+    tasks.register("probeDevJar", Jar) {
+        from sourceSets.probe.output
+        archiveClassifier = "probe-dev"
+        destinationDirectory = layout.buildDirectory.dir("devlibs")
+    }
+    // Applied scripts resolve Loom task types through the plugin's classloader.
+    def remapJarType = plugins.getPlugin("fabric-loom").class.classLoader.loadClass("net.fabricmc.loom.task.RemapJarTask")
+    tasks.register("probeJar", remapJarType) {
+        dependsOn tasks.named("probeDevJar")
+        inputFile = tasks.named("probeDevJar").flatMap { it.archiveFile }
+        archiveClassifier = "probe"
+        addNestedDependencies = false
+    }
+}
+
+// Preserve the Yarn-only collection policy and its check-before-copy dependency.
+if (yarn && !legacyPort) {
+    tasks.register("collectBuilds", Copy) {
+        dependsOn tasks.named("check"), tasks.named("remapJar"), project(":supervisor").tasks.named("build")
+        from(tasks.named("remapJar").flatMap { it.archiveFile })
+        from(project(":supervisor").tasks.named("jar").flatMap { it.archiveFile })
+        into new File(repository, "build")
+    }
+    tasks.named("build") { dependsOn tasks.named("collectBuilds") }
+}

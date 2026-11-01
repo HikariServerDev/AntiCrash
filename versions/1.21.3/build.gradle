@@ -1,0 +1,7 @@
+plugins {
+    id "fabric-loom" version "1.7.4"
+    id "maven-publish"
+}
+
+ext.compileWithFabricApi = true
+apply from: "../../gradle/mod.gradle"

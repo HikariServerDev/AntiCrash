@@ -1,0 +1,31 @@
+def repository = rootProject.file("../..")
+def groups = new groovy.json.JsonSlurper().parse(new File(repository, "gradle/source-groups.json"))
+def sharedRoots = groups.findAll { path, versions -> rootProject.minecraft_version in versions }
+        .keySet().collect { new File(repository, "${it}/src") }
+
+// Shared files are compiled against this target's game, mappings and Java release.
+sourceSets.configureEach { sourceSet ->
+    sharedRoots.each { root ->
+        sourceSet.java.srcDir(new File(root, "${sourceSet.name}/java"))
+        sourceSet.resources.srcDir(new File(root, "${sourceSet.name}/resources"))
+    }
+}
+
+tasks.register("verifySourceLayout") {
+    doLast {
+        sourceSets.each { sourceSet ->
+            [sourceSet.java, sourceSet.resources].each { sources ->
+                def paths = [:]
+                sources.asFileTree.visit { entry ->
+                    if (!entry.directory) {
+                        def previous = paths.put(entry.relativePath.pathString, entry.file)
+                        if (previous != null) {
+                            throw new GradleException("Duplicate ${sourceSet.name} source: ${previous}, ${entry.file}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+tasks.named("check") { dependsOn tasks.named("verifySourceLayout") }

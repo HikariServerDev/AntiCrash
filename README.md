@@ -141,7 +141,31 @@ Replace the version in the JAR name with the server's Minecraft version. The com
 - Keep independent backups and test recovery on a copy of the world before using it on a valuable server.
 - The Minecraft 1.16.1 directory is incomplete and must not be used as a released build.
 
-The source and build configuration for each Minecraft version are kept in that version's directory. The prebuilt Mod and Supervisor JARs are collected in `build/`. The project is licensed under the GNU Lesser General Public License v3.0 only (SPDX: `LGPL-3.0-only`).
+The prebuilt Mod and Supervisor JARs are collected in `build/`. The project is licensed under the GNU Lesser General Public License v3.0 only (SPDX: `LGPL-3.0-only`).
+
+### Source layout and building
+
+```text
+common/src/              Sources, tests and resources shared by every target
+shared/<first>-<last>/src/  Sources shared by a compatible group of game versions
+versions/<minecraft>/    Version-specific sources, metadata and Gradle bootstrap
+supervisor/              One shared process supervisor and its tests
+gradle/                  Shared build rules and explicit source-group membership
+scripts/                 Source-layout checks
+```
+
+`gradle/source-groups.json` lists the exact members of each shared group. Folder ranges are labels; membership is never inferred from version ordering. Each target compiles its version-specific sources together with its declared shared groups against its own Minecraft, mappings and Java release. There is no source generation, copying or implicit override: duplicate class/resource paths fail validation. Shared tests run separately against each target's game classes.
+
+Use JDK 21 for Yarn targets (1.18–1.21.11), or JDK 25 for 26.x. The wrappers retain each target's required Gradle and Loom versions:
+
+```sh
+cd versions/1.21.8
+sh ./gradlew check remapJar sourcesJar :supervisor:build
+```
+
+Outputs stay in that target's `build/` directory, including `build/supervisor/`. Yarn targets also retain `sh ./gradlew build` to collect checked Mod/Supervisor JARs into the repository's `build/`. The 26.x targets retain their separate collection policy. Minecraft 1.16.1 remains an incomplete, unpublishable port.
+
+Run `python3 -m unittest discover -s scripts -v` and `python3 scripts/check_sources.py` from the repository root to check the layout. For the original source migration, `python3 scripts/check_sources.py --baseline-ref b5a2cabd7c0a57bf14050ff269ba0d260032bd8f` verifies every effective source/resource byte, including tests, probes, the legacy adapter and Supervisor, against the original layout. GitHub Actions builds and tests all 30 buildable targets; this is offline verification, not live recovery qualification.
 
 ---
 
@@ -282,4 +306,14 @@ Supervisor JAR名のMinecraft版はサーバーに合わせます。`--`より�
 - 大切なサーバーでは独立バックアップを保管し、ワールド複製で復旧テストをしてから利用してください。
 - `1.16.1`は移植途中です。配布用ビルドとして使用しないでください。
 
-各Minecraft版のソース・ビルド設定は版名のディレクトリに分かれています。配布用Mod JARとSupervisor JARはルートの`build/`にあります。ライセンスはGNU Lesser General Public License v3.0 only（SPDX: `LGPL-3.0-only`）です。
+配布用Mod JARとSupervisor JARはルートの`build/`にあります。ライセンスはGNU Lesser General Public License v3.0 only（SPDX: `LGPL-3.0-only`）です。
+
+### ソース構成とビルド
+
+全版共通の実装・テスト・リソースは`common/src/`、同じAPIで扱える版群の共通部分は`shared/<先頭版>-<最終版>/src/`、各版だけの差分と依存関係は`versions/<Minecraft版>/`にあります。Supervisorは`supervisor/`に集約し、ビルド規則は`gradle/`で共有しています。
+
+共通ソースの適用先は`gradle/source-groups.json`に明記しています。ディレクトリ名の範囲から適用先を推測せず、ソースのコピー・生成・上書きもしません。同じクラスやリソースの二重定義は検証エラーになります。各版のMinecraft・マッピング・Java要件を使って共通ソースをコンパイルし、共通テストも各版で実行します。
+
+Yarn版（1.18〜1.21.11）はJDK 21、26.xはJDK 25で、例えば`cd versions/1.21.8`の後に`sh ./gradlew check remapJar sourcesJar :supervisor:build`を実行します。版ごとに必要なGradle・Loomを維持しています。出力先は各版の`build/`と`build/supervisor/`です。1.16.1の未完成・配布禁止の扱いは継続しています。
+
+ルートで`python3 -m unittest discover -s scripts -v`と`python3 scripts/check_sources.py`を実行すると構成を検証できます。移行元との全ソースの一致検証と詳細なビルド手順は上の英語セクションに記載しています。GitHub Actionsではビルド可能な30版を検証します。実サーバーでの復旧確認とは区別してください。
