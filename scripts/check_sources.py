@@ -47,6 +47,7 @@ def baseline(root, ref, versions):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline-ref", help="Compare every target with its original version/src tree at this Git ref")
+    parser.add_argument("--production-only", action="store_true", help="Exclude tests adapted to the new source layout from baseline comparison")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
     versions = [v["minecraft"] for v in json.loads((root / "versions.json").read_text())["versions"]]
@@ -63,10 +64,12 @@ def main():
         previous = baseline(root, args.baseline_ref, versions)
         for v in versions:
             differences = sorted(name for name in current[v].keys() | previous[v].keys()
-                                 if current[v].get(name) != previous[v].get(name))
+                                 if current[v].get(name) != previous[v].get(name)
+                                 and not (args.production_only and "/test/" in name))
             if differences:
                 raise ValueError(f"{v}: source bytes or membership changed: {differences[:8]}")
-        print(f"Byte-identical sources, tests, probes, resources and supervisor for all {len(versions)} targets.")
+        scope = "production sources, probes and resources" if args.production_only else "sources, tests, probes and resources"
+        print(f"Byte-identical {scope} for all {len(versions)} targets, including supervisor and legacy adapter.")
     else:
         print(f"No duplicate sources or resources across {len(versions)} targets and {len(groups)} source groups.")
 

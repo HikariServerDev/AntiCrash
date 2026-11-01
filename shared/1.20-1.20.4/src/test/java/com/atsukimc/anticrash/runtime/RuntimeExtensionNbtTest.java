@@ -104,22 +104,22 @@ class RuntimeExtensionNbtTest {
     /** Every mixin that adds to a Vanilla writeNbt must be gated by one of the two save scopes. */
     @Test
     void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception {
-        java.nio.file.Path mixins = java.nio.file.Path.of("src/main/java/com/atsukimc/anticrash/mixin");
-        org.junit.jupiter.api.Assumptions.assumeTrue(java.nio.file.Files.isDirectory(mixins));
+        String mixins = System.getProperty("anticrash.mixinSources");
+        assertNotNull(mixins, "Gradle must supply this target's complete mixin source list");
+        assertFalse(mixins.isBlank());
         int injections = 0;
-        try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files.list(mixins)) {
-            for (java.nio.file.Path file : files.toList()) {
-                String source = java.nio.file.Files.readString(file);
-                int at = 0;
-                while ((at = source.indexOf("@Inject(method = \"writeNbt\"", at)) >= 0) {
-                    injections++;
-                    int body = source.indexOf('{', at);
-                    String head = source.substring(body, Math.min(source.length(), body + 200));
-                    assertTrue(head.contains("savingLoadedChunk()) return;")
-                                    || head.contains("savingLoadedEntities()) return;"),
-                            file.getFileName() + " writes to writeNbt outside a save scope");
-                    at = body;
-                }
+        for (String name : mixins.split(java.io.File.pathSeparator)) {
+            java.nio.file.Path file = java.nio.file.Path.of(name);
+            String source = java.nio.file.Files.readString(file);
+            int at = 0;
+            while ((at = source.indexOf("@Inject(method = \"writeNbt\"", at)) >= 0) {
+                injections++;
+                int body = source.indexOf('{', at);
+                String head = source.substring(body, Math.min(source.length(), body + 200));
+                assertTrue(head.contains("savingLoadedChunk()) return;")
+                                || head.contains("savingLoadedEntities()) return;"),
+                        file.getFileName() + " writes to writeNbt outside a save scope");
+                at = body;
             }
         }
         // Sculk listener NBT is owned by Vanilla since 1.19, leaving four extension hooks.

@@ -45,6 +45,9 @@ tasks.withType(JavaCompile).configureEach { options.release = target.java_target
 tasks.withType(Test).configureEach {
     useJUnitPlatform()
     maxHeapSize = "512m"
+    def mixins = sourceSets.main.java.matching { include "com/atsukimc/anticrash/mixin/*.java" }
+    inputs.files(mixins)
+    doFirst { systemProperty "anticrash.mixinSources", mixins.files*.absolutePath.sort().join(File.pathSeparator) }
 }
 subprojects {
     group = rootProject.group

@@ -67,7 +67,7 @@ jobs:
           distribution: temurin
           java-version: ${{ startsWith(matrix.minecraft, '26.') && '25' || '21' }}
       - uses: gradle/actions/setup-gradle@v4
-      - run: sh ./gradlew --no-daemon --console=plain check remapJar sourcesJar :supervisor:build
+      - run: sh ./gradlew --no-daemon --console=plain check ${{ startsWith(matrix.minecraft, '26.') && 'jar' || 'remapJar' }} sourcesJar :supervisor:build
       - uses: actions/upload-artifact@v4
         if: always()
         with:

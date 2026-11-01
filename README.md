@@ -163,9 +163,9 @@ cd versions/1.21.8
 sh ./gradlew check remapJar sourcesJar :supervisor:build
 ```
 
-Outputs stay in that target's `build/` directory, including `build/supervisor/`. Yarn targets also retain `sh ./gradlew build` to collect checked Mod/Supervisor JARs into the repository's `build/`. The 26.x targets retain their separate collection policy. Minecraft 1.16.1 remains an incomplete, unpublishable port.
+For 26.x, use `jar` instead of `remapJar`; its unobfuscated game does not need remapping. Outputs stay in that target's `build/` directory, including `build/supervisor/`. Yarn targets also retain `sh ./gradlew build` to collect checked Mod/Supervisor JARs into the repository's `build/`. The 26.x targets retain their separate collection policy. Minecraft 1.16.1 remains an incomplete, unpublishable port.
 
-Run `python3 -m unittest discover -s scripts -v` and `python3 scripts/check_sources.py` from the repository root to check the layout. For the original source migration, `python3 scripts/check_sources.py --baseline-ref b5a2cabd7c0a57bf14050ff269ba0d260032bd8f` verifies every effective source/resource byte, including tests, probes, the legacy adapter and Supervisor, against the original layout. GitHub Actions builds and tests all 30 buildable targets; this is offline verification, not live recovery qualification.
+Run `python3 -m unittest discover -s scripts -v` and `python3 scripts/check_sources.py` from the repository root to check the layout. For the original source migration, `python3 scripts/check_sources.py --baseline-ref b5a2cabd7c0a57bf14050ff269ba0d260032bd8f --production-only` verifies every effective production source/resource byte, including probes, the legacy adapter and Supervisor, against the original layout. The source-scanning test uses the complete Gradle source list so it still audits shared mixins. GitHub Actions builds and tests all 30 buildable targets; this is offline verification, not live recovery qualification.
 
 ---
 
@@ -314,6 +314,6 @@ Supervisor JAR名のMinecraft版はサーバーに合わせます。`--`より�
 
 共通ソースの適用先は`gradle/source-groups.json`に明記しています。ディレクトリ名の範囲から適用先を推測せず、ソースのコピー・生成・上書きもしません。同じクラスやリソースの二重定義は検証エラーになります。各版のMinecraft・マッピング・Java要件を使って共通ソースをコンパイルし、共通テストも各版で実行します。
 
-Yarn版（1.18〜1.21.11）はJDK 21、26.xはJDK 25で、例えば`cd versions/1.21.8`の後に`sh ./gradlew check remapJar sourcesJar :supervisor:build`を実行します。版ごとに必要なGradle・Loomを維持しています。出力先は各版の`build/`と`build/supervisor/`です。1.16.1の未完成・配布禁止の扱いは継続しています。
+Yarn版（1.18〜1.21.11）はJDK 21、26.xはJDK 25で、例えば`cd versions/1.21.8`の後に`sh ./gradlew check remapJar sourcesJar :supervisor:build`を実行します。26.xは非難読化版なので`remapJar`を`jar`に置き換えてください。版ごとに必要なGradle・Loomを維持しています。出力先は各版の`build/`と`build/supervisor/`です。1.16.1の未完成・配布禁止の扱いは継続しています。
 
 ルートで`python3 -m unittest discover -s scripts -v`と`python3 scripts/check_sources.py`を実行すると構成を検証できます。移行元との全ソースの一致検証と詳細なビルド手順は上の英語セクションに記載しています。GitHub Actionsではビルド可能な30版を検証します。実サーバーでの復旧確認とは区別してください。
