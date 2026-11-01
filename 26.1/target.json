@@ -14,10 +14,14 @@
   "fabric_api_pinned": null,
   "runtime_capsule_version": 8,
   "minecraft_namespace": "MOJANG_UNOBFUSCATED",
-  "main_tests": 307,
+  "main_tests": 313,
   "supervisor_tests": 13,
-  "source_updated_on": "2026-10-30",
-  "offline_verified_on": "2026-10-30",
-  "mod_sha256": "138f2f49ab2286c7193aa132d0f6a7edb0a6363ecb27676ae21aef99c54f4cd5",
-  "supervisor_sha256": "311f88cc1d4382c3f60a5ee9d401d7b8733b158a537037974fbf2f47bbca0e60"
+  "source_updated_on": "2026-11-02",
+  "offline_verified_on": "2026-11-02",
+  "mod_sha256": "2319928734f16006d57aca64cd738cb9e118e2fe6b7b5eedf5766c1db18b48e0",
+  "supervisor_sha256": "cf3ead2b23093cc28d1d994dfb72f01b71feba65e2626c5d55efc18961ae3743",
+  "mod_version": "1.0.1",
+  "source_layout": "SHARED_WITH_ISOLATED_ADAPTERS",
+  "runtime_parity_baseline": "1.0.0",
+  "runtime_parity_status": "MATCH_DEBUG_AND_VERSION_NORMALIZED"
 }

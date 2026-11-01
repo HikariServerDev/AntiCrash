@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.SculkSensorListener;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 

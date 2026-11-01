@@ -6,52 +6,66 @@ import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.util.Hashing;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
-import java.io.DataInputStream;
+
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.Base64;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
 /**
- * Background-only materializer. It consumes immutable NBT bytes and an already committed parent;
- * it never receives a Minecraft server/world/chunk object. Copy-on-write is mandatory because a
- * parent checkpoint may use hard links internally.
+ * Background-only materializer. It consumes immutable NBT bytes and an already committed parent; it
+ * never receives a Minecraft server/world/chunk object. Copy-on-write is mandatory because a parent
+ * checkpoint may use hard links internally.
  */
 public final class LogicalDeltaMaterializer {
-    private LogicalDeltaMaterializer() {
-    }
+    private LogicalDeltaMaterializer() {}
 
-    public static SnapshotResult materialize(Path parentWorld, Path destinationWorld,
-                                             Map<String, SnapshotFile> parentFiles,
-                                             LogicalDelta delta) throws IOException {
+    public static SnapshotResult materialize(
+            Path parentWorld,
+            Path destinationWorld,
+            Map<String, SnapshotFile> parentFiles,
+            LogicalDelta delta)
+            throws IOException {
         com.atsukimc.anticrash.snapshot.CheckpointWriteGuard.requireMutable(destinationWorld);
-        if (parentWorld == null || !Files.isDirectory(parentWorld, LinkOption.NOFOLLOW_LINKS)
+        if (parentWorld == null
+                || !Files.isDirectory(parentWorld, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(parentWorld)) {
             throw new IOException("Logical delta parent world is unavailable");
         }
-        if (delta == null || !delta.exact) throw new IOException(
-                "Logical delta is not exact: " + (delta == null ? "null" : delta.failureReason));
-        SnapshotResult view = new JavaIncrementalBackend(() -> 1).snapshot(
-                parentWorld, destinationWorld, parentWorld,
-                parentFiles == null ? Map.of() : parentFiles, Map.of());
+        if (delta == null || !delta.exact)
+            throw new IOException(
+                    "Logical delta is not exact: "
+                            + (delta == null ? "null" : delta.failureReason));
+        SnapshotResult view =
+                new JavaIncrementalBackend(() -> 1)
+                        .snapshot(
+                                parentWorld,
+                                destinationWorld,
+                                parentWorld,
+                                parentFiles == null ? Map.of() : parentFiles,
+                                Map.of());
         Set<String> changed = new HashSet<>();
         for (LogicalChunkDelta chunk : delta.chunks) {
             if (chunk == null || !"PRESENT".equals(chunk.state)) continue;
-            Path file = applyRegionNbt(destinationWorld, chunk.dimension, chunk.packedPosition,
-                    "region", chunk.payloadBase64);
+            Path file =
+                    applyRegionNbt(
+                            destinationWorld,
+                            chunk.dimension,
+                            chunk.packedPosition,
+                            "region",
+                            chunk.payloadBase64);
             changed.add(relative(destinationWorld, file));
         }
         Set<String> replacedEntityChunks = new HashSet<>();
@@ -62,25 +76,41 @@ public final class LogicalDeltaMaterializer {
             if (root.getList("Entities", 10).isEmpty()) {
                 // Vanilla deletes an empty entity chunk instead of storing an empty list. Do the
                 // same, and never create an entity region only to record that it is empty.
-                file = deleteRegionChunk(destinationWorld, chunk.dimension, chunk.packedPosition,
-                        "entities");
+                file =
+                        deleteRegionChunk(
+                                destinationWorld,
+                                chunk.dimension,
+                                chunk.packedPosition,
+                                "entities");
             } else {
-                file = applyRegionNbt(destinationWorld, chunk.dimension, chunk.packedPosition,
-                        "entities", chunk.payloadBase64);
+                file =
+                        applyRegionNbt(
+                                destinationWorld,
+                                chunk.dimension,
+                                chunk.packedPosition,
+                                "entities",
+                                chunk.payloadBase64);
             }
             if (file != null) changed.add(relative(destinationWorld, file));
         }
         for (LogicalTombstone tombstone : delta.tombstones) {
-            if (tombstone == null || tombstone.dimension == null
-                    || tombstone.key == null || tombstone.packedPosition == null
+            if (tombstone == null
+                    || tombstone.dimension == null
+                    || tombstone.key == null
+                    || tombstone.packedPosition == null
                     || (!"ENTITY_REMOVED".equals(tombstone.kind)
-                    && !"ENTITY_MOVED_FROM".equals(tombstone.kind))) continue;
+                            && !"ENTITY_MOVED_FROM".equals(tombstone.kind))) continue;
             // A replaced entity chunk already holds the exact list at the cut. Applying a
             // tombstone to it could delete an entity that moved away and came back.
-            if (replacedEntityChunks.contains(ChunkMutationTracker.key(tombstone.dimension,
-                    tombstone.packedPosition))) continue;
-            Path file = removeEntity(destinationWorld, tombstone.dimension,
-                    tombstone.packedPosition, tombstone.key);
+            if (replacedEntityChunks.contains(
+                    ChunkMutationTracker.key(tombstone.dimension, tombstone.packedPosition)))
+                continue;
+            Path file =
+                    removeEntity(
+                            destinationWorld,
+                            tombstone.dimension,
+                            tombstone.packedPosition,
+                            tombstone.key);
             if (file != null) changed.add(relative(destinationWorld, file));
         }
         String metadata = delta.componentStatus.get("LEVEL_DAT_PAYLOAD");
@@ -103,8 +133,9 @@ public final class LogicalDeltaMaterializer {
         return view;
     }
 
-    private static Path applyRegionNbt(Path world, String dimension, long packed,
-                                       String directoryName, String encoded) throws IOException {
+    private static Path applyRegionNbt(
+            Path world, String dimension, long packed, String directoryName, String encoded)
+            throws IOException {
         ChunkPos chunk = new ChunkPos(packed);
         Path dimensionRoot = dimensionRoot(world, dimension);
         Path directory = dimensionRoot.resolve(directoryName);
@@ -123,8 +154,8 @@ public final class LogicalDeltaMaterializer {
         return file;
     }
 
-    private static Path deleteRegionChunk(Path world, String dimension, long packed,
-                                          String directoryName) throws IOException {
+    private static Path deleteRegionChunk(
+            Path world, String dimension, long packed, String directoryName) throws IOException {
         ChunkPos chunk = new ChunkPos(packed);
         Path directory = dimensionRoot(world, dimension).resolve(directoryName);
         Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
@@ -143,8 +174,8 @@ public final class LogicalDeltaMaterializer {
         return file;
     }
 
-    private static Path removeEntity(Path world, String dimension, long packed,
-                                     String uuidText) throws IOException {
+    private static Path removeEntity(Path world, String dimension, long packed, String uuidText)
+            throws IOException {
         ChunkPos chunk = new ChunkPos(packed);
         Path directory = dimensionRoot(world, dimension).resolve("entities");
         Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
@@ -189,11 +220,14 @@ public final class LogicalDeltaMaterializer {
         if ("minecraft:the_nether".equals(dimension)) return world.resolve("DIM-1");
         if ("minecraft:the_end".equals(dimension)) return world.resolve("DIM1");
         Identifier identifier = Identifier.tryParse(dimension);
-        if (identifier == null || identifier.getNamespace().contains("..")
+        if (identifier == null
+                || identifier.getNamespace().contains("..")
                 || identifier.getPath().contains("..")) {
             throw new IOException("Unsafe dimension id in logical delta: " + dimension);
         }
-        return world.resolve("dimensions").resolve(identifier.getNamespace()).resolve(identifier.getPath());
+        return world.resolve("dimensions")
+                .resolve(identifier.getNamespace())
+                .resolve(identifier.getPath());
     }
 
     private static void copyOnWrite(Path file) throws IOException {
@@ -205,7 +239,10 @@ public final class LogicalDeltaMaterializer {
         Files.deleteIfExists(temporary);
         Files.copy(file, temporary, StandardCopyOption.COPY_ATTRIBUTES);
         try {
-            Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING,
+            Files.move(
+                    temporary,
+                    file,
+                    StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.ATOMIC_MOVE);
         } catch (java.nio.file.AtomicMoveNotSupportedException unsupported) {
             Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING);
@@ -216,14 +253,20 @@ public final class LogicalDeltaMaterializer {
         return root.relativize(file).toString().replace('\\', '/');
     }
 
-    private static void refresh(SnapshotResult result, Path root, String relative) throws IOException {
+    private static void refresh(SnapshotResult result, Path root, String relative)
+            throws IOException {
         Path file = root.resolve(Path.of(relative)).normalize();
         if (!file.startsWith(root.normalize())) {
             throw new IOException("Unsafe logical delta relative path: " + relative);
         }
         FileFacts facts = FileFacts.read(file);
-        SnapshotFile replacement = new SnapshotFile(relative, facts.size(), facts.modifiedTime(),
-                facts.changeTime(), Hashing.sha256(file));
+        SnapshotFile replacement =
+                new SnapshotFile(
+                        relative,
+                        facts.size(),
+                        facts.modifiedTime(),
+                        facts.changeTime(),
+                        Hashing.sha256(file));
         for (int index = 0; index < result.files.size(); index++) {
             if (relative.equals(result.files.get(index).path)) {
                 result.files.set(index, replacement);

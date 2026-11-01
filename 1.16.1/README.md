@@ -10,3 +10,5 @@ The version-specific port is incomplete. Minecraft runtime capture and restore a
 AntiCrash is intended as a server-side Fabric mod. When a version is released, its checkpoint data must only be used with the same Minecraft version. Keep independent world backups.
 
 Licensed under the GNU Lesser General Public License v3.0 only (`LGPL-3.0-only`).
+
+Development layout: clone the complete repository; this target uses shared `common/`, API-family `shared/`, and `supervisor/` sources with its own Minecraft adapters.

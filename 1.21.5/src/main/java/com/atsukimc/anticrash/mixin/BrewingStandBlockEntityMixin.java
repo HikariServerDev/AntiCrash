@@ -4,6 +4,7 @@ import net.minecraft.block.BlockState;
 import net.minecraft.block.entity.BrewingStandBlockEntity;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -13,9 +14,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class BrewingStandBlockEntityMixin {
     @Inject(method = "tick", at = @At("HEAD"))
-    private static void anticrash$markBrewTimeDirty(World world, BlockPos pos, BlockState state,
-                                                    BrewingStandBlockEntity stand, CallbackInfo callbackInfo) {
-        if (((BrewingStandBlockEntityTimerAccessor) stand).anticrash$getBrewTime() > 0) world.markDirty(pos);
+    private static void anticrash$markBrewTimeDirty(
+            World world,
+            BlockPos pos,
+            BlockState state,
+            BrewingStandBlockEntity stand,
+            CallbackInfo callbackInfo) {
+        if (((BrewingStandBlockEntityTimerAccessor) stand).anticrash$getBrewTime() > 0)
+            world.markDirty(pos);
     }
 
     @org.spongepowered.asm.mixin.Shadow private int brewTime;
@@ -27,21 +33,38 @@ public abstract class BrewingStandBlockEntityMixin {
      * progress starts over (up to 400 ticks late).
      */
     @Inject(method = "writeNbt", at = @At("TAIL"))
-    private void anticrash$saveBrewingItem(net.minecraft.nbt.NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registries, CallbackInfo callbackInfo) {
+    private void anticrash$saveBrewingItem(
+            net.minecraft.nbt.NbtCompound nbt,
+            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+            CallbackInfo callbackInfo) {
         if (!com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.savingLoadedChunk()) return;
-        com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.write(nbt, extension -> {
-            extension.remove("ItemBrewing");
-            if (brewTime > 0 && itemBrewing != null) {
-                extension.putString("ItemBrewing", net.minecraft.registry.Registries.ITEM.getId(itemBrewing).toString());
-            }
-        });
+        com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.write(
+                nbt,
+                extension -> {
+                    extension.remove("ItemBrewing");
+                    if (brewTime > 0 && itemBrewing != null) {
+                        extension.putString(
+                                "ItemBrewing",
+                                net.minecraft.registry.Registries.ITEM
+                                        .getId(itemBrewing)
+                                        .toString());
+                    }
+                });
     }
 
     @Inject(method = "readNbt", at = @At("TAIL"))
-    private void anticrash$loadBrewingItem(net.minecraft.nbt.NbtCompound nbt, net.minecraft.registry.RegistryWrapper.WrapperLookup registries, CallbackInfo callbackInfo) {
-        net.minecraft.nbt.NbtCompound extension = com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.read(nbt);
-        if (extension == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0) return;
-        net.minecraft.util.Identifier id = net.minecraft.util.Identifier.tryParse(extension.getString("ItemBrewing").orElseThrow());
+    private void anticrash$loadBrewingItem(
+            net.minecraft.nbt.NbtCompound nbt,
+            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+            CallbackInfo callbackInfo) {
+        net.minecraft.nbt.NbtCompound extension =
+                com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.read(nbt);
+        if (extension == null
+                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ItemBrewing", 8)
+                || brewTime <= 0) return;
+        net.minecraft.util.Identifier id =
+                net.minecraft.util.Identifier.tryParse(
+                        extension.getString("ItemBrewing").orElseThrow());
         if (id != null && net.minecraft.registry.Registries.ITEM.containsId(id)) {
             itemBrewing = net.minecraft.registry.Registries.ITEM.get(id);
         }

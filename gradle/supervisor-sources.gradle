@@ -1,0 +1,7 @@
+// Shared implementation, isolated outputs: each version keeps its own Supervisor project/build.
+def repository = rootProject.projectDir.parentFile
+sourceSets.configureEach { sourceSet ->
+    sourceSet.java.srcDir(new File(repository, "supervisor/src/${sourceSet.name}/java"))
+    sourceSet.resources.srcDir(new File(repository, "supervisor/src/${sourceSet.name}/resources"))
+}
+tasks.withType(Test).configureEach { maxHeapSize = "256m" }

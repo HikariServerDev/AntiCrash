@@ -7,12 +7,11 @@ import net.minecraft.util.Formatting;
 
 /** Renders an AntiCrash message as coloured Minecraft chat text; see {@link MessageStyle}. */
 public final class ChatStyle {
-    private ChatStyle() {
-    }
+    private ChatStyle() {}
 
     /**
      * @param base colour of the unstyled text, or null to inherit (white for feedback, red when
-     *             Vanilla wraps the text as a command error)
+     *     Vanilla wraps the text as a command error)
      */
     public static Text text(String message, Formatting base, boolean coloured) {
         if (message == null) return new LiteralText("");
@@ -29,7 +28,7 @@ public final class ChatStyle {
                 MutableText part = new LiteralText(span.text());
                 switch (span.kind()) {
                     case HEADER -> part.formatted(Formatting.BOLD);
-                    case PREFIX, PLAIN -> { }
+                    case PREFIX, PLAIN -> {}
                 }
                 result.append(part);
             }

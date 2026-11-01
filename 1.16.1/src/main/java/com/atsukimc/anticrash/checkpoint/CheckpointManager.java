@@ -28,15 +28,15 @@ import com.atsukimc.anticrash.snapshot.SnapshotManager;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.snapshot.VanillaFileSnapshot;
 import com.atsukimc.anticrash.snapshot.WorldLocator;
-import com.atsukimc.anticrash.snapshot.logical.LogicalDelta;
-import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaEngine;
-import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaMaterializer;
 import com.atsukimc.anticrash.snapshot.logical.CheckpointMirror;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalDelta;
+import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaEngine;
+import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaMaterializer;
 import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.AtomicFiles;
-import it.unimi.dsi.fastutil.longs.LongLinkedOpenHashSet;
+
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
@@ -47,17 +47,17 @@ import net.minecraft.world.chunk.ReadOnlyChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.storage.StorageIoWorker;
 
-import java.io.InterruptedIOException;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionException;
@@ -71,23 +71,29 @@ import java.util.concurrent.TimeoutException;
 /**
  * Coordinates the short server-thread consistency barrier and the long filesystem operation.
  *
- * <p>The worker must never access Minecraft objects. Everything it needs is copied into
- * {@link CaptureContext} while the server thread owns the barrier.</p>
+ * <p>The worker must never access Minecraft objects. Everything it needs is copied into {@link
+ * CaptureContext} while the server thread owns the barrier.
  */
 public final class CheckpointManager {
     /**
      * Longest a portable cut may take before it is abandoned (no checkpoint, the world resumes).
      *
-     * <p>The cut always completes inside the tick that took it. Spreading it over ticks, as the
-     * old barrier did, runs every other mod's server-tick hook (Carpet and scarpet, Fabric API
-     * tick events, ...) between the Runtime Capsule and the file capture, and any of them may
-     * change the world after the cut. The bound keeps the call well below the 60 s watchdog.</p>
+     * <p>The cut always completes inside the tick that took it. Spreading it over ticks, as the old
+     * barrier did, runs every other mod's server-tick hook (Carpet and scarpet, Fabric API tick
+     * events, ...) between the Runtime Capsule and the file capture, and any of them may change the
+     * world after the cut. The bound keeps the call well below the 60 s watchdog.
      */
     /** How long the cut waits for every IO worker to finish its current task and park. */
     private static final long IO_SEAL_TIMEOUT_NANOS = 10_000_000_000L;
+
     private static final long MAX_CUT_NANOS = 40_000_000_000L;
-    /** A legacy barrier still unfinished after this long is abandoned so the world is never held forever. */
+
+    /**
+     * A legacy barrier still unfinished after this long is abandoned so the world is never held
+     * forever.
+     */
     private static final long MAX_BARRIER_NANOS = 120_000_000_000L;
+
     private final AntiCrashConfig config;
     private final InternalStateManager internal;
     private final AntiCrashStateMachine states;
@@ -132,23 +138,33 @@ public final class CheckpointManager {
     private String lastCheckpointId = "none";
     private boolean saveOffReported;
     private CheckpointManifest lastManifest;
+
     /**
      * Committed checkpoint whose cut started the current {@link LiveFileTracker} interval. While it
      * is the parent of the next capture, region files the tracker did not see written can be
      * inherited without being examined.
      */
     private String trackerBaseCheckpointId;
+
     /** Result of the last POI/PersistentState probe; null until the first capture probed it. */
     private Boolean logicalPersistentStateBlocked;
+
     private String lastLogicalFallbackReason;
+
     /** Tracker interval handed to the running job; returned to the tracker if the job fails. */
     private Set<java.nio.file.Path> activeTrackerWrites;
+
     /** True when the running job's cut started the tracker interval now being recorded. */
     private boolean activeTrackerArmedAtCut;
 
-    public CheckpointManager(AntiCrashConfig config, InternalStateManager internal,
-                             AntiCrashStateMachine states, AntiCrashLogger logger,
-                             RuntimeCapsuleManager runtime, PlayerSnapshotManager players) throws IOException {
+    public CheckpointManager(
+            AntiCrashConfig config,
+            InternalStateManager internal,
+            AntiCrashStateMachine states,
+            AntiCrashLogger logger,
+            RuntimeCapsuleManager runtime,
+            PlayerSnapshotManager players)
+            throws IOException {
         this.config = config;
         this.internal = internal;
         this.states = states;
@@ -157,19 +173,29 @@ public final class CheckpointManager {
         this.players = players;
         this.store = new CheckpointStore(internal.checkpointsDir(), config, logger);
         this.snapshots = new SnapshotManager(config, logger);
-        this.logicalDeltaEngine = new LogicalDeltaEngine(
-                Math.min(Math.max(16L, config.checkpoint.candidateCacheMaxMb) * 1024L * 1024L,
-                        Math.max(16L * 1024 * 1024, Runtime.getRuntime().maxMemory() / 16L)));
+        this.logicalDeltaEngine =
+                new LogicalDeltaEngine(
+                        Math.min(
+                                Math.max(16L, config.checkpoint.candidateCacheMaxMb)
+                                        * 1024L
+                                        * 1024L,
+                                Math.max(
+                                        16L * 1024 * 1024,
+                                        Runtime.getRuntime().maxMemory() / 16L)));
         this.checkpointMirror = new CheckpointMirror(config.checkpoint);
-        this.rollingBudget = new RollingBudgetController(
-                config.checkpoint.rollingBudgetMsPerTick,
-                config.checkpoint.rollingMaxBudgetMsPerTick,
-                config.checkpoint.adaptiveBudget);
-        this.ioExecutor = Executors.newFixedThreadPool(Math.max(1, config.checkpoint.backgroundThreads), runnable -> {
-            Thread thread = new Thread(runnable, "AntiCrash-Checkpoint-IO");
-            thread.setDaemon(true);
-            return thread;
-        });
+        this.rollingBudget =
+                new RollingBudgetController(
+                        config.checkpoint.rollingBudgetMsPerTick,
+                        config.checkpoint.rollingMaxBudgetMsPerTick,
+                        config.checkpoint.adaptiveBudget);
+        this.ioExecutor =
+                Executors.newFixedThreadPool(
+                        Math.max(1, config.checkpoint.backgroundThreads),
+                        runnable -> {
+                            Thread thread = new Thread(runnable, "AntiCrash-Checkpoint-IO");
+                            thread.setDaemon(true);
+                            return thread;
+                        });
         resetDeadline();
     }
 
@@ -188,9 +214,11 @@ public final class CheckpointManager {
         }
     }
 
-    /** Explicit operator request for the first/full BASE. Normal automatic checkpoints never
-     * enter this path implicitly, because a cold BASE can otherwise freeze a live world for tens
-     * of seconds on a large save. */
+    /**
+     * Explicit operator request for the first/full BASE. Normal automatic checkpoints never enter
+     * this path implicitly, because a cold BASE can otherwise freeze a live world for tens of
+     * seconds on a large save.
+     */
     public void requestBase() {
         if (!config.checkpoint.enabled || !config.checkpoint.createOnManualCommand) return;
         baseRequested = true;
@@ -198,8 +226,8 @@ public final class CheckpointManager {
     }
 
     /**
-     * Called from the end of the server tick. The only potentially non-trivial work here is
-     * the consistency barrier and the Future state transition; all tree walking and hashing is
+     * Called from the end of the server tick. The only potentially non-trivial work here is the
+     * consistency barrier and the Future state transition; all tree walking and hashing is
      * performed by {@link #ioExecutor}.
      */
     public void onTickEnd(MinecraftServer server) {
@@ -211,11 +239,17 @@ public final class CheckpointManager {
             returnToRunning();
         }
         pollCompaction(server);
-        if (config.checkpoint.rollingEnabled && states.get() == AntiCrashState.RUNNING
+        if (config.checkpoint.rollingEnabled
+                && states.get() == AntiCrashState.RUNNING
                 && failureGate.permits(System.nanoTime())
                 && !savingDisabled(server)) {
-            try { prepareDirtyChunksWithinRollingBudget(server); }
-            catch (OutOfMemoryError failure) { activePhase = "ROLLING_PREPARATION"; failBarrier(failure); return; }
+            try {
+                prepareDirtyChunksWithinRollingBudget(server);
+            } catch (OutOfMemoryError failure) {
+                activePhase = "ROLLING_PREPARATION";
+                failBarrier(failure);
+                return;
+            }
         }
         // Recovery selection already verifies its candidate explicitly. Starting the incremental
         // base preflight at the same time duplicates a full-world hash pass and obscures ASK logs.
@@ -230,7 +264,8 @@ public final class CheckpointManager {
         if (pollActiveJob()) {
             return;
         }
-        if (config.checkpoint.enabled && states.get() == AntiCrashState.RUNNING
+        if (config.checkpoint.enabled
+                && states.get() == AntiCrashState.RUNNING
                 && failureGate.permits(System.nanoTime())
                 && System.nanoTime() - nextDeadlineNanos >= 0) {
             requestPending = true;
@@ -239,8 +274,13 @@ public final class CheckpointManager {
         // A compaction adopts its result as the newest parent when it finishes. A checkpoint
         // committed meanwhile would be newer than that result and the adoption would roll the
         // parent (and the recovery timeline) back, so captures wait for the compaction.
-        if (requestPending && failureGate.permits(System.nanoTime()) && previousLookupComplete && liveScanComplete && compactionJob == null
-                && states.get() != AntiCrashState.RECOVERY_FAILED && !states.isRecovery()) {
+        if (requestPending
+                && failureGate.permits(System.nanoTime())
+                && previousLookupComplete
+                && liveScanComplete
+                && compactionJob == null
+                && states.get() != AntiCrashState.RECOVERY_FAILED
+                && !states.isRecovery()) {
             requestPending = false;
             beginCapture(server);
         }
@@ -248,16 +288,17 @@ public final class CheckpointManager {
 
     /**
      * Opportunistically persists a small amount of dirty chunk state while the world is running.
-     * This is preparation only: no runtime capsule is created and no chunk is considered part of
-     * a checkpoint until the exact logical-cut barrier captures it again.
+     * This is preparation only: no runtime capsule is created and no chunk is considered part of a
+     * checkpoint until the exact logical-cut barrier captures it again.
      */
     private void prepareDirtyChunksWithinRollingBudget(MinecraftServer server) {
         // Backpressure, not a wait: do not serialize another batch while storage still owns the
         // last batch's NBT. Previously a discarded completeAll Future allowed the queue to grow.
         if (rollingDrain != null) {
             if (!rollingDrain.isDone()) return;
-            try { rollingDrain.getNow(null); }
-            catch (CompletionException failed) {
+            try {
+                rollingDrain.getNow(null);
+            } catch (CompletionException failed) {
                 logger.verboseKey("checkpoint.rolling_prepare_failed", failed.getMessage());
             }
             rollingDrain = null;
@@ -268,19 +309,29 @@ public final class CheckpointManager {
             // Probe once before the first capture so a world that can never use the logical
             // engine does not spend its rolling budget on candidates in the meantime.
             try {
-                logicalPersistentStateBlocked = LogicalDeltaEngine.hasUnsupportedPersistentFiles(server)
-                        && !config.checkpoint.allowUnsupportedPersistentState;
+                logicalPersistentStateBlocked =
+                        LogicalDeltaEngine.hasUnsupportedPersistentFiles(server)
+                                && !config.checkpoint.allowUnsupportedPersistentState;
             } catch (IOException exception) {
                 logicalPersistentStateBlocked = true;
             }
         }
         if (logicalEngineUsable()) {
             LogicalDeltaEngine.PreparationReport report =
-                    logicalDeltaEngine.prepareCandidates(server,
-                            Math.min(budget, (long) (config.checkpoint.candidateBudgetMsPerTick * 1_000_000L)));
+                    logicalDeltaEngine.prepareCandidates(
+                            server,
+                            Math.min(
+                                    budget,
+                                    (long)
+                                            (config.checkpoint.candidateBudgetMsPerTick
+                                                    * 1_000_000L)));
             if (report.captured() > 0) {
-                logger.verboseKey("checkpoint.logical_candidates_prepared", report.captured(),
-                        report.inspected(), report.bytes(), report.evictions());
+                logger.verboseKey(
+                        "checkpoint.logical_candidates_prepared",
+                        report.captured(),
+                        report.inspected(),
+                        report.bytes(),
+                        report.evictions());
             }
             if (report.error() != null) {
                 logger.verboseKey("checkpoint.logical_candidates_failed", report.error());
@@ -302,7 +353,9 @@ public final class CheckpointManager {
                     CompletableFuture<Chunk> saving = holder.getFuture();
                     if (!saving.isDone()) continue;
                     Chunk chunk = saving.getNow(null);
-                    if (chunk != null && chunk.needsSaving() && storage.anticrash$saveChunk(chunk)) {
+                    if (chunk != null
+                            && chunk.needsSaving()
+                            && storage.anticrash$saveChunk(chunk)) {
                         prepared++;
                     }
                 }
@@ -312,9 +365,11 @@ public final class CheckpointManager {
             List<CompletableFuture<Void>> drains = new ArrayList<>();
             for (ServerWorld world : server.getWorlds()) {
                 Object worker = world.getChunkManager().getChunkIoWorker();
-                if (prepared > 0 && worker instanceof StorageIoWorker storageIoWorker) drains.add(storageIoWorker.completeAll(false));
+                if (prepared > 0 && worker instanceof StorageIoWorker storageIoWorker)
+                    drains.add(storageIoWorker.completeAll(false));
             }
-            if (!drains.isEmpty()) rollingDrain = CompletableFuture.allOf(drains.toArray(CompletableFuture[]::new));
+            if (!drains.isEmpty())
+                rollingDrain = CompletableFuture.allOf(drains.toArray(CompletableFuture[]::new));
         } catch (RuntimeException exception) {
             // Preparation is optional.  A failure leaves the chunk dirty for the fail-closed
             // barrier path and is not allowed to take down the running server.
@@ -322,13 +377,16 @@ public final class CheckpointManager {
         } finally {
             rollingBudget.observe(System.nanoTime() - started);
         }
-        if (prepared > 0) logger.verboseKey("checkpoint.rolling_prepared", prepared,
-                String.format(java.util.Locale.ROOT, "%.2f", rollingBudget.currentMs()));
+        if (prepared > 0)
+            logger.verboseKey(
+                    "checkpoint.rolling_prepared",
+                    prepared,
+                    String.format(java.util.Locale.ROOT, "%.2f", rollingBudget.currentMs()));
     }
 
     /**
-     * Starts the final checkpoint asynchronously. A caller that needs a clean shutdown must
-     * keep the server alive until {@link #isCapturing()} becomes false.
+     * Starts the final checkpoint asynchronously. A caller that needs a clean shutdown must keep
+     * the server alive until {@link #isCapturing()} becomes false.
      */
     public boolean captureFinal(MinecraftServer server) {
         if (failureGate.suspended()) return true; // shutdown never retries an OOM/invalid parent
@@ -383,7 +441,8 @@ public final class CheckpointManager {
         lastFinalizationError = null;
         CheckpointTiming timing = new CheckpointTiming();
         if (requestEnqueuedNanos != 0L) {
-            timing.record("wait_for_tick_boundary",
+            timing.record(
+                    "wait_for_tick_boundary",
                     Math.max(0L, System.nanoTime() - requestEnqueuedNanos));
         }
         requestEnqueuedNanos = 0L;
@@ -392,9 +451,11 @@ public final class CheckpointManager {
         try {
             activePhase = "PREFLIGHT";
             checkMemoryHeadroom();
-            if (Boolean.TRUE.equals(logicalPersistentStateBlocked) || baseRequested) logicalDeltaEngine.releaseCandidates();
+            if (Boolean.TRUE.equals(logicalPersistentStateBlocked) || baseRequested)
+                logicalDeltaEngine.releaseCandidates();
             world = WorldLocator.resolve(internal.gameDir());
-            if (!Files.isDirectory(world, java.nio.file.LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(world)) {
+            if (!Files.isDirectory(world, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                    || Files.isSymbolicLink(world)) {
                 throw new IOException("World directory is unavailable: " + world);
             }
             if (savingDisabled(server)) {
@@ -414,7 +475,8 @@ public final class CheckpointManager {
             saveOffReported = false;
 
             boolean explicitBase = baseRequested;
-            if (logicalDeltaRequested() && !explicitBase
+            if (logicalDeltaRequested()
+                    && !explicitBase
                     && (previousWorld == null || previousManifest == null)) {
                 // Do not silently turn the first ordinary 30-second checkpoint into a full
                 // world freeze. An administrator must explicitly bootstrap a BASE (or provide a
@@ -427,10 +489,18 @@ public final class CheckpointManager {
             }
             baseRequested = false;
 
-            String engineMode = config.checkpoint.engineMode == null ? "LOGICAL_DELTA"
-                    : config.checkpoint.engineMode.trim().toUpperCase(java.util.Locale.ROOT);
-            boolean logicalDelta = !explicitBase && logicalDeltaRequested()
-                    && previousWorld != null && previousManifest != null;
+            String engineMode =
+                    config.checkpoint.engineMode == null
+                            ? "LOGICAL_DELTA"
+                            : config.checkpoint
+                                    .engineMode
+                                    .trim()
+                                    .toUpperCase(java.util.Locale.ROOT);
+            boolean logicalDelta =
+                    !explicitBase
+                            && logicalDeltaRequested()
+                            && previousWorld != null
+                            && previousManifest != null;
             boolean unsupportedPersistentState = false;
             // This probe is deliberately outside CHECKPOINT_BARRIER.  POI/data are not safely
             // represented by the generic semantic delta yet, but discovering their presence must
@@ -440,18 +510,23 @@ public final class CheckpointManager {
             if (logicalDelta) {
                 long persistentProbeStarted = System.nanoTime();
                 try {
-                    unsupportedPersistentState = LogicalDeltaEngine.hasUnsupportedPersistentFiles(server);
-                    logicalPersistentStateBlocked = unsupportedPersistentState
-                            && !config.checkpoint.allowUnsupportedPersistentState;
-                    if (unsupportedPersistentState && !config.checkpoint.allowUnsupportedPersistentState) {
+                    unsupportedPersistentState =
+                            LogicalDeltaEngine.hasUnsupportedPersistentFiles(server);
+                    logicalPersistentStateBlocked =
+                            unsupportedPersistentState
+                                    && !config.checkpoint.allowUnsupportedPersistentState;
+                    if (unsupportedPersistentState
+                            && !config.checkpoint.allowUnsupportedPersistentState) {
                         logicalDelta = false;
-                        reportLogicalFallback("POI/PersistentState files require a semantic authority");
+                        reportLogicalFallback(
+                                "POI/PersistentState files require a semantic authority");
                     }
                 } catch (IOException unsupported) {
                     logicalDelta = false;
                     logger.importantKey("checkpoint.logical_fallback", unsupported.getMessage());
                 } finally {
-                    timing.record("delta.persistent_state",
+                    timing.record(
+                            "delta.persistent_state",
                             Math.max(0L, System.nanoTime() - persistentProbeStarted));
                 }
             }
@@ -473,12 +548,14 @@ public final class CheckpointManager {
             activePhase = "RUNTIME_CAPTURE";
             checkMemoryHeadroom();
             ScheduledTickMutationTracer.Capture initialScheduledTrace =
-                    ScheduledTickMutationTracer.begin(server.getTicks(), config.checkpoint.mirrorTraceLimit);
+                    ScheduledTickMutationTracer.begin(
+                            server.getTicks(), config.checkpoint.mirrorTraceLimit);
             RuntimeCapsule capsule;
             TransientChunkStateMarker.MarkResult transientState;
             try {
                 transientState = TransientChunkStateMarker.markForCheckpoint(server);
-                logger.normalKey("checkpoint.transient_state_marked",
+                logger.normalKey(
+                        "checkpoint.transient_state_marked",
                         transientState.inspectedChunks(),
                         transientState.criticalChunkCount(),
                         transientState.chunksMadeDirty(),
@@ -493,29 +570,34 @@ public final class CheckpointManager {
                 ScheduledTickMutationTracer.end(initialScheduledTrace);
             }
             if (initialScheduledTrace.changed()) {
-                throw new IllegalStateException("Scheduled-tick state changed during runtime capture: "
-                        + initialScheduledTrace.diagnostic());
+                throw new IllegalStateException(
+                        "Scheduled-tick state changed during runtime capture: "
+                                + initialScheduledTrace.diagnostic());
             }
             long playerCaptureStarted = System.nanoTime();
             List<PlayerSnapshotData> playerSnapshots = List.copyOf(players.capture(server));
-            timing.record("runtime.players", Math.max(0L, System.nanoTime() - playerCaptureStarted));
+            timing.record(
+                    "runtime.players", Math.max(0L, System.nanoTime() - playerCaptureStarted));
             if ("STRICT".equalsIgnoreCase(config.recovery.fidelity)
                     && config.recovery.strict.players.requireCheckpointPlayers) {
-                RuntimeCapsuleManager.populateCheckpointPlayerIdentities(capsule,
-                        players.captureCheckpointPlayers(server));
+                RuntimeCapsuleManager.populateCheckpointPlayerIdentities(
+                        capsule, players.captureCheckpointPlayers(server));
             }
             long fakePlayerCaptureStarted = System.nanoTime();
-            List<FakePlayerSnapshot> fakeSnapshots = List.copyOf(
-                    CarpetIntegration.captureForCheckpoint(server, config, logger));
-            timing.record("runtime.fakeplayers",
+            List<FakePlayerSnapshot> fakeSnapshots =
+                    List.copyOf(CarpetIntegration.captureForCheckpoint(server, config, logger));
+            timing.record(
+                    "runtime.fakeplayers",
                     Math.max(0L, System.nanoTime() - fakePlayerCaptureStarted));
             RuntimeCapsuleManager.populateFakePlayerFingerprint(capsule, fakeSnapshots);
             if ("STRICT".equalsIgnoreCase(config.recovery.fidelity)) {
-                List<String> strictBlockers = RuntimeCapsuleManager.strictCaptureBlockers(
-                        capsule, config.recovery.strict);
+                List<String> strictBlockers =
+                        RuntimeCapsuleManager.strictCaptureBlockers(
+                                capsule, config.recovery.strict);
                 if (!strictBlockers.isEmpty()) {
-                    throw new IllegalStateException("STRICT checkpoint capture is incomplete: "
-                            + String.join(", ", strictBlockers));
+                    throw new IllegalStateException(
+                            "STRICT checkpoint capture is incomplete: "
+                                    + String.join(", ", strictBlockers));
                 }
             }
             timing.end("runtime_capture");
@@ -534,63 +616,90 @@ public final class CheckpointManager {
             // and trip the watchdog before an OutOfMemoryError is even thrown. Keep the exact same
             // save boundary, but serialize dirty chunks in tiny IO-drained batches over multiple
             // frozen server ticks. The final Vanilla flush then has no large backlog to allocate.
-            boolean portableFallback = usePortableGeneration()
-                    && "PORTABLE_GENERATION".equalsIgnoreCase(config.checkpoint.engineFallback);
+            boolean portableFallback =
+                    usePortableGeneration()
+                            && "PORTABLE_GENERATION"
+                                    .equalsIgnoreCase(config.checkpoint.engineFallback);
             // Keep the fallback backend selected even while the first attempt is logical.  A
             // logical cut may be rejected on the next frozen tick (candidate eviction, an
             // unregistered scheduler, or a mutation observed during the cut).  In that case the
             // same PendingBarrier must continue into the bounded Portable Generation path rather
             // than silently falling through to the legacy worker that would read the live World.
-            boolean portableGeneration = "PORTABLE_GENERATION".equals(engineMode)
-                    || (portableFallback && ("LOGICAL_DELTA".equals(engineMode) || explicitBase));
+            boolean portableGeneration =
+                    "PORTABLE_GENERATION".equals(engineMode)
+                            || (portableFallback
+                                    && ("LOGICAL_DELTA".equals(engineMode) || explicitBase));
             String previousId = previousManifest == null ? null : previousManifest.checkpointId;
-            GenerationPlan generationPlan = logicalDelta
-                    ? new GenerationPlan(previousWorld, previousManifest.checkpointId,
-                    Math.max(0, previousManifest.generationChainDepth),
-                    SnapshotManager.index(previousManifest), false, previousManifest.checkpointId)
-                    : portableGeneration
-                    ? generationPlan(explicitBase)
-                    : new GenerationPlan(previousWorld, previousId,
-                    previousManifest == null ? 0 : Math.max(0, previousManifest.generationChainDepth),
-                    SnapshotManager.index(previousManifest), false, previousId);
+            GenerationPlan generationPlan =
+                    logicalDelta
+                            ? new GenerationPlan(
+                                    previousWorld,
+                                    previousManifest.checkpointId,
+                                    Math.max(0, previousManifest.generationChainDepth),
+                                    SnapshotManager.index(previousManifest),
+                                    false,
+                                    previousManifest.checkpointId)
+                            : portableGeneration
+                                    ? generationPlan(explicitBase)
+                                    : new GenerationPlan(
+                                            previousWorld,
+                                            previousId,
+                                            previousManifest == null
+                                                    ? 0
+                                                    : Math.max(
+                                                            0,
+                                                            previousManifest.generationChainDepth),
+                                            SnapshotManager.index(previousManifest),
+                                            false,
+                                            previousId);
             String timelineParent = internal.recoveryState().activeCheckpointId;
             if (generationPlan.sourceCheckpointId() != null) {
                 pinnedParentId = generationPlan.sourceCheckpointId();
                 store.pin(pinnedParentId);
             }
-            pendingBarrier = new PendingBarrier(
-                    timelineParent,
-                    server,
-                    world,
-                    capsule,
-                    playerSnapshots,
-                    fakeSnapshots,
-                    barrierStart,
-                    server.getTicks(),
-                    server.getOverworld() == null ? 0L : server.getOverworld().getTime(),
-                    captureDimensions(server),
-                    FabricLoader.getInstance().getModContainer("fabricloader")
-                            .map(container -> container.getMetadata().getVersion().getFriendlyString())
-                            .orElse("unknown"),
-                    FabricLoader.getInstance().getModContainer("fabric-api")
-                            .map(container -> container.getMetadata().getVersion().getFriendlyString())
-                            .orElse(null),
-                    CarpetIntegration.version(),
-                    transientState,
-                    generationPlan.previousWorld(),
-                    generationPlan.parentCheckpointId(),
-                    generationPlan.parentChainDepth(),
-                    generationPlan.previousFiles(),
-                    liveHashes,
-                    captureBarrierWorlds(server),
-                    temporary,
-                    timing,
-                    logicalDelta,
-                    portableGeneration,
-                    unsupportedPersistentState,
-                    generationPlan.rebase(),
-                    generationPlan.sourceCheckpointId()
-            );
+            pendingBarrier =
+                    new PendingBarrier(
+                            timelineParent,
+                            server,
+                            world,
+                            capsule,
+                            playerSnapshots,
+                            fakeSnapshots,
+                            barrierStart,
+                            server.getTicks(),
+                            server.getOverworld() == null ? 0L : server.getOverworld().getTime(),
+                            captureDimensions(server),
+                            FabricLoader.getInstance()
+                                    .getModContainer("fabricloader")
+                                    .map(container ->
+                                            container
+                                                    .getMetadata()
+                                                    .getVersion()
+                                                    .getFriendlyString())
+                                    .orElse("unknown"),
+                            FabricLoader.getInstance()
+                                    .getModContainer("fabric-api")
+                                    .map(container ->
+                                            container
+                                                    .getMetadata()
+                                                    .getVersion()
+                                                    .getFriendlyString())
+                                    .orElse(null),
+                            CarpetIntegration.version(),
+                            transientState,
+                            generationPlan.previousWorld(),
+                            generationPlan.parentCheckpointId(),
+                            generationPlan.parentChainDepth(),
+                            generationPlan.previousFiles(),
+                            liveHashes,
+                            captureBarrierWorlds(server),
+                            temporary,
+                            timing,
+                            logicalDelta,
+                            portableGeneration,
+                            unsupportedPersistentState,
+                            generationPlan.rebase(),
+                            generationPlan.sourceCheckpointId());
             capturing = true;
             lastJobSuccessful = false;
             // Take the rest of the cut right away: returning here would freeze the world for at
@@ -627,16 +736,18 @@ public final class CheckpointManager {
     }
 
     /**
-     * Takes the cut. A portable cut always completes within the calling tick; see
-     * {@link #MAX_CUT_NANOS}. Only the legacy engines stay frozen across ticks.
+     * Takes the cut. A portable cut always completes within the calling tick; see {@link
+     * #MAX_CUT_NANOS}. Only the legacy engines stay frozen across ticks.
      */
     private void advanceBarrier(MinecraftServer server) {
         PendingBarrier barrier = pendingBarrier;
         if (barrier == null) return;
         try {
             if (System.nanoTime() - barrier.barrierStartNanos > MAX_BARRIER_NANOS) {
-                throw new IOException("Checkpoint barrier did not finish within "
-                        + MAX_BARRIER_NANOS / 1_000_000_000L + " seconds");
+                throw new IOException(
+                        "Checkpoint barrier did not finish within "
+                                + MAX_BARRIER_NANOS / 1_000_000_000L
+                                + " seconds");
             }
             if (barrier.logicalDelta) {
                 advanceLogicalDeltaBarrier(barrier);
@@ -645,9 +756,12 @@ public final class CheckpointManager {
                 if (pendingBarrier != barrier || barrier.logicalDelta) return;
             }
             long cutDeadline = barrier.barrierStartNanos + MAX_CUT_NANOS;
-            if (!saveBarrierChunks(barrier, barrier.portableGeneration ? cutDeadline : Long.MAX_VALUE)) {
-                throw new IOException("Checkpoint cut did not finish within "
-                        + MAX_CUT_NANOS / 1_000_000_000L + " seconds; abandoned without a checkpoint");
+            if (!saveBarrierChunks(
+                    barrier, barrier.portableGeneration ? cutDeadline : Long.MAX_VALUE)) {
+                throw new IOException(
+                        "Checkpoint cut did not finish within "
+                                + MAX_CUT_NANOS / 1_000_000_000L
+                                + " seconds; abandoned without a checkpoint");
             }
             if (barrier.portableGeneration) {
                 completePortableCut(server, barrier);
@@ -674,12 +788,11 @@ public final class CheckpointManager {
      *
      * <p>A portable cut takes queued writes from the queue (see {@link IoSeal}) and never needs
      * them on disk. Waiting for them is only a memory safeguard: each queued save holds its NBT.
-     * The safeguard used to wait after every 16 chunks whatever the heap size, and with
-     * synchronous chunk writes each such wait is 16 fsyncs. A server saving a few hundred chunks
-     * per cut (chunk generation, a schematic being pasted) froze for seconds at every checkpoint.
-     * The bound now follows the heap (a quarter of it at a deliberately high estimate per chunk),
-     * and the queue is written out earlier whenever the heap is actually tight; see
-     * {@link #heapTight}.</p>
+     * The safeguard used to wait after every 16 chunks whatever the heap size, and with synchronous
+     * chunk writes each such wait is 16 fsyncs. A server saving a few hundred chunks per cut (chunk
+     * generation, a schematic being pasted) froze for seconds at every checkpoint. The bound now
+     * follows the heap (a quarter of it at a deliberately high estimate per chunk), and the queue
+     * is written out earlier whenever the heap is actually tight; see {@link #heapTight}.
      */
     static int queuedChunkBudget(long maxHeapBytes, int configuredBatch) {
         // A batch set below the old fixed limit is an explicit request to hold less; honour it.
@@ -689,8 +802,8 @@ public final class CheckpointManager {
 
     /**
      * True when little heap is left, counting uncollected garbage as used. Then the queued saves
-     * are written out before more are added, which is what a small heap needs and what a large
-     * one practically never reaches.
+     * are written out before more are added, which is what a small heap needs and what a large one
+     * practically never reaches.
      */
     private static boolean heapTight() {
         Runtime jvm = Runtime.getRuntime();
@@ -701,18 +814,20 @@ public final class CheckpointManager {
     /**
      * Saves every dirty chunk of the cut into the chunk IO queue.
      *
-     * <p>A Vanilla flush joins every ChunkHolder and serializes every dirty chunk at once. With a
-     * 1 GiB heap that retained thousands of NBT trees and tripped the watchdog, so the number of
+     * <p>A Vanilla flush joins every ChunkHolder and serializes every dirty chunk at once. With a 1
+     * GiB heap that retained thousands of NBT trees and tripped the watchdog, so the number of
      * saves waiting in the queue is bounded (see {@link #queuedChunkBudget}); the legacy engines,
-     * which flush everything anyway, keep their small fixed batches.</p>
+     * which flush everything anyway, keep their small fixed batches.
      *
      * @return false when the deadline passed before every dirty chunk was saved
      */
     private boolean saveBarrierChunks(PendingBarrier barrier, long deadline) throws IOException {
         activePhase = "CHUNK_SERIALIZATION";
-        int batchLimit = barrier.portableGeneration
-                ? queuedChunkBudget(Runtime.getRuntime().maxMemory(), config.checkpoint.saveBatchChunks)
-                : Math.max(1, Math.min(config.checkpoint.saveBatchChunks, 16));
+        int batchLimit =
+                barrier.portableGeneration
+                        ? queuedChunkBudget(
+                                Runtime.getRuntime().maxMemory(), config.checkpoint.saveBatchChunks)
+                        : Math.max(1, Math.min(config.checkpoint.saveBatchChunks, 16));
         long started = System.nanoTime();
         long drainNanos = 0L;
         try {
@@ -747,7 +862,8 @@ public final class CheckpointManager {
             }
             return true;
         } finally {
-            barrier.timing.record("chunk_save", Math.max(0L, System.nanoTime() - started - drainNanos));
+            barrier.timing.record(
+                    "chunk_save", Math.max(0L, System.nanoTime() - started - drainNanos));
             barrier.timing.record("chunk_drain", drainNanos);
             barrier.timing.count("savedChunks", barrier.savedChunks);
             barrier.timing.count("ioWaits", barrier.drainedBatches);
@@ -758,16 +874,16 @@ public final class CheckpointManager {
      * The chunk whose state at the cut must reach the checkpoint, without waiting for the holder.
      *
      * <p>A loaded chunk is taken from the highest completed status, not from the saving future:
-     * that future stays pending while any status or ticket change is scheduled, and a holder
-     * whose level dropped (a chunk being unloaded) has already had its accessible future replaced,
-     * yet its WorldChunk can still hold changes nobody saved. A ReadOnlyChunk is unwrapped because
-     * it always reports "nothing to save" even when the WorldChunk inside is dirty.</p>
+     * that future stays pending while any status or ticket change is scheduled, and a holder whose
+     * level dropped (a chunk being unloaded) has already had its accessible future replaced, yet
+     * its WorldChunk can still hold changes nobody saved. A ReadOnlyChunk is unwrapped because it
+     * always reports "nothing to save" even when the WorldChunk inside is dirty.
      *
-     * <p>Waiting instead, as the old barrier did for up to 26 frozen ticks, lets chunk loads
-     * finish during the cut and add block-entity tickers and entities to the world after the
-     * Runtime Capsule was taken. A chunk that is still being generated is part of no one's world
-     * yet: it holds world generation output only, never a player's block, and its saved form on
-     * disk is what the cut contains, exactly as Vanilla's own autosave treats it.</p>
+     * <p>Waiting instead, as the old barrier did for up to 26 frozen ticks, lets chunk loads finish
+     * during the cut and add block-entity tickers and entities to the world after the Runtime
+     * Capsule was taken. A chunk that is still being generated is part of no one's world yet: it
+     * holds world generation output only, never a player's block, and its saved form on disk is
+     * what the cut contains, exactly as Vanilla's own autosave treats it.
      */
     private static Chunk savableChunk(ChunkHolder holder) {
         Chunk current = holder.getCompletedChunk();
@@ -782,11 +898,12 @@ public final class CheckpointManager {
     }
 
     /**
-     * Finishes a Portable Generation cut: Vanilla's save without its flush, a seal of every
-     * storage IO queue, then {@link DetachedGeneration#capture}. The worker does the rest,
-     * including writing the writes that were still queued into the checkpoint's copies.
+     * Finishes a Portable Generation cut: Vanilla's save without its flush, a seal of every storage
+     * IO queue, then {@link DetachedGeneration#capture}. The worker does the rest, including
+     * writing the writes that were still queued into the checkpoint's copies.
      */
-    private void completePortableCut(MinecraftServer server, PendingBarrier barrier) throws Exception {
+    private void completePortableCut(MinecraftServer server, PendingBarrier barrier)
+            throws Exception {
         activePhase = "VANILLA_SAVE_POI_PERSISTENT";
         barrier.timing.begin("vanilla_save");
         CutSave.begin();
@@ -809,7 +926,8 @@ public final class CheckpointManager {
                 && Files.getFileStore(barrier.temporary).getUsableSpace() < minimumFreeBytes) {
             throw new IOException("Insufficient checkpoint storage free space");
         }
-        logger.verboseKey("checkpoint.staged_save_complete", barrier.savedChunks, barrier.drainedBatches);
+        logger.verboseKey(
+                "checkpoint.staged_save_complete", barrier.savedChunks, barrier.drainedBatches);
 
         // Every chunk, entity and POI write of the cut is queued. Park the IO workers instead of
         // waiting for each synchronous write: the files on disk plus the queued writes are the cut.
@@ -824,21 +942,24 @@ public final class CheckpointManager {
             // the tracker's base checkpoint. Queued writes land after the seal, in the next
             // interval, and are detached from this cut through the seal instead.
             Set<java.nio.file.Path> written = LiveFileTracker.global().swap();
-            boolean trackedParent = written != null && barrier.sourceCheckpointId != null
-                    && barrier.sourceCheckpointId.equals(trackerBaseCheckpointId);
+            boolean trackedParent =
+                    written != null
+                            && barrier.sourceCheckpointId != null
+                            && barrier.sourceCheckpointId.equals(trackerBaseCheckpointId);
             barrier.trackerWrites = written;
             barrier.trackerArmedAtCut = true;
 
             barrier.timing.begin("logical_cut");
             barrier.timing.begin("generation_capture");
             activePhase = "FILE_DETACHMENT";
-            generation = DetachedGeneration.capture(
-                    barrier.world,
-                    barrier.temporary.resolve("world"),
-                    barrier.previousFiles,
-                    barrier.liveHashes,
-                    trackedParent ? written : null,
-                    ioSeal.writes());
+            generation =
+                    DetachedGeneration.capture(
+                            barrier.world,
+                            barrier.temporary.resolve("world"),
+                            barrier.previousFiles,
+                            barrier.liveHashes,
+                            trackedParent ? written : null,
+                            ioSeal.writes());
             barrier.timing.end("generation_capture");
             // Vanilla playerdata/stats/advancements are an opt-in external snapshot. They are also
             // cut here; the worker must never read their mutable live copies.
@@ -852,7 +973,8 @@ public final class CheckpointManager {
             }
             barrier.timing.end("logical_cut");
             if (!ioSeal.intact()) {
-                throw new IOException("A storage IO worker resumed before the checkpoint cut finished");
+                throw new IOException(
+                        "A storage IO worker resumed before the checkpoint cut finished");
             }
         } catch (Exception exception) {
             if (generation != null) generation.discard();
@@ -867,10 +989,16 @@ public final class CheckpointManager {
         barrier.timing.end("barrier");
         barrier.timing.captureAfterJvm();
         lastTiming = barrier.timing;
-        logger.verboseKey("checkpoint.cut_detached", generation.tracked() ? "TRACKED" : "METADATA",
-                generation.statedFiles(), generation.detachedFiles(), generation.detachedBytes(),
-                generation.pendingWriteCount(), sealedSlowest);
-        CaptureContext context = barrier.toCaptureContext(barrierDurationMs, null, null, generation);
+        logger.verboseKey(
+                "checkpoint.cut_detached",
+                generation.tracked() ? "TRACKED" : "METADATA",
+                generation.statedFiles(),
+                generation.detachedFiles(),
+                generation.detachedBytes(),
+                generation.pendingWriteCount(),
+                sealedSlowest);
+        CaptureContext context =
+                barrier.toCaptureContext(barrierDurationMs, null, null, generation);
         enterCheckpointState(AntiCrashState.CHECKPOINT_SEALED);
         activeTrackerWrites = barrier.trackerWrites;
         activeTrackerArmedAtCut = barrier.trackerArmedAtCut;
@@ -884,10 +1012,12 @@ public final class CheckpointManager {
     }
 
     /** The legacy engines keep the full flush and stay frozen until their worker completes. */
-    private void completeLegacyCut(MinecraftServer server, PendingBarrier barrier) throws Exception {
+    private void completeLegacyCut(MinecraftServer server, PendingBarrier barrier)
+            throws Exception {
         // The flush below waits for every write.
         WriteHold.release();
-        logger.verboseKey("checkpoint.staged_save_complete", barrier.savedChunks, barrier.drainedBatches);
+        logger.verboseKey(
+                "checkpoint.staged_save_complete", barrier.savedChunks, barrier.drainedBatches);
         if (!server.save(true, true, false)) {
             throw new IOException("Minecraft refused the world save");
         }
@@ -913,8 +1043,8 @@ public final class CheckpointManager {
     }
 
     /**
-     * Saves every entity section with Vanilla's flush, including sections still loading, and
-     * waits for the entity IO queue without fsyncing each entity region file.
+     * Saves every entity section with Vanilla's flush, including sections still loading, and waits
+     * for the entity IO queue without fsyncing each entity region file.
      */
     private static void flushEntitiesAtCut(MinecraftServer server) {
         CutSave.begin();
@@ -922,7 +1052,8 @@ public final class CheckpointManager {
             for (ServerWorld world : server.getWorlds()) {
                 if (world.savingDisabled) continue;
                 ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                        .anticrash$getEntityManager().flush();
+                        .anticrash$getEntityManager()
+                        .flush();
             }
         } finally {
             CutSave.end();
@@ -933,7 +1064,7 @@ public final class CheckpointManager {
      * Queues every POI section not yet written.
      *
      * <p>Vanilla's flush reaches POI only through the chunks it saves, and never waits for the POI
-     * queue. The POI queue is sealed with the others (see {@link IoSeal}).</p>
+     * queue. The POI queue is sealed with the others (see {@link IoSeal}).
      */
     private static void savePointsOfInterest(ServerWorld world) {
         SerializingRegionBasedStorageAccessorMixin poi =
@@ -954,32 +1085,40 @@ public final class CheckpointManager {
             }
         }
         if (!unsaved.isEmpty()) {
-            throw new IllegalStateException("POI sections could not be saved in "
-                    + world.getRegistryKey().getValue());
+            throw new IllegalStateException(
+                    "POI sections could not be saved in " + world.getRegistryKey().getValue());
         }
     }
 
-    /** The chunk, entity and POI IO workers of every world, i.e. everything that writes region files. */
+    /**
+     * The chunk, entity and POI IO workers of every world, i.e. everything that writes region
+     * files.
+     */
     private static List<StorageIoWorker> storageWorkers(List<BarrierWorld> worlds) {
         List<StorageIoWorker> workers = new ArrayList<>(worlds.size() * 3);
         for (BarrierWorld barrierWorld : worlds) {
             ServerWorld world = barrierWorld.world;
             if (!(world.getChunkManager().getChunkIoWorker() instanceof StorageIoWorker chunks)) {
-                throw new IllegalStateException("Unsupported chunk IO worker for "
-                        + world.getRegistryKey().getValue());
+                throw new IllegalStateException(
+                        "Unsupported chunk IO worker for " + world.getRegistryKey().getValue());
             }
             workers.add(chunks);
-            Object entities = ((com.atsukimc.anticrash.mixin.ServerEntityManagerAccessorMixin)
-                    ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                            .anticrash$getEntityManager()).anticrash$getDataAccess();
-            if (!(entities instanceof net.minecraft.world.storage.EntityChunkDataAccess entityAccess)) {
-                throw new IllegalStateException("Unsupported entity storage for "
-                        + world.getRegistryKey().getValue());
+            Object entities =
+                    ((com.atsukimc.anticrash.mixin.ServerEntityManagerAccessorMixin)
+                                    ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
+                                            .anticrash$getEntityManager())
+                            .anticrash$getDataAccess();
+            if (!(entities
+                    instanceof net.minecraft.world.storage.EntityChunkDataAccess entityAccess)) {
+                throw new IllegalStateException(
+                        "Unsupported entity storage for " + world.getRegistryKey().getValue());
             }
-            workers.add(((com.atsukimc.anticrash.mixin.EntityChunkDataAccessAccessorMixin) entityAccess)
-                    .anticrash$getDataLoadWorker());
-            workers.add(((SerializingRegionBasedStorageAccessorMixin) world.getPointOfInterestStorage())
-                    .anticrash$getWorker());
+            workers.add(
+                    ((com.atsukimc.anticrash.mixin.EntityChunkDataAccessAccessorMixin) entityAccess)
+                            .anticrash$getDataLoadWorker());
+            workers.add(
+                    ((SerializingRegionBasedStorageAccessorMixin) world.getPointOfInterestStorage())
+                            .anticrash$getWorker());
         }
         return workers;
     }
@@ -999,42 +1138,76 @@ public final class CheckpointManager {
             logicalDeltaEngine.releaseCandidates();
             System.gc();
             available = jvm.maxMemory() - (jvm.totalMemory() - jvm.freeMemory());
-            if (available < required) throw new CheckpointFailureGate.MemoryBudgetException(available, required);
+            if (available < required)
+                throw new CheckpointFailureGate.MemoryBudgetException(available, required);
         }
     }
 
     private void releaseParentPin() {
-        if (pinnedParentId != null) { store.unpin(pinnedParentId); pinnedParentId = null; }
+        if (pinnedParentId != null) {
+            store.unpin(pinnedParentId);
+            pinnedParentId = null;
+        }
     }
 
     public String engineIncidentStatus(String language) {
         boolean ja = "ja".equalsIgnoreCase(language);
         Runtime jvm = Runtime.getRuntime();
-        String status = failureGate.suspended() ? (failureGate.category() == CheckpointFailureGate.Category.PARENT_INVALID
-                ? "SUSPENDED_NEEDS_REBASE" : "SUSPENDED") : "ACTIVE";
-        return (ja ? "Checkpointエンジン: " : "Checkpoint engine: ") + status
-                + "; reason=" + failureGate.category() + "; consecutiveFailures=" + failureGate.consecutiveFailures()
-                + "; lastValid=" + (store.isQuarantined(lastCheckpointId) ? "UNAVAILABLE" : lastCheckpointId)
-                + "; parent=" + (previousManifest == null ? "UNAVAILABLE" : previousManifest.checkpointId)
-                + "; phase=" + activePhase + "; lowPause=" + (Boolean.TRUE.equals(logicalPersistentStateBlocked) ? "UNAVAILABLE_POI_PERSISTENT_STATE" : "CONDITIONAL")
-                + "; finalizer=" + (activeJob != null) + "; headroomBytes="
+        String status =
+                failureGate.suspended()
+                        ? (failureGate.category() == CheckpointFailureGate.Category.PARENT_INVALID
+                                ? "SUSPENDED_NEEDS_REBASE"
+                                : "SUSPENDED")
+                        : "ACTIVE";
+        return (ja ? "Checkpointエンジン: " : "Checkpoint engine: ")
+                + status
+                + "; reason="
+                + failureGate.category()
+                + "; consecutiveFailures="
+                + failureGate.consecutiveFailures()
+                + "; lastValid="
+                + (store.isQuarantined(lastCheckpointId) ? "UNAVAILABLE" : lastCheckpointId)
+                + "; parent="
+                + (previousManifest == null ? "UNAVAILABLE" : previousManifest.checkpointId)
+                + "; phase="
+                + activePhase
+                + "; lowPause="
+                + (Boolean.TRUE.equals(logicalPersistentStateBlocked)
+                        ? "UNAVAILABLE_POI_PERSISTENT_STATE"
+                        : "CONDITIONAL")
+                + "; finalizer="
+                + (activeJob != null)
+                + "; headroomBytes="
                 + (jvm.maxMemory() - (jvm.totalMemory() - jvm.freeMemory()))
-                + "; reservedHeadroomBytes=" + Math.min(128L * 1024 * 1024, jvm.maxMemory() / 8)
-                + "; effectiveSaveBatch=" + queuedChunkBudget(jvm.maxMemory(), config.checkpoint.saveBatchChunks)
-                + (failureGate.suspended() ? (ja ? "; 確認後 /ac checkpoint base で独立BASEを作成できます" : "; review, then /ac checkpoint base for independent rebase") : "");
+                + "; reservedHeadroomBytes="
+                + Math.min(128L * 1024 * 1024, jvm.maxMemory() / 8)
+                + "; effectiveSaveBatch="
+                + queuedChunkBudget(jvm.maxMemory(), config.checkpoint.saveBatchChunks)
+                + (failureGate.suspended()
+                        ? (ja
+                                ? "; 確認後 /ac checkpoint base で独立BASEを作成できます"
+                                : "; review, then /ac checkpoint base for independent rebase")
+                        : "");
     }
 
-    /** Seals only immutable semantic bytes; no Vanilla lifecycle/task pump or global save occurs. */
+    /**
+     * Seals only immutable semantic bytes; no Vanilla lifecycle/task pump or global save occurs.
+     */
     private void advanceLogicalDeltaBarrier(PendingBarrier barrier) {
         WriteHold.release();
         ScheduledTickMutationTracer.Capture trace =
-                ScheduledTickMutationTracer.begin(barrier.serverTick, config.checkpoint.mirrorTraceLimit);
+                ScheduledTickMutationTracer.begin(
+                        barrier.serverTick, config.checkpoint.mirrorTraceLimit);
         try {
             barrier.timing.begin("logical_cut");
-            LogicalDeltaEngine.CaptureResult captured = logicalDeltaEngine.captureAtCut(
-                    barrier.server, barrier.serverTick, barrier.parentCheckpointId,
-                    config.checkpoint.allowUnsupportedPersistentState,
-                    barrier.unsupportedPersistentState, barrier.timing);
+            LogicalDeltaEngine.CaptureResult captured =
+                    logicalDeltaEngine.captureAtCut(
+                            barrier.server,
+                            barrier.serverTick,
+                            barrier.parentCheckpointId,
+                            config.checkpoint.allowUnsupportedPersistentState,
+                            barrier.unsupportedPersistentState,
+                            barrier.timing);
             if (!captured.exact()) {
                 com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer.end(trace);
                 if (captured.reason() != null && captured.reason().contains("uncertain")) {
@@ -1052,7 +1225,8 @@ public final class CheckpointManager {
                 // back to the portable save path, which advanceBarrier runs in the same call.
                 barrier.timing.end("logical_cut");
                 checkpointMirror.invalidate("scheduled tick mutation during logical cut");
-                logger.importantKey("checkpoint.logical_fallback",
+                logger.importantKey(
+                        "checkpoint.logical_fallback",
                         "scheduled_tick_mutation_during_logical_cut: " + trace.diagnostic());
                 barrier.logicalDelta = false;
                 return;
@@ -1068,9 +1242,13 @@ public final class CheckpointManager {
                     && Files.getFileStore(barrier.temporary).getUsableSpace() < minimumFreeBytes) {
                 throw new IOException("Insufficient checkpoint storage free space");
             }
-            CaptureContext context = barrier.toCaptureContext(
-                    Math.max(0L, (System.nanoTime() - barrier.barrierStartNanos) / 1_000_000L),
-                    null, delta);
+            CaptureContext context =
+                    barrier.toCaptureContext(
+                            Math.max(
+                                    0L,
+                                    (System.nanoTime() - barrier.barrierStartNanos) / 1_000_000L),
+                            null,
+                            delta);
             enterCheckpointState(AntiCrashState.CHECKPOINT_SEALED);
             activeJob = ioExecutor.submit(() -> runCapture(context));
             pendingBarrier = null;
@@ -1090,8 +1268,9 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : worlds) {
             Object worker = barrierWorld.world.getChunkManager().getChunkIoWorker();
             if (!(worker instanceof StorageIoWorker storageIoWorker)) {
-                throw new IllegalStateException("Unsupported chunk IO worker for "
-                        + barrierWorld.world.getRegistryKey().getValue());
+                throw new IllegalStateException(
+                        "Unsupported chunk IO worker for "
+                                + barrierWorld.world.getRegistryKey().getValue());
             }
             futures.add(storageIoWorker.completeAll(false));
         }
@@ -1103,8 +1282,10 @@ public final class CheckpointManager {
         logicalDeltaEngine.resetCommittedBaseline();
         com.atsukimc.anticrash.snapshot.SealedNbt.clear();
         releaseParentPin();
-        String message = failure == null || failure.getMessage() == null
-                ? String.valueOf(failure) : failure.getMessage();
+        String message =
+                failure == null || failure.getMessage() == null
+                        ? String.valueOf(failure)
+                        : failure.getMessage();
         logger.importantKey("checkpoint.barrier_failed", message);
         lastFinalizationError = activePhase + ": " + message;
         PendingBarrier barrier = pendingBarrier;
@@ -1114,8 +1295,10 @@ public final class CheckpointManager {
             LiveFileTracker.global().restore(barrier.trackerWrites);
         }
         if (activeJob != null) activeJob.cancel(true);
-        Path temporary = activeTemporary != null ? activeTemporary
-                : barrier == null ? null : barrier.temporary;
+        Path temporary =
+                activeTemporary != null
+                        ? activeTemporary
+                        : barrier == null ? null : barrier.temporary;
         if (temporary != null) {
             try {
                 SnapshotManager.deleteTree(temporary);
@@ -1151,34 +1334,50 @@ public final class CheckpointManager {
                 // The cut already copied every changed file into the generation; only the
                 // immutable parent checkpoint is read from here on, never the live world.
                 long snapshotStart = System.nanoTime();
-                long rehashedBefore = com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
-                        .CONTENT_AUTHENTICATIONS.get();
+                long rehashedBefore =
+                        com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
+                                .CONTENT_AUTHENTICATIONS
+                                .get();
                 context.timing.begin("finalize.generation");
                 // Hashing and linking run beside the live server, so they stay on a couple of
                 // threads unless the operator configured more.
-                result = context.detachedGeneration.materialize(context.previousWorld,
-                        context.previousFiles, temporary.resolve("world"), context.copyInherited,
-                        PortableGenerationBackend.NAME,
-                        config.snapshot.ioThreads > 0 ? config.snapshot.ioThreads : 2);
-                seal = new GenerationSeal(result, context.parentCheckpointId,
-                        context.logicalCutServerTick, context.logicalCutMonotonicNanos);
+                result =
+                        context.detachedGeneration.materialize(
+                                context.previousWorld,
+                                context.previousFiles,
+                                temporary.resolve("world"),
+                                context.copyInherited,
+                                PortableGenerationBackend.NAME,
+                                config.snapshot.ioThreads > 0 ? config.snapshot.ioThreads : 2);
+                seal =
+                        new GenerationSeal(
+                                result,
+                                context.parentCheckpointId,
+                                context.logicalCutServerTick,
+                                context.logicalCutMonotonicNanos);
                 if (context.parentCheckpointId != null) seal.addTombstones(context.previousFiles);
                 seal.persist(temporary);
                 context.timing.end("finalize.generation");
-                context.timing.count("parentFilesRehashed", com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
-                        .CONTENT_AUTHENTICATIONS.get() - rehashedBefore);
+                context.timing.count(
+                        "parentFilesRehashed",
+                        com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
+                                        .CONTENT_AUTHENTICATIONS
+                                        .get()
+                                - rehashedBefore);
                 snapshotMs = (System.nanoTime() - snapshotStart) / 1_000_000L;
             } else if (context.logicalDelta != null) {
                 long snapshotStart = System.nanoTime();
                 context.timing.begin("finalize.file_write");
-                result = LogicalDeltaMaterializer.materialize(
-                        context.previousWorld,
-                        temporary.resolve("world"),
-                        context.previousFiles,
-                        context.logicalDelta);
+                result =
+                        LogicalDeltaMaterializer.materialize(
+                                context.previousWorld,
+                                temporary.resolve("world"),
+                                context.previousFiles,
+                                context.logicalDelta);
                 // The semantic delta is immutable by this point. Serialize it on the worker,
                 // never while the server thread owns the micro-cut.
-                AtomicFiles.writeJson(temporary.resolve("logical-delta.json"), context.logicalDelta);
+                AtomicFiles.writeJson(
+                        temporary.resolve("logical-delta.json"), context.logicalDelta);
                 context.timing.end("finalize.file_write");
                 snapshotMs = (System.nanoTime() - snapshotStart) / 1_000_000L;
             } else if (context.generationSeal != null) {
@@ -1193,13 +1392,13 @@ public final class CheckpointManager {
                 // semantics are intentionally retained rather than pretending they can resume
                 // before a filesystem-level snapshot has completed.
                 long snapshotStart = System.nanoTime();
-                result = snapshots.snapshot(
-                        context.world,
-                        temporary.resolve("world"),
-                        context.previousWorld,
-                        context.previousFiles,
-                        context.liveHashes
-                );
+                result =
+                        snapshots.snapshot(
+                                context.world,
+                                temporary.resolve("world"),
+                                context.previousWorld,
+                                context.previousFiles,
+                                context.liveHashes);
                 VanillaFileSnapshot.capture(context.world, temporary, config);
                 snapshotMs = (System.nanoTime() - snapshotStart) / 1_000_000L;
             }
@@ -1231,9 +1430,10 @@ public final class CheckpointManager {
             manifest.serverTick = context.serverTick;
             manifest.worldGameTime = context.worldGameTime;
             manifest.snapshotBackend = result.backend;
-            manifest.checkpointEngine = context.logicalDelta != null
-                    ? "LOGICAL_DELTA"
-                    : seal != null ? "PORTABLE_GENERATION" : "LEGACY_SAFE";
+            manifest.checkpointEngine =
+                    context.logicalDelta != null
+                            ? "LOGICAL_DELTA"
+                            : seal != null ? "PORTABLE_GENERATION" : "LEGACY_SAFE";
             manifest.snapshotDurationMs = snapshotMs;
             manifest.barrierDurationMs = context.barrierDurationMs;
             manifest.totalBytes = result.totalBytes;
@@ -1243,26 +1443,39 @@ public final class CheckpointManager {
             manifest.fakePlayerCount = context.fakeSnapshots.size();
             manifest.blockEventCount = context.capsule.blockEventCount();
             manifest.loadedChunkCount = context.capsule.loadedChunkCount();
-            manifest.fullChunkCount = context.capsule.chunks.stream()
-                    .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::fullCount).sum();
-            manifest.blockTickingChunkCount = context.capsule.chunks.stream()
-                    .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::blockTickingCount).sum();
+            manifest.fullChunkCount =
+                    context.capsule.chunks.stream()
+                            .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::fullCount)
+                            .sum();
+            manifest.blockTickingChunkCount =
+                    context.capsule.chunks.stream()
+                            .mapToInt(
+                                    com.atsukimc.anticrash.runtime.ChunkStateSnapshot
+                                            ::blockTickingCount)
+                            .sum();
             manifest.entityTickingChunkCount = context.capsule.entityTickingChunkCount();
-            manifest.forcedChunkCount = context.capsule.chunks.stream()
-                    .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::forcedCount).sum();
+            manifest.forcedChunkCount =
+                    context.capsule.chunks.stream()
+                            .mapToInt(
+                                    com.atsukimc.anticrash.runtime.ChunkStateSnapshot::forcedCount)
+                            .sum();
             manifest.fidelity = context.capsule.fidelity;
-            manifest.chunkDomainHash = context.capsule.expectedFingerprints.get(
-                    com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN);
+            manifest.chunkDomainHash =
+                    context.capsule.expectedFingerprints.get(
+                            com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN);
             manifest.carpetCaptureStatus = context.capsule.carpetCaptureStatus;
             manifest.unsupportedRuntimeState.addAll(context.capsule.unsupportedRuntimeState);
             manifest.blockEntityTickerCount = context.capsule.blockEntityTickerCount();
             manifest.entityOrderCount = context.capsule.entityOrderCount();
             manifest.torchBurnoutCount = context.capsule.redstoneTorchBurnoutCount();
             manifest.ticketCount = context.capsule.ticketCount();
-            manifest.checkpointPlayerCount = context.capsule.checkpointPlayersCaptured
-                    ? context.capsule.checkpointPlayers.size() : 0;
-            manifest.checkpointPlayerHash = context.capsule.expectedFingerprints.get(
-                    com.atsukimc.anticrash.runtime.EquivalenceCategory.PLAYERS);
+            manifest.checkpointPlayerCount =
+                    context.capsule.checkpointPlayersCaptured
+                            ? context.capsule.checkpointPlayers.size()
+                            : 0;
+            manifest.checkpointPlayerHash =
+                    context.capsule.expectedFingerprints.get(
+                            com.atsukimc.anticrash.runtime.EquivalenceCategory.PLAYERS);
             manifest.runtimeCapsuleVersion = context.capsule.formatVersion;
             manifest.transientChunkCount = context.transientState.criticalChunkCount();
             manifest.transientChunksMadeDirty = context.transientState.chunksMadeDirty();
@@ -1302,8 +1515,8 @@ public final class CheckpointManager {
                 manifest.fileSet.addAll(seal.fileSet);
             }
             context.timing.captureAfterJvm();
-            manifest.finalizationDurationMs = Math.max(0L, context.timing.totalMs()
-                    - context.barrierDurationMs);
+            manifest.finalizationDurationMs =
+                    Math.max(0L, context.timing.totalMs() - context.barrierDurationMs);
             manifest.phaseDurationsMs.putAll(context.timing.durationsMs());
             CheckpointTiming.JvmSample beforeJvm = context.timing.beforeJvm();
             CheckpointTiming.JvmSample afterJvm = context.timing.afterJvm();
@@ -1326,17 +1539,35 @@ public final class CheckpointManager {
             // The worker returns the immutable delta to the server thread. Updating the mutation
             // ledger here would race with mixin hooks and rolling preparation, so markCommitted
             // is deliberately performed by pollActiveJob on the server thread after commit.
-            return CaptureResult.success(committed, manifest, result, context.logicalDelta,
-                    checkpointDiagnostic(context.capsule, manifest, runtimeCapsuleBytes,
-                            manifest.heapUsedAfterBytes, manifest.heapMaxBytes));
+            return CaptureResult.success(
+                    committed,
+                    manifest,
+                    result,
+                    context.logicalDelta,
+                    checkpointDiagnostic(
+                            context.capsule,
+                            manifest,
+                            runtimeCapsuleBytes,
+                            manifest.heapUsedAfterBytes,
+                            manifest.heapMaxBytes));
         } catch (Exception | OutOfMemoryError exception) {
             if (context.detachedGeneration != null) context.detachedGeneration.discard();
             // Small phase/allocation evidence, not a heap dump or a whole-world report.
             Runtime jvm = Runtime.getRuntime();
-            logger.importantKey("checkpoint.failed", "category=" + CheckpointFailureGate.classify(exception)
-                    + "; phase=" + activePhase + "; used/max="
-                    + (jvm.totalMemory() - jvm.freeMemory()) + "/" + jvm.maxMemory()
-                    + "; at=" + (exception.getStackTrace().length == 0 ? "unknown" : exception.getStackTrace()[0]));
+            logger.importantKey(
+                    "checkpoint.failed",
+                    "category="
+                            + CheckpointFailureGate.classify(exception)
+                            + "; phase="
+                            + activePhase
+                            + "; used/max="
+                            + (jvm.totalMemory() - jvm.freeMemory())
+                            + "/"
+                            + jvm.maxMemory()
+                            + "; at="
+                            + (exception.getStackTrace().length == 0
+                                    ? "unknown"
+                                    : exception.getStackTrace()[0]));
             if (temporary != null) {
                 try {
                     SnapshotManager.deleteTree(temporary);
@@ -1349,61 +1580,122 @@ public final class CheckpointManager {
     }
 
     /**
-     * Builds the one-line evidence record operators need when a later recovery does not match.
-     * The Runtime Capsule already contains the complete values; this compact copy is emitted at
-     * commit time so the normal server log is useful without opening JSON by hand. It deliberately
+     * Builds the one-line evidence record operators need when a later recovery does not match. The
+     * Runtime Capsule already contains the complete values; this compact copy is emitted at commit
+     * time so the normal server log is useful without opening JSON by hand. It deliberately
      * contains counts and hashes, not the full entity/chunk lists, to keep routine checkpoint logs
      * bounded even for a large technical world.
      */
-    private static String checkpointDiagnostic(RuntimeCapsule capsule, CheckpointManifest manifest,
-                                               long runtimeCapsuleBytes, long heapUsedBytes,
-                                               long heapMaxBytes) {
+    private static String checkpointDiagnostic(
+            RuntimeCapsule capsule,
+            CheckpointManifest manifest,
+            long runtimeCapsuleBytes,
+            long heapUsedBytes,
+            long heapMaxBytes) {
         StringBuilder result = new StringBuilder(1024);
-        result.append("fidelity=").append(manifest.fidelity)
-                .append("; dimensions=").append(dimensionDiagnostic(capsule))
+        result.append("fidelity=")
+                .append(manifest.fidelity)
+                .append("; dimensions=")
+                .append(dimensionDiagnostic(capsule))
                 .append("; chunks loaded/full/block/entity/forced=")
-                .append(manifest.loadedChunkCount).append('/')
-                .append(manifest.fullChunkCount).append('/')
-                .append(manifest.blockTickingChunkCount).append('/')
-                .append(manifest.entityTickingChunkCount).append('/')
+                .append(manifest.loadedChunkCount)
+                .append('/')
+                .append(manifest.fullChunkCount)
+                .append('/')
+                .append(manifest.blockTickingChunkCount)
+                .append('/')
+                .append(manifest.entityTickingChunkCount)
+                .append('/')
                 .append(manifest.forcedChunkCount)
-                .append("; CHUNK_DOMAIN hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN))
-                .append("; BLOCK_ENTITY_TICKERS count=").append(manifest.blockEntityTickerCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_ENTITY_TICKERS))
-                .append("; ENTITIES count=").append(manifest.entityOrderCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.ENTITIES))
-                .append("; BLOCK_EVENTS count=").append(manifest.blockEventCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_EVENTS))
-                .append("; SCHEDULED_TICKS count=").append(size(capsule.scheduledTicks))
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.SCHEDULED_TICKS))
-                .append("; MOVING_PISTONS count=").append(size(capsule.movingPistonTickOrder))
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.MOVING_PISTONS))
-                .append("; TORCH_BURNOUT count=").append(manifest.torchBurnoutCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.REDSTONE_RUNTIME))
-                .append("; WORLD_RUNTIME hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME))
-                .append(" support=").append(worldRuntimeSupport(capsule))
-                .append("; WORLD_RNG hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG))
-                .append("; TICKET_LEDGER count=").append(manifest.ticketCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.TICKET_LEDGER))
-                .append("; CARPET status=").append(manifest.carpetCaptureStatus)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.CARPET))
-                .append("; FAKEPLAYERS count=").append(manifest.fakePlayerCount)
-                .append(" hash=").append(fingerprint(capsule,
-                        com.atsukimc.anticrash.runtime.EquivalenceCategory.FAKEPLAYERS))
-                .append("; runtimeCapsuleBytes=").append(runtimeCapsuleBytes)
-                .append("; heapUsed/max=").append(heapUsedBytes).append('/').append(heapMaxBytes)
-                .append("; unsupported=").append(capsule.unsupportedRuntimeState);
+                .append("; CHUNK_DOMAIN hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN))
+                .append("; BLOCK_ENTITY_TICKERS count=")
+                .append(manifest.blockEntityTickerCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory
+                                        .BLOCK_ENTITY_TICKERS))
+                .append("; ENTITIES count=")
+                .append(manifest.entityOrderCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.ENTITIES))
+                .append("; BLOCK_EVENTS count=")
+                .append(manifest.blockEventCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_EVENTS))
+                .append("; SCHEDULED_TICKS count=")
+                .append(size(capsule.scheduledTicks))
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.SCHEDULED_TICKS))
+                .append("; MOVING_PISTONS count=")
+                .append(size(capsule.movingPistonTickOrder))
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.MOVING_PISTONS))
+                .append("; TORCH_BURNOUT count=")
+                .append(manifest.torchBurnoutCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory
+                                        .REDSTONE_RUNTIME))
+                .append("; WORLD_RUNTIME hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME))
+                .append(" support=")
+                .append(worldRuntimeSupport(capsule))
+                .append("; WORLD_RNG hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG))
+                .append("; TICKET_LEDGER count=")
+                .append(manifest.ticketCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.TICKET_LEDGER))
+                .append("; CARPET status=")
+                .append(manifest.carpetCaptureStatus)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule, com.atsukimc.anticrash.runtime.EquivalenceCategory.CARPET))
+                .append("; FAKEPLAYERS count=")
+                .append(manifest.fakePlayerCount)
+                .append(" hash=")
+                .append(
+                        fingerprint(
+                                capsule,
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.FAKEPLAYERS))
+                .append("; runtimeCapsuleBytes=")
+                .append(runtimeCapsuleBytes)
+                .append("; heapUsed/max=")
+                .append(heapUsedBytes)
+                .append('/')
+                .append(heapMaxBytes)
+                .append("; unsupported=")
+                .append(capsule.unsupportedRuntimeState);
         return result.toString();
     }
 
@@ -1412,9 +1704,19 @@ public final class CheckpointManager {
         List<String> dimensions = new ArrayList<>();
         for (RuntimeCapsule.WorldRuntime world : capsule.worlds) {
             if (world == null) continue;
-            dimensions.add(world.dimension + "[" + world.loadedChunkCount + "/"
-                    + world.fullChunkCount + "/" + world.blockTickingChunkCount + "/"
-                    + world.entityTickingChunkCount + "/" + world.forcedChunkCount + "]");
+            dimensions.add(
+                    world.dimension
+                            + "["
+                            + world.loadedChunkCount
+                            + "/"
+                            + world.fullChunkCount
+                            + "/"
+                            + world.blockTickingChunkCount
+                            + "/"
+                            + world.entityTickingChunkCount
+                            + "/"
+                            + world.forcedChunkCount
+                            + "]");
         }
         dimensions.sort(String::compareTo);
         return dimensions.isEmpty() ? "[]" : '[' + String.join(";", dimensions) + ']';
@@ -1432,18 +1734,25 @@ public final class CheckpointManager {
 
     private static String worldRuntimeSupport(RuntimeCapsule capsule) {
         if (capsule == null || capsule.expectedFingerprints == null) return "missing";
-        boolean rngUnsupported = capsule.unsupportedRuntimeState != null
-                && capsule.unsupportedRuntimeState.contains(
-                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG);
-        return "WORLD_RUNTIME=" + (capsule.expectedFingerprints.containsKey(
-                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME) ? "CAPTURED" : "MISSING")
-                + ",WORLD_RNG=" + (rngUnsupported ? "UNSUPPORTED" : "CAPTURED");
+        boolean rngUnsupported =
+                capsule.unsupportedRuntimeState != null
+                        && capsule.unsupportedRuntimeState.contains(
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG);
+        return "WORLD_RUNTIME="
+                + (capsule.expectedFingerprints.containsKey(
+                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME)
+                        ? "CAPTURED"
+                        : "MISSING")
+                + ",WORLD_RNG="
+                + (rngUnsupported ? "UNSUPPORTED" : "CAPTURED");
     }
 
     private PreviousCheckpoint loadPreviousCheckpoint() throws IOException {
         String preferredBaseCheckpointId = internal.recoveryState().activeCheckpointId;
-        List<Path> candidates = preferredBaseCheckpointId == null
-                ? store.listComplete() : store.timelineCandidates(preferredBaseCheckpointId);
+        List<Path> candidates =
+                preferredBaseCheckpointId == null
+                        ? store.listComplete()
+                        : store.timelineCandidates(preferredBaseCheckpointId);
         Path checkpoint = null;
         CheckpointManifest verifiedManifest = null;
         for (Path candidate : candidates) {
@@ -1453,7 +1762,10 @@ public final class CheckpointManager {
                 checkpoint = candidate;
                 break;
             } catch (IOException exception) {
-                logger.importantKey("checkpoint.invalid_ignored", candidate.getFileName(), exception.getMessage());
+                logger.importantKey(
+                        "checkpoint.invalid_ignored",
+                        candidate.getFileName(),
+                        exception.getMessage());
             }
         }
         if (checkpoint == null) {
@@ -1463,9 +1775,9 @@ public final class CheckpointManager {
     }
 
     /**
-     * Verifies only the newest usable base checkpoint before a live-world barrier is entered.
-     * The lookup starts lazily on the first tick so crash recovery does not hash the same
-     * checkpoint concurrently during controller construction.
+     * Verifies only the newest usable base checkpoint before a live-world barrier is entered. The
+     * lookup starts lazily on the first tick so crash recovery does not hash the same checkpoint
+     * concurrently during controller construction.
      */
     private void pollPreviousLookup() {
         if (previousLookupComplete) {
@@ -1486,7 +1798,8 @@ public final class CheckpointManager {
                 lastCheckpointId = previous.manifest.checkpointId;
                 lastManifest = previous.manifest;
                 if (!lastCheckpointId.equals(internal.recoveryState().activeCheckpointId)) {
-                    internal.updateRecoveryOrThrow(data -> data.activeCheckpointId = lastCheckpointId);
+                    internal.updateRecoveryOrThrow(
+                            data -> data.activeCheckpointId = lastCheckpointId);
                 }
             }
         } catch (InterruptedException exception) {
@@ -1512,7 +1825,7 @@ public final class CheckpointManager {
      * <p>The first capture of a session normally cannot reuse the parent checkpoint from metadata,
      * because that checkpoint was written by an earlier run. Without this pass every unchanged file
      * is read inside the frozen window instead. The scan runs on the same single IO worker as the
-     * incremental-base preflight, so it never competes with it for disk.</p>
+     * incremental-base preflight, so it never competes with it for disk.
      */
     private void pollLiveScan() {
         if (!config.checkpoint.rollingEnabled) {
@@ -1532,7 +1845,8 @@ public final class CheckpointManager {
             }
             Map<String, SnapshotFile> previousFiles = SnapshotManager.index(previousManifest);
             logger.normalKey("checkpoint.live_scan_started");
-            liveScanJob = ioExecutor.submit(() -> LiveWorldScan.hashUnmatchedFiles(world, previousFiles));
+            liveScanJob =
+                    ioExecutor.submit(() -> LiveWorldScan.hashUnmatchedFiles(world, previousFiles));
             return;
         }
         if (!liveScanJob.isDone()) return;
@@ -1576,7 +1890,9 @@ public final class CheckpointManager {
             Thread.currentThread().interrupt();
             result = CaptureResult.failure(exception);
         } catch (ExecutionException exception) {
-            result = CaptureResult.failure(exception.getCause() == null ? exception : exception.getCause());
+            result =
+                    CaptureResult.failure(
+                            exception.getCause() == null ? exception : exception.getCause());
         } catch (CancellationException exception) {
             result = CaptureResult.failure(new InterruptedIOException("Checkpoint was cancelled"));
         }
@@ -1615,14 +1931,17 @@ public final class CheckpointManager {
                 logger.importantKey("state.recovery_state_persist_failed", exception.getMessage());
                 states.set(AntiCrashState.RECOVERY_FAILED);
             }
-            logger.normalKey("checkpoint.committed",
+            logger.normalKey(
+                    "checkpoint.committed",
                     lastCheckpointId,
                     result.snapshot.backend,
                     result.manifest.snapshotDurationMs,
                     result.manifest.barrierDurationMs,
                     result.snapshot.changedFiles,
                     result.snapshot.reusedFiles);
-            logger.normalKey("checkpoint.diagnostic", lastCheckpointId,
+            logger.normalKey(
+                    "checkpoint.diagnostic",
+                    lastCheckpointId,
                     result.diagnostic == null ? "unavailable" : result.diagnostic);
             if (lastTiming != null) {
                 logger.normalKey("checkpoint.performance", lastCheckpointId, lastTiming.summary());
@@ -1636,14 +1955,17 @@ public final class CheckpointManager {
                 logger.importantKey("checkpoint.barrier_slow", result.manifest.barrierDurationMs);
             }
             if (result.manifest.barrierDurationMs > config.checkpoint.criticalBarrierMs) {
-                logger.importantKey("checkpoint.barrier_critical",
-                        result.manifest.barrierDurationMs, config.checkpoint.criticalBarrierMs);
+                logger.importantKey(
+                        "checkpoint.barrier_critical",
+                        result.manifest.barrierDurationMs,
+                        config.checkpoint.criticalBarrierMs);
             }
             if (result.manifest.snapshotDurationMs > config.checkpoint.warnCheckpointMs) {
                 logger.importantKey("checkpoint.snapshot_slow", result.manifest.snapshotDurationMs);
             }
             if (result.manifest.finalizationDurationMs > config.checkpoint.warnFinalizeMs) {
-                logger.importantKey("checkpoint.finalize_slow", result.manifest.finalizationDurationMs);
+                logger.importantKey(
+                        "checkpoint.finalize_slow", result.manifest.finalizationDurationMs);
             }
             resetDeadline();
         } else {
@@ -1653,7 +1975,8 @@ public final class CheckpointManager {
             if (result.error instanceof ParentCheckpointChangedException) {
                 // The parent itself is no longer what its manifest says. Choose and fully verify
                 // the incremental parent again rather than failing on it at every interval.
-                store.quarantine(previousManifest == null ? null : previousManifest.checkpointId,
+                store.quarantine(
+                        previousManifest == null ? null : previousManifest.checkpointId,
                         "PARENT_INVALID: " + result.error.getMessage());
                 previousWorld = null;
                 previousManifest = null;
@@ -1663,7 +1986,8 @@ public final class CheckpointManager {
             lastFinalizationError = result.error == null ? "unknown" : result.error.getMessage();
             failureGate.failed(result.error, System.nanoTime());
             logger.importantKey("checkpoint.failed", lastFinalizationError);
-            if (!states.isRecovery()) enterCheckpointState(AntiCrashState.CHECKPOINT_FINALIZE_FAILED);
+            if (!states.isRecovery())
+                enterCheckpointState(AntiCrashState.CHECKPOINT_FINALIZE_FAILED);
             resetDeadline();
         }
 
@@ -1706,8 +2030,10 @@ public final class CheckpointManager {
             lastCompactionError = exception.getMessage();
             logger.importantKey("checkpoint.compaction_failed", lastCompactionError);
         } catch (ExecutionException | IOException exception) {
-            Throwable cause = exception instanceof ExecutionException && exception.getCause() != null
-                    ? exception.getCause() : exception;
+            Throwable cause =
+                    exception instanceof ExecutionException && exception.getCause() != null
+                            ? exception.getCause()
+                            : exception;
             lastCompactionError = cause.getMessage();
             logger.importantKey("checkpoint.compaction_failed", lastCompactionError);
         } finally {
@@ -1721,8 +2047,10 @@ public final class CheckpointManager {
 
     /** Waits for the current checkpoint without ever extending shutdown indefinitely. */
     public boolean awaitCurrentJob(long timeoutMillis) {
-        long deadlineNanos = timeoutMillis <= 0 ? 0L
-                : System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
+        long deadlineNanos =
+                timeoutMillis <= 0
+                        ? 0L
+                        : System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMillis);
         // Normal checkpoints advance once per server tick. During Minecraft#shutdown there are no
         // further ticks, so drive the same bounded state machine on the server thread while still
         // honoring the configured shutdown deadline.
@@ -1753,8 +2081,11 @@ public final class CheckpointManager {
             Thread.currentThread().interrupt();
             return false;
         } catch (ExecutionException exception) {
-            logger.importantKey("checkpoint.worker_terminated", exception.getCause() == null
-                    ? exception.getMessage() : exception.getCause().getMessage());
+            logger.importantKey(
+                    "checkpoint.worker_terminated",
+                    exception.getCause() == null
+                            ? exception.getMessage()
+                            : exception.getCause().getMessage());
         } catch (TimeoutException exception) {
             return false;
         } catch (CancellationException exception) {
@@ -1850,9 +2181,9 @@ public final class CheckpointManager {
     }
 
     /**
-     * Fully verifies a recovery candidate and adopts the same authenticated checkpoint as the
-     * next incremental snapshot base. Boot-time ASK selection calls this before the first server
-     * tick, avoiding a second full-world hash pass after the operator chooses not to restore.
+     * Fully verifies a recovery candidate and adopts the same authenticated checkpoint as the next
+     * incremental snapshot base. Boot-time ASK selection calls this before the first server tick,
+     * avoiding a second full-world hash pass after the operator chooses not to restore.
      */
     public void verifyAndUseAsIncrementalBase(Path path) throws IOException {
         CheckpointManifest manifest = store.verifyForIncrementalReuse(path);
@@ -1860,10 +2191,14 @@ public final class CheckpointManager {
     }
 
     /** Adopts a checkpoint that WorldRestorer has just authenticated and staged. */
-    public void useVerifiedAsIncrementalBase(Path path, CheckpointManifest manifest) throws IOException {
-        if (path == null || manifest == null || manifest.checkpointId == null
+    public void useVerifiedAsIncrementalBase(Path path, CheckpointManifest manifest)
+            throws IOException {
+        if (path == null
+                || manifest == null
+                || manifest.checkpointId == null
                 || !path.getFileName().toString().equals(manifest.checkpointId)
-                || !Files.isDirectory(path.resolve("world"), java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                || !Files.isDirectory(
+                        path.resolve("world"), java.nio.file.LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(path.resolve("world"))) {
             throw new IOException("Verified incremental checkpoint base is invalid");
         }
@@ -1905,22 +2240,31 @@ public final class CheckpointManager {
         return lastManifest;
     }
 
-    /** Requests offline compaction of the newest verified view; never touches a live ServerWorld. */
+    /**
+     * Requests offline compaction of the newest verified view; never touches a live ServerWorld.
+     */
     public boolean requestCompaction() {
-        if (!config.checkpoint.enabled || !config.checkpoint.createOnManualCommand
-                || compactionJob != null || isCapturing()
-                || previousWorld == null || previousManifest == null) {
+        if (!config.checkpoint.enabled
+                || !config.checkpoint.createOnManualCommand
+                || compactionJob != null
+                || isCapturing()
+                || previousWorld == null
+                || previousManifest == null) {
             return false;
         }
         Path source = previousWorld.getParent();
         if (source == null) return false;
         logger.normalKey("checkpoint.compaction_started", source.getFileName());
-        compactionJob = ioExecutor.submit(() -> {
-            Path compacted = CheckpointCompactor.compact(store, source);
-            // Verify on the worker so the adopted parent carries fresh destination metadata.
-            // Otherwise the next capture would have to re-hash every file inside the barrier.
-            return new CompactionResult(compacted, store.verifyForIncrementalReuse(compacted));
-        });
+        compactionJob =
+                ioExecutor.submit(() -> {
+                    Path compacted = CheckpointCompactor.compact(store, source);
+                    // Verify on the worker so the adopted parent carries fresh destination
+                    // metadata.
+                    // Otherwise the next capture would have to re-hash every file inside the
+                    // barrier.
+                    return new CompactionResult(
+                            compacted, store.verifyForIncrementalReuse(compacted));
+                });
         return true;
     }
 
@@ -1941,52 +2285,95 @@ public final class CheckpointManager {
         CheckpointManifest manifest = lastManifest;
         CheckpointTiming timing = lastTiming;
         StringBuilder result = new StringBuilder();
-        result.append(japanese ? "AntiCrash Checkpoint Performance" : "AntiCrash Checkpoint Performance")
+        result.append(
+                        japanese
+                                ? "AntiCrash Checkpoint Performance"
+                                : "AntiCrash Checkpoint Performance")
                 .append('\n')
-                .append(japanese ? "状態: " : "State: ").append(states.get()).append('\n')
-                .append(japanese ? "進行中: " : "In flight: ").append(isCapturing()).append('\n')
-                .append(engineIncidentStatus(language)).append('\n')
-                .append(japanese ? "閾値 target/warn/critical ms: " : "Threshold target/warn/critical ms: ")
-                .append(config.checkpoint.targetBarrierMs).append('/')
-                .append(config.checkpoint.warnBarrierMs).append('/')
-                .append(config.checkpoint.criticalBarrierMs).append('\n');
+                .append(japanese ? "状態: " : "State: ")
+                .append(states.get())
+                .append('\n')
+                .append(japanese ? "進行中: " : "In flight: ")
+                .append(isCapturing())
+                .append('\n')
+                .append(engineIncidentStatus(language))
+                .append('\n')
+                .append(
+                        japanese
+                                ? "閾値 target/warn/critical ms: "
+                                : "Threshold target/warn/critical ms: ")
+                .append(config.checkpoint.targetBarrierMs)
+                .append('/')
+                .append(config.checkpoint.warnBarrierMs)
+                .append('/')
+                .append(config.checkpoint.criticalBarrierMs)
+                .append('\n');
         if (manifest == null) {
             result.append(japanese ? "まだ確定済みcheckpointはありません。" : "No committed checkpoint yet.");
             if (lastFinalizationError != null) {
-                result.append('\n').append(japanese ? "直近エラー: " : "Last error: ")
+                result.append('\n')
+                        .append(japanese ? "直近エラー: " : "Last error: ")
                         .append(lastFinalizationError);
             }
             return result.toString();
         }
-        result.append(japanese ? "Checkpoint: " : "Checkpoint: ").append(manifest.checkpointId).append('\n')
-                .append(japanese ? "Backend: " : "Backend: ").append(manifest.snapshotBackend).append('\n')
-                .append(japanese ? "Engine: " : "Engine: ").append(manifest.checkpointEngine).append('\n')
-                .append(japanese ? "Parent: " : "Parent: ").append(manifest.parentCheckpointId).append('\n')
+        result.append(japanese ? "Checkpoint: " : "Checkpoint: ")
+                .append(manifest.checkpointId)
+                .append('\n')
+                .append(japanese ? "Backend: " : "Backend: ")
+                .append(manifest.snapshotBackend)
+                .append('\n')
+                .append(japanese ? "Engine: " : "Engine: ")
+                .append(manifest.checkpointEngine)
+                .append('\n')
+                .append(japanese ? "Parent: " : "Parent: ")
+                .append(manifest.parentCheckpointId)
+                .append('\n')
                 .append(japanese ? "論理カット: " : "Logical cut: ")
-                .append(manifest.logicalCutServerTick).append('\n')
-                .append(japanese ? "Barrier ms: " : "Barrier ms: ").append(manifest.barrierDurationMs).append('\n')
+                .append(manifest.logicalCutServerTick)
+                .append('\n')
+                .append(japanese ? "Barrier ms: " : "Barrier ms: ")
+                .append(manifest.barrierDurationMs)
+                .append('\n')
                 .append(japanese ? "Finalization ms: " : "Finalization ms: ")
-                .append(manifest.finalizationDurationMs).append('\n')
-                .append(japanese ? "Generation files present/absent/inherited/sealed/tombstone: "
-                        : "Generation files present/absent/inherited/sealed/tombstone: ")
-                .append(manifest.generationPresentFiles).append('/')
-                .append(manifest.generationAbsentFiles).append('/')
-                .append(manifest.generationInheritedFiles).append('/')
-                .append(manifest.generationSealedFiles).append('/')
-                .append(manifest.generationTombstoneFiles).append('\n')
+                .append(manifest.finalizationDurationMs)
+                .append('\n')
+                .append(
+                        japanese
+                                ? "Generation files present/absent/inherited/sealed/tombstone: "
+                                : "Generation files present/absent/inherited/sealed/tombstone: ")
+                .append(manifest.generationPresentFiles)
+                .append('/')
+                .append(manifest.generationAbsentFiles)
+                .append('/')
+                .append(manifest.generationInheritedFiles)
+                .append('/')
+                .append(manifest.generationSealedFiles)
+                .append('/')
+                .append(manifest.generationTombstoneFiles)
+                .append('\n')
                 .append(japanese ? "Heap before/after/max: " : "Heap before/after/max: ")
-                .append(manifest.heapUsedBeforeBytes).append('/')
-                .append(manifest.heapUsedAfterBytes).append('/')
-                .append(manifest.heapMaxBytes).append('\n')
-                .append(japanese ? "Phase ms（barrier等の親phaseはinclusive）: "
-                        : "Phase ms (parent phases such as barrier are inclusive): ")
+                .append(manifest.heapUsedBeforeBytes)
+                .append('/')
+                .append(manifest.heapUsedAfterBytes)
+                .append('/')
+                .append(manifest.heapMaxBytes)
+                .append('\n')
+                .append(
+                        japanese
+                                ? "Phase ms（barrier等の親phaseはinclusive）: "
+                                : "Phase ms (parent phases such as barrier are inclusive): ")
                 .append(timing == null ? manifest.phaseDurationsMs : timing.durationsMs())
                 .append('\n')
                 .append(japanese ? "Logical delta: " : "Logical delta: ")
-                .append(manifest.logicalDeltaChunkCount).append(" chunks / ")
-                .append(manifest.logicalDeltaEntityChunkCount).append(" entity chunks / ")
-                .append(manifest.logicalDeltaTombstoneCount).append(" tombstones / ")
-                .append(manifest.logicalDeltaPayloadBytes).append(" bytes")
+                .append(manifest.logicalDeltaChunkCount)
+                .append(" chunks / ")
+                .append(manifest.logicalDeltaEntityChunkCount)
+                .append(" entity chunks / ")
+                .append(manifest.logicalDeltaTombstoneCount)
+                .append(" tombstones / ")
+                .append(manifest.logicalDeltaPayloadBytes)
+                .append(" bytes")
                 .append('\n')
                 .append(japanese ? "Candidate cache: " : "Candidate cache: ")
                 .append(logicalDeltaEngine.candidateReport())
@@ -1994,28 +2381,36 @@ public final class CheckpointManager {
                 .append(japanese ? "Mirror: " : "Mirror: ")
                 .append(checkpointMirror.snapshot().compact());
         if (lastCompactionError != null) {
-            result.append('\n').append(japanese ? "直近compactionエラー: " : "Last compaction error: ")
+            result.append('\n')
+                    .append(japanese ? "直近compactionエラー: " : "Last compaction error: ")
                     .append(lastCompactionError);
         }
         if (verbose) {
-            result.append('\n').append(japanese ? "詳細phase（親phaseはinclusive）: "
-                    : "Detailed phases (parent phases are inclusive): ")
+            result.append('\n')
+                    .append(
+                            japanese
+                                    ? "詳細phase（親phaseはinclusive）: "
+                                    : "Detailed phases (parent phases are inclusive): ")
                     .append(timing == null ? manifest.phaseDurationsMs : timing.durationsMs())
-                    .append('\n').append(japanese ? "未対応状態: " : "Unsupported state: ")
+                    .append('\n')
+                    .append(japanese ? "未対応状態: " : "Unsupported state: ")
                     .append(manifest.logicalDeltaComponentStatus)
-                    .append('\n').append(japanese ? "Runtime unsupported: " : "Runtime unsupported: ")
+                    .append('\n')
+                    .append(japanese ? "Runtime unsupported: " : "Runtime unsupported: ")
                     .append(manifest.unsupportedRuntimeState);
         }
         if (lastFinalizationError != null) {
-            result.append('\n').append(japanese ? "直近エラー: " : "Last error: ")
+            result.append('\n')
+                    .append(japanese ? "直近エラー: " : "Last error: ")
                     .append(lastFinalizationError);
         }
         return result.toString();
     }
 
     public String checkpointMirrorReport(String language, boolean audit) {
-        return (audit ? checkpointMirror.audit() : checkpointMirror.snapshot())
-                .compact() + "\n" + checkpointMirror.render(language);
+        return (audit ? checkpointMirror.audit() : checkpointMirror.snapshot()).compact()
+                + "\n"
+                + checkpointMirror.render(language);
     }
 
     public void resetPerformance() {
@@ -2073,7 +2468,7 @@ public final class CheckpointManager {
      * <p>These states only describe work inside this process. Boot classifies an exit from
      * run-state.json and never acts on a stored checkpoint state, yet persisting each transition
      * fsynced the state file and its directory three times inside the frozen window. On ext4 such
-     * an fsync right after the cut's region writes can wait for all of them to reach the disk.</p>
+     * an fsync right after the cut's region writes can wait for all of them to reach the disk.
      */
     private void enterCheckpointState(AntiCrashState next) {
         states.setTransient(next);
@@ -2109,25 +2504,34 @@ public final class CheckpointManager {
      * seeding its ledger would only cost server-thread time every tick and at every cut.
      */
     private boolean logicalEngineUsable() {
-        return logicalDeltaRequested() && !hasUnsafeLogicalOptions()
+        return logicalDeltaRequested()
+                && !hasUnsafeLogicalOptions()
                 && !Boolean.TRUE.equals(logicalPersistentStateBlocked);
     }
 
     private boolean usePortableGeneration() {
-        String backend = config.snapshot.backend == null ? "AUTO"
-                : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
-        return backend.equals("AUTO") || backend.equals("PORTABLE_GENERATION")
+        String backend =
+                config.snapshot.backend == null
+                        ? "AUTO"
+                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
+        return backend.equals("AUTO")
+                || backend.equals("PORTABLE_GENERATION")
                 || backend.equals("GENERATION");
     }
 
     private boolean logicalDeltaRequested() {
-        String mode = config.checkpoint.engineMode == null ? "LOGICAL_DELTA"
-                : config.checkpoint.engineMode.trim().toUpperCase(java.util.Locale.ROOT);
-        String backend = config.snapshot.backend == null ? "AUTO"
-                : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
+        String mode =
+                config.checkpoint.engineMode == null
+                        ? "LOGICAL_DELTA"
+                        : config.checkpoint.engineMode.trim().toUpperCase(java.util.Locale.ROOT);
+        String backend =
+                config.snapshot.backend == null
+                        ? "AUTO"
+                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
         return "LOGICAL_DELTA".equals(mode)
-                && ("AUTO".equals(backend) || "PORTABLE_GENERATION".equals(backend)
-                || "GENERATION".equals(backend));
+                && ("AUTO".equals(backend)
+                        || "PORTABLE_GENERATION".equals(backend)
+                        || "GENERATION".equals(backend));
     }
 
     private boolean hasUnsafeLogicalOptions() {
@@ -2144,33 +2548,42 @@ public final class CheckpointManager {
      * <p>A BASE starts a new lineage whose files share no inode with the old one. It is no longer
      * periodic by default: each BASE copied the whole world (19 GB on s1) about every ten minutes,
      * roughly 1.5 TB of writes a day, while restores always read a generation's own complete and
-     * checksummed file set. {@code base_interval}/{@code max_chain_depth} still enable it. It used to be captured by copying the whole live world while the server was frozen
-     * (19 GB took 25-30 s). With a verified portable parent it is now captured like any delta and
-     * the worker copies, rather than links, the inherited files from the immutable parent. A legacy
-     * or pre-generation checkpoint is never treated as a parent for the generation protocol, even
-     * though it remains a valid recovery candidate.</p>
+     * checksummed file set. {@code base_interval}/{@code max_chain_depth} still enable it. It used
+     * to be captured by copying the whole live world while the server was frozen (19 GB took 25-30
+     * s). With a verified portable parent it is now captured like any delta and the worker copies,
+     * rather than links, the inherited files from the immutable parent. A legacy or pre-generation
+     * checkpoint is never treated as a parent for the generation protocol, even though it remains a
+     * valid recovery candidate.
      */
     private GenerationPlan generationPlan(boolean explicitBase) {
         if (previousManifest == null || previousWorld == null) {
             return new GenerationPlan(null, null, 0, Map.of(), false, null);
         }
-        boolean portableParent = "PORTABLE_GENERATION".equalsIgnoreCase(previousManifest.snapshotBackend)
-                && previousManifest.generationSealFormatVersion > 0
-                && previousManifest.formatVersion >= 3;
+        boolean portableParent =
+                "PORTABLE_GENERATION".equalsIgnoreCase(previousManifest.snapshotBackend)
+                        && previousManifest.generationSealFormatVersion > 0
+                        && previousManifest.formatVersion >= 3;
         if (!portableParent) return new GenerationPlan(null, null, 0, Map.of(), false, null);
         // 0 disables either limit. Every generation is a complete, individually checksummed file
         // set whatever its depth, so a periodic BASE only adds a physical copy of the whole world.
         int depth = previousManifest.generationChainDepth;
-        boolean startBase = explicitBase
-                || (config.checkpoint.baseInterval > 0 && depth >= config.checkpoint.baseInterval)
-                || (config.checkpoint.maxChainDepth > 0 && depth >= config.checkpoint.maxChainDepth);
+        boolean startBase =
+                explicitBase
+                        || (config.checkpoint.baseInterval > 0
+                                && depth >= config.checkpoint.baseInterval)
+                        || (config.checkpoint.maxChainDepth > 0
+                                && depth >= config.checkpoint.maxChainDepth);
         Map<String, SnapshotFile> previousFiles = SnapshotManager.index(previousManifest);
         if (startBase) {
-            return new GenerationPlan(previousWorld, null, 0, previousFiles, true,
-                    previousManifest.checkpointId);
+            return new GenerationPlan(
+                    previousWorld, null, 0, previousFiles, true, previousManifest.checkpointId);
         }
-        return new GenerationPlan(previousWorld, previousManifest.checkpointId,
-                Math.max(0, previousManifest.generationChainDepth), previousFiles, false,
+        return new GenerationPlan(
+                previousWorld,
+                previousManifest.checkpointId,
+                Math.max(0, previousManifest.generationChainDepth),
+                previousFiles,
+                false,
                 previousManifest.checkpointId);
     }
 
@@ -2205,17 +2618,17 @@ public final class CheckpointManager {
             DetachedGeneration detachedGeneration,
             boolean copyInherited,
             long logicalCutServerTick,
-            long logicalCutMonotonicNanos
-    ) {
-    }
+            long logicalCutMonotonicNanos) {}
 
-    private record GenerationPlan(Path previousWorld, String parentCheckpointId,
-                                  int parentChainDepth, Map<String, SnapshotFile> previousFiles,
-                                  boolean rebase, String sourceCheckpointId) {
-    }
+    private record GenerationPlan(
+            Path previousWorld,
+            String parentCheckpointId,
+            int parentChainDepth,
+            Map<String, SnapshotFile> previousFiles,
+            boolean rebase,
+            String sourceCheckpointId) {}
 
-    private record BarrierWorld(ServerWorld world, List<ChunkHolder> holders) {
-    }
+    private record BarrierWorld(ServerWorld world, List<ChunkHolder> holders) {}
 
     private static final class PendingBarrier {
         private final String timelineParentCheckpointId;
@@ -2244,35 +2657,52 @@ public final class CheckpointManager {
         private LogicalDelta logicalDeltaValue;
         private final boolean portableGeneration;
         private final boolean unsupportedPersistentState;
+
         /** BASE generation: inherited files are copied from the parent instead of linked. */
         private final boolean rebase;
+
         /** Checkpoint whose files are {@link #previousFiles}; also set for a rebase. */
         private final String sourceCheckpointId;
+
         private int worldCursor;
         private int holderCursor;
         private int savedChunks;
         private int savedSinceDrain;
         private int drainedBatches;
+
         /** Tracker interval ended by this cut, until the worker owns it. */
         private Set<java.nio.file.Path> trackerWrites;
+
         private boolean trackerArmedAtCut;
 
-        private PendingBarrier(String timelineParentCheckpointId,
-                               MinecraftServer server, Path world, RuntimeCapsule capsule,
-                               List<PlayerSnapshotData> playerSnapshots,
-                               List<FakePlayerSnapshot> fakeSnapshots,
-                               long barrierStartNanos, long serverTick, long worldGameTime,
-                               List<String> dimensions, String fabricLoaderVersion,
-                               String fabricApiVersion, String carpetVersion,
-                               TransientChunkStateMarker.MarkResult transientState,
-                               Path previousWorld, String parentCheckpointId, int parentChainDepth,
-                               Map<String, SnapshotFile> previousFiles,
-                               Map<String, SnapshotFile> liveHashes,
-                               List<BarrierWorld> worlds, Path temporary,
-                               CheckpointTiming timing, boolean logicalDelta,
-                               boolean portableGeneration,
-                               boolean unsupportedPersistentState,
-                               boolean rebase, String sourceCheckpointId) {
+        private PendingBarrier(
+                String timelineParentCheckpointId,
+                MinecraftServer server,
+                Path world,
+                RuntimeCapsule capsule,
+                List<PlayerSnapshotData> playerSnapshots,
+                List<FakePlayerSnapshot> fakeSnapshots,
+                long barrierStartNanos,
+                long serverTick,
+                long worldGameTime,
+                List<String> dimensions,
+                String fabricLoaderVersion,
+                String fabricApiVersion,
+                String carpetVersion,
+                TransientChunkStateMarker.MarkResult transientState,
+                Path previousWorld,
+                String parentCheckpointId,
+                int parentChainDepth,
+                Map<String, SnapshotFile> previousFiles,
+                Map<String, SnapshotFile> liveHashes,
+                List<BarrierWorld> worlds,
+                Path temporary,
+                CheckpointTiming timing,
+                boolean logicalDelta,
+                boolean portableGeneration,
+                boolean unsupportedPersistentState,
+                boolean rebase,
+                String sourceCheckpointId) {
             this.timelineParentCheckpointId = timelineParentCheckpointId;
             this.server = server;
             this.world = world;
@@ -2306,33 +2736,55 @@ public final class CheckpointManager {
             return toCaptureContext(barrierDurationMs, seal, null);
         }
 
-        private CaptureContext toCaptureContext(long barrierDurationMs, GenerationSeal seal,
-                                                LogicalDelta logicalDelta) {
+        private CaptureContext toCaptureContext(
+                long barrierDurationMs, GenerationSeal seal, LogicalDelta logicalDelta) {
             return toCaptureContext(barrierDurationMs, seal, logicalDelta, null);
         }
 
-        private CaptureContext toCaptureContext(long barrierDurationMs, GenerationSeal seal,
-                                                LogicalDelta logicalDelta,
-                                                DetachedGeneration detached) {
-            String generationParent = seal != null ? seal.parentCheckpointId
-                    : detached != null ? parentCheckpointId : null;
+        private CaptureContext toCaptureContext(
+                long barrierDurationMs,
+                GenerationSeal seal,
+                LogicalDelta logicalDelta,
+                DetachedGeneration detached) {
+            String generationParent =
+                    seal != null
+                            ? seal.parentCheckpointId
+                            : detached != null ? parentCheckpointId : null;
             int chainDepth = generationParent == null ? 0 : parentChainDepth + 1;
             boolean frozenLiveReader = seal == null && detached == null;
-            return new CaptureContext(frozenLiveReader ? world : null, capsule, playerSnapshots,
-                    fakeSnapshots, barrierDurationMs, serverTick, worldGameTime, dimensions,
-                    fabricLoaderVersion, fabricApiVersion, carpetVersion, transientState,
-                    previousWorld, parentCheckpointId, previousFiles, liveHashes, temporary,
-                    logicalDelta, seal,
-                    chainDepth, timing, timelineParentCheckpointId, detached, rebase,
-                    serverTick, System.nanoTime());
+            return new CaptureContext(
+                    frozenLiveReader ? world : null,
+                    capsule,
+                    playerSnapshots,
+                    fakeSnapshots,
+                    barrierDurationMs,
+                    serverTick,
+                    worldGameTime,
+                    dimensions,
+                    fabricLoaderVersion,
+                    fabricApiVersion,
+                    carpetVersion,
+                    transientState,
+                    previousWorld,
+                    parentCheckpointId,
+                    previousFiles,
+                    liveHashes,
+                    temporary,
+                    logicalDelta,
+                    seal,
+                    chainDepth,
+                    timing,
+                    timelineParentCheckpointId,
+                    detached,
+                    rebase,
+                    serverTick,
+                    System.nanoTime());
         }
     }
 
-    private record PreviousCheckpoint(Path world, CheckpointManifest manifest) {
-    }
+    private record PreviousCheckpoint(Path world, CheckpointManifest manifest) {}
 
-    private record CompactionResult(Path path, CheckpointManifest manifest) {
-    }
+    private record CompactionResult(Path path, CheckpointManifest manifest) {}
 
     private static final class CaptureResult {
         private final boolean success;
@@ -2343,9 +2795,14 @@ public final class CheckpointManager {
         private final String diagnostic;
         private final Exception error;
 
-        private CaptureResult(boolean success, Path committed, CheckpointManifest manifest,
-                              SnapshotResult snapshot, LogicalDelta logicalDelta,
-                              String diagnostic, Exception error) {
+        private CaptureResult(
+                boolean success,
+                Path committed,
+                CheckpointManifest manifest,
+                SnapshotResult snapshot,
+                LogicalDelta logicalDelta,
+                String diagnostic,
+                Exception error) {
             this.success = success;
             this.committed = committed;
             this.manifest = manifest;
@@ -2355,17 +2812,21 @@ public final class CheckpointManager {
             this.error = error;
         }
 
-        private static CaptureResult success(Path committed, CheckpointManifest manifest,
-                                             SnapshotResult snapshot, LogicalDelta logicalDelta,
-                                             String diagnostic) {
-            return new CaptureResult(true, committed, manifest, snapshot, logicalDelta,
-                    diagnostic, null);
+        private static CaptureResult success(
+                Path committed,
+                CheckpointManifest manifest,
+                SnapshotResult snapshot,
+                LogicalDelta logicalDelta,
+                String diagnostic) {
+            return new CaptureResult(
+                    true, committed, manifest, snapshot, logicalDelta, diagnostic, null);
         }
 
         private static CaptureResult failure(Throwable failure) {
-            Exception exception = failure instanceof Exception
-                    ? (Exception) failure
-                    : new IOException(failure.getMessage(), failure);
+            Exception exception =
+                    failure instanceof Exception
+                            ? (Exception) failure
+                            : new IOException(failure.getMessage(), failure);
             return new CaptureResult(false, null, null, null, null, null, exception);
         }
     }

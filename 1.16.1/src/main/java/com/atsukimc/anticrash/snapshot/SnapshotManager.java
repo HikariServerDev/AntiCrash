@@ -5,13 +5,12 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.stream.Stream;
 import java.util.Locale;
-import java.nio.file.LinkOption;
+import java.util.Map;
 
 public final class SnapshotManager {
     private final AntiCrashConfig config;
@@ -27,23 +26,29 @@ public final class SnapshotManager {
         this.config = config;
         this.logger = logger;
         this.java = new JavaIncrementalBackend(() -> this.config.snapshot.ioThreads);
-        this.portable = new PortableGenerationBackend(() ->
-                this.config.snapshot.ioThreads > 0 ? this.config.snapshot.ioThreads : 1);
+        this.portable =
+                new PortableGenerationBackend(() ->
+                        this.config.snapshot.ioThreads > 0 ? this.config.snapshot.ioThreads : 1);
         this.reflink = new ReflinkBackend(() -> this.config.snapshot.ioThreads);
         this.criu = new CriuBackend(() -> this.config.snapshot.ioThreads);
     }
 
-    public SnapshotResult snapshot(Path liveWorld, Path destination, Path previousWorld,
-                                   Map<String, SnapshotFile> previousFiles,
-                                   Map<String, SnapshotFile> liveHashes) throws IOException {
+    public SnapshotResult snapshot(
+            Path liveWorld,
+            Path destination,
+            Path previousWorld,
+            Map<String, SnapshotFile> previousFiles,
+            Map<String, SnapshotFile> liveHashes)
+            throws IOException {
         String requested = config.snapshot.backend.toUpperCase(Locale.ROOT);
-        SnapshotBackend selected = switch (requested) {
-            case "BTRFS" -> btrfs;
-            case "REFLINK" -> reflink;
-            case "CRIU_EXPERIMENTAL" -> criu;
-            case "PORTABLE_GENERATION", "GENERATION" -> portable;
-            default -> java;
-        };
+        SnapshotBackend selected =
+                switch (requested) {
+                    case "BTRFS" -> btrfs;
+                    case "REFLINK" -> reflink;
+                    case "CRIU_EXPERIMENTAL" -> criu;
+                    case "PORTABLE_GENERATION", "GENERATION" -> portable;
+                    default -> java;
+                };
         // AUTO already probes each candidate. Support probing can spawn an external process
         // (btrfs subvolume show), so never repeat it for a backend it just accepted.
         boolean supportConfirmed = false;
@@ -64,11 +69,13 @@ public final class SnapshotManager {
             selected = java;
         }
         try {
-            return selected.snapshot(liveWorld, destination, previousWorld, previousFiles, liveHashes);
+            return selected.snapshot(
+                    liveWorld, destination, previousWorld, previousFiles, liveHashes);
         } catch (IOException firstFailure) {
             if (selected == java) throw firstFailure;
             if (selected == reflink) reflinkUnavailableForSession = true;
-            logger.importantKey("snapshot.backend_failed", selected.name(), firstFailure.getMessage());
+            logger.importantKey(
+                    "snapshot.backend_failed", selected.name(), firstFailure.getMessage());
             deleteTree(destination);
             return java.snapshot(liveWorld, destination, previousWorld, previousFiles, liveHashes);
         }
@@ -84,7 +91,10 @@ public final class SnapshotManager {
 
     public static void deleteTree(Path root) throws IOException {
         if (root == null || !Files.exists(root, LinkOption.NOFOLLOW_LINKS)) return;
-        if (Files.isSymbolicLink(root)) { Files.delete(root); return; }
+        if (Files.isSymbolicLink(root)) {
+            Files.delete(root);
+            return;
+        }
         if (BtrfsBackend.deleteSubvolumeIfPresent(root)) return;
         try (var stream = Files.walk(root)) {
             for (Path path : stream.sorted(Comparator.reverseOrder()).toList()) {

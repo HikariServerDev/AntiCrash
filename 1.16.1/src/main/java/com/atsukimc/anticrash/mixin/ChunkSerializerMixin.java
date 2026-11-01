@@ -4,14 +4,18 @@ import com.atsukimc.anticrash.runtime.ExtensionCarrier;
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.world.ChunkSerializer;
 import net.minecraft.world.chunk.Chunk;
 import net.minecraft.world.chunk.WorldChunk;
+
 import org.spongepowered.asm.mixin.Mixin;
 
-/** Tells block entities whether their chunk is saved while it stays loaded; see RuntimeExtensionNbt. */
+/**
+ * Tells block entities whether their chunk is saved while it stays loaded; see RuntimeExtensionNbt.
+ */
 @Mixin(ChunkSerializer.class)
 public abstract class ChunkSerializerMixin {
     /**
@@ -19,18 +23,20 @@ public abstract class ChunkSerializerMixin {
      * next unrelated writeNbt on this thread would be taken for a save of a loaded chunk.
      */
     @WrapMethod(method = "serialize")
-    private static CompoundTag anticrash$scopeChunkSave(ServerWorld world, Chunk chunk,
-                                                        Operation<CompoundTag> original) {
+    private static CompoundTag anticrash$scopeChunkSave(
+            ServerWorld world, Chunk chunk, Operation<CompoundTag> original) {
         WorldChunk worldChunk = chunk instanceof WorldChunk loaded ? loaded : null;
-        boolean staysLoaded = worldChunk != null
-                && ((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld();
+        boolean staysLoaded =
+                worldChunk != null
+                        && ((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld();
         RuntimeExtensionNbt.loadedChunkSave(staysLoaded);
         try {
             CompoundTag nbt = original.call(world, chunk);
             // Remembered so that an unload rewrites the chunk without the extension even when
             // nothing else changed; see ThreadedAnvilChunkStorageEntityLifecycleMixin.
             if (worldChunk != null) {
-                ((ExtensionCarrier) worldChunk).anticrash$setExtensionOnDisk(RuntimeExtensionNbt.extensionWritten());
+                ((ExtensionCarrier) worldChunk)
+                        .anticrash$setExtensionOnDisk(RuntimeExtensionNbt.extensionWritten());
             }
             return nbt;
         } finally {

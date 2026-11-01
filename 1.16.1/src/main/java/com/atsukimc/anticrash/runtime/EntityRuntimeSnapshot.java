@@ -1,6 +1,5 @@
 package com.atsukimc.anticrash.runtime;
 
-import net.minecraft.entity.Entity;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
@@ -14,7 +13,7 @@ import java.util.List;
  *
  * <p>EntityList is actively used by ServerWorld#tick. Its internal map is not replaced during
  * recovery: Minecraft's own add/remove invariants remain authoritative. This snapshot is used to
- * detect an order change and stop STRICT recovery rather than silently reshuffling live entities.</p>
+ * detect an order change and stop STRICT recovery rather than silently reshuffling live entities.
  */
 public final class EntityRuntimeSnapshot {
     public int formatVersion = 1;
@@ -25,7 +24,10 @@ public final class EntityRuntimeSnapshot {
     public int chunkX;
     public int chunkZ;
     public int order;
-    /** EntityList can retain a removed entry until the owning tick removes it. Keep its count/order. */
+
+    /**
+     * EntityList can retain a removed entry until the owning tick removes it. Keep its count/order.
+     */
     public boolean removed;
 
     public String canonical() {
@@ -34,15 +36,29 @@ public final class EntityRuntimeSnapshot {
 
     /** Canonical form with a comparison-local order after optional entity filtering. */
     public String canonicalAt(int comparisonOrder) {
-        return comparisonOrder + "|" + dimension + "|" + uuid + "|" + type + "|"
-                + networkEntityId + "|" + chunkX + ',' + chunkZ + "|removed=" + removed;
+        return comparisonOrder
+                + "|"
+                + dimension
+                + "|"
+                + uuid
+                + "|"
+                + type
+                + "|"
+                + networkEntityId
+                + "|"
+                + chunkX
+                + ','
+                + chunkZ
+                + "|removed="
+                + removed;
     }
 
     public static List<EntityRuntimeSnapshot> capture(ServerWorld world) {
         List<EntityRuntimeSnapshot> result = new ArrayList<>();
         String dimension = world.getRegistryKey().getValue().toString();
         ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                .anticrash$getEntityList().forEach(entity -> {
+                .anticrash$getEntityList()
+                .forEach(entity -> {
                     if (entity == null) return;
                     EntityRuntimeSnapshot snapshot = new EntityRuntimeSnapshot();
                     snapshot.dimension = dimension;

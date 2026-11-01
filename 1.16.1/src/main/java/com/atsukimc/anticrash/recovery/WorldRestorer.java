@@ -20,7 +20,6 @@ import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Stream;
 
 /** Pre-world-load restore. It never writes a world that Minecraft has opened. */
 public final class WorldRestorer {
@@ -29,19 +28,37 @@ public final class WorldRestorer {
     private final AntiCrashConfig config;
     private final AntiCrashLogger logger;
     private final Path workRoot;
+
     /** The only live-world path a persisted transaction is allowed to name. */
     private final Path expectedLiveWorld;
 
-    public WorldRestorer(CheckpointStore store, AntiCrashConfig config, AntiCrashLogger logger, Path internalRoot) throws IOException {
+    public WorldRestorer(
+            CheckpointStore store,
+            AntiCrashConfig config,
+            AntiCrashLogger logger,
+            Path internalRoot)
+            throws IOException {
         this(store, config, logger, internalRoot, null);
     }
 
-    public WorldRestorer(CheckpointStore store, AntiCrashConfig config, AntiCrashLogger logger,
-                         Path internalRoot, Path expectedLiveWorld) throws IOException {
-        this.store=store;this.config=config;this.logger=logger;this.workRoot=internalRoot.resolve("restore-work");
-        this.expectedLiveWorld = expectedLiveWorld == null ? null
-                : expectedLiveWorld.toAbsolutePath().normalize();
-        if(Files.exists(workRoot,LinkOption.NOFOLLOW_LINKS)){if(!Files.isDirectory(workRoot,LinkOption.NOFOLLOW_LINKS)||Files.isSymbolicLink(workRoot))throw new IOException("Unsafe restore-work directory: "+workRoot);}else Files.createDirectories(workRoot);
+    public WorldRestorer(
+            CheckpointStore store,
+            AntiCrashConfig config,
+            AntiCrashLogger logger,
+            Path internalRoot,
+            Path expectedLiveWorld)
+            throws IOException {
+        this.store = store;
+        this.config = config;
+        this.logger = logger;
+        this.workRoot = internalRoot.resolve("restore-work");
+        this.expectedLiveWorld =
+                expectedLiveWorld == null ? null : expectedLiveWorld.toAbsolutePath().normalize();
+        if (Files.exists(workRoot, LinkOption.NOFOLLOW_LINKS)) {
+            if (!Files.isDirectory(workRoot, LinkOption.NOFOLLOW_LINKS)
+                    || Files.isSymbolicLink(workRoot))
+                throw new IOException("Unsafe restore-work directory: " + workRoot);
+        } else Files.createDirectories(workRoot);
         recoverInterruptedTransaction();
         discardAbandonedStages();
     }
@@ -51,67 +68,101 @@ public final class WorldRestorer {
      * one restoreCheckpoint call, so anything present at construction time is dead weight.
      */
     private void discardAbandonedStages() {
-        try(var stream=Files.list(workRoot)){
-            for(Path stage:stream.toList()){
-                if(!Files.isDirectory(stage,LinkOption.NOFOLLOW_LINKS)||Files.isSymbolicLink(stage))continue;
+        try (var stream = Files.list(workRoot)) {
+            for (Path stage : stream.toList()) {
+                if (!Files.isDirectory(stage, LinkOption.NOFOLLOW_LINKS)
+                        || Files.isSymbolicLink(stage)) continue;
                 SnapshotManager.deleteTree(stage);
-                logger.importantKey("restore.abandoned_stage_removed",stage.getFileName());
+                logger.importantKey("restore.abandoned_stage_removed", stage.getFileName());
             }
-        }catch(IOException exception){
-            logger.importantKey("restore.abandoned_stage_failed",exception.getMessage());
+        } catch (IOException exception) {
+            logger.importantKey("restore.abandoned_stage_failed", exception.getMessage());
         }
     }
 
-    public CheckpointManifest restoreCheckpoint(Path checkpoint, Path liveWorld) throws IOException {
+    public CheckpointManifest restoreCheckpoint(Path checkpoint, Path liveWorld)
+            throws IOException {
         validateLiveWorldPath(liveWorld);
-        CheckpointManifest manifest=store.verifyForIncrementalReuse(checkpoint);
-        if(Files.exists(liveWorld))validateTree(liveWorld);
-        Path stage=workRoot.resolve(checkpoint.getFileName().toString()+"-"+java.util.UUID.randomUUID()).normalize();PathSafety.requireChild(workRoot,stage);Files.createDirectory(stage);Files.createDirectory(stage.resolve("world"));
-        try{
-            Set<String> expected=new HashSet<>();
-            for(SnapshotFile snapshotFile:manifest.worldFiles){
-                String relative=snapshotFile.path.replace('\\','/');
-                if(!expected.add(relative)||SnapshotFilters.excluded(relative))throw new IOException("Invalid world file in manifest: "+relative);
-                Path source=PathSafety.requireChild(checkpoint.resolve("world"),checkpoint.resolve("world").resolve(relative));
-                Path target=PathSafety.requireChild(stage.resolve("world"),stage.resolve("world").resolve(relative));
-                if(!Files.isRegularFile(source,LinkOption.NOFOLLOW_LINKS))throw new IOException("Missing snapshot file: "+relative);
+        CheckpointManifest manifest = store.verifyForIncrementalReuse(checkpoint);
+        if (Files.exists(liveWorld)) validateTree(liveWorld);
+        Path stage =
+                workRoot.resolve(
+                                checkpoint.getFileName().toString()
+                                        + "-"
+                                        + java.util.UUID.randomUUID())
+                        .normalize();
+        PathSafety.requireChild(workRoot, stage);
+        Files.createDirectory(stage);
+        Files.createDirectory(stage.resolve("world"));
+        try {
+            Set<String> expected = new HashSet<>();
+            for (SnapshotFile snapshotFile : manifest.worldFiles) {
+                String relative = snapshotFile.path.replace('\\', '/');
+                if (!expected.add(relative) || SnapshotFilters.excluded(relative))
+                    throw new IOException("Invalid world file in manifest: " + relative);
+                Path source =
+                        PathSafety.requireChild(
+                                checkpoint.resolve("world"),
+                                checkpoint.resolve("world").resolve(relative));
+                Path target =
+                        PathSafety.requireChild(
+                                stage.resolve("world"), stage.resolve("world").resolve(relative));
+                if (!Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS))
+                    throw new IOException("Missing snapshot file: " + relative);
                 PathSafety.rejectSymlink(source);
                 Files.createDirectories(target.getParent());
-                Files.copy(source,target,StandardCopyOption.COPY_ATTRIBUTES);
+                Files.copy(source, target, StandardCopyOption.COPY_ATTRIBUTES);
                 // Verification and staging are separate I/O passes. Re-hash the staged bytes so
                 // media errors or a checkpoint changed during the copy can never reach the live
                 // world merely because the earlier store verification succeeded.
-                if(Files.size(target)!=snapshotFile.size
-                        || !Hashing.sha256(target).equalsIgnoreCase(snapshotFile.sha256)){
-                    throw new IOException("Staged snapshot checksum mismatch: "+relative);
+                if (Files.size(target) != snapshotFile.size
+                        || !Hashing.sha256(target).equalsIgnoreCase(snapshotFile.sha256)) {
+                    throw new IOException("Staged snapshot checksum mismatch: " + relative);
                 }
             }
             copyExcludedLiveFiles(liveWorld, stage.resolve("world"));
-            VanillaFileSnapshot.restore(checkpoint,stage.resolve("world"),config);
+            VanillaFileSnapshot.restore(checkpoint, stage.resolve("world"), config);
             validateTree(stage.resolve("world"));
-            commitStagedWorld(stage, stage.resolve("world"), liveWorld, checkpoint.getFileName().toString());
-            logger.importantKey("restore.world_files",checkpoint.getFileName());
-        }finally{try{SnapshotManager.deleteTree(stage);}catch(Exception cleanup){logger.verboseKey("restore.stage_cleanup_failed",cleanup.getMessage());}}
+            commitStagedWorld(
+                    stage, stage.resolve("world"), liveWorld, checkpoint.getFileName().toString());
+            logger.importantKey("restore.world_files", checkpoint.getFileName());
+        } finally {
+            try {
+                SnapshotManager.deleteTree(stage);
+            } catch (Exception cleanup) {
+                logger.verboseKey("restore.stage_cleanup_failed", cleanup.getMessage());
+            }
+        }
         return manifest;
     }
 
-    public void restoreCrashRaw(Path raw,Path liveWorld)throws IOException{
+    public void restoreCrashRaw(Path raw, Path liveWorld) throws IOException {
         validateLiveWorldPath(liveWorld);
-        Path source=PathSafety.requireChild(raw,raw.resolve("world"));if(!Files.isDirectory(source))throw new IOException("Crash-raw world is missing");if(Files.exists(liveWorld))validateTree(liveWorld);
-        Path stage=workRoot.resolve("raw-"+java.util.UUID.randomUUID()).normalize();
-        PathSafety.requireChild(workRoot,stage);Files.createDirectory(stage);Files.createDirectory(stage.resolve("world"));
+        Path source = PathSafety.requireChild(raw, raw.resolve("world"));
+        if (!Files.isDirectory(source)) throw new IOException("Crash-raw world is missing");
+        if (Files.exists(liveWorld)) validateTree(liveWorld);
+        Path stage = workRoot.resolve("raw-" + java.util.UUID.randomUUID()).normalize();
+        PathSafety.requireChild(workRoot, stage);
+        Files.createDirectory(stage);
+        Files.createDirectory(stage.resolve("world"));
         try {
-            TreeCopy.copy(source,stage.resolve("world"));
+            TreeCopy.copy(source, stage.resolve("world"));
             validateTree(stage.resolve("world"));
-            commitStagedWorld(stage,stage.resolve("world"),liveWorld,raw.getFileName().toString());
-            logger.importantKey("restore.crashraw",raw.getFileName());
+            commitStagedWorld(
+                    stage, stage.resolve("world"), liveWorld, raw.getFileName().toString());
+            logger.importantKey("restore.crashraw", raw.getFileName());
         } finally {
-            try { SnapshotManager.deleteTree(stage); }
-            catch (Exception cleanup) { logger.verboseKey("restore.stage_cleanup_failed",cleanup.getMessage()); }
+            try {
+                SnapshotManager.deleteTree(stage);
+            } catch (Exception cleanup) {
+                logger.verboseKey("restore.stage_cleanup_failed", cleanup.getMessage());
+            }
         }
     }
 
-    /** Copies player data and the session lock that are intentionally outside a normal checkpoint. */
+    /**
+     * Copies player data and the session lock that are intentionally outside a normal checkpoint.
+     */
     private static void copyExcludedLiveFiles(Path live, Path staged) throws IOException {
         if (!Files.exists(live, LinkOption.NOFOLLOW_LINKS)) return;
         String[] names = {"playerdata", "stats", "advancements", "session.lock"};
@@ -130,20 +181,22 @@ public final class WorldRestorer {
     }
 
     /**
-     * Commits a fully prepared world with a recoverable directory exchange.  If the JVM dies
-     * between the two renames, the next AntiCrash initialization restores the old directory or
-     * keeps the completely installed new directory; it never treats a half-copied tree as a
-     * normal world.
+     * Commits a fully prepared world with a recoverable directory exchange. If the JVM dies between
+     * the two renames, the next AntiCrash initialization restores the old directory or keeps the
+     * completely installed new directory; it never treats a half-copied tree as a normal world.
      */
     private void commitStagedWorld(Path stage, Path stagedWorld, Path liveWorld, String sourceId)
             throws IOException {
         validateLiveWorldPath(liveWorld);
         Path backup = workRoot.resolve(".live-backup-" + java.util.UUID.randomUUID()).normalize();
         PathSafety.requireChild(workRoot, backup);
-        RestoreTransaction transaction = new RestoreTransaction(
-                liveWorld.toAbsolutePath().normalize().toString(),
-                backup.toAbsolutePath().normalize().toString(),
-                stage.toAbsolutePath().normalize().toString(), "PREPARED", sourceId);
+        RestoreTransaction transaction =
+                new RestoreTransaction(
+                        liveWorld.toAbsolutePath().normalize().toString(),
+                        backup.toAbsolutePath().normalize().toString(),
+                        stage.toAbsolutePath().normalize().toString(),
+                        "PREPARED",
+                        sourceId);
         writeTransaction(transaction);
         boolean hadLive = Files.exists(liveWorld, LinkOption.NOFOLLOW_LINKS);
         try {
@@ -165,22 +218,28 @@ public final class WorldRestorer {
     private void recoverInterruptedTransaction() throws IOException {
         Path file = transactionFile();
         if (!Files.exists(file, LinkOption.NOFOLLOW_LINKS)) return;
-        if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)
+        if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                || Files.isSymbolicLink(file)
                 || Files.size(file) > MAX_TRANSACTION_BYTES) {
             throw new IOException("Unsafe or oversized restore transaction marker");
         }
         RestoreTransaction transaction;
         try {
-            transaction = AtomicFiles.readJson(file, RestoreTransaction.class, MAX_TRANSACTION_BYTES);
+            transaction =
+                    AtomicFiles.readJson(file, RestoreTransaction.class, MAX_TRANSACTION_BYTES);
         } catch (RuntimeException exception) {
             throw new IOException("Malformed restore transaction marker", exception);
         }
-        if (transaction == null || transaction.livePath == null || transaction.backupPath == null
-                || transaction.stagePath == null) throw new IOException("Incomplete restore transaction marker");
+        if (transaction == null
+                || transaction.livePath == null
+                || transaction.backupPath == null
+                || transaction.stagePath == null)
+            throw new IOException("Incomplete restore transaction marker");
         Path backup = PathSafety.requireChild(workRoot, Path.of(transaction.backupPath));
         Path stage = PathSafety.requireChild(workRoot, Path.of(transaction.stagePath));
         Path live = Path.of(transaction.livePath).toAbsolutePath().normalize();
-        if (!live.isAbsolute()) throw new IOException("Restore transaction live path is not absolute");
+        if (!live.isAbsolute())
+            throw new IOException("Restore transaction live path is not absolute");
         validateLiveWorldPath(live);
         if (Files.exists(live, LinkOption.NOFOLLOW_LINKS)
                 && !Files.isDirectory(live, LinkOption.NOFOLLOW_LINKS)) {
@@ -226,9 +285,11 @@ public final class WorldRestorer {
             SnapshotManager.deleteTree(backup);
             backupExists = false;
         }
-        if (!liveExists) throw new IOException("Restore transaction has neither live nor backup world");
+        if (!liveExists)
+            throw new IOException("Restore transaction has neither live nor backup world");
         if (stagedWorldExists) SnapshotManager.deleteTree(stage);
-        if (!backupExists && Files.exists(backup, LinkOption.NOFOLLOW_LINKS)) SnapshotManager.deleteTree(backup);
+        if (!backupExists && Files.exists(backup, LinkOption.NOFOLLOW_LINKS))
+            SnapshotManager.deleteTree(backup);
         Files.deleteIfExists(file);
     }
 
@@ -239,7 +300,8 @@ public final class WorldRestorer {
     private void validateLiveWorldPath(Path liveWorld) throws IOException {
         Path normalized = liveWorld.toAbsolutePath().normalize();
         if (expectedLiveWorld != null && !expectedLiveWorld.equals(normalized)) {
-            throw new IOException("Restore transaction names an unexpected live World: " + normalized);
+            throw new IOException(
+                    "Restore transaction names an unexpected live World: " + normalized);
         }
         if (normalized.equals(workRoot) || normalized.startsWith(workRoot)) {
             throw new IOException("Live World may not be inside restore-work: " + normalized);
@@ -260,12 +322,17 @@ public final class WorldRestorer {
         }
     }
 
-    private record RestoreTransaction(String livePath, String backupPath, String stagePath,
-                                      String status, String sourceId) {
+    private record RestoreTransaction(
+            String livePath, String backupPath, String stagePath, String status, String sourceId) {
         private RestoreTransaction withStatus(String nextStatus) {
             return new RestoreTransaction(livePath, backupPath, stagePath, nextStatus, sourceId);
         }
     }
 
-    private static void validateTree(Path root)throws IOException{PathSafety.rejectSymlink(root);try(var stream=Files.walk(root)){for(Path path:stream.toList())PathSafety.rejectSymlink(path);}}
+    private static void validateTree(Path root) throws IOException {
+        PathSafety.rejectSymlink(root);
+        try (var stream = Files.walk(root)) {
+            for (Path path : stream.toList()) PathSafety.rejectSymlink(path);
+        }
+    }
 }

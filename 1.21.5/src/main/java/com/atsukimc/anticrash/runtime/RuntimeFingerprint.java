@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
 import com.atsukimc.anticrash.util.Hashing;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.network.ServerPlayerEntity;
 
@@ -14,8 +15,7 @@ import java.util.Set;
 
 /** Canonical, streaming-friendly fingerprints for Runtime Capsule categories. */
 public final class RuntimeFingerprint {
-    private RuntimeFingerprint() {
-    }
+    private RuntimeFingerprint() {}
 
     public static String hashLines(Iterable<?> lines) {
         // Hashing.sha256Lines already streams one canonical item at a time. Do not first copy a
@@ -43,11 +43,18 @@ public final class RuntimeFingerprint {
                 // Legacy capsules have no semantic domain rows. Keep their set representation
                 // deterministic for diagnostics, but STRICT will classify the missing rows
                 // separately and never treat this fallback as exact.
-                lines.add(snapshot.dimension + "|loaded=" + join(snapshot.loadedChunks)
-                        + "|full=" + join(snapshot.fullChunks)
-                        + "|block=" + join(snapshot.blockTickingChunks)
-                        + "|entity=" + join(snapshot.entityTickingChunks)
-                        + "|forced=" + join(snapshot.forcedChunks));
+                lines.add(
+                        snapshot.dimension
+                                + "|loaded="
+                                + join(snapshot.loadedChunks)
+                                + "|full="
+                                + join(snapshot.fullChunks)
+                                + "|block="
+                                + join(snapshot.blockTickingChunks)
+                                + "|entity="
+                                + join(snapshot.entityTickingChunks)
+                                + "|forced="
+                                + join(snapshot.forcedChunks));
             }
         }
         // The domain is a set of executable chunk states, not an iteration-order contract. The
@@ -62,9 +69,26 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (snapshot == null || snapshot.entries == null) return lines;
         for (BlockEventSnapshot.Entry entry : snapshot.entries) {
-            if (entry == null) { lines.add("<null>"); continue; }
-            lines.add(entry.queue + "|" + entry.dimension + "|" + entry.x + ',' + entry.y + ',' + entry.z
-                    + "|" + entry.block + "|" + entry.type + "|" + entry.data);
+            if (entry == null) {
+                lines.add("<null>");
+                continue;
+            }
+            lines.add(
+                    entry.queue
+                            + "|"
+                            + entry.dimension
+                            + "|"
+                            + entry.x
+                            + ','
+                            + entry.y
+                            + ','
+                            + entry.z
+                            + "|"
+                            + entry.block
+                            + "|"
+                            + entry.type
+                            + "|"
+                            + entry.data);
         }
         return lines;
     }
@@ -73,10 +97,28 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (ticks == null) return lines;
         for (ScheduledTickSnapshot tick : ticks) {
-            if (tick == null) { lines.add("<null>"); continue; }
-            lines.add(tick.dimension + "|" + tick.kind + "|" + tick.type + "|"
-                    + tick.x + ',' + tick.y + ',' + tick.z + "|" + tick.triggerTick
-                    + "|" + tick.priority + "|" + tick.subTickOrder);
+            if (tick == null) {
+                lines.add("<null>");
+                continue;
+            }
+            lines.add(
+                    tick.dimension
+                            + "|"
+                            + tick.kind
+                            + "|"
+                            + tick.type
+                            + "|"
+                            + tick.x
+                            + ','
+                            + tick.y
+                            + ','
+                            + tick.z
+                            + "|"
+                            + tick.triggerTick
+                            + "|"
+                            + tick.priority
+                            + "|"
+                            + tick.subTickOrder);
         }
         return lines;
     }
@@ -85,7 +127,10 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (pistons == null) return lines;
         for (MovingPistonTickSnapshot piston : pistons) {
-            if (piston == null) { lines.add("<null>"); continue; }
+            if (piston == null) {
+                lines.add("<null>");
+                continue;
+            }
             lines.add(piston.dimension + "|" + piston.x + ',' + piston.y + ',' + piston.z);
         }
         return lines;
@@ -95,7 +140,10 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (tickers == null) return lines;
         for (BlockEntityTickerSnapshot ticker : tickers) {
-            if (ticker == null) { lines.add("<null>"); continue; }
+            if (ticker == null) {
+                lines.add("<null>");
+                continue;
+            }
             lines.add(ticker.canonical());
         }
         return lines;
@@ -106,13 +154,14 @@ public final class RuntimeFingerprint {
     }
 
     /**
-     * Builds entity-order lines while optionally excluding real players. Real Player readiness is
-     * a separate policy because a restarted server may not have accepted those connections yet;
+     * Builds entity-order lines while optionally excluding real players. Real Player readiness is a
+     * separate policy because a restarted server may not have accepted those connections yet;
      * FakePlayers remain included by UUID so their ActionPack state is still part of this order.
      */
-    public static List<String> entityLines(List<EntityRuntimeSnapshot> entities,
-                                           Set<String> fakePlayerUuids,
-                                           boolean includeRealPlayers) {
+    public static List<String> entityLines(
+            List<EntityRuntimeSnapshot> entities,
+            Set<String> fakePlayerUuids,
+            boolean includeRealPlayers) {
         List<String> lines = new ArrayList<>();
         if (entities == null) return lines;
         Set<String> fakeIds = new HashSet<>();
@@ -123,9 +172,13 @@ public final class RuntimeFingerprint {
         }
         int comparisonOrder = 0;
         for (EntityRuntimeSnapshot entity : entities) {
-            if (entity == null) { lines.add("<null>"); continue; }
+            if (entity == null) {
+                lines.add("<null>");
+                continue;
+            }
             if (!includeRealPlayers && isRealPlayer(entity, fakeIds)) continue;
-            lines.add(includeRealPlayers ? entity.canonical() : entity.canonicalAt(comparisonOrder));
+            lines.add(
+                    includeRealPlayers ? entity.canonical() : entity.canonicalAt(comparisonOrder));
             comparisonOrder++;
         }
         return lines;
@@ -134,14 +187,17 @@ public final class RuntimeFingerprint {
     private static boolean isRealPlayer(EntityRuntimeSnapshot entity, Set<String> fakePlayerUuids) {
         return "minecraft:player".equalsIgnoreCase(entity.type)
                 && (entity.uuid == null
-                || !fakePlayerUuids.contains(entity.uuid.toLowerCase(Locale.ROOT)));
+                        || !fakePlayerUuids.contains(entity.uuid.toLowerCase(Locale.ROOT)));
     }
 
     public static List<String> burnoutLines(List<RedstoneTorchBurnoutSnapshot> snapshots) {
         List<String> lines = new ArrayList<>();
         if (snapshots == null) return lines;
         for (RedstoneTorchBurnoutSnapshot snapshot : snapshots) {
-            if (snapshot == null) { lines.add("<null>"); continue; }
+            if (snapshot == null) {
+                lines.add("<null>");
+                continue;
+            }
             lines.addAll(snapshot.canonicalLines());
         }
         return lines;
@@ -160,28 +216,41 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (worlds == null) return lines;
         for (RuntimeCapsule.WorldRuntime world : worlds) {
-            if (world == null) { lines.add("<null>"); continue; }
-            lines.add(world.dimension + "|time=" + world.gameTime + "|day=" + world.timeOfDay
-                    + "|tickOrder=" + world.nextTickOrder + "|lcg=" + world.lcgBlockSeed);
+            if (world == null) {
+                lines.add("<null>");
+                continue;
+            }
+            lines.add(
+                    world.dimension
+                            + "|time="
+                            + world.gameTime
+                            + "|day="
+                            + world.timeOfDay
+                            + "|tickOrder="
+                            + world.nextTickOrder
+                            + "|lcg="
+                            + world.lcgBlockSeed);
         }
         lines.sort(String::compareTo);
         return lines;
     }
 
     /**
-     * Records the capability boundary for World.random.  Minecraft 1.18.2 exposes this as a
+     * Records the capability boundary for World.random. Minecraft 1.18.2 exposes this as a
      * java.util.Random without a safe semantic state accessor; the line is therefore a
      * deterministic evidence marker, not a claim that the random seed was restored.
      */
     public static List<String> worldRngLines() {
-        return List.of("implementation=net.minecraft.util.math.random.Random",
+        return List.of(
+                "implementation=net.minecraft.util.math.random.Random",
                 "state=UNSUPPORTED",
                 "reason=random-implementation-state-not-restored-by-this-adapter");
     }
 
     public static List<String> carpetLines(TickSpeedSnapshot snapshot) {
         if (snapshot == null) return List.of();
-        return List.of("format=" + snapshot.formatVersion,
+        return List.of(
+                "format=" + snapshot.formatVersion,
                 "tickrate=" + snapshot.tickrate,
                 "mspt=" + snapshot.mspt,
                 "process_entities=" + snapshot.processEntities,
@@ -199,7 +268,10 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (players == null) return lines;
         for (FakePlayerSnapshot player : players) {
-            if (player == null) { lines.add("<null>"); continue; }
+            if (player == null) {
+                lines.add("<null>");
+                continue;
+            }
             lines.add(player.canonical());
         }
         // PlayerManager order is not the FakePlayer ActionPack's execution order. Sort identities
@@ -226,8 +298,12 @@ public final class RuntimeFingerprint {
             if (com.atsukimc.anticrash.integration.carpet.CarpetIntegration.isFakePlayer(player)) {
                 continue;
             }
-            lines.add(player.getUuidAsString() + "|" + player.getGameProfile().getName() + "|"
-                    + player.getWorld().getRegistryKey().getValue());
+            lines.add(
+                    player.getUuidAsString()
+                            + "|"
+                            + player.getGameProfile().getName()
+                            + "|"
+                            + player.getWorld().getRegistryKey().getValue());
         }
         lines.sort(String::compareTo);
         return lines;

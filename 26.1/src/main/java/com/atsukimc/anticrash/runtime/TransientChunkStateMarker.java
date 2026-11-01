@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.server.MinecraftServer;
@@ -13,28 +14,28 @@ import net.minecraft.world.entity.item.PrimedTnt;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-import java.util.Map;
+
+import java.util.ArrayList;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.ArrayList;
 
 /**
  * Makes Vanilla's transient chunk state eligible for the save immediately before a checkpoint.
  *
  * <p>In 1.18.2 {@code ChunkSerializer} already writes block entities and chunk-local scheduled
  * ticks. The missing part is that {@code ServerChunkLoadingManager} skips serialization unless
- * {@code Chunk#needsSaving()} is true. Piston progress and some scheduler mutations do not set
- * that flag reliably, so the checkpoint can otherwise contain an older moving-piston state.</p>
+ * {@code Chunk#needsSaving()} is true. Piston progress and some scheduler mutations do not set that
+ * flag reliably, so the checkpoint can otherwise contain an older moving-piston state.
  *
  * <p>This class runs only on the server thread while the checkpoint barrier owns the world. It
- * examines already accessible chunks and never requests or waits for a new chunk.</p>
+ * examines already accessible chunks and never requests or waits for a new chunk.
  */
 public final class TransientChunkStateMarker {
     private static final String PISTON_BLOCK_ENTITY_ID = "minecraft:piston";
 
-    private TransientChunkStateMarker() {
-    }
+    private TransientChunkStateMarker() {}
 
     public static MarkResult markForCheckpoint(MinecraftServer server) {
         int inspectedChunks = 0;
@@ -65,10 +66,11 @@ public final class TransientChunkStateMarker {
                 int blockTicks = chunk.getBlockTicks().count();
                 int fluidTicks = chunk.getFluidTicks().count();
                 long advertisedScheduledTicks = (long) blockTicks + fluidTicks;
-                List<ScheduledTickSnapshot> exactTicks = advertisedScheduledTicks == 0L
-                        ? List.of()
-                        : ScheduledTickSnapshot.capture(
-                        world.dimension().identifier().toString(), chunk);
+                List<ScheduledTickSnapshot> exactTicks =
+                        advertisedScheduledTicks == 0L
+                                ? List.of()
+                                : ScheduledTickSnapshot.capture(
+                                        world.dimension().identifier().toString(), chunk);
                 long chunkScheduledTicks = exactTicks.size();
                 // WorldTickScheduler is driven by the block-ticking predicate, not by the
                 // entity-ticking predicate. A FULL/TICKING holder can therefore own a live
@@ -78,8 +80,9 @@ public final class TransientChunkStateMarker {
                 if (chunkScheduledTicks > 0) orderedScheduledTicks.addAll(exactTicks);
                 if (!needsTransientSave(pistonsInChunk > 0, blockTicks, fluidTicks)) continue;
 
-                criticalChunks.add(new ChunkReference(
-                        world.dimension().identifier().toString(), chunk.getPos().pack()));
+                criticalChunks.add(
+                        new ChunkReference(
+                                world.dimension().identifier().toString(), chunk.getPos().pack()));
                 if (pistonsInChunk > 0) {
                     movingPistonChunks++;
                     movingPistons += pistonsInChunk;
@@ -100,15 +103,22 @@ public final class TransientChunkStateMarker {
             for (Entity entity : world.getAllEntities()) {
                 if (!isCheckpointCriticalEntity(entity)) continue;
                 transientPhysicsEntities++;
-                criticalChunks.add(new ChunkReference(
-                        world.dimension().identifier().toString(),
-                        entity.chunkPosition().pack()));
+                criticalChunks.add(
+                        new ChunkReference(
+                                world.dimension().identifier().toString(),
+                                entity.chunkPosition().pack()));
             }
         }
 
-        return new MarkResult(inspectedChunks, chunksMadeDirty,
-                movingPistonChunks, movingPistons, scheduledTickChunks, scheduledTicks,
-                transientPhysicsEntities, List.copyOf(criticalChunks),
+        return new MarkResult(
+                inspectedChunks,
+                chunksMadeDirty,
+                movingPistonChunks,
+                movingPistons,
+                scheduledTickChunks,
+                scheduledTicks,
+                transientPhysicsEntities,
+                List.copyOf(criticalChunks),
                 List.copyOf(orderedScheduledTicks));
     }
 
@@ -118,7 +128,8 @@ public final class TransientChunkStateMarker {
     }
 
     static boolean isCheckpointCriticalEntity(Entity entity) {
-        return entity != null && !entity.isRemoved()
+        return entity != null
+                && !entity.isRemoved()
                 && (entity instanceof PrimedTnt || entity instanceof FallingBlockEntity);
     }
 
@@ -161,8 +172,7 @@ public final class TransientChunkStateMarker {
             long scheduledTicks,
             int transientPhysicsEntities,
             List<ChunkReference> criticalChunks,
-            List<ScheduledTickSnapshot> orderedScheduledTicks
-    ) {
+            List<ScheduledTickSnapshot> orderedScheduledTicks) {
         public MarkResult {
             criticalChunks = List.copyOf(criticalChunks);
             orderedScheduledTicks = List.copyOf(orderedScheduledTicks);
@@ -181,6 +191,5 @@ public final class TransientChunkStateMarker {
         }
     }
 
-    public record ChunkReference(String dimension, long packedPosition) {
-    }
+    public record ChunkReference(String dimension, long packedPosition) {}
 }

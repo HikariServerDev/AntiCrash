@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.mixin;
 import net.minecraft.server.world.ServerWorld;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.MobSpawnerLogic;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
@@ -17,12 +18,14 @@ public abstract class MobSpawnerLogicMixin {
     @Unique private int anticrash$delayBefore;
 
     @Inject(method = "serverTick", at = @At("HEAD"))
-    private void anticrash$rememberDelay(ServerWorld world, BlockPos pos, CallbackInfo callbackInfo) {
+    private void anticrash$rememberDelay(
+            ServerWorld world, BlockPos pos, CallbackInfo callbackInfo) {
         anticrash$delayBefore = spawnDelay;
     }
 
     @Inject(method = "serverTick", at = @At("RETURN"))
-    private void anticrash$markDelayDirty(ServerWorld world, BlockPos pos, CallbackInfo callbackInfo) {
+    private void anticrash$markDelayDirty(
+            ServerWorld world, BlockPos pos, CallbackInfo callbackInfo) {
         if (spawnDelay != anticrash$delayBefore) world.markDirty(pos);
     }
 }

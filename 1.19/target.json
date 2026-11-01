@@ -12,10 +12,14 @@
   "loader_version": "0.17.3",
   "yarn_pinned": "1.19+build.4",
   "fabric_api_pinned": "0.58.0+1.19",
-  "main_tests": 269,
+  "main_tests": 275,
   "supervisor_tests": 13,
-  "source_updated_on": "2026-10-30",
-  "offline_verified_on": "2026-10-30",
-  "mod_sha256": "6588ebd6e669073d621857b2b16090f47932b7d220720981741b868d2156199c",
-  "supervisor_sha256": "f29f6d1fd39f657748b2b2825b998d21587429f30d7d9d4a0887790d0c8edc94"
+  "source_updated_on": "2026-11-02",
+  "offline_verified_on": "2026-11-02",
+  "mod_sha256": "1cbd805db09d93a503f779940791d4076ac5fe05e3c374675bb9de2b5ece0681",
+  "supervisor_sha256": "bb0c2c99410f8c18a8e2003daba65992239248bdc6e84b82385b5287ba91fce5",
+  "mod_version": "1.0.1",
+  "source_layout": "SHARED_WITH_ISOLATED_ADAPTERS",
+  "runtime_parity_baseline": "1.0.0",
+  "runtime_parity_status": "MATCH_DEBUG_AND_VERSION_NORMALIZED"
 }

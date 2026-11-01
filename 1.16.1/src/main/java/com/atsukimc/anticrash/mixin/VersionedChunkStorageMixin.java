@@ -1,8 +1,10 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.SealedNbt;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.storage.VersionedChunkStorage;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.ModifyVariable;

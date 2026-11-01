@@ -2,9 +2,11 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.SulfurRuntimeFrame;
+
 import net.minecraft.world.level.block.entity.PotentSulfurBlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,8 +21,12 @@ public abstract class PotentSulfurRuntimeMixin {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$savePhase(ValueOutput output, CallbackInfo ci) {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
-        RuntimeExtensionNbt.write(output, extension -> extension.put("SulfurFrame",
-                new SulfurRuntimeFrame(waitingCountdown, eruptionTick).write()));
+        RuntimeExtensionNbt.write(
+                output,
+                extension ->
+                        extension.put(
+                                "SulfurFrame",
+                                new SulfurRuntimeFrame(waitingCountdown, eruptionTick).write()));
     }
 
     @Inject(method = "loadAdditional", at = @At("TAIL"))

@@ -1,10 +1,11 @@
 package com.atsukimc.anticrash.snapshot;
 
+import net.minecraft.nbt.CompoundTag;
+
 import java.util.Collection;
 import java.util.Collections;
 import java.util.IdentityHashMap;
 import java.util.Set;
-import net.minecraft.nbt.CompoundTag;
 
 /**
  * The queued NbtCompounds a checkpoint cut took from the storage IO queues and will write into its
@@ -12,11 +13,11 @@ import net.minecraft.nbt.CompoundTag;
  * with the IO thread.
  */
 public final class SealedNbt {
-    private static final Set<CompoundTag> SEALED = Collections.newSetFromMap(new IdentityHashMap<>());
+    private static final Set<CompoundTag> SEALED =
+            Collections.newSetFromMap(new IdentityHashMap<>());
     private static volatile boolean any;
 
-    private SealedNbt() {
-    }
+    private SealedNbt() {}
 
     public static boolean isSealed(CompoundTag nbt) {
         if (!any || nbt == null) return false;
@@ -29,7 +30,8 @@ public final class SealedNbt {
         synchronized (SEALED) {
             // Only one checkpoint cut is ever outstanding; whatever an abandoned one left is stale.
             SEALED.clear();
-            for (PendingRegionWrite write : writes) if (write.nbt() != null) SEALED.add(write.nbt());
+            for (PendingRegionWrite write : writes)
+                if (write.nbt() != null) SEALED.add(write.nbt());
             any = !SEALED.isEmpty();
         }
     }

@@ -1,7 +1,8 @@
 package com.atsukimc.anticrash.runtime;
 
-import java.util.function.Consumer;
 import net.minecraft.nbt.CompoundTag;
+
+import java.util.function.Consumer;
 
 /**
  * The one place AntiCrash keeps runtime state inside Vanilla chunk and entity data.
@@ -10,7 +11,7 @@ import net.minecraft.nbt.CompoundTag;
  * progress, a gateway's cooldown, an entity about to change dimension). It is stored in a single
  * versioned compound beside Vanilla's own keys and never replaces them: Vanilla's value stays the
  * authority for everything Vanilla saves, and a server without AntiCrash ignores the compound.
- * Every serialized field is explicitly documented and intentionally scoped.</p>
+ * Every serialized field is explicitly documented and intentionally scoped.
  */
 public final class RuntimeExtensionNbt {
     public static final String KEY = "AntiCrash";
@@ -20,10 +21,10 @@ public final class RuntimeExtensionNbt {
     /**
      * The extension describes something that keeps running: it is written only when data is saved
      * while it stays loaded (a checkpoint, an autosave, the save at shutdown). When Vanilla unloads
-     * a chunk or an entity section and loads it again later, losing this state is what Vanilla
-     * does in an uninterrupted game, and that must stay as it is. Entity#writeNbt and
-     * BlockEntity#writeNbt also feed dimension changes, /data, structure blocks and client
-     * packets; none of those get the extension either.
+     * a chunk or an entity section and loads it again later, losing this state is what Vanilla does
+     * in an uninterrupted game, and that must stay as it is. Entity#writeNbt and
+     * BlockEntity#writeNbt also feed dimension changes, /data, structure blocks and client packets;
+     * none of those get the extension either.
      */
     private static final class Scope {
         boolean entitySave;
@@ -34,8 +35,7 @@ public final class RuntimeExtensionNbt {
 
     private static final ThreadLocal<Scope> SCOPE = ThreadLocal.withInitial(Scope::new);
 
-    private RuntimeExtensionNbt() {
-    }
+    private RuntimeExtensionNbt() {}
 
     public static void entitySave(boolean active) {
         SCOPE.get().entitySave = active;

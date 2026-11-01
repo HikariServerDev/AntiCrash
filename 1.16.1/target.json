@@ -8,7 +8,9 @@
   "integration_verified": false,
   "source_base": "1.18.2",
   "blocker": "Legacy tick-ledger core implemented; Minecraft capture/restore, merged entity/chunk IO, Mixin and full baseline integration remain",
-  "source_updated_on": "2026-10-30",
+  "source_updated_on": "2026-11-02",
   "legacy_adapter_tests": 14,
-  "legacy_adapter_verified_on": "2026-10-30"
+  "legacy_adapter_verified_on": "2026-11-02",
+  "mod_version": "1.0.1",
+  "source_layout": "SHARED_WITH_ISOLATED_ADAPTERS"
 }

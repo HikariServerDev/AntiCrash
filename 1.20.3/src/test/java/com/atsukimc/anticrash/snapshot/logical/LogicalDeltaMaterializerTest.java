@@ -1,14 +1,19 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotSame;
+
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -19,12 +24,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotSame;
-
 class LogicalDeltaMaterializerTest {
-    @TempDir
-    Path temp;
+    @TempDir Path temp;
 
     @Test
     void appliesChangedRegionAndEntityTombstoneWithCopyOnWrite() throws Exception {
@@ -41,8 +42,8 @@ class LogicalDeltaMaterializerTest {
         writeRegion(live, "entities", new ChunkPos(0, 0), entities);
 
         Path parentWorld = temp.resolve("parent");
-        SnapshotResult parentSnapshot = new JavaIncrementalBackend(() -> 1)
-                .snapshot(live, parentWorld, null, Map.of());
+        SnapshotResult parentSnapshot =
+                new JavaIncrementalBackend(() -> 1).snapshot(live, parentWorld, null, Map.of());
         Map<String, SnapshotFile> parentFiles = new HashMap<>();
         for (SnapshotFile file : parentSnapshot.files) parentFiles.put(file.path, file);
 
@@ -54,20 +55,36 @@ class LogicalDeltaMaterializerTest {
         changed.payloadBase64 = NbtCodec.encode(marker("after"));
         changed.sha256 = "unused-in-test";
         delta.addChunk(changed);
-        delta.addTombstone(new LogicalTombstone("ENTITY_REMOVED", "minecraft:overworld",
-                removed.toString(), 1L, "test", new ChunkPos(0, 0).toLong()));
+        delta.addTombstone(
+                new LogicalTombstone(
+                        "ENTITY_REMOVED",
+                        "minecraft:overworld",
+                        removed.toString(),
+                        1L,
+                        "test",
+                        new ChunkPos(0, 0).toLong()));
 
         Path destination = temp.resolve("materialized");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
 
-        assertEquals("before", readRegion(parentWorld, "region", new ChunkPos(0, 0)).getString("marker"));
-        assertEquals("after", readRegion(destination, "region", new ChunkPos(0, 0)).getString("marker"));
-        assertNotSame(parentWorld.resolve("region/r.0.0.mca").toRealPath(),
+        assertEquals(
+                "before",
+                readRegion(parentWorld, "region", new ChunkPos(0, 0)).getString("marker"));
+        assertEquals(
+                "after", readRegion(destination, "region", new ChunkPos(0, 0)).getString("marker"));
+        assertNotSame(
+                parentWorld.resolve("region/r.0.0.mca").toRealPath(),
                 destination.resolve("region/r.0.0.mca").toRealPath());
-        assertEquals(0, readRegion(destination, "entities", new ChunkPos(0, 0))
-                .getList("Entities", 10).size());
-        assertEquals(1, readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                .getList("Entities", 10).size());
+        assertEquals(
+                0,
+                readRegion(destination, "entities", new ChunkPos(0, 0))
+                        .getList("Entities", 10)
+                        .size());
+        assertEquals(
+                1,
+                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
+                        .getList("Entities", 10)
+                        .size());
     }
 
     @Test
@@ -78,8 +95,8 @@ class LogicalDeltaMaterializerTest {
         writeRegion(live, "entities", new ChunkPos(1, 0), entityChunk(returned));
 
         Path parentWorld = temp.resolve("parent2");
-        SnapshotResult parentSnapshot = new JavaIncrementalBackend(() -> 1)
-                .snapshot(live, parentWorld, null, Map.of());
+        SnapshotResult parentSnapshot =
+                new JavaIncrementalBackend(() -> 1).snapshot(live, parentWorld, null, Map.of());
         Map<String, SnapshotFile> parentFiles = new HashMap<>();
         for (SnapshotFile file : parentSnapshot.files) parentFiles.put(file.path, file);
 
@@ -97,8 +114,14 @@ class LogicalDeltaMaterializerTest {
         rewritten.packedPosition = new ChunkPos(1, 0).toLong();
         rewritten.payloadBase64 = NbtCodec.encode(entityChunk(returned));
         delta.addEntityChunk(rewritten);
-        delta.addTombstone(new LogicalTombstone("ENTITY_MOVED_FROM", "minecraft:overworld",
-                returned.toString(), 1L, "test", new ChunkPos(1, 0).toLong()));
+        delta.addTombstone(
+                new LogicalTombstone(
+                        "ENTITY_MOVED_FROM",
+                        "minecraft:overworld",
+                        returned.toString(),
+                        1L,
+                        "test",
+                        new ChunkPos(1, 0).toLong()));
 
         Path destination = temp.resolve("materialized2");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
@@ -107,10 +130,16 @@ class LogicalDeltaMaterializerTest {
         try (RegionFile region = new RegionFile(directory.resolve("r.0.0.mca"), directory, false)) {
             assertEquals(false, region.hasChunk(new ChunkPos(0, 0)));
         }
-        assertEquals(1, readRegion(destination, "entities", new ChunkPos(1, 0))
-                .getList("Entities", 10).size());
-        assertEquals(1, readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                .getList("Entities", 10).size());
+        assertEquals(
+                1,
+                readRegion(destination, "entities", new ChunkPos(1, 0))
+                        .getList("Entities", 10)
+                        .size());
+        assertEquals(
+                1,
+                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
+                        .getList("Entities", 10)
+                        .size());
     }
 
     private static NbtCompound entityChunk(UUID... uuids) {
@@ -132,8 +161,8 @@ class LogicalDeltaMaterializerTest {
         return root;
     }
 
-    private static void writeRegion(Path world, String directoryName, ChunkPos pos,
-                                    NbtCompound root) throws Exception {
+    private static void writeRegion(
+            Path world, String directoryName, ChunkPos pos, NbtCompound root) throws Exception {
         Path directory = world.resolve(directoryName);
         Files.createDirectories(directory);
         Path file = directory.resolve("r." + (pos.x >> 5) + "." + (pos.z >> 5) + ".mca");
@@ -150,8 +179,9 @@ class LogicalDeltaMaterializerTest {
         Path directory = world.resolve(directoryName);
         Path file = directory.resolve("r." + (pos.x >> 5) + "." + (pos.z >> 5) + ".mca");
         try (RegionFile region = new RegionFile(file, directory, false);
-             var input = region.getChunkInputStream(pos)) {
-            return NbtIo.readCompound(input, net.minecraft.nbt.NbtTagSizeTracker.of(16 * 1024 * 1024));
+                var input = region.getChunkInputStream(pos)) {
+            return NbtIo.readCompound(
+                    input, net.minecraft.nbt.NbtTagSizeTracker.of(16 * 1024 * 1024));
         }
     }
 }

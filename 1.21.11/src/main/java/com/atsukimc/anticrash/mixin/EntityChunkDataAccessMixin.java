@@ -3,10 +3,12 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.snapshot.EntityChunkWriteDeduplicator;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.EntityChunkDataAccess;
 import net.minecraft.world.storage.VersionedChunkStorage;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -17,15 +19,16 @@ import java.util.concurrent.CompletableFuture;
 @Mixin(EntityChunkDataAccess.class)
 public abstract class EntityChunkDataAccessMixin {
     @Unique
-    private final EntityChunkWriteDeduplicator anticrash$deduplicator = new EntityChunkWriteDeduplicator();
+    private final EntityChunkWriteDeduplicator anticrash$deduplicator =
+            new EntityChunkWriteDeduplicator();
 
     /**
      * Entity runtime state is added only to data that goes to the entity's chunk on disk. A wrap,
      * so the scope also ends when an entity fails to save.
      */
     @com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "writeChunkData")
-    private void anticrash$scopeEntitySave(net.minecraft.world.storage.ChunkDataList<?> dataList,
-                                           Operation<Void> original) {
+    private void anticrash$scopeEntitySave(
+            net.minecraft.world.storage.ChunkDataList<?> dataList, Operation<Void> original) {
         com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
         try {
             original.call(dataList);
@@ -34,11 +37,18 @@ public abstract class EntityChunkDataAccessMixin {
         }
     }
 
-    @WrapOperation(method = "writeChunkData", at = @At(value = "INVOKE",
-            target = "Lnet/minecraft/world/storage/VersionedChunkStorage;setNbt(Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/nbt/NbtCompound;)Ljava/util/concurrent/CompletableFuture;"))
-    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(VersionedChunkStorage worker, ChunkPos pos,
-                                                                      NbtCompound nbt,
-                                                                      Operation<CompletableFuture<Void>> original) {
+    @WrapOperation(
+            method = "writeChunkData",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/storage/VersionedChunkStorage;setNbt(Lnet/minecraft/util/math/ChunkPos;Lnet/minecraft/nbt/NbtCompound;)Ljava/util/concurrent/CompletableFuture;"))
+    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
+            VersionedChunkStorage worker,
+            ChunkPos pos,
+            NbtCompound nbt,
+            Operation<CompletableFuture<Void>> original) {
         long chunk = pos.toLong();
         if (nbt == null) {
             anticrash$deduplicator.forget(chunk);
@@ -56,11 +66,19 @@ public abstract class EntityChunkDataAccessMixin {
 
     // The empty-entity path now writes NULL_NBT_SUPPLIER. Forget its last digest so a later
     // identical entity payload cannot be incorrectly skipped after the chunk was deleted.
-    @WrapOperation(method="writeChunkData",at=@At(value="INVOKE",
-            target="Lnet/minecraft/world/storage/VersionedChunkStorage;set(Lnet/minecraft/util/math/ChunkPos;Ljava/util/function/Supplier;)Ljava/util/concurrent/CompletableFuture;"))
-    private CompletableFuture<Void> anticrash$forgetDeletedEntityChunk(VersionedChunkStorage storage,ChunkPos pos,
-            java.util.function.Supplier<NbtCompound> value,Operation<CompletableFuture<Void>> original) {
+    @WrapOperation(
+            method = "writeChunkData",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/storage/VersionedChunkStorage;set(Lnet/minecraft/util/math/ChunkPos;Ljava/util/function/Supplier;)Ljava/util/concurrent/CompletableFuture;"))
+    private CompletableFuture<Void> anticrash$forgetDeletedEntityChunk(
+            VersionedChunkStorage storage,
+            ChunkPos pos,
+            java.util.function.Supplier<NbtCompound> value,
+            Operation<CompletableFuture<Void>> original) {
         anticrash$deduplicator.forget(pos.toLong());
-        return original.call(storage,pos,value);
+        return original.call(storage, pos, value);
     }
 }

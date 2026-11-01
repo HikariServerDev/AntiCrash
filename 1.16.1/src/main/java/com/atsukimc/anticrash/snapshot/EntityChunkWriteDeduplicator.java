@@ -23,12 +23,14 @@ import java.util.concurrent.ConcurrentHashMap;
  * Vanilla already skips repeated writes of an empty chunk; this extends the same rule to chunks
  * whose content did not change. The digest is recorded when the write is submitted, which is the
  * content the storage ends up with (a later submission for the same chunk replaces an earlier
- * pending one), and it is forgotten when the write fails, so a failed write is always retried.</p>
+ * pending one), and it is forgotten when the write fails, so a failed write is always retried.
  */
 public final class EntityChunkWriteDeduplicator {
     private final Map<Long, byte[]> submitted = new ConcurrentHashMap<>();
 
-    /** @return the digest to submit with, or null when an identical write was already submitted */
+    /**
+     * @return the digest to submit with, or null when an identical write was already submitted
+     */
     public byte[] digestIfChanged(long chunk, CompoundTag nbt) {
         byte[] digest = digest(nbt);
         if (digest == null) {
@@ -52,7 +54,9 @@ public final class EntityChunkWriteDeduplicator {
     private static byte[] digest(CompoundTag nbt) {
         try {
             MessageDigest sha = MessageDigest.getInstance("SHA-256");
-            try (DataOutputStream out = new DataOutputStream(new DigestOutputStream(OutputStream.nullOutputStream(), sha))) {
+            try (DataOutputStream out =
+                    new DataOutputStream(
+                            new DigestOutputStream(OutputStream.nullOutputStream(), sha))) {
                 NbtIo.write(nbt, out);
             }
             return sha.digest();

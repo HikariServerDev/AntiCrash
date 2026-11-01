@@ -130,3 +130,6 @@ tasks.register("collectBuilds", Copy) {
 tasks.named("build") {
     dependsOn tasks.named("collectBuilds")
 }
+
+// Compile shared implementation against this target's own Minecraft API.
+apply from: "../gradle/sources.gradle"

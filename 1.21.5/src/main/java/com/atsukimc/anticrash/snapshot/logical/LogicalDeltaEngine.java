@@ -3,22 +3,20 @@ package com.atsukimc.anticrash.snapshot.logical;
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.Hashing;
+
 import net.minecraft.SharedConstants;
-import net.minecraft.block.BlockState;
 import net.minecraft.entity.Entity;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtList;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.world.ChunkHolder;
 import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.chunk.SerializedChunk;
 import net.minecraft.world.chunk.WorldChunk;
 import net.minecraft.world.level.LevelProperties;
 
 import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -34,15 +32,14 @@ import java.util.Objects;
 /**
  * Server-thread side of the Exact-Epoch semantic delta engine.
  *
- * <p>Only immutable Base64 NBT bytes cross the cut.  Background code never receives a Minecraft
- * object.  The engine is intentionally conservative: a missing candidate, an unsupported
- * persistent component, a lifecycle uncertainty, or a mutation during capture returns a blocked
- * result so the caller can use the existing safe backend.</p>
+ * <p>Only immutable Base64 NBT bytes cross the cut. Background code never receives a Minecraft
+ * object. The engine is intentionally conservative: a missing candidate, an unsupported persistent
+ * component, a lifecycle uncertainty, or a mutation during capture returns a blocked result so the
+ * caller can use the existing safe backend.
  */
 public final class LogicalDeltaEngine {
-    public record PreparationReport(int captured, int inspected, long bytes, long evictions,
-                                    String error) {
-    }
+    public record PreparationReport(
+            int captured, int inspected, long bytes, long evictions, String error) {}
 
     public record CaptureResult(LogicalDelta delta, boolean exact, String reason) {
         public static CaptureResult blocked(long epoch, String reason) {
@@ -52,11 +49,15 @@ public final class LogicalDeltaEngine {
 
     private final ChunkMutationTracker mutations;
     private final ChunkCandidateCache candidates;
+
     /** Last successfully committed semantic index in this JVM. Missing means full first delta. */
     private final Map<String, Long> committedChunkGenerations = new LinkedHashMap<>();
+
     private final Map<String, String> committedChunkHashes = new LinkedHashMap<>();
+
     /** Accessible domain at the last committed epoch, separate from stale generation keys. */
     private final java.util.Set<String> committedAccessibleChunks = new java.util.HashSet<>();
+
     private final Map<String, String> committedEntityChunkHashes = new LinkedHashMap<>();
     private boolean committedBaseline;
     private int roundRobin;
@@ -72,18 +73,29 @@ public final class LogicalDeltaEngine {
     }
 
     public synchronized String candidateReport() {
-        return "size=" + candidates.size() + "; bytes=" + candidates.bytes()
-                + "; maxBytes=" + candidates.maxBytes() + "; evictions=" + candidates.evictions()
-                + "; committedBaseline=" + committedBaseline
-                + "; committedChunks=" + committedChunkGenerations.size()
-                + "; committedAccessibleChunks=" + committedAccessibleChunks.size()
-                + "; committedEntityChunks=" + committedEntityChunkHashes.size()
-                + "; preparationError=" + (preparationError == null ? "none" : preparationError);
+        return "size="
+                + candidates.size()
+                + "; bytes="
+                + candidates.bytes()
+                + "; maxBytes="
+                + candidates.maxBytes()
+                + "; evictions="
+                + candidates.evictions()
+                + "; committedBaseline="
+                + committedBaseline
+                + "; committedChunks="
+                + committedChunkGenerations.size()
+                + "; committedAccessibleChunks="
+                + committedAccessibleChunks.size()
+                + "; committedEntityChunks="
+                + committedEntityChunkHashes.size()
+                + "; preparationError="
+                + (preparationError == null ? "none" : preparationError);
     }
 
     /**
-     * Seeds the semantic generation ledger after a complete BASE/fallback view has committed at
-     * the current server boundary.  No chunk NBT is copied here; unchanged chunks inherit the
+     * Seeds the semantic generation ledger after a complete BASE/fallback view has committed at the
+     * current server boundary. No chunk NBT is copied here; unchanged chunks inherit the
      * authenticated parent and only a later mutation requires a fresh candidate.
      */
     public synchronized void establishGenerationBaseline(MinecraftServer server) {
@@ -99,8 +111,8 @@ public final class LogicalDeltaEngine {
             for (WorldChunkRef ref : accessibleChunks(server)) {
                 String key = ref.key();
                 committedAccessibleChunks.add(key);
-                committedChunkGenerations.put(key,
-                        mutations.generation(ref.dimension(), ref.chunk().getPos().toLong()));
+                committedChunkGenerations.put(
+                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().toLong()));
                 committedChunkHashes.put(key, "INHERITED");
             }
         }
@@ -116,11 +128,14 @@ public final class LogicalDeltaEngine {
      * lifecycle/task pump.
      */
     public PreparationReport prepareCandidates(MinecraftServer server, long budgetNanos) {
-        if (server == null || budgetNanos <= 0L) return new PreparationReport(0, 0, candidates.bytes(), candidates.evictions(), null);
+        if (server == null || budgetNanos <= 0L)
+            return new PreparationReport(0, 0, candidates.bytes(), candidates.evictions(), null);
         long started = System.nanoTime();
         registerSchedulers(server);
         List<WorldChunkRef> refs = accessibleChunks(server);
-        if (refs.isEmpty()) return new PreparationReport(0, 0, candidates.bytes(), candidates.evictions(), preparationError);
+        if (refs.isEmpty())
+            return new PreparationReport(
+                    0, 0, candidates.bytes(), candidates.evictions(), preparationError);
         int captured = 0;
         int inspected = 0;
         int start = Math.floorMod(roundRobin, refs.size());
@@ -129,60 +144,84 @@ public final class LogicalDeltaEngine {
                 if (System.nanoTime() - started >= budgetNanos) break;
                 WorldChunkRef ref = refs.get((start + offset) % refs.size());
                 inspected++;
-                long generation = mutations.generation(ref.dimension(), ref.chunk().getPos().toLong());
-                if (candidates.getIfValid(ref.key(), server.getTicks(), generation) != null) continue;
+                long generation =
+                        mutations.generation(ref.dimension(), ref.chunk().getPos().toLong());
+                if (candidates.getIfValid(ref.key(), server.getTicks(), generation) != null)
+                    continue;
                 String encoded = encodeChunk(ref.world(), ref.chunk());
                 byte[] payload = Base64.getDecoder().decode(encoded);
-                candidates.put(ref.key(), server.getTicks(), generation, payload,
-                        Hashing.sha256(payload));
+                candidates.put(
+                        ref.key(), server.getTicks(), generation, payload, Hashing.sha256(payload));
                 captured++;
                 roundRobin = (start + offset + 1) % refs.size();
             }
         } catch (Exception exception) {
             preparationError = safeMessage(exception);
         }
-        return new PreparationReport(captured, inspected, candidates.bytes(), candidates.evictions(), preparationError);
+        return new PreparationReport(
+                captured, inspected, candidates.bytes(), candidates.evictions(), preparationError);
     }
 
     /**
-     * Captures the current semantic state at one server tick.  No filesystem operation is done
-     * here.  A candidate must be from this epoch or have a provably unchanged mutation generation.
+     * Captures the current semantic state at one server tick. No filesystem operation is done here.
+     * A candidate must be from this epoch or have a provably unchanged mutation generation.
      */
-    public CaptureResult captureAtCut(MinecraftServer server, long epoch, String parentCheckpointId) {
+    public CaptureResult captureAtCut(
+            MinecraftServer server, long epoch, String parentCheckpointId) {
         return captureAtCut(server, epoch, parentCheckpointId, false);
     }
 
-    public CaptureResult captureAtCut(MinecraftServer server, long epoch, String parentCheckpointId,
-                                      boolean allowUnsupportedPersistentState) {
+    public CaptureResult captureAtCut(
+            MinecraftServer server,
+            long epoch,
+            String parentCheckpointId,
+            boolean allowUnsupportedPersistentState) {
         boolean unsupportedPersistentState;
         try {
             unsupportedPersistentState = hasUnsupportedPersistentFiles(server);
         } catch (IOException exception) {
-            return CaptureResult.blocked(epoch, "persistent_state_probe_failed:" + safeMessage(exception));
+            return CaptureResult.blocked(
+                    epoch, "persistent_state_probe_failed:" + safeMessage(exception));
         }
-        return captureAtCut(server, epoch, parentCheckpointId,
-                allowUnsupportedPersistentState, unsupportedPersistentState, null);
+        return captureAtCut(
+                server,
+                epoch,
+                parentCheckpointId,
+                allowUnsupportedPersistentState,
+                unsupportedPersistentState,
+                null);
     }
 
     /**
      * Cut variant used by CheckpointManager after its preflight. The boolean is deliberately
      * supplied by the barrier owner so the logical cut never walks the live data/poi trees twice.
      */
-    public CaptureResult captureAtCut(MinecraftServer server, long epoch, String parentCheckpointId,
-                                      boolean allowUnsupportedPersistentState,
-                                      boolean unsupportedPersistentState) {
-        return captureAtCut(server, epoch, parentCheckpointId,
-                allowUnsupportedPersistentState, unsupportedPersistentState, null);
+    public CaptureResult captureAtCut(
+            MinecraftServer server,
+            long epoch,
+            String parentCheckpointId,
+            boolean allowUnsupportedPersistentState,
+            boolean unsupportedPersistentState) {
+        return captureAtCut(
+                server,
+                epoch,
+                parentCheckpointId,
+                allowUnsupportedPersistentState,
+                unsupportedPersistentState,
+                null);
     }
 
     /**
      * Cut variant with an optional phase sink. The timing sink is diagnostic-only and does not
      * change the read-only capture or the epoch validation rules.
      */
-    public CaptureResult captureAtCut(MinecraftServer server, long epoch, String parentCheckpointId,
-                                      boolean allowUnsupportedPersistentState,
-                                      boolean unsupportedPersistentState,
-                                      CheckpointTiming timing) {
+    public CaptureResult captureAtCut(
+            MinecraftServer server,
+            long epoch,
+            String parentCheckpointId,
+            boolean allowUnsupportedPersistentState,
+            boolean unsupportedPersistentState,
+            CheckpointTiming timing) {
         if (server == null) return CaptureResult.blocked(epoch, "server_missing");
         registerSchedulers(server);
         if (!committedBaseline) {
@@ -191,7 +230,8 @@ public final class LogicalDeltaEngine {
             // would defeat the low-pause contract, so force the configured full/fallback path.
             return CaptureResult.blocked(epoch, "generation_baseline_missing");
         }
-        if (mutations.isUncertain()) return CaptureResult.blocked(epoch, "chunk_mutation_hook_uncertain");
+        if (mutations.isUncertain())
+            return CaptureResult.blocked(epoch, "chunk_mutation_hook_uncertain");
         long version = mutations.version();
         long phaseStart = System.nanoTime();
         List<WorldChunkRef> refs = accessibleChunks(server);
@@ -203,12 +243,13 @@ public final class LogicalDeltaEngine {
             Long committed = committedChunkGenerations.get(observed.getKey());
             if (!Objects.equals(committed, observed.getValue())
                     && !accessibleKeys.contains(observed.getKey())) {
-                return CaptureResult.blocked(epoch,
-                        "changed_chunk_not_accessible:" + observed.getKey());
+                return CaptureResult.blocked(
+                        epoch, "changed_chunk_not_accessible:" + observed.getKey());
             }
         }
         EntityLifecycleTracker.Capture lifecycle = EntityLifecycleTracker.global().snapshot();
-        if (lifecycle.overflow()) return CaptureResult.blocked(epoch, "entity_lifecycle_observer_overflow");
+        if (lifecycle.overflow())
+            return CaptureResult.blocked(epoch, "entity_lifecycle_observer_overflow");
         LogicalDelta delta = new LogicalDelta();
         delta.captureEpoch = epoch;
         delta.logicalCutMonotonicNanos = System.nanoTime();
@@ -239,12 +280,14 @@ public final class LogicalDeltaEngine {
                 long packed = ref.chunk().getPos().toLong();
                 long generation = mutations.generation(ref.dimension(), packed);
                 String key = ref.key();
-                boolean changed = !committedAccessibleChunks.contains(key)
-                        || !Objects.equals(committedChunkGenerations.get(key), generation);
+                boolean changed =
+                        !committedAccessibleChunks.contains(key)
+                                || !Objects.equals(committedChunkGenerations.get(key), generation);
                 if (!changed) {
                     // The full materialized parent is the authority for this unchanged chunk.
                     // Do not require a detached candidate or allocate a duplicate NBT payload.
-                    delta.indexChunk(key, committedChunkHashes.getOrDefault(key, "INHERITED"), generation);
+                    delta.indexChunk(
+                            key, committedChunkHashes.getOrDefault(key, "INHERITED"), generation);
                     continue;
                 }
                 ChunkCandidateCache.Candidate candidate =
@@ -280,8 +323,14 @@ public final class LogicalDeltaEngine {
                     // epoch. Only the barrier save can capture that newer on-disk state.
                     return CaptureResult.blocked(epoch, "entity_unload_requires_barrier_fallback");
                 }
-                delta.addTombstone(new LogicalTombstone(event.kind(), event.dimension(),
-                        event.uuid(), epoch, event.detail(), event.chunk()));
+                delta.addTombstone(
+                        new LogicalTombstone(
+                                event.kind(),
+                                event.dimension(),
+                                event.uuid(),
+                                epoch,
+                                event.detail(),
+                                event.chunk()));
             }
             recordPhase(timing, "delta.tombstones", phaseStart);
             phaseStart = System.nanoTime();
@@ -326,9 +375,13 @@ public final class LogicalDeltaEngine {
         EntityLifecycleTracker.global().clearAll();
     }
 
-    public void releaseCandidates() { candidates.clear(); }
+    public void releaseCandidates() {
+        candidates.clear();
+    }
 
-    /** The semantic path is safe only when these mutable stores are absent or explicitly handled. */
+    /**
+     * The semantic path is safe only when these mutable stores are absent or explicitly handled.
+     */
     public static boolean hasUnsupportedPersistentFiles(MinecraftServer server) throws IOException {
         if (server == null || server.getOverworld() == null) return true;
         Path root = server.getSavePath(net.minecraft.util.WorldSavePath.ROOT);
@@ -336,8 +389,9 @@ public final class LogicalDeltaEngine {
         // 1.18.2.  Refuse semantic materialization when they exist instead of carrying an old
         // parent file into a newer epoch. Every dimension keeps its own poi/ and data/.
         for (ServerWorld world : server.getWorlds()) {
-            Path dimensionRoot = net.minecraft.world.dimension.DimensionType
-                    .getSaveDirectory(world.getRegistryKey(), root);
+            Path dimensionRoot =
+                    net.minecraft.world.dimension.DimensionType.getSaveDirectory(
+                            world.getRegistryKey(), root);
             if (hasRegularFiles(dimensionRoot.resolve("poi"))
                     || hasRegularFiles(dimensionRoot.resolve("data"))) return true;
         }
@@ -345,14 +399,17 @@ public final class LogicalDeltaEngine {
     }
 
     private static boolean hasRegularFiles(Path path) throws IOException {
-        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(path)) return false;
+        if (!Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(path))
+            return false;
         try (var stream = Files.walk(path)) {
-            return stream.anyMatch(file -> Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
-                    && !Files.isSymbolicLink(file));
+            return stream.anyMatch(file ->
+                    Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                            && !Files.isSymbolicLink(file));
         }
     }
 
-    private void captureEntities(MinecraftServer server, long epoch, LogicalDelta delta) throws IOException {
+    private void captureEntities(MinecraftServer server, long epoch, LogicalDelta delta)
+            throws IOException {
         Map<String, List<Entity>> grouped = new LinkedHashMap<>();
         Map<String, ServerWorld> owners = new HashMap<>();
         for (ServerWorld world : server.getWorlds()) {
@@ -410,13 +467,14 @@ public final class LogicalDeltaEngine {
             }
             root.put("Entities", entities);
             ChunkPos pos = new ChunkPos(packed);
-            root.putIntArray("Position", new int[]{pos.x, pos.z});
+            root.putIntArray("Position", new int[] {pos.x, pos.z});
             String encoded = NbtCodec.encode(root);
             String hash = Hashing.sha256(Base64.getDecoder().decode(encoded));
             String key = ChunkMutationTracker.key(dimension, packed);
             delta.indexEntityChunk(key, hash);
-            boolean changed = !committedBaseline
-                    || !Objects.equals(committedEntityChunkHashes.get(key), hash);
+            boolean changed =
+                    !committedBaseline
+                            || !Objects.equals(committedEntityChunkHashes.get(key), hash);
             if (!changed) continue;
             for (int index = 0; index < saved.size(); index++) {
                 Entity entity = saved.get(index);
@@ -442,7 +500,8 @@ public final class LogicalDeltaEngine {
         }
     }
 
-    private static void captureWorldMetadata(MinecraftServer server, LogicalDelta delta) throws IOException {
+    private static void captureWorldMetadata(MinecraftServer server, LogicalDelta delta)
+            throws IOException {
         if (!(server.getSaveProperties() instanceof LevelProperties properties)) {
             throw new IOException("save_properties_not_level_properties");
         }
@@ -453,22 +512,25 @@ public final class LogicalDeltaEngine {
         if (overworld != null) {
             properties.getMainWorldProperties().setWorldBorder(overworld.getWorldBorder().write());
         }
-        properties.setCustomBossEvents(server.getBossBarManager().toNbt(server.getRegistryManager()));
+        properties.setCustomBossEvents(
+                server.getBossBarManager().toNbt(server.getRegistryManager()));
         for (ServerWorld world : server.getWorlds()) {
             if (world.getEnderDragonFight() != null) {
                 properties.setDragonFight(world.getEnderDragonFight().toData());
             }
         }
         NbtCompound player = server.getPlayerManager().getUserData();
-        NbtCompound data = properties.cloneWorldNbt(server.getRegistryManager(),
-                player == null ? null : player.copy());
+        NbtCompound data =
+                properties.cloneWorldNbt(
+                        server.getRegistryManager(), player == null ? null : player.copy());
         // LevelStorage.Session#backupLevelDataFile nests everything under "Data". A bare
         // compound is unreadable to LevelStorage and falls back to level.dat_old or defaults.
         NbtCompound root = new NbtCompound();
         root.put("Data", data);
         String encoded = NbtCodec.encode(root);
         delta.componentStatus.put("LEVEL_DAT", "CAPTURED");
-        delta.componentStatus.put("LEVEL_DAT_SHA256", Hashing.sha256(Base64.getDecoder().decode(encoded)));
+        delta.componentStatus.put(
+                "LEVEL_DAT_SHA256", Hashing.sha256(Base64.getDecoder().decode(encoded)));
         delta.componentStatus.put("LEVEL_DAT_PAYLOAD", encoded);
     }
 
@@ -480,18 +542,25 @@ public final class LogicalDeltaEngine {
         List<WorldChunkRef> result = new ArrayList<>();
         for (ServerWorld world : server.getWorlds()) {
             String dimension = world.getRegistryKey().getValue().toString();
-            var storage = (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                    world.getChunkManager().chunkLoadingManager;
+            var storage =
+                    (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
+                            world.getChunkManager().chunkLoadingManager;
             for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;
                 var future = holder.getAccessibleFuture();
-                if (future == null || !future.isDone() || future.isCompletedExceptionally()) continue;
+                if (future == null || !future.isDone() || future.isCompletedExceptionally())
+                    continue;
                 try {
                     var ready = future.getNow(null);
                     WorldChunk chunk = ready == null ? null : ready.orElse(null);
                     if (chunk != null) {
-                        result.add(new WorldChunkRef(world, dimension, chunk,
-                                ChunkMutationTracker.key(dimension, chunk.getPos().toLong())));
+                        result.add(
+                                new WorldChunkRef(
+                                        world,
+                                        dimension,
+                                        chunk,
+                                        ChunkMutationTracker.key(
+                                                dimension, chunk.getPos().toLong())));
                     }
                 } catch (RuntimeException ignored) {
                     // A retiring holder is not an exact candidate for this epoch.
@@ -514,9 +583,11 @@ public final class LogicalDeltaEngine {
 
     private static String safeMessage(Throwable exception) {
         String message = exception == null ? "unknown" : exception.getMessage();
-        return message == null || message.isBlank() ? exception.getClass().getSimpleName() : message;
+        return message == null || message.isBlank()
+                ? exception.getClass().getSimpleName()
+                : message;
     }
 
-    private record WorldChunkRef(ServerWorld world, String dimension, WorldChunk chunk, String key) {
-    }
+    private record WorldChunkRef(
+            ServerWorld world, String dimension, WorldChunk chunk, String key) {}
 }

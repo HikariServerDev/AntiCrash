@@ -1,14 +1,15 @@
 package com.atsukimc.anticrash.runtime;
 
-import net.minecraft.nbt.NbtCompound;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import net.minecraft.nbt.NbtCompound;
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 class RuntimeExtensionNbtTest {
     @AfterEach
@@ -28,13 +29,15 @@ class RuntimeExtensionNbtTest {
         NbtCompound extension = RuntimeExtensionNbt.read(nbt);
         assertNotNull(extension);
         assertEquals(1.0f, extension.getFloat("Progress").orElseThrow());
-        assertEquals(RuntimeExtensionNbt.VERSION, nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
+        assertEquals(
+                RuntimeExtensionNbt.VERSION,
+                nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
     }
 
     @Test
     void nothingIsAddedWhenThereIsNothingToSave() {
         NbtCompound nbt = new NbtCompound();
-        RuntimeExtensionNbt.write(nbt, extension -> { });
+        RuntimeExtensionNbt.write(nbt, extension -> {});
         assertFalse(nbt.contains(RuntimeExtensionNbt.KEY));
         assertNull(RuntimeExtensionNbt.read(nbt));
 
@@ -73,8 +76,8 @@ class RuntimeExtensionNbtTest {
     /**
      * Permanent regression test. Entity#copyFrom (a dimension change) is writeNbt on the old entity
      * followed by readNbt on the new one. An earlier build wrote the pending portal state on every
-     * writeNbt, so the copy arrived "inside a portal" and went straight back. The extension may only
-     * be written inside an entity chunk save of entities that stay loaded.
+     * writeNbt, so the copy arrived "inside a portal" and went straight back. The extension may
+     * only be written inside an entity chunk save of entities that stay loaded.
      */
     @Test
     void portalStateIsNeverWrittenDuringADimensionChangeCopy() {
@@ -104,22 +107,23 @@ class RuntimeExtensionNbtTest {
     /** Every mixin that adds to a Vanilla writeNbt must be gated by one of the two save scopes. */
     @Test
     void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception {
-        java.nio.file.Path mixins = java.nio.file.Path.of("src/main/java/com/atsukimc/anticrash/mixin");
-        org.junit.jupiter.api.Assumptions.assumeTrue(java.nio.file.Files.isDirectory(mixins));
+        String mixins = System.getProperty("anticrash.mixinSources");
+        assertNotNull(mixins, "Gradle must supply this target's complete mixin source list");
+        assertFalse(mixins.isBlank());
         int injections = 0;
-        try (java.util.stream.Stream<java.nio.file.Path> files = java.nio.file.Files.list(mixins)) {
-            for (java.nio.file.Path file : files.toList()) {
-                String source = java.nio.file.Files.readString(file);
-                int at = 0;
-                while ((at = source.indexOf("@Inject(method = \"writeNbt\"", at)) >= 0) {
-                    injections++;
-                    int body = source.indexOf('{', at);
-                    String head = source.substring(body, Math.min(source.length(), body + 200));
-                    assertTrue(head.contains("savingLoadedChunk()) return;")
-                                    || head.contains("savingLoadedEntities()) return;"),
-                            file.getFileName() + " writes to writeNbt outside a save scope");
-                    at = body;
-                }
+        for (String name : mixins.split(java.io.File.pathSeparator)) {
+            java.nio.file.Path file = java.nio.file.Path.of(name);
+            String source = java.nio.file.Files.readString(file);
+            int at = 0;
+            while ((at = source.indexOf("@Inject(method = \"writeNbt\"", at)) >= 0) {
+                injections++;
+                int body = source.indexOf('{', at);
+                String head = source.substring(body, Math.min(source.length(), body + 200));
+                assertTrue(
+                        head.contains("savingLoadedChunk()) return;")
+                                || head.contains("savingLoadedEntities()) return;"),
+                        file.getFileName() + " writes to writeNbt outside a save scope");
+                at = body;
             }
         }
         // Sculk listener NBT is owned by Vanilla since 1.19, leaving four extension hooks.

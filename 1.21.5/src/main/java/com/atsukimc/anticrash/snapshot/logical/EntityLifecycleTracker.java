@@ -25,26 +25,37 @@ public final class EntityLifecycleTracker {
 
     public static void recordRemoval(Entity entity, String reason) {
         if (!persisted(entity)) return;
-        GLOBAL.record("ENTITY_REMOVED", entity.getWorld().getRegistryKey().getValue().toString(),
-                entity.getChunkPos().toLong(), entity.getUuidAsString(), reason);
+        GLOBAL.record(
+                "ENTITY_REMOVED",
+                entity.getWorld().getRegistryKey().getValue().toString(),
+                entity.getChunkPos().toLong(),
+                entity.getUuidAsString(),
+                reason);
     }
 
     public static void recordMove(Entity entity, long oldChunk, long newChunk) {
         if (oldChunk == newChunk || !persisted(entity)) return;
-        GLOBAL.record("ENTITY_MOVED_FROM", entity.getWorld().getRegistryKey().getValue().toString(),
-                oldChunk, entity.getUuidAsString(), Long.toString(newChunk));
+        GLOBAL.record(
+                "ENTITY_MOVED_FROM",
+                entity.getWorld().getRegistryKey().getValue().toString(),
+                oldChunk,
+                entity.getUuidAsString(),
+                Long.toString(newChunk));
     }
 
     /**
-     * A ServerEntityManager unload is not a despawn: the entity may still be persisted to an
-     * entity region even though it is no longer present in {@code iterateEntities()}.  Without a
-     * final immutable entity-region capture, inheriting the parent would be ambiguous, so the
-     * logical path treats this boundary as a safe fallback condition.
+     * A ServerEntityManager unload is not a despawn: the entity may still be persisted to an entity
+     * region even though it is no longer present in {@code iterateEntities()}. Without a final
+     * immutable entity-region capture, inheriting the parent would be ambiguous, so the logical
+     * path treats this boundary as a safe fallback condition.
      */
     public static void recordUnload(Entity entity) {
         if (!persisted(entity)) return;
-        GLOBAL.record("ENTITY_UNLOADED", entity.getWorld().getRegistryKey().getValue().toString(),
-                entity.getChunkPos().toLong(), entity.getUuidAsString(),
+        GLOBAL.record(
+                "ENTITY_UNLOADED",
+                entity.getWorld().getRegistryKey().getValue().toString(),
+                entity.getChunkPos().toLong(),
+                entity.getUuidAsString(),
                 "server_entity_manager_unload");
     }
 
@@ -54,12 +65,15 @@ public final class EntityLifecycleTracker {
      * player movement from filling the bounded event list.
      */
     private static boolean persisted(Entity entity) {
-        return LogicalTracking.enabled() && entity != null && entity.getWorld() != null && !entity.getWorld().isClient
+        return LogicalTracking.enabled()
+                && entity != null
+                && entity.getWorld() != null
+                && !entity.getWorld().isClient
                 && entity.getType().isSaveable();
     }
 
-    private synchronized void record(String kind, String dimension, long chunk,
-                                     String uuid, String detail) {
+    private synchronized void record(
+            String kind, String dimension, long chunk, String uuid, String detail) {
         nextSequence++;
         if (events.size() >= MAX_EVENTS) {
             overflow = true;
@@ -82,10 +96,8 @@ public final class EntityLifecycleTracker {
         overflow = false;
     }
 
-    public record Event(long sequence, String kind, String dimension, long chunk,
-                        String uuid, String detail) {
-    }
+    public record Event(
+            long sequence, String kind, String dimension, long chunk, String uuid, String detail) {}
 
-    public record Capture(long sequence, List<Event> events, boolean overflow) {
-    }
+    public record Capture(long sequence, List<Event> events, boolean overflow) {}
 }

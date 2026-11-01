@@ -1,0 +1,45 @@
+// Shared-source layout adapted from aomona's AntiCrash contribution (505516d).
+// Version directories and their Loom/mappings/toolchains remain independent.
+def repository = rootProject.projectDir.parentFile
+def groups = new groovy.json.JsonSlurper().parse(new File(repository, "gradle/source-groups.json"))
+def sharedRoots = groups.findAll { path, versions -> rootProject.minecraft_version in versions }
+        .keySet().collect { new File(repository, "${it}/src") }
+
+sourceSets.configureEach { sourceSet ->
+    sharedRoots.each { root ->
+        def name = sourceSet.name == "legacyIntegration" ? "main" : sourceSet.name
+        sourceSet.java.srcDir(new File(root, "${name}/java"))
+        sourceSet.resources.srcDir(new File(root, "${name}/resources"))
+    }
+}
+
+tasks.register("verifySourceLayout") {
+    group = "verification"
+    description = "Reject duplicate classes/resources in this target's effective source roots."
+    doLast {
+        sourceSets.each { sourceSet ->
+            [sourceSet.java, sourceSet.resources].each { sources ->
+                def paths = [:]
+                sources.asFileTree.visit { entry ->
+                    if (!entry.directory) {
+                        def previous = paths.put(entry.relativePath.pathString, entry.file)
+                        if (previous != null && previous != entry.file) {
+                            throw new GradleException("Duplicate ${sourceSet.name} source: ${previous}, ${entry.file}")
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+tasks.named("check") { dependsOn tasks.named("verifySourceLayout") }
+tasks.named("compileJava") { dependsOn tasks.named("verifySourceLayout") }
+
+tasks.withType(Test).configureEach {
+    maxHeapSize = "512m"
+    def mixins = sourceSets.main.java.matching { include "com/atsukimc/anticrash/mixin/*.java" }
+    inputs.files(mixins)
+    doFirst {
+        systemProperty "anticrash.mixinSources", mixins.files*.absolutePath.sort().join(File.pathSeparator)
+    }
+}

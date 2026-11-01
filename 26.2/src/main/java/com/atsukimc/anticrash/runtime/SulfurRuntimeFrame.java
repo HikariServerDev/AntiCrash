@@ -12,9 +12,11 @@ public record SulfurRuntimeFrame(int countdown, long eruptionTick) {
     }
 
     public static SulfurRuntimeFrame read(CompoundTag nbt) {
-        return new SulfurRuntimeFrame(nbt.getInt("Countdown").orElseThrow(),
-                nbt.getLong("EruptionTick").orElseThrow());
+        return new SulfurRuntimeFrame(
+                nbt.getInt("Countdown").orElseThrow(), nbt.getLong("EruptionTick").orElseThrow());
     }
 
-    public String canonical() { return countdown + "|" + eruptionTick; }
+    public String canonical() {
+        return countdown + "|" + eruptionTick;
+    }
 }

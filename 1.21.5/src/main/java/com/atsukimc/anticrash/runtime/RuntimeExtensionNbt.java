@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * progress, a gateway's cooldown, an entity about to change dimension). It is stored in a single
  * versioned compound beside Vanilla's own keys and never replaces them: Vanilla's value stays the
  * authority for everything Vanilla saves, and a server without AntiCrash ignores the compound.
- * Every serialized field is explicitly documented and intentionally scoped.</p>
+ * Every serialized field is explicitly documented and intentionally scoped.
  */
 public final class RuntimeExtensionNbt {
     public static final String KEY = "AntiCrash";
@@ -21,10 +21,10 @@ public final class RuntimeExtensionNbt {
     /**
      * The extension describes something that keeps running: it is written only when data is saved
      * while it stays loaded (a checkpoint, an autosave, the save at shutdown). When Vanilla unloads
-     * a chunk or an entity section and loads it again later, losing this state is what Vanilla
-     * does in an uninterrupted game, and that must stay as it is. Entity#writeNbt and
-     * BlockEntity#writeNbt also feed dimension changes, /data, structure blocks and client
-     * packets; none of those get the extension either.
+     * a chunk or an entity section and loads it again later, losing this state is what Vanilla does
+     * in an uninterrupted game, and that must stay as it is. Entity#writeNbt and
+     * BlockEntity#writeNbt also feed dimension changes, /data, structure blocks and client packets;
+     * none of those get the extension either.
      */
     private static final class Scope {
         boolean entitySave;
@@ -35,8 +35,7 @@ public final class RuntimeExtensionNbt {
 
     private static final ThreadLocal<Scope> SCOPE = ThreadLocal.withInitial(Scope::new);
 
-    private RuntimeExtensionNbt() {
-    }
+    private RuntimeExtensionNbt() {}
 
     public static void entitySave(boolean active) {
         SCOPE.get().entitySave = active;
@@ -70,7 +69,10 @@ public final class RuntimeExtensionNbt {
 
     /** Adds the extension to {@code nbt} when {@code writer} stored anything in it. */
     public static void write(NbtCompound nbt, Consumer<NbtCompound> writer) {
-        NbtCompound extension = com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10) ? nbt.getCompoundOrEmpty(KEY) : new NbtCompound();
+        NbtCompound extension =
+                com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
+                        ? nbt.getCompoundOrEmpty(KEY)
+                        : new NbtCompound();
         writer.accept(extension);
         extension.remove(VERSION_KEY);
         if (extension.isEmpty()) {
@@ -85,7 +87,8 @@ public final class RuntimeExtensionNbt {
 
     /** The extension, or null when absent or written by a newer format this build cannot read. */
     public static NbtCompound read(NbtCompound nbt) {
-        if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)) return null;
+        if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
+            return null;
         NbtCompound extension = nbt.getCompoundOrEmpty(KEY);
         int version = extension.getInt(VERSION_KEY).orElse(0);
         return version >= 1 && version <= VERSION ? extension : null;

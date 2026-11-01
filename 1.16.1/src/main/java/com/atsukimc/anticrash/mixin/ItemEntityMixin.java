@@ -2,11 +2,13 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
+
 import net.minecraft.entity.ItemEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.ItemStack;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.util.math.BlockPos;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -25,7 +27,9 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
 
     @Override
     public int anticrash$idPhase() {
-        return anticrash$idPhase >= 0 ? anticrash$idPhase : Math.floorMod(((ItemEntity) (Object) this).getEntityId(), 4);
+        return anticrash$idPhase >= 0
+                ? anticrash$idPhase
+                : Math.floorMod(((ItemEntity) (Object) this).getEntityId(), 4);
     }
 
     @Override
@@ -33,7 +37,8 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         anticrash$idPhase = Math.floorMod(phase, 4);
     }
 
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(method = "tick",
+    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(
+            method = "tick",
             at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;getId()I"))
     private int anticrash$stableMovePhase(int networkId) {
         return anticrash$idPhase >= 0 ? anticrash$idPhase : networkId;
@@ -41,26 +46,43 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
 
     @Unique private ItemStack anticrash$pickupBefore = ItemStack.EMPTY;
 
-    @Inject(method="onPlayerCollision",at=@At("HEAD"),cancellable=true)
-    private void anticrash$beforePickup(PlayerEntity player,CallbackInfo info){
-        anticrash$pickupBefore=ItemStack.EMPTY;
-        AntiCrashController controller=AntiCrashMod.controller();
-        if(controller!=null&&controller.isCheckpointFrozen()){info.cancel();return;}
-        if(controller!=null&&controller.isRecoveryFrozen()&&!controller.config().recovery.lock.allowItemPickup){info.cancel();return;}
-        if(player instanceof ServerPlayerEntity)anticrash$pickupBefore=((ItemEntity)(Object)this).getStack().copy();
+    @Inject(method = "onPlayerCollision", at = @At("HEAD"), cancellable = true)
+    private void anticrash$beforePickup(PlayerEntity player, CallbackInfo info) {
+        anticrash$pickupBefore = ItemStack.EMPTY;
+        AntiCrashController controller = AntiCrashMod.controller();
+        if (controller != null && controller.isCheckpointFrozen()) {
+            info.cancel();
+            return;
+        }
+        if (controller != null
+                && controller.isRecoveryFrozen()
+                && !controller.config().recovery.lock.allowItemPickup) {
+            info.cancel();
+            return;
+        }
+        if (player instanceof ServerPlayerEntity)
+            anticrash$pickupBefore = ((ItemEntity) (Object) this).getStack().copy();
     }
 
-    @Inject(method="onPlayerCollision",at=@At("RETURN"))
-    private void anticrash$afterPickup(PlayerEntity player,CallbackInfo info){
-        ItemStack before=anticrash$pickupBefore;
-        anticrash$pickupBefore=ItemStack.EMPTY;
-        if(!(player instanceof ServerPlayerEntity serverPlayer)||before.isEmpty())return;
-        ItemEntity item=(ItemEntity)(Object)this;
-        int remaining=item.isRemoved()?0:item.getStack().getCount();
-        int picked=before.getCount()-remaining;
-        if(picked<=0)return;
-        ItemStack pickedStack=before.copy();pickedStack.setCount(picked);
-        AntiCrashController controller=AntiCrashMod.controller();
-        if(controller!=null)controller.recordTransaction("ITEM_PICKUP",serverPlayer,"world","player",new BlockPos(item.getPos()),pickedStack);
+    @Inject(method = "onPlayerCollision", at = @At("RETURN"))
+    private void anticrash$afterPickup(PlayerEntity player, CallbackInfo info) {
+        ItemStack before = anticrash$pickupBefore;
+        anticrash$pickupBefore = ItemStack.EMPTY;
+        if (!(player instanceof ServerPlayerEntity serverPlayer) || before.isEmpty()) return;
+        ItemEntity item = (ItemEntity) (Object) this;
+        int remaining = item.isRemoved() ? 0 : item.getStack().getCount();
+        int picked = before.getCount() - remaining;
+        if (picked <= 0) return;
+        ItemStack pickedStack = before.copy();
+        pickedStack.setCount(picked);
+        AntiCrashController controller = AntiCrashMod.controller();
+        if (controller != null)
+            controller.recordTransaction(
+                    "ITEM_PICKUP",
+                    serverPlayer,
+                    "world",
+                    "player",
+                    new BlockPos(item.getPos()),
+                    pickedStack);
     }
 }

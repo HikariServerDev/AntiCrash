@@ -1,12 +1,14 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+
 import net.minecraft.block.entity.SculkSensorBlockEntity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.util.Identifier;
 import net.minecraft.util.registry.Registry;
 import net.minecraft.world.event.GameEvent;
 import net.minecraft.world.event.listener.SculkSensorListener;
+
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -18,9 +20,9 @@ import java.util.Optional;
 
 /**
  * A sculk sensor that has heard a vibration waits {@code delay} ticks before it activates. In
- * 1.18.2 Vanilla saves only "last_vibration_frequency"; the listener's pending event, distance
- * and delay are not saved (that came in 1.19), so a restart silently drops the signal. There is
- * no Vanilla value for these three fields, hence no second authority.
+ * 1.18.2 Vanilla saves only "last_vibration_frequency"; the listener's pending event, distance and
+ * delay are not saved (that came in 1.19), so a restart silently drops the signal. There is no
+ * Vanilla value for these three fields, hence no second authority.
  */
 @Mixin(SculkSensorBlockEntity.class)
 public abstract class SculkSensorBlockEntityMixin {
@@ -31,15 +33,17 @@ public abstract class SculkSensorBlockEntityMixin {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         SculkSensorListenerAccessorMixin accessor = (SculkSensorListenerAccessorMixin) listener;
         Optional<GameEvent> event = accessor.anticrash$getEvent();
-        RuntimeExtensionNbt.write(nbt, extension -> {
-            extension.remove("Vibration");
-            if (event == null || event.isEmpty()) return;
-            CompoundTag state = new CompoundTag();
-            state.putString("Event", Registry.GAME_EVENT.getId(event.get()).toString());
-            state.putInt("Distance", accessor.anticrash$getDistance());
-            state.putInt("Delay", accessor.anticrash$getDelay());
-            extension.put("Vibration", state);
-        });
+        RuntimeExtensionNbt.write(
+                nbt,
+                extension -> {
+                    extension.remove("Vibration");
+                    if (event == null || event.isEmpty()) return;
+                    CompoundTag state = new CompoundTag();
+                    state.putString("Event", Registry.GAME_EVENT.getId(event.get()).toString());
+                    state.putInt("Distance", accessor.anticrash$getDistance());
+                    state.putInt("Delay", accessor.anticrash$getDelay());
+                    extension.put("Vibration", state);
+                });
     }
 
     @Inject(method = "readNbt", at = @At("TAIL"))

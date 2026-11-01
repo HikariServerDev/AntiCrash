@@ -42,3 +42,17 @@ tasks.named("remapJar") { enabled = false }
 tasks.named("build") {
     doFirst { throw new GradleException("AntiCrash 1.16.1: PORT_IN_PROGRESS; full legacy adapter integration is incomplete.") }
 }
+
+// Compile shared implementation against this target's own Minecraft API.
+apply from: "../gradle/sources.gradle"
+
+// Expose the resolved, exact mapped game to the adapter-only offline CI job.
+tasks.register("printLegacyGameJar") {
+    doLast {
+        def mapped = sourceSets.main.compileClasspath.files.find {
+            it.name.startsWith("minecraft-merged-") && it.name.endsWith(".jar")
+        }
+        if (mapped == null) throw new GradleException("Mapped legacy Minecraft JAR is missing")
+        println mapped.absolutePath
+    }
+}

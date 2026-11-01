@@ -1,9 +1,17 @@
 package com.atsukimc.anticrash.snapshot;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.nbt.NbtIo;
 import net.minecraft.util.math.ChunkPos;
 import net.minecraft.world.storage.RegionFile;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -17,16 +25,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 class PendingRegionWriteOverlayTest {
-    @TempDir
-    Path temp;
+    @TempDir Path temp;
 
     @AfterEach
     void clearSealed() {
@@ -36,7 +36,7 @@ class PendingRegionWriteOverlayTest {
     private static NbtCompound chunk(String marker) {
         NbtCompound nbt = new NbtCompound();
         nbt.putString("marker", marker);
-        nbt.putLongArray("data", new long[]{1L, 2L, 3L});
+        nbt.putLongArray("data", new long[] {1L, 2L, 3L});
         return nbt;
     }
 
@@ -53,7 +53,10 @@ class PendingRegionWriteOverlayTest {
     private static NbtCompound read(Path region, ChunkPos pos) throws IOException {
         RegionFile file = new RegionFile(region, region.getParent(), false);
         try (DataInputStream input = file.getChunkInputStream(pos)) {
-            return input == null ? null : NbtIo.readCompound(input, net.minecraft.nbt.NbtSizeTracker.of(16 * 1024 * 1024));
+            return input == null
+                    ? null
+                    : NbtIo.readCompound(
+                            input, net.minecraft.nbt.NbtSizeTracker.of(16 * 1024 * 1024));
         } finally {
             file.close();
         }
@@ -77,33 +80,42 @@ class PendingRegionWriteOverlayTest {
         Files.writeString(live.resolve("level.dat"), "level");
 
         Path firstWorld = temp.resolve("cp-000001/world");
-        DetachedGeneration first = DetachedGeneration.capture(live, firstWorld, Map.of(), Map.of(), null);
-        SnapshotResult parent = first.materialize(null, Map.of(), firstWorld, false, "PORTABLE_GENERATION");
+        DetachedGeneration first =
+                DetachedGeneration.capture(live, firstWorld, Map.of(), Map.of(), null);
+        SnapshotResult parent =
+                first.materialize(null, Map.of(), firstWorld, false, "PORTABLE_GENERATION");
         byte[] liveBefore = Files.readAllBytes(region);
 
         Path directory = live.resolve("region").toAbsolutePath();
         NbtCompound queuedChunk = chunk("queued");
-        List<PendingRegionWrite> pending = List.of(
-                new PendingRegionWrite(directory, queued, queuedChunk),
-                new PendingRegionWrite(directory, deleted, null),
-                new PendingRegionWrite(directory, new ChunkPos(40, 0), chunk("new-region")));
+        List<PendingRegionWrite> pending =
+                List.of(
+                        new PendingRegionWrite(directory, queued, queuedChunk),
+                        new PendingRegionWrite(directory, deleted, null),
+                        new PendingRegionWrite(
+                                directory, new ChunkPos(40, 0), chunk("new-region")));
         Path secondWorld = temp.resolve("cp-000002/world");
-        // The live region file is unchanged since the parent: only the queued writes force its copy.
-        DetachedGeneration second = DetachedGeneration.capture(live, secondWorld, index(parent), Map.of(),
-                null, pending);
+        // The live region file is unchanged since the parent: only the queued writes force its
+        // copy.
+        DetachedGeneration second =
+                DetachedGeneration.capture(
+                        live, secondWorld, index(parent), Map.of(), null, pending);
         assertEquals(1, second.detachedFiles());
         assertEquals(3, second.pendingWriteCount());
         assertTrue(SealedNbt.isSealed(queuedChunk));
 
-        SnapshotResult result = second.materialize(firstWorld, index(parent), secondWorld, false,
-                "PORTABLE_GENERATION");
+        SnapshotResult result =
+                second.materialize(
+                        firstWorld, index(parent), secondWorld, false, "PORTABLE_GENERATION");
 
         Path copied = secondWorld.resolve("region/r.0.0.mca");
         assertEquals("kept", read(copied, kept).getString("marker"));
         assertEquals("queued", read(copied, queued).getString("marker"));
         assertNull(read(copied, deleted));
-        assertEquals("new-region", read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0))
-                .getString("marker"));
+        assertEquals(
+                "new-region",
+                read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0))
+                        .getString("marker"));
         assertTrue(java.util.Arrays.equals(liveBefore, Files.readAllBytes(region)));
         assertFalse(Files.exists(live.resolve("region/r.1.0.mca")));
 
@@ -126,12 +138,18 @@ class PendingRegionWriteOverlayTest {
         Files.writeString(live.resolve("level.dat"), "level");
         NbtCompound touched = chunk("touched");
         touched.putString("__context", "partially updated");
-        List<PendingRegionWrite> pending = List.of(new PendingRegionWrite(
-                live.resolve("region").toAbsolutePath(), new ChunkPos(0, 0), touched));
+        List<PendingRegionWrite> pending =
+                List.of(
+                        new PendingRegionWrite(
+                                live.resolve("region").toAbsolutePath(),
+                                new ChunkPos(0, 0),
+                                touched));
         Path world = temp.resolve("cp-000001/world");
-        DetachedGeneration generation = DetachedGeneration.capture(live, world, Map.of(), Map.of(), null, pending);
-        assertThrows(IOException.class, () -> generation.materialize(null, Map.of(), world, false,
-                "PORTABLE_GENERATION"));
+        DetachedGeneration generation =
+                DetachedGeneration.capture(live, world, Map.of(), Map.of(), null, pending);
+        assertThrows(
+                IOException.class,
+                () -> generation.materialize(null, Map.of(), world, false, "PORTABLE_GENERATION"));
         assertFalse(SealedNbt.isSealed(touched));
     }
 
@@ -140,9 +158,18 @@ class PendingRegionWriteOverlayTest {
         Path live = temp.resolve("live");
         Files.createDirectories(live.resolve("region"));
         NbtCompound queued = chunk("queued");
-        DetachedGeneration generation = DetachedGeneration.capture(live, temp.resolve("cp/world"), Map.of(),
-                Map.of(), null, List.of(new PendingRegionWrite(live.resolve("region").toAbsolutePath(),
-                        new ChunkPos(0, 0), queued)));
+        DetachedGeneration generation =
+                DetachedGeneration.capture(
+                        live,
+                        temp.resolve("cp/world"),
+                        Map.of(),
+                        Map.of(),
+                        null,
+                        List.of(
+                                new PendingRegionWrite(
+                                        live.resolve("region").toAbsolutePath(),
+                                        new ChunkPos(0, 0),
+                                        queued)));
         assertTrue(SealedNbt.isSealed(queued));
         generation.discard();
         assertFalse(SealedNbt.isSealed(queued));

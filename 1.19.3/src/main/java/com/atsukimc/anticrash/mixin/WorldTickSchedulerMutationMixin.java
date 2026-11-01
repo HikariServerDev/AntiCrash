@@ -2,12 +2,14 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
-import net.minecraft.util.math.ChunkPos;
+
 import net.minecraft.util.math.BlockBox;
+import net.minecraft.util.math.ChunkPos;
 import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.tick.ChunkTickScheduler;
 import net.minecraft.world.tick.OrderedTick;
 import net.minecraft.world.tick.WorldTickScheduler;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -19,9 +21,14 @@ public abstract class WorldTickSchedulerMutationMixin {
     @Inject(method = "scheduleTick", at = @At("HEAD"))
     private void anticrash$schedule(OrderedTick<?> tick, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
-            ScheduledTickMutationTracer.record("world.schedule",
-                    "dimension=" + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
-                            + " position=" + tick.pos() + " tick=" + tick);
+            ScheduledTickMutationTracer.record(
+                    "world.schedule",
+                    "dimension="
+                            + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
+                            + " position="
+                            + tick.pos()
+                            + " tick="
+                            + tick);
         }
         if (com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) {
             ChunkMutationTracker.recordScheduler(this, new ChunkPos(tick.pos()), "world.schedule");
@@ -29,12 +36,15 @@ public abstract class WorldTickSchedulerMutationMixin {
     }
 
     @Inject(method = "addChunkTickScheduler", at = @At("HEAD"))
-    private void anticrash$addChunk(ChunkPos pos, ChunkTickScheduler<?> scheduler,
-                                    CallbackInfo callbackInfo) {
+    private void anticrash$addChunk(
+            ChunkPos pos, ChunkTickScheduler<?> scheduler, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
-            ScheduledTickMutationTracer.record("world.attach",
-                    "dimension=" + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
-                            + " position=" + pos);
+            ScheduledTickMutationTracer.record(
+                    "world.attach",
+                    "dimension="
+                            + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
+                            + " position="
+                            + pos);
         }
         ChunkMutationTracker.recordScheduler(this, pos, "world.attach");
     }
@@ -42,9 +52,12 @@ public abstract class WorldTickSchedulerMutationMixin {
     @Inject(method = "removeChunkTickScheduler", at = @At("HEAD"))
     private void anticrash$removeChunk(ChunkPos pos, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
-            ScheduledTickMutationTracer.record("world.detach",
-                    "dimension=" + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
-                            + " position=" + pos);
+            ScheduledTickMutationTracer.record(
+                    "world.detach",
+                    "dimension="
+                            + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
+                            + " position="
+                            + pos);
         }
         ChunkMutationTracker.recordScheduler(this, pos, "world.detach");
     }
@@ -53,9 +66,12 @@ public abstract class WorldTickSchedulerMutationMixin {
     @Inject(method = "clearNextTicks", at = @At("HEAD"))
     private void anticrash$clearNextTicks(BlockBox box, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
-            ScheduledTickMutationTracer.record("world.clearNextTicks",
-                    "dimension=" + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
-                            + " box=" + box);
+            ScheduledTickMutationTracer.record(
+                    "world.clearNextTicks",
+                    "dimension="
+                            + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
+                            + " box="
+                            + box);
         }
         ChunkMutationTracker.markSchedulerUncertain("clearNextTicks");
     }
@@ -63,9 +79,14 @@ public abstract class WorldTickSchedulerMutationMixin {
     @Inject(method = "scheduleTicks", at = @At("HEAD"))
     private void anticrash$scheduleTicks(BlockBox box, Vec3i offset, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
-            ScheduledTickMutationTracer.record("world.scheduleTicks",
-                    "dimension=" + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
-                            + " box=" + box + " offset=" + offset);
+            ScheduledTickMutationTracer.record(
+                    "world.scheduleTicks",
+                    "dimension="
+                            + String.valueOf(ChunkMutationTracker.schedulerDimension(this))
+                            + " box="
+                            + box
+                            + " offset="
+                            + offset);
         }
         ChunkMutationTracker.markSchedulerUncertain("scheduleTicks");
     }

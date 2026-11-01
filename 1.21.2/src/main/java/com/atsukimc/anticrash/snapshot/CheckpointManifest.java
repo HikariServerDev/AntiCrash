@@ -6,24 +6,28 @@ import java.util.List;
 public final class CheckpointManifest {
     /** Version 4 adds the Exact-Epoch semantic delta engine evidence. */
     public int formatVersion = 4;
-    public String antiCrashVersion = "1.0.0";
+
+    public String antiCrashVersion = com.atsukimc.anticrash.AntiCrashMod.VERSION;
     public static final String CURRENT_MINECRAFT_VERSION = "1.21.2";
     public String minecraftVersion = CURRENT_MINECRAFT_VERSION;
     public String fabricLoaderVersion;
     public String fabricApiVersion;
     public String carpetVersion;
     public String checkpointId;
+
     /**
-     * Committed checkpoint whose unchanged files this generation reuses, or null for a BASE.
-     * Also used as the lineage for manifests written before {@link #timelineParentCheckpointId}.
+     * Committed checkpoint whose unchanged files this generation reuses, or null for a BASE. Also
+     * used as the lineage for manifests written before {@link #timelineParentCheckpointId}.
      */
     public String parentCheckpointId;
+
     /**
-     * Previous committed checkpoint on the active recovery timeline, independent of file reuse.
-     * A BASE generation has no file parent but still continues the timeline, so recovery can fall
+     * Previous committed checkpoint on the active recovery timeline, independent of file reuse. A
+     * BASE generation has no file parent but still continues the timeline, so recovery can fall
      * back past it to older checkpoints.
      */
     public String timelineParentCheckpointId;
+
     public String utcTimestamp;
     public String localTimestamp;
     public long monotonicNanos;
@@ -31,8 +35,10 @@ public final class CheckpointManifest {
     public long worldGameTime;
     public final List<String> dimensions = new ArrayList<>();
     public String snapshotBackend;
+
     /** LOGICAL_DELTA, PORTABLE_GENERATION, or LEGACY_SAFE. */
     public String checkpointEngine = "PORTABLE_GENERATION";
+
     public int logicalDeltaFormatVersion;
     public long logicalDeltaEpoch;
     public int logicalDeltaChunkCount;
@@ -41,9 +47,12 @@ public final class CheckpointManifest {
     public int logicalDeltaTombstoneCount;
     public long logicalDeltaPayloadBytes;
     public String logicalDeltaFailureReason;
-    public final java.util.Map<String, String> logicalDeltaComponentStatus = new java.util.LinkedHashMap<>();
+    public final java.util.Map<String, String> logicalDeltaComponentStatus =
+            new java.util.LinkedHashMap<>();
+
     /** BASE or DELTA. DELTA is a complete materialized view with an authenticated parent. */
     public String generationType = "BASE";
+
     public String baseCheckpointId;
     public int generationChainDepth;
     public int generationSealFormatVersion;
@@ -54,8 +63,10 @@ public final class CheckpointManifest {
     public int generationInheritedFiles;
     public int generationSealedFiles;
     public int generationTombstoneFiles;
+
     /** PRESENT/ABSENT/TOMBSTONE records captured at the logical cut. */
     public final List<GenerationFileEntry> fileSet = new ArrayList<>();
+
     public long snapshotDurationMs;
     public long barrierDurationMs;
     public long finalizationDurationMs;
@@ -89,13 +100,17 @@ public final class CheckpointManifest {
     public int checkpointPlayerCount;
     public String checkpointPlayerHash;
     public final List<String> unsupportedRuntimeState = new ArrayList<>();
+
     /** Chunks made eligible for serialization because they contain transient server state. */
     public int transientChunkCount;
+
     public int transientChunksMadeDirty;
     public int movingPistonCount;
     public long scheduledTickCount;
+
     /** Active scheduled ticks whose exact sub-tick ordering is in Runtime Capsule v3. */
     public long orderedScheduledTickCount;
+
     public long orderedMovingPistonCount;
     public long orderedTransientEntityCount;
     public String checksum;

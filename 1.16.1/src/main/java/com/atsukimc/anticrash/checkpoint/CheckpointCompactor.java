@@ -14,25 +14,26 @@ import java.nio.file.StandardCopyOption;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
-import java.util.stream.Stream;
 
 /**
  * Offline compaction of an already authenticated, fully materialized checkpoint view.
  *
  * <p>The current logical-delta materializer writes a complete copy-on-write world for every
- * committed delta.  Compaction therefore does not need to read the live server or replay mutable
- * Minecraft objects: it validates the newest view, copies its immutable payloads, and commits a
- * new root whose parent is null.  It is intentionally run by the checkpoint IO executor.</p>
+ * committed delta. Compaction therefore does not need to read the live server or replay mutable
+ * Minecraft objects: it validates the newest view, copies its immutable payloads, and commits a new
+ * root whose parent is null. It is intentionally run by the checkpoint IO executor.
  */
 public final class CheckpointCompactor {
-    private CheckpointCompactor() {
-    }
+    private CheckpointCompactor() {}
 
     public static Path compact(CheckpointStore store, Path source) throws IOException {
         if (store == null || source == null) throw new IOException("Compaction source is missing");
         store.pin(source.getFileName().toString());
-        try { return compactPinned(store, source); }
-        finally { store.unpin(source.getFileName().toString()); }
+        try {
+            return compactPinned(store, source);
+        } finally {
+            store.unpin(source.getFileName().toString());
+        }
     }
 
     private static Path compactPinned(CheckpointStore store, Path source) throws IOException {
@@ -42,8 +43,11 @@ public final class CheckpointCompactor {
         try {
             copyPayloadTree(source, temporary);
             Files.deleteIfExists(temporary.resolve("logical-delta.json"));
-            CheckpointManifest manifest = AtomicFiles.readJson(source.resolve("manifest.json"),
-                    CheckpointManifest.class, 16L * 1024 * 1024);
+            CheckpointManifest manifest =
+                    AtomicFiles.readJson(
+                            source.resolve("manifest.json"),
+                            CheckpointManifest.class,
+                            16L * 1024 * 1024);
             manifest.checkpointId = temporary.getFileName().toString().replaceFirst("\\.tmp$", "");
             manifest.parentCheckpointId = null;
             // The compacted root is the same epoch as its source. Keep the source on the recovery
@@ -81,7 +85,8 @@ public final class CheckpointCompactor {
             manifest.logicalDeltaPayloadBytes = 0L;
             manifest.logicalDeltaFailureReason = null;
             manifest.logicalDeltaComponentStatus.clear();
-            manifest.logicalDeltaComponentStatus.put("COMPACTION", "MATERIALIZED_AUTHENTICATED_VIEW");
+            manifest.logicalDeltaComponentStatus.put(
+                    "COMPACTION", "MATERIALIZED_AUTHENTICATED_VIEW");
             LogicalDelta compactedDelta = new LogicalDelta();
             compactedDelta.captureEpoch = sourceManifest.serverTick;
             compactedDelta.captureKind = "COMPACTION_BASE";
@@ -108,7 +113,8 @@ public final class CheckpointCompactor {
         try (var stream = Files.walk(source)) {
             for (Path file : stream.sorted().toList()) {
                 Path relative = source.relativize(file);
-                if (relative.toString().isBlank() || relative.toString().equals("manifest.json")
+                if (relative.toString().isBlank()
+                        || relative.toString().equals("manifest.json")
                         || relative.toString().equals("READY")
                         || relative.toString().equals("checksums.sha256")
                         || relative.toString().equals("logical-delta.json")

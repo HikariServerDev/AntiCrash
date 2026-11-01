@@ -60,3 +60,6 @@ subprojects {
 }
 // A source migration is NOT recovery qualification. No automatic root build collection
 // until target.json is promoted by the offline verification tool after all tests pass.
+
+// Compile shared implementation against this target's own Minecraft API.
+apply from: "../gradle/sources.gradle"

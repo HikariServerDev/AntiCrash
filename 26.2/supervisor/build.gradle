@@ -35,3 +35,5 @@ jar {
         attributes("Main-Class": "com.atsukimc.anticrash.supervisor.SupervisorMain")
     }
 }
+
+apply from: "../../gradle/supervisor-sources.gradle"

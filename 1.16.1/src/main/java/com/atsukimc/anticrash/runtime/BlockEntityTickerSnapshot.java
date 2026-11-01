@@ -44,8 +44,17 @@ public final class BlockEntityTickerSnapshot {
     public static String keyFor(ServerWorld world, String queue, BlockEntityTickInvoker ticker) {
         if (ticker == null) return null;
         BlockPos position = ticker.getPos();
-        return queue + "|" + position.getX() + ',' + position.getY() + ',' + position.getZ()
-                + "|" + typeId(loadedBlockEntity(world, position), null) + "|" + ticker.getName();
+        return queue
+                + "|"
+                + position.getX()
+                + ','
+                + position.getY()
+                + ','
+                + position.getZ()
+                + "|"
+                + typeId(loadedBlockEntity(world, position), null)
+                + "|"
+                + ticker.getName();
     }
 
     /**
@@ -53,9 +62,9 @@ public final class BlockEntityTickerSnapshot {
      *
      * <p>Removing a block entity does not take its ticker out of the World list: WorldChunk swaps
      * the wrapped invoker for a shared empty one (position 0,0,0, name {@code <null>}), and
-     * World#tickBlockEntities discards it on the next pass. Two removals in the same tick
-     * therefore left two identical rows, which the capsule validator rejected as a duplicate and
-     * failed the whole checkpoint. A removed ticker never runs again, so it carries no order.</p>
+     * World#tickBlockEntities discards it on the next pass. Two removals in the same tick therefore
+     * left two identical rows, which the capsule validator rejected as a duplicate and failed the
+     * whole checkpoint. A removed ticker never runs again, so it carries no order.
      */
     public static boolean removed(BlockEntityTickInvoker ticker) {
         return ticker == null || ticker.isRemoved();
@@ -67,13 +76,17 @@ public final class BlockEntityTickerSnapshot {
                 (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
         Map<BlockEntityType<?>, String> typeIds = new IdentityHashMap<>();
         captureList(result, world, CURRENT, accessor.anticrash$getBlockEntityTickers(), typeIds);
-        captureList(result, world, PENDING, accessor.anticrash$getPendingBlockEntityTickers(), typeIds);
+        captureList(
+                result, world, PENDING, accessor.anticrash$getPendingBlockEntityTickers(), typeIds);
         return result;
     }
 
-    private static void captureList(List<BlockEntityTickerSnapshot> output, ServerWorld world,
-                                    String queue, List<BlockEntityTickInvoker> tickers,
-                                    Map<BlockEntityType<?>, String> typeIds) {
+    private static void captureList(
+            List<BlockEntityTickerSnapshot> output,
+            ServerWorld world,
+            String queue,
+            List<BlockEntityTickInvoker> tickers,
+            Map<BlockEntityType<?>, String> typeIds) {
         String dimension = world.getRegistryKey().getValue().toString();
         int order = 0;
         for (BlockEntityTickInvoker ticker : tickers) {
@@ -101,10 +114,11 @@ public final class BlockEntityTickerSnapshot {
      * <p>World#getBlockEntity is not a read: it asks for the chunk with loading enabled and uses
      * {@code CreationType.IMMEDIATE}, which instantiates a missing block entity or one still held
      * as pending NBT. A capture that runs inside the checkpoint barrier must not mutate the world,
-     * and the plain map lookup is also several times cheaper for thousands of tickers.</p>
+     * and the plain map lookup is also several times cheaper for thousands of tickers.
      */
     public static BlockEntity loadedBlockEntity(ServerWorld world, BlockPos position) {
-        WorldChunk chunk = world.getChunkManager().getWorldChunk(position.getX() >> 4, position.getZ() >> 4);
+        WorldChunk chunk =
+                world.getChunkManager().getWorldChunk(position.getX() >> 4, position.getZ() >> 4);
         return chunk == null ? null : chunk.getBlockEntities().get(position);
     }
 

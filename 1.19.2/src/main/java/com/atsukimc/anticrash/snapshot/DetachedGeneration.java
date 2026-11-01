@@ -31,24 +31,26 @@ import java.util.concurrent.atomic.AtomicReference;
  * <p>{@link #capture} runs at the checkpoint cut. It only decides, per file, whether the parent
  * checkpoint already holds the cut's bytes ({@link Kind#INHERITED}) and copies the files that
  * changed into the temporary generation ({@link Kind#DETACHED}). After it returns, nothing in the
- * generation depends on the mutable live world any more, so the server may resume.</p>
+ * generation depends on the mutable live world any more, so the server may resume.
  *
  * <p>{@link #materialize} runs on the checkpoint worker. It hashes the detached copies and
  * hard-links (or, for a BASE, copies) the inherited files from the immutable parent checkpoint.
- * Hashing every changed file twice, linking ten thousand unchanged files and the periodic full
- * copy of the world used to happen while the server was frozen and cost seconds per checkpoint.</p>
+ * Hashing every changed file twice, linking ten thousand unchanged files and the periodic full copy
+ * of the world used to happen while the server was frozen and cost seconds per checkpoint.
  */
 public final class DetachedGeneration {
-    public enum Kind { INHERITED, DETACHED }
+    public enum Kind {
+        INHERITED,
+        DETACHED
+    }
 
     /**
      * One world file at the cut. The metadata is that of the live file at the cut (or, for a file
      * the tracker proves unwritten, the parent's record of it); {@code sha256} is known only for an
      * inherited file.
      */
-    public record Entry(String path, Kind kind, long size, long modifiedTime, long changeTime,
-                        String sha256) {
-    }
+    public record Entry(
+            String path, Kind kind, long size, long modifiedTime, long changeTime, String sha256) {}
 
     private static final int DEFAULT_THREADS = 4;
 
@@ -56,15 +58,19 @@ public final class DetachedGeneration {
     private final boolean tracked;
     private final int statedFiles;
     private final long detachedBytes;
+
     /** Writes still queued at the cut; written into the detached copies before materializing. */
     private List<QueuedWrite> pendingWrites;
 
     /** A queued write with its region and external chunk file relative to the world. */
-    private record QueuedWrite(String regionPath, String externalPath, PendingRegionWrite write) {
-    }
+    private record QueuedWrite(String regionPath, String externalPath, PendingRegionWrite write) {}
 
-    private DetachedGeneration(List<Entry> entries, boolean tracked, int statedFiles, long detachedBytes,
-                               List<QueuedWrite> pendingWrites) {
+    private DetachedGeneration(
+            List<Entry> entries,
+            boolean tracked,
+            int statedFiles,
+            long detachedBytes,
+            List<QueuedWrite> pendingWrites) {
         this.entries = List.copyOf(entries);
         this.tracked = tracked;
         this.statedFiles = statedFiles;
@@ -99,35 +105,42 @@ public final class DetachedGeneration {
         return pendingWrites.size();
     }
 
-    public static DetachedGeneration capture(Path liveWorld, Path destination,
-                                             Map<String, SnapshotFile> previousFiles,
-                                             Map<String, SnapshotFile> liveHashes,
-                                             Set<Path> writtenSinceParent) throws IOException {
-        return capture(liveWorld, destination, previousFiles, liveHashes, writtenSinceParent, List.of());
+    public static DetachedGeneration capture(
+            Path liveWorld,
+            Path destination,
+            Map<String, SnapshotFile> previousFiles,
+            Map<String, SnapshotFile> liveHashes,
+            Set<Path> writtenSinceParent)
+            throws IOException {
+        return capture(
+                liveWorld, destination, previousFiles, liveHashes, writtenSinceParent, List.of());
     }
 
     /**
      * Captures the live world at the cut. The caller guarantees that nothing writes the live world
      * meanwhile: the world is frozen and every storage IO queue is either drained or sealed.
      *
-     * <p>Every file is examined. A file is inherited from the parent only when both witnesses
-     * agree that it did not change since the parent's cut: its size, mtime and ctime equal the
-     * parent's record (or a pre-freeze digest proves the bytes equal), and no chunk, entity or POI
-     * write reached it according to {@link LiveFileTracker}. Either witness alone is enough to
-     * copy it, so a writer one of them cannot see still ends up in the checkpoint.</p>
+     * <p>Every file is examined. A file is inherited from the parent only when both witnesses agree
+     * that it did not change since the parent's cut: its size, mtime and ctime equal the parent's
+     * record (or a pre-freeze digest proves the bytes equal), and no chunk, entity or POI write
+     * reached it according to {@link LiveFileTracker}. Either witness alone is enough to copy it,
+     * so a writer one of them cannot see still ends up in the checkpoint.
      *
-     * @param previousFiles       the parent's world files, or empty for a first BASE
-     * @param liveHashes          digests from the pre-freeze live scan, possibly empty
-     * @param writtenSinceParent  region files written since the parent's cut, or null when the
-     *                            tracker cannot vouch for that interval
-     * @param pendingWrites       writes queued but not yet on disk at the cut; their region files
-     *                            are always detached so the writes can be applied to the copies
+     * @param previousFiles the parent's world files, or empty for a first BASE
+     * @param liveHashes digests from the pre-freeze live scan, possibly empty
+     * @param writtenSinceParent region files written since the parent's cut, or null when the
+     *     tracker cannot vouch for that interval
+     * @param pendingWrites writes queued but not yet on disk at the cut; their region files are
+     *     always detached so the writes can be applied to the copies
      */
-    public static DetachedGeneration capture(Path liveWorld, Path destination,
-                                             Map<String, SnapshotFile> previousFiles,
-                                             Map<String, SnapshotFile> liveHashes,
-                                             Set<Path> writtenSinceParent,
-                                             List<PendingRegionWrite> pendingWrites) throws IOException {
+    public static DetachedGeneration capture(
+            Path liveWorld,
+            Path destination,
+            Map<String, SnapshotFile> previousFiles,
+            Map<String, SnapshotFile> liveHashes,
+            Set<Path> writtenSinceParent,
+            List<PendingRegionWrite> pendingWrites)
+            throws IOException {
         Map<String, SnapshotFile> parent = previousFiles == null ? Map.of() : previousFiles;
         Path root = liveWorld.toAbsolutePath().normalize();
         boolean tracked = writtenSinceParent != null;
@@ -160,22 +173,36 @@ public final class DetachedGeneration {
         List<Entry> entries = new ArrayList<>();
         List<Candidate> changed = new ArrayList<>();
         for (Candidate candidate : candidates) {
-            if (writtenRelative.contains(candidate.relative) || pendingRegions.contains(candidate.relative)) {
+            if (writtenRelative.contains(candidate.relative)
+                    || pendingRegions.contains(candidate.relative)) {
                 changed.add(candidate);
                 continue;
             }
             SnapshotFile previous = parent.get(candidate.relative);
             FileFacts facts = candidate.facts;
             if (JavaIncrementalBackend.sameMetadata(previous, facts)) {
-                entries.add(new Entry(candidate.relative, Kind.INHERITED, facts.size(),
-                        facts.modifiedTime(), facts.changeTime(), previous.sha256));
+                entries.add(
+                        new Entry(
+                                candidate.relative,
+                                Kind.INHERITED,
+                                facts.size(),
+                                facts.modifiedTime(),
+                                facts.changeTime(),
+                                previous.sha256));
                 continue;
             }
-            String cached = JavaIncrementalBackend.cachedLiveDigest(liveHashes, candidate.relative, facts);
+            String cached =
+                    JavaIncrementalBackend.cachedLiveDigest(liveHashes, candidate.relative, facts);
             if (cached != null && previous != null && cached.equals(previous.sha256)) {
                 // Touched but byte-identical (for example a region header rewritten on close).
-                entries.add(new Entry(candidate.relative, Kind.INHERITED, facts.size(),
-                        facts.modifiedTime(), facts.changeTime(), previous.sha256));
+                entries.add(
+                        new Entry(
+                                candidate.relative,
+                                Kind.INHERITED,
+                                facts.size(),
+                                facts.modifiedTime(),
+                                facts.changeTime(),
+                                previous.sha256));
                 continue;
             }
             changed.add(candidate);
@@ -184,25 +211,42 @@ public final class DetachedGeneration {
         Set<Path> createdDirectories = ConcurrentHashMap.newKeySet();
         ConcurrentLinkedQueue<Entry> detached = new ConcurrentLinkedQueue<>();
         AtomicLong bytes = new AtomicLong();
-        parallel(changed, DEFAULT_THREADS, candidate -> {
-            Path target = PathSafety.requireChild(destination, destination.resolve(candidate.relative));
-            createParent(target, createdDirectories);
-            Files.copy(candidate.absolute, target, StandardCopyOption.COPY_ATTRIBUTES);
-            long size = candidate.facts.size();
-            if (LiveFileTracker.isRegionStorageFile(candidate.relative)) {
-                // Chunk loading keeps reading while the world is frozen, and a read that evicts a
-                // cached RegionFile closes it: the header is rewritten with the same bytes, and a
-                // region file a read just created gains its empty header. Neither changes a chunk,
-                // and no chunk write can happen after the drain, so the copy is taken as is.
-                size = FileFacts.read(target).size();
-            } else if (!FileFacts.read(candidate.absolute).sameRevision(candidate.facts)) {
-                // Nothing in Minecraft writes these during the freeze; this is an external writer.
-                throw new IOException("Live world file changed during snapshot: " + candidate.absolute);
-            }
-            bytes.addAndGet(size);
-            detached.add(new Entry(candidate.relative, Kind.DETACHED, size,
-                    candidate.facts.modifiedTime(), candidate.facts.changeTime(), null));
-        });
+        parallel(
+                changed,
+                DEFAULT_THREADS,
+                candidate -> {
+                    Path target =
+                            PathSafety.requireChild(
+                                    destination, destination.resolve(candidate.relative));
+                    createParent(target, createdDirectories);
+                    Files.copy(candidate.absolute, target, StandardCopyOption.COPY_ATTRIBUTES);
+                    long size = candidate.facts.size();
+                    if (LiveFileTracker.isRegionStorageFile(candidate.relative)) {
+                        // Chunk loading keeps reading while the world is frozen, and a read that
+                        // evicts a
+                        // cached RegionFile closes it: the header is rewritten with the same bytes,
+                        // and a
+                        // region file a read just created gains its empty header. Neither changes a
+                        // chunk,
+                        // and no chunk write can happen after the drain, so the copy is taken as
+                        // is.
+                        size = FileFacts.read(target).size();
+                    } else if (!FileFacts.read(candidate.absolute).sameRevision(candidate.facts)) {
+                        // Nothing in Minecraft writes these during the freeze; this is an external
+                        // writer.
+                        throw new IOException(
+                                "Live world file changed during snapshot: " + candidate.absolute);
+                    }
+                    bytes.addAndGet(size);
+                    detached.add(
+                            new Entry(
+                                    candidate.relative,
+                                    Kind.DETACHED,
+                                    size,
+                                    candidate.facts.modifiedTime(),
+                                    candidate.facts.changeTime(),
+                                    null));
+                });
         entries.addAll(detached);
         entries.sort(Comparator.comparing(Entry::path));
         SealedNbt.seal(pending);
@@ -225,15 +269,18 @@ public final class DetachedGeneration {
                 byRegion.computeIfAbsent(write.regionPath, ignored -> new ArrayList<>()).add(write);
             }
             for (Map.Entry<String, List<QueuedWrite>> region : byRegion.entrySet()) {
-                Path target = PathSafety.requireChild(destination, destination.resolve(region.getKey()));
+                Path target =
+                        PathSafety.requireChild(destination, destination.resolve(region.getKey()));
                 Entry existing = byPath.get(region.getKey());
                 if (existing != null && existing.kind != Kind.DETACHED) {
-                    throw new IOException("Region file with queued writes was not detached: " + region.getKey());
+                    throw new IOException(
+                            "Region file with queued writes was not detached: " + region.getKey());
                 }
                 CheckpointWriteGuard.requireDetached(target);
                 Files.createDirectories(target.getParent());
                 net.minecraft.world.storage.RegionFile file =
-                        new net.minecraft.world.storage.RegionFile(target, target.getParent(), false);
+                        new net.minecraft.world.storage.RegionFile(
+                                target, target.getParent(), false);
                 try {
                     for (QueuedWrite queued : region.getValue()) {
                         PendingRegionWrite write = queued.write;
@@ -241,9 +288,11 @@ public final class DetachedGeneration {
                             file.delete(write.pos());
                         } else {
                             if (write.nbt().contains("__context")) {
-                                throw new IOException("Queued chunk data was being modified: " + write.pos());
+                                throw new IOException(
+                                        "Queued chunk data was being modified: " + write.pos());
                             }
-                            try (java.io.DataOutputStream output = file.getChunkOutputStream(write.pos())) {
+                            try (java.io.DataOutputStream output =
+                                    file.getChunkOutputStream(write.pos())) {
                                 net.minecraft.nbt.NbtIo.write(write.nbt(), output);
                             }
                         }
@@ -251,15 +300,26 @@ public final class DetachedGeneration {
                 } finally {
                     file.close();
                 }
-                // Zero times mean "no metadata": the next checkpoint hashes instead of trusting them.
-                byPath.put(region.getKey(), new Entry(region.getKey(), Kind.DETACHED,
-                        Files.size(target), 0L, 0L, null));
+                // Zero times mean "no metadata": the next checkpoint hashes instead of trusting
+                // them.
+                byPath.put(
+                        region.getKey(),
+                        new Entry(
+                                region.getKey(), Kind.DETACHED, Files.size(target), 0L, 0L, null));
                 for (QueuedWrite queued : region.getValue()) {
                     String external = queued.externalPath;
-                    Path externalTarget = PathSafety.requireChild(destination, destination.resolve(external));
+                    Path externalTarget =
+                            PathSafety.requireChild(destination, destination.resolve(external));
                     if (Files.exists(externalTarget)) {
-                        byPath.put(external, new Entry(external, Kind.DETACHED,
-                                Files.size(externalTarget), 0L, 0L, null));
+                        byPath.put(
+                                external,
+                                new Entry(
+                                        external,
+                                        Kind.DETACHED,
+                                        Files.size(externalTarget),
+                                        0L,
+                                        0L,
+                                        null));
                     } else {
                         byPath.remove(external);
                     }
@@ -280,23 +340,31 @@ public final class DetachedGeneration {
         SealedNbt.clear();
     }
 
-
     /**
      * Completes the generation from the immutable parent checkpoint. Never reads the live world.
      *
      * @param copyInherited true for a BASE generation: inherited files are copied rather than
-     *                      hard-linked so the new generation shares no inode with its parent
+     *     hard-linked so the new generation shares no inode with its parent
      */
-    public SnapshotResult materialize(Path previousWorld, Map<String, SnapshotFile> previousFiles,
-                                      Path destination, boolean copyInherited, String backend)
+    public SnapshotResult materialize(
+            Path previousWorld,
+            Map<String, SnapshotFile> previousFiles,
+            Path destination,
+            boolean copyInherited,
+            String backend)
             throws IOException {
-        return materialize(previousWorld, previousFiles, destination, copyInherited, backend,
-                DEFAULT_THREADS);
+        return materialize(
+                previousWorld, previousFiles, destination, copyInherited, backend, DEFAULT_THREADS);
     }
 
-    public SnapshotResult materialize(Path previousWorld, Map<String, SnapshotFile> previousFiles,
-                                      Path destination, boolean copyInherited, String backend,
-                                      int threads) throws IOException {
+    public SnapshotResult materialize(
+            Path previousWorld,
+            Map<String, SnapshotFile> previousFiles,
+            Path destination,
+            boolean copyInherited,
+            String backend,
+            int threads)
+            throws IOException {
         CheckpointWriteGuard.requireMutable(destination);
         applyPendingWrites(destination);
         List<Entry> entries = this.entries;
@@ -306,53 +374,65 @@ public final class DetachedGeneration {
         AtomicInteger changedFiles = new AtomicInteger();
         AtomicInteger reusedFiles = new AtomicInteger();
         AtomicLong totalBytes = new AtomicLong();
-        parallel(entries, Math.max(1, threads), entry -> {
-            Path target = PathSafety.requireChild(destination, destination.resolve(entry.path));
-            SnapshotFile previous = parent.get(entry.path);
-            boolean linked = false;
-            String sha256;
-            if (entry.kind == Kind.INHERITED) {
-                Path previousFile = verifiedParentFile(previousWorld, entry.path, previous);
-                if (previousFile == null) {
-                    throw new ParentCheckpointChangedException(
-                            parentFailure(previousWorld, entry.path, previous));
-                }
-                createParent(target, createdDirectories);
-                if (copyInherited) {
-                    Files.copy(previousFile, target, StandardCopyOption.COPY_ATTRIBUTES);
-                    changedFiles.incrementAndGet();
-                } else {
-                    linked = linkOrCopy(previousFile, target);
-                    reusedFiles.incrementAndGet();
-                }
-                sha256 = entry.sha256;
-            } else {
-                sha256 = Hashing.sha256(target);
-                Path previousFile = !copyInherited && previous != null && sha256.equals(previous.sha256)
-                        ? verifiedParentFile(previousWorld, entry.path, previous) : null;
-                if (previousFile != null) {
-                    // Rewritten with the same bytes: share the parent's already durable inode.
-                    Files.delete(target);
-                    linked = linkOrCopy(previousFile, target);
-                    reusedFiles.incrementAndGet();
-                } else {
-                    changedFiles.incrementAndGet();
-                }
-            }
-            FileFacts stored = FileFacts.read(target);
-            if (stored.size() != entry.size) {
-                throw new IOException("Checkpoint copy size mismatch: " + entry.path);
-            }
-            SnapshotFile file = new SnapshotFile(entry.path, entry.size, entry.modifiedTime,
-                    entry.changeTime, sha256);
-            file.reusedFromParent = linked;
-            file.destinationMetadataRecorded = true;
-            file.storedModifiedTime = stored.modifiedTime();
-            file.storedChangeTime = stored.changeTime();
-            file.storedLinkCount = stored.linkCount();
-            files.add(file);
-            totalBytes.addAndGet(entry.size);
-        });
+        parallel(
+                entries,
+                Math.max(1, threads),
+                entry -> {
+                    Path target =
+                            PathSafety.requireChild(destination, destination.resolve(entry.path));
+                    SnapshotFile previous = parent.get(entry.path);
+                    boolean linked = false;
+                    String sha256;
+                    if (entry.kind == Kind.INHERITED) {
+                        Path previousFile = verifiedParentFile(previousWorld, entry.path, previous);
+                        if (previousFile == null) {
+                            throw new ParentCheckpointChangedException(
+                                    parentFailure(previousWorld, entry.path, previous));
+                        }
+                        createParent(target, createdDirectories);
+                        if (copyInherited) {
+                            Files.copy(previousFile, target, StandardCopyOption.COPY_ATTRIBUTES);
+                            changedFiles.incrementAndGet();
+                        } else {
+                            linked = linkOrCopy(previousFile, target);
+                            reusedFiles.incrementAndGet();
+                        }
+                        sha256 = entry.sha256;
+                    } else {
+                        sha256 = Hashing.sha256(target);
+                        Path previousFile =
+                                !copyInherited && previous != null && sha256.equals(previous.sha256)
+                                        ? verifiedParentFile(previousWorld, entry.path, previous)
+                                        : null;
+                        if (previousFile != null) {
+                            // Rewritten with the same bytes: share the parent's already durable
+                            // inode.
+                            Files.delete(target);
+                            linked = linkOrCopy(previousFile, target);
+                            reusedFiles.incrementAndGet();
+                        } else {
+                            changedFiles.incrementAndGet();
+                        }
+                    }
+                    FileFacts stored = FileFacts.read(target);
+                    if (stored.size() != entry.size) {
+                        throw new IOException("Checkpoint copy size mismatch: " + entry.path);
+                    }
+                    SnapshotFile file =
+                            new SnapshotFile(
+                                    entry.path,
+                                    entry.size,
+                                    entry.modifiedTime,
+                                    entry.changeTime,
+                                    sha256);
+                    file.reusedFromParent = linked;
+                    file.destinationMetadataRecorded = true;
+                    file.storedModifiedTime = stored.modifiedTime();
+                    file.storedChangeTime = stored.changeTime();
+                    file.storedLinkCount = stored.linkCount();
+                    files.add(file);
+                    totalBytes.addAndGet(entry.size);
+                });
         SnapshotResult result = new SnapshotResult(backend);
         List<SnapshotFile> sorted = new ArrayList<>(files);
         sorted.sort(Comparator.comparing(file -> file.path));
@@ -364,25 +444,47 @@ public final class DetachedGeneration {
     }
 
     /** Returns the parent's file when it still holds exactly the recorded bytes, else null. */
-    private static Path verifiedParentFile(Path previousWorld, String relative, SnapshotFile previous)
-            throws IOException {
+    private static Path verifiedParentFile(
+            Path previousWorld, String relative, SnapshotFile previous) throws IOException {
         if (previousWorld == null || previous == null || previous.sha256 == null) return null;
         Path previousFile = PathSafety.requireChild(previousWorld, previousWorld.resolve(relative));
         FileFacts facts = FileFacts.readOrNull(previousFile);
         if (facts == null || !facts.regularFile() || facts.symbolicLink()) return null;
-        return JavaIncrementalBackend.previousFileMatches(previousFile, facts, previous) ? previousFile : null;
+        return JavaIncrementalBackend.previousFileMatches(previousFile, facts, previous)
+                ? previousFile
+                : null;
     }
 
-    private static String parentFailure(Path root, String relative, SnapshotFile previous) throws IOException {
-        FileFacts facts = root == null ? null : FileFacts.readOrNull(PathSafety.requireChild(root, root.resolve(relative)));
-        String reason = previous == null ? "MISSING_MANIFEST_ENTRY" : facts == null ? "MISSING"
-                : !facts.regularFile() || facts.symbolicLink() ? "UNSAFE_FILE"
-                : facts.size() != previous.size ? "SIZE_MISMATCH" : "CHECKSUM_MISMATCH";
-        return "Parent checkpoint file is missing or was modified: " + relative + "; reason=" + reason
-                + "; expectedSize=" + (previous == null ? -1 : previous.size) + "; actual=" + facts;
+    private static String parentFailure(Path root, String relative, SnapshotFile previous)
+            throws IOException {
+        FileFacts facts =
+                root == null
+                        ? null
+                        : FileFacts.readOrNull(
+                                PathSafety.requireChild(root, root.resolve(relative)));
+        String reason =
+                previous == null
+                        ? "MISSING_MANIFEST_ENTRY"
+                        : facts == null
+                                ? "MISSING"
+                                : !facts.regularFile() || facts.symbolicLink()
+                                        ? "UNSAFE_FILE"
+                                        : facts.size() != previous.size
+                                                ? "SIZE_MISMATCH"
+                                                : "CHECKSUM_MISMATCH";
+        return "Parent checkpoint file is missing or was modified: "
+                + relative
+                + "; reason="
+                + reason
+                + "; expectedSize="
+                + (previous == null ? -1 : previous.size)
+                + "; actual="
+                + facts;
     }
 
-    /** @return true for a hard link to the parent's inode, false when a copy had to be made. */
+    /**
+     * @return true for a hard link to the parent's inode, false when a copy had to be made.
+     */
     private static boolean linkOrCopy(Path previousFile, Path target) throws IOException {
         try {
             Files.createLink(target, previousFile);
@@ -408,15 +510,21 @@ public final class DetachedGeneration {
                 }
             }
             ConcurrentLinkedQueue<Path> next = new ConcurrentLinkedQueue<>();
-            parallel(children, DEFAULT_THREADS, child -> {
-                FileFacts facts = FileFacts.readOrNull(child);
-                if (facts == null) return;
-                if (facts.symbolicLink()) {
-                    throw new IOException("Symbolic links are not supported in a snapshot path: " + child);
-                }
-                if (facts.directory()) next.add(child);
-                else if (facts.regularFile()) files.add(new Candidate(relative(root, child), child, facts));
-            });
+            parallel(
+                    children,
+                    DEFAULT_THREADS,
+                    child -> {
+                        FileFacts facts = FileFacts.readOrNull(child);
+                        if (facts == null) return;
+                        if (facts.symbolicLink()) {
+                            throw new IOException(
+                                    "Symbolic links are not supported in a snapshot path: "
+                                            + child);
+                        }
+                        if (facts.directory()) next.add(child);
+                        else if (facts.regularFile())
+                            files.add(new Candidate(relative(root, child), child, facts));
+                    });
             level = new ArrayList<>(next);
         }
         List<Candidate> result = new ArrayList<>(files);
@@ -444,35 +552,47 @@ public final class DetachedGeneration {
     }
 
     /** Runs the action over a small pool; file work here is latency bound, not CPU bound. */
-    private static <T> void parallel(List<T> items, int threads, IoAction<T> action) throws IOException {
+    private static <T> void parallel(List<T> items, int threads, IoAction<T> action)
+            throws IOException {
         if (items.isEmpty()) return;
         AtomicInteger cursor = new AtomicInteger();
         AtomicReference<Throwable> failure = new AtomicReference<>();
-        Runnable worker = () -> {
-            int index;
-            while (failure.get() == null && (index = cursor.getAndIncrement()) < items.size()) {
-                if (Thread.currentThread().isInterrupted()) {
-                    failure.compareAndSet(null, new InterruptedIOException("Snapshot was interrupted"));
-                    return;
-                }
-                try {
-                    action.run(items.get(index));
-                } catch (Throwable thrown) {
-                    failure.compareAndSet(null, thrown);
-                    return;
-                }
-            }
-        };
-        int count = Math.max(1, Math.min(threads, Math.min(items.size(),
-                Runtime.getRuntime().availableProcessors())));
+        Runnable worker =
+                () -> {
+                    int index;
+                    while (failure.get() == null
+                            && (index = cursor.getAndIncrement()) < items.size()) {
+                        if (Thread.currentThread().isInterrupted()) {
+                            failure.compareAndSet(
+                                    null, new InterruptedIOException("Snapshot was interrupted"));
+                            return;
+                        }
+                        try {
+                            action.run(items.get(index));
+                        } catch (Throwable thrown) {
+                            failure.compareAndSet(null, thrown);
+                            return;
+                        }
+                    }
+                };
+        int count =
+                Math.max(
+                        1,
+                        Math.min(
+                                threads,
+                                Math.min(
+                                        items.size(), Runtime.getRuntime().availableProcessors())));
         if (count == 1) {
             worker.run();
         } else {
-            ExecutorService pool = Executors.newFixedThreadPool(count, runnable -> {
-                Thread thread = new Thread(runnable, "AntiCrash-Snapshot");
-                thread.setDaemon(true);
-                return thread;
-            });
+            ExecutorService pool =
+                    Executors.newFixedThreadPool(
+                            count,
+                            runnable -> {
+                                Thread thread = new Thread(runnable, "AntiCrash-Snapshot");
+                                thread.setDaemon(true);
+                                return thread;
+                            });
             try {
                 List<Future<?>> running = new ArrayList<>(count);
                 for (int i = 0; i < count; i++) running.add(pool.submit(worker));
@@ -497,6 +617,5 @@ public final class DetachedGeneration {
         if (thrown != null) throw new IOException("Snapshot failed", thrown);
     }
 
-    private record Candidate(String relative, Path absolute, FileFacts facts) {
-    }
+    private record Candidate(String relative, Path absolute, FileFacts facts) {}
 }

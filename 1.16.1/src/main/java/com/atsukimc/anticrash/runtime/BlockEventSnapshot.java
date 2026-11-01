@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
+
 import net.minecraft.block.Block;
 import net.minecraft.server.world.BlockEvent;
 import net.minecraft.server.world.ServerWorld;
@@ -33,19 +34,32 @@ public final class BlockEventSnapshot {
 
     public RestoreResult restore(Iterable<ServerWorld> worlds) {
         RestoreResult result = new RestoreResult();
-        if (formatVersion != 1 || entries == null) { result.failed = 1; return result; }
+        if (formatVersion != 1 || entries == null) {
+            result.failed = 1;
+            return result;
+        }
         Map<String, ServerWorld> byDimension = new LinkedHashMap<>();
-        for (ServerWorld world : worlds) byDimension.put(world.getRegistryKey().getValue().toString(), world);
+        for (ServerWorld world : worlds)
+            byDimension.put(world.getRegistryKey().getValue().toString(), world);
         List<PreparedEntry> prepared = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
             try {
-                if (entry == null || !("SYNCED".equals(entry.queue) || "REGULAR".equals(entry.queue))) throw new IllegalArgumentException("invalid block event queue");
+                if (entry == null
+                        || !("SYNCED".equals(entry.queue) || "REGULAR".equals(entry.queue)))
+                    throw new IllegalArgumentException("invalid block event queue");
                 ServerWorld world = byDimension.get(entry.dimension);
-                if (world == null) throw new IllegalArgumentException("unknown block event dimension");
+                if (world == null)
+                    throw new IllegalArgumentException("unknown block event dimension");
                 Identifier blockId = new Identifier(entry.block);
-                if (!Registry.BLOCK.containsId(blockId)) throw new IllegalArgumentException("unknown block id");
+                if (!Registry.BLOCK.containsId(blockId))
+                    throw new IllegalArgumentException("unknown block id");
                 Block block = Registry.BLOCK.get(blockId);
-                BlockEvent event = new BlockEvent(new BlockPos(entry.x, entry.y, entry.z), block, entry.type, entry.data);
+                BlockEvent event =
+                        new BlockEvent(
+                                new BlockPos(entry.x, entry.y, entry.z),
+                                block,
+                                entry.type,
+                                entry.data);
                 prepared.add(new PreparedEntry(world, entry.queue, event));
             } catch (Exception exception) {
                 result.failed++;
@@ -61,14 +75,15 @@ public final class BlockEventSnapshot {
         }
         for (PreparedEntry entry : prepared) {
             ServerWorldAccessorMixin accessor = (ServerWorldAccessorMixin) entry.world;
-            if ("SYNCED".equals(entry.queue)) accessor.anticrash$getSyncedBlockEventQueue().add(entry.event);
+            if ("SYNCED".equals(entry.queue))
+                accessor.anticrash$getSyncedBlockEventQueue().add(entry.event);
             else accessor.anticrash$getBlockEventQueue().add(entry.event);
             result.restored++;
         }
         return result;
     }
 
-    private record PreparedEntry(ServerWorld world, String queue, BlockEvent event) { }
+    private record PreparedEntry(ServerWorld world, String queue, BlockEvent event) {}
 
     public static final class Entry {
         public String queue;
@@ -81,9 +96,12 @@ public final class BlockEventSnapshot {
             Entry entry = new Entry();
             entry.queue = queue;
             entry.dimension = world.getRegistryKey().getValue().toString();
-            entry.x = event.pos().getX(); entry.y = event.pos().getY(); entry.z = event.pos().getZ();
+            entry.x = event.pos().getX();
+            entry.y = event.pos().getY();
+            entry.z = event.pos().getZ();
             entry.block = Registry.BLOCK.getId(event.block()).toString();
-            entry.type = event.type(); entry.data = event.data();
+            entry.type = event.type();
+            entry.data = event.data();
             return entry;
         }
     }

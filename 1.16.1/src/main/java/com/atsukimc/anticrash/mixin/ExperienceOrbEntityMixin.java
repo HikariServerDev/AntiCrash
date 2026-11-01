@@ -2,7 +2,9 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.ItemPhaseHolder;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
+
 import net.minecraft.entity.ExperienceOrbEntity;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
@@ -19,7 +21,8 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
 
     @Override
     public int anticrash$idPhase() {
-        return anticrash$idPhase >= 0 ? anticrash$idPhase
+        return anticrash$idPhase >= 0
+                ? anticrash$idPhase
                 : Math.floorMod(((ExperienceOrbEntity) (Object) this).getEntityId(), 40);
     }
 
@@ -28,15 +31,24 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
         anticrash$idPhase = Math.floorMod(phase, 40);
     }
 
-    @ModifyExpressionValue(method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;)Z",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
+    @ModifyExpressionValue(
+            method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;)Z",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
     private int anticrash$stableSeed(int networkId) {
         return anticrash$idPhase >= 0 ? anticrash$idPhase : networkId;
     }
 
-    @ModifyExpressionValue(method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;II)Z",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
-    private static int anticrash$stableCandidate(int networkId, ExperienceOrbEntity orb, int seed, int amount) {
+    @ModifyExpressionValue(
+            method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;II)Z",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
+    private static int anticrash$stableCandidate(
+            int networkId, ExperienceOrbEntity orb, int seed, int amount) {
         int phase = ((ExperienceOrbEntityMixin) (Object) orb).anticrash$idPhase;
         return phase >= 0 ? phase : networkId;
     }

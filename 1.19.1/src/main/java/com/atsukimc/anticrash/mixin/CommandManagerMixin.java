@@ -6,8 +6,10 @@ import com.atsukimc.anticrash.command.AntiCrashCommand;
 import com.atsukimc.anticrash.command.RecoveryCommandPolicy;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.mojang.brigadier.CommandDispatcher;
+
 import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -20,14 +22,17 @@ public abstract class CommandManagerMixin {
     private void anticrash$register(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) {
-            CommandDispatcher<ServerCommandSource> dispatcher = ((CommandManager) (Object) this).getDispatcher();
+            CommandDispatcher<ServerCommandSource> dispatcher =
+                    ((CommandManager) (Object) this).getDispatcher();
             AntiCrashCommand.register(dispatcher, controller);
         }
     }
 
     @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
-    private void anticrash$blockCommandsDuringCheckpoint(com.mojang.brigadier.ParseResults<ServerCommandSource> parse, String command,
-                                                          CallbackInfoReturnable<Integer> callbackInfo) {
+    private void anticrash$blockCommandsDuringCheckpoint(
+            com.mojang.brigadier.ParseResults<ServerCommandSource> parse,
+            String command,
+            CallbackInfoReturnable<Integer> callbackInfo) {
         ServerCommandSource source = parse.getContext().getSource();
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null) return;
@@ -39,8 +44,11 @@ public abstract class CommandManagerMixin {
             // made a command issued inside the sub-second barrier look like a broken feature, so
             // say why and let the operator simply run it again.
             if (!RecoveryCommandPolicy.allowedDuringCheckpoint(normalized)) {
-                source.sendError(controller.chat(MessageCatalog.text(controller.config().language,
-                        "checkpoint.command_blocked"), null));
+                source.sendError(
+                        controller.chat(
+                                MessageCatalog.text(
+                                        controller.config().language, "checkpoint.command_blocked"),
+                                null));
                 callbackInfo.setReturnValue(0);
             }
             return;
@@ -49,9 +57,14 @@ public abstract class CommandManagerMixin {
         // player can. Recovery safety therefore applies to every source; recovery controls and
         // read-only commands are explicitly allowed by the policy below.
         if (!controller.isRecoveryFrozen()) return;
-        if (!RecoveryCommandPolicy.allowed(normalized, controller.config().recovery.lock.allowCommands)) {
-            source.sendError(controller.chat(MessageCatalog.text(controller.config().language,
-                    "recovery.command_mutation_blocked"), null));
+        if (!RecoveryCommandPolicy.allowed(
+                normalized, controller.config().recovery.lock.allowCommands)) {
+            source.sendError(
+                    controller.chat(
+                            MessageCatalog.text(
+                                    controller.config().language,
+                                    "recovery.command_mutation_blocked"),
+                            null));
             callbackInfo.setReturnValue(0);
         }
     }

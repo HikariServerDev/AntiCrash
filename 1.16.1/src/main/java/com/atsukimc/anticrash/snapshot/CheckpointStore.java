@@ -6,8 +6,7 @@ import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.util.AtomicFiles;
 import com.atsukimc.anticrash.util.Hashing;
 import com.atsukimc.anticrash.util.PathSafety;
-import com.google.gson.stream.JsonReader;
-import java.io.BufferedReader;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.file.Files;
@@ -20,26 +19,34 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Stream;
-import java.util.concurrent.TimeUnit;
 
 public final class CheckpointStore {
     private static final Pattern ID_PATTERN = Pattern.compile("cp-(\\d{6,18})");
     private final Path directory;
     private final AntiCrashConfig config;
     private final AntiCrashLogger logger;
-    public enum CandidateState { DISCOVERED, VERIFYING, VALID, INVALID, QUARANTINED }
-    private final Map<String, CandidateState> candidateStates = new java.util.concurrent.ConcurrentHashMap<>();
+
+    public enum CandidateState {
+        DISCOVERED,
+        VERIFYING,
+        VALID,
+        INVALID,
+        QUARANTINED
+    }
+
+    private final Map<String, CandidateState> candidateStates =
+            new java.util.concurrent.ConcurrentHashMap<>();
     private final Map<String, Integer> pins = new HashMap<>();
     private final Map<String, String> quarantined = new java.util.concurrent.ConcurrentHashMap<>();
 
-    public CheckpointStore(Path directory, AntiCrashConfig config, AntiCrashLogger logger) throws IOException {
+    public CheckpointStore(Path directory, AntiCrashConfig config, AntiCrashLogger logger)
+            throws IOException {
         this.directory = directory.toAbsolutePath().normalize();
         this.config = config;
         this.logger = logger;
@@ -55,31 +62,55 @@ public final class CheckpointStore {
         Path catalog = this.directory.resolve("quarantine.json");
         if (Files.exists(catalog, LinkOption.NOFOLLOW_LINKS)) {
             try {
-                QuarantineData data = AtomicFiles.readJson(catalog, QuarantineData.class, 1024L * 1024L);
+                QuarantineData data =
+                        AtomicFiles.readJson(catalog, QuarantineData.class, 1024L * 1024L);
                 if (data != null && data.reasons != null) quarantined.putAll(data.reasons);
-                quarantined.keySet().forEach(id -> candidateStates.put(id, CandidateState.QUARANTINED));
+                quarantined
+                        .keySet()
+                        .forEach(id -> candidateStates.put(id, CandidateState.QUARANTINED));
             } catch (IOException | RuntimeException invalid) {
                 throw new IOException("Unsafe quarantine catalog", invalid);
             }
         }
     }
 
-    private static final class QuarantineData { Map<String, String> reasons = new HashMap<>(); }
-    public synchronized void pin(String id) { if (id != null) pins.merge(id, 1, Integer::sum); }
+    private static final class QuarantineData {
+        Map<String, String> reasons = new HashMap<>();
+    }
+
+    public synchronized void pin(String id) {
+        if (id != null) pins.merge(id, 1, Integer::sum);
+    }
+
     public synchronized void unpin(String id) {
         Integer count = pins.get(id);
-        if (count != null) { if (count <= 1) pins.remove(id); else pins.put(id, count - 1); }
+        if (count != null) {
+            if (count <= 1) pins.remove(id);
+            else pins.put(id, count - 1);
+        }
     }
-    public CandidateState candidateState(String id) { return candidateStates.getOrDefault(id, CandidateState.DISCOVERED); }
-    public boolean isQuarantined(String id) { return quarantined.containsKey(id); }
+
+    public CandidateState candidateState(String id) {
+        return candidateStates.getOrDefault(id, CandidateState.DISCOVERED);
+    }
+
+    public boolean isQuarantined(String id) {
+        return quarantined.containsKey(id);
+    }
+
     public synchronized void quarantine(String id, String reason) {
         if (id == null || !ID_PATTERN.matcher(id).matches()) return;
-        quarantined.put(id, reason == null ? "invalid" : reason.substring(0, Math.min(reason.length(), 512)));
+        quarantined.put(
+                id,
+                reason == null ? "invalid" : reason.substring(0, Math.min(reason.length(), 512)));
         candidateStates.put(id, CandidateState.QUARANTINED);
         QuarantineData data = new QuarantineData();
         data.reasons.putAll(quarantined);
-        try { AtomicFiles.writeJson(directory.resolve("quarantine.json"), data); }
-        catch (IOException failure) { logger.importantKey("checkpoint.previous_lookup_failed", failure.getMessage()); }
+        try {
+            AtomicFiles.writeJson(directory.resolve("quarantine.json"), data);
+        } catch (IOException failure) {
+            logger.importantKey("checkpoint.previous_lookup_failed", failure.getMessage());
+        }
     }
 
     /**
@@ -87,7 +118,7 @@ public final class CheckpointStore {
      *
      * <p>They are never listed as complete checkpoints, so retention would keep them forever and
      * every abnormal exit would leak another partial world copy. The AntiCrash process lock is
-     * already held here, so no other instance can own an in-flight temporary directory.</p>
+     * already held here, so no other instance can own an in-flight temporary directory.
      */
     private void discardAbandonedTemporaries() {
         try (var stream = Files.list(directory)) {
@@ -115,11 +146,14 @@ public final class CheckpointStore {
         return temporary;
     }
 
-    public synchronized Path commit(Path temporary, CheckpointManifest manifest) throws IOException {
+    public synchronized Path commit(Path temporary, CheckpointManifest manifest)
+            throws IOException {
         PathSafety.requireChild(directory, temporary);
-        if (!temporary.getFileName().toString().endsWith(".tmp")) throw new IOException("Not a checkpoint temp directory");
+        if (!temporary.getFileName().toString().endsWith(".tmp"))
+            throw new IOException("Not a checkpoint temp directory");
         if (!Files.isDirectory(temporary, LinkOption.NOFOLLOW_LINKS)
-                || Files.isSymbolicLink(temporary)) throw new IOException("Unsafe checkpoint temp directory");
+                || Files.isSymbolicLink(temporary))
+            throw new IOException("Unsafe checkpoint temp directory");
         Path manifestFile = temporary.resolve("manifest.json");
         // SnapshotResult already hashed every world file. Reuse those immutable hashes for
         // commit metadata; verification still performs a fresh hash of every file. The payload
@@ -140,7 +174,11 @@ public final class CheckpointStore {
             AtomicFiles.forceDirectory(temporary);
         }
 
-        String name = temporary.getFileName().toString().substring(0, temporary.getFileName().toString().length() - 4);
+        String name =
+                temporary
+                        .getFileName()
+                        .toString()
+                        .substring(0, temporary.getFileName().toString().length() - 4);
         Path committed = directory.resolve(name);
         AtomicFiles.moveAtomically(temporary, committed);
         if (!"FAST".equals(durabilityMode())) {
@@ -151,8 +189,10 @@ public final class CheckpointStore {
         } catch (IOException retentionFailure) {
             // The checkpoint is already atomically committed. A cleanup failure must not turn
             // a usable checkpoint into a reported capture failure or delete its temp path.
-            logger.importantKey("checkpoint.retention_failed",
-                    committed.getFileName(), retentionFailure.getMessage());
+            logger.importantKey(
+                    "checkpoint.retention_failed",
+                    committed.getFileName(),
+                    retentionFailure.getMessage());
         }
         return committed;
     }
@@ -163,19 +203,21 @@ public final class CheckpointStore {
             return stream.filter(path -> Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
                     .filter(path -> !Files.isSymbolicLink(path))
                     .filter(path -> ID_PATTERN.matcher(path.getFileName().toString()).matches())
-                    .sorted(Comparator.comparingLong((Path path) -> sequence(path)).reversed()).toList();
+                    .sorted(Comparator.comparingLong((Path path) -> sequence(path)).reversed())
+                    .toList();
         }
     }
 
     /**
      * Discovers one candidate without authenticating or traversing its payload.
      *
-     * <p>This is intentionally smaller than {@link #verify(Path)}.  It only checks the directory,
-     * READY marker and bounded manifest metadata needed to show an ASK prompt.  The returned
+     * <p>This is intentionally smaller than {@link #verify(Path)}. It only checks the directory,
+     * READY marker and bounded manifest metadata needed to show an ASK prompt. The returned
      * candidate is explicitly unverified; callers must run the full verifier before replacing a
-     * live world.</p>
+     * live world.
      */
-    public CheckpointCandidate discoverLatestCandidate(String activeCheckpointId) throws IOException {
+    public CheckpointCandidate discoverLatestCandidate(String activeCheckpointId)
+            throws IOException {
         List<Path> complete = listComplete();
         if (complete.isEmpty()) return null;
         Path preferred = null;
@@ -226,7 +268,8 @@ public final class CheckpointStore {
         } catch (RuntimeException | IOException exception) {
             return null;
         }
-        if (manifest == null || manifest.checkpointId == null
+        if (manifest == null
+                || manifest.checkpointId == null
                 || !manifest.checkpointId.equals(normalized.getFileName().toString())) return null;
         return new CheckpointCandidate(normalized, manifest);
     }
@@ -239,7 +282,10 @@ public final class CheckpointStore {
                 valid.add(checkpoint);
             } catch (IOException exception) {
                 rethrowIfInterrupted(exception);
-                logger.importantKey("checkpoint.invalid_ignored", checkpoint.getFileName(), exception.getMessage());
+                logger.importantKey(
+                        "checkpoint.invalid_ignored",
+                        checkpoint.getFileName(),
+                        exception.getMessage());
             }
         }
         return valid;
@@ -253,7 +299,10 @@ public final class CheckpointStore {
                 return checkpoint;
             } catch (IOException exception) {
                 rethrowIfInterrupted(exception);
-                logger.importantKey("checkpoint.invalid_ignored", checkpoint.getFileName(), exception.getMessage());
+                logger.importantKey(
+                        "checkpoint.invalid_ignored",
+                        checkpoint.getFileName(),
+                        exception.getMessage());
             }
         }
         return null;
@@ -264,8 +313,8 @@ public final class CheckpointStore {
      *
      * <p>Version 2 manifests carry an exact parent ID. A missing or unreadable parent stops the
      * traversal rather than selecting a numerically newer checkpoint from an abandoned branch.
-     * Version 1 checkpoints predate lineage metadata, so their only compatible fallback is an
-     * older numeric generation; a higher ID is never selected for an older active checkpoint.</p>
+     * Version 1 checkpoints predate lineage metadata, so their only compatible fallback is an older
+     * numeric generation; a higher ID is never selected for an older active checkpoint.
      */
     public List<Path> timelineCandidates(String activeCheckpointId) throws IOException {
         if (activeCheckpointId == null) return listComplete();
@@ -296,10 +345,13 @@ public final class CheckpointStore {
             }
             if (manifest == null || !currentId.equals(manifest.checkpointId)) break;
             if (manifest.formatVersion >= 2) {
-                String parent = manifest.timelineParentCheckpointId != null
-                        ? manifest.timelineParentCheckpointId : manifest.parentCheckpointId;
+                String parent =
+                        manifest.timelineParentCheckpointId != null
+                                ? manifest.timelineParentCheckpointId
+                                : manifest.parentCheckpointId;
                 if (parent == null) break;
-                if (!ID_PATTERN.matcher(parent).matches() || sequence(parent) >= sequence(currentId)) break;
+                if (!ID_PATTERN.matcher(parent).matches()
+                        || sequence(parent) >= sequence(currentId)) break;
                 currentId = parent;
                 continue;
             }
@@ -320,12 +372,14 @@ public final class CheckpointStore {
     public CheckpointManifest readManifest(Path checkpoint) throws IOException {
         Path normalized = PathSafety.requireChild(directory, checkpoint);
         Path manifest = normalized.resolve("manifest.json");
-        if (!Files.isRegularFile(manifest, LinkOption.NOFOLLOW_LINKS)) throw new IOException("Missing checkpoint manifest");
+        if (!Files.isRegularFile(manifest, LinkOption.NOFOLLOW_LINKS))
+            throw new IOException("Missing checkpoint manifest");
         return AtomicFiles.readJson(manifest, CheckpointManifest.class, 16L * 1024L * 1024L);
     }
 
     /** Authenticates only the small control metadata needed to follow a recovery branch. */
-    private CheckpointManifest readAuthenticatedLineageManifest(Path checkpoint) throws IOException {
+    private CheckpointManifest readAuthenticatedLineageManifest(Path checkpoint)
+            throws IOException {
         Path normalized = PathSafety.requireChild(directory, checkpoint);
         Path readyFile = normalized.resolve("READY");
         Path checksumFile = normalized.resolve("checksums.sha256");
@@ -335,7 +389,8 @@ public final class CheckpointStore {
                 || !Files.isRegularFile(manifestFile, LinkOption.NOFOLLOW_LINKS)) {
             throw new IOException("Checkpoint lineage metadata is incomplete");
         }
-        if (Files.size(readyFile) > 1024L || Files.size(checksumFile) > 64L * 1024L * 1024L
+        if (Files.size(readyFile) > 1024L
+                || Files.size(checksumFile) > 64L * 1024L * 1024L
                 || Files.size(manifestFile) > 16L * 1024L * 1024L) {
             throw new IOException("Checkpoint lineage metadata is too large");
         }
@@ -345,19 +400,22 @@ public final class CheckpointStore {
         }
         String manifestDigest = null;
         try (var reader = AtomicFiles.boundedTextReader(checksumFile, 64L * 1024L * 1024L)) {
-        String line;
-        while ((line = readChecksumLine(reader)) != null) {
-            if (line.isBlank()) continue;
-            int separator = line.indexOf("  ");
-            if (separator <= 0) throw new IOException("Malformed checkpoint lineage checksum");
-            String digest = line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
-            String relative = line.substring(separator + 2).trim().replace('\\', '/');
-            if (!digest.matches("[0-9a-f]{64}")) throw new IOException("Malformed checkpoint lineage digest");
-            if (relative.equals("manifest.json")) {
-                if (manifestDigest != null) throw new IOException("Duplicate checkpoint manifest checksum");
-                manifestDigest = digest;
+            String line;
+            while ((line = readChecksumLine(reader)) != null) {
+                if (line.isBlank()) continue;
+                int separator = line.indexOf("  ");
+                if (separator <= 0) throw new IOException("Malformed checkpoint lineage checksum");
+                String digest =
+                        line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
+                String relative = line.substring(separator + 2).trim().replace('\\', '/');
+                if (!digest.matches("[0-9a-f]{64}"))
+                    throw new IOException("Malformed checkpoint lineage digest");
+                if (relative.equals("manifest.json")) {
+                    if (manifestDigest != null)
+                        throw new IOException("Duplicate checkpoint manifest checksum");
+                    manifestDigest = digest;
+                }
             }
-        }
         }
         if (manifestDigest == null || !manifestDigest.equals(Hashing.sha256(manifestFile))) {
             throw new IOException("Checkpoint lineage manifest checksum mismatch");
@@ -387,7 +445,8 @@ public final class CheckpointStore {
             try {
                 CheckpointManifest result = verifyInternal(checkpoint, true);
                 authenticated.put(id, Authenticated.capture(checkpoint, result));
-                while (authenticated.size() > 2) authenticated.remove(authenticated.keySet().iterator().next());
+                while (authenticated.size() > 2)
+                    authenticated.remove(authenticated.keySet().iterator().next());
                 candidateStates.put(id, CandidateState.VALID);
                 return result;
             } catch (IOException failure) {
@@ -398,22 +457,30 @@ public final class CheckpointStore {
                 candidateStates.put(id, CandidateState.INVALID);
                 quarantine(id, failure.getMessage());
                 throw failure;
-            } finally { unpin(id); }
+            } finally {
+                unpin(id);
+            }
         }
     }
 
     private final Object verificationLock = new Object();
     private final Map<String, Authenticated> authenticated = new java.util.LinkedHashMap<>();
+
     private record Authenticated(CheckpointManifest manifest, Map<String, FileFacts> revisions) {
         static Authenticated capture(Path root, CheckpointManifest manifest) throws IOException {
             Map<String, FileFacts> facts = new HashMap<>();
             Map<String, SnapshotFile> world = SnapshotManager.index(manifest);
             Map<String, String> payload = new HashMap<>();
-            try (var reader = AtomicFiles.boundedTextReader(root.resolve("checksums.sha256"), 64L * 1024 * 1024)) {
+            try (var reader =
+                    AtomicFiles.boundedTextReader(
+                            root.resolve("checksums.sha256"), 64L * 1024 * 1024)) {
                 String line;
                 while ((line = readChecksumLine(reader)) != null) {
                     int separator = line.indexOf("  ");
-                    if (separator > 0) payload.put(line.substring(separator + 2).replace('\\', '/'), line.substring(0, separator));
+                    if (separator > 0)
+                        payload.put(
+                                line.substring(separator + 2).replace('\\', '/'),
+                                line.substring(0, separator));
                 }
             }
             String listDigest = Hashing.sha256(root.resolve("checksums.sha256"));
@@ -426,22 +493,32 @@ public final class CheckpointStore {
                     if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) {
                         String relative = root.relativize(path).toString().replace('\\', '/');
                         FileFacts revision = FileFacts.read(path);
-                        SnapshotFile file = relative.startsWith("world/") ? world.get(relative.substring(6)) : null;
+                        SnapshotFile file =
+                                relative.startsWith("world/")
+                                        ? world.get(relative.substring(6))
+                                        : null;
                         if (file != null) {
                             if (!JavaIncrementalBackend.previousFileMatches(path, revision, file))
-                                throw new IOException("World file changed before verification publication: " + relative);
-                        } else if (!relative.equals("READY") && !relative.equals("checksums.sha256")) {
+                                throw new IOException(
+                                        "World file changed before verification publication: "
+                                                + relative);
+                        } else if (!relative.equals("READY")
+                                && !relative.equals("checksums.sha256")) {
                             String expected = payload.get(relative);
                             if (expected == null || !expected.equals(Hashing.sha256(path)))
-                                throw new IOException("Payload changed before verification publication: " + relative);
+                                throw new IOException(
+                                        "Payload changed before verification publication: "
+                                                + relative);
                         }
-                        if (!FileFacts.read(path).sameRevision(revision)) throw new IOException("Verification publication raced: " + relative);
+                        if (!FileFacts.read(path).sameRevision(revision))
+                            throw new IOException("Verification publication raced: " + relative);
                         facts.put(root.relativize(path).toString(), revision);
                     }
                 }
             }
             return new Authenticated(manifest, Map.copyOf(facts));
         }
+
         boolean unchanged(Path root) throws IOException {
             // No durable trust cache: restarting always authenticates content again. Within one
             // process only an identical complete revision may reuse the authenticated result.
@@ -454,7 +531,8 @@ public final class CheckpointStore {
                     if (facts.symbolicLink()) return false;
                     if (facts.directory()) continue;
                     FileFacts old = revisions.get(root.relativize(path).toString());
-                    if (old == null || old.changeTime() == 0 || !facts.sameRevision(old)) return false;
+                    if (old == null || old.changeTime() == 0 || !facts.sameRevision(old))
+                        return false;
                     count++;
                 }
             }
@@ -462,71 +540,98 @@ public final class CheckpointStore {
         }
     }
 
-    private CheckpointManifest verifyInternal(Path checkpoint, boolean hydrateDestinationMetadata) throws IOException {
+    private CheckpointManifest verifyInternal(Path checkpoint, boolean hydrateDestinationMetadata)
+            throws IOException {
         Path normalized = PathSafety.requireChild(directory, checkpoint);
         logger.normalKey("checkpoint.validation_started", normalized.getFileName());
         PathSafety.rejectSymlink(normalized);
         Path readyFile = normalized.resolve("READY");
         if (!Files.isDirectory(normalized, LinkOption.NOFOLLOW_LINKS)
-                || !Files.isRegularFile(readyFile, LinkOption.NOFOLLOW_LINKS)) throw new IOException("Checkpoint is incomplete");
+                || !Files.isRegularFile(readyFile, LinkOption.NOFOLLOW_LINKS))
+            throw new IOException("Checkpoint is incomplete");
         Path checksums = normalized.resolve("checksums.sha256");
-        if (!Files.isRegularFile(checksums, LinkOption.NOFOLLOW_LINKS)) throw new IOException("Missing checksum list");
-        if (Files.size(checksums) > 64L * 1024L * 1024L) throw new IOException("Checksum list is too large");
+        if (!Files.isRegularFile(checksums, LinkOption.NOFOLLOW_LINKS))
+            throw new IOException("Missing checksum list");
+        if (Files.size(checksums) > 64L * 1024L * 1024L)
+            throw new IOException("Checksum list is too large");
         String ready = AtomicFiles.readText(readyFile, 1024L).trim();
-        if (config.snapshot.verifyChecksums && !ready.equals(Hashing.sha256(checksums))) throw new IOException("READY marker checksum mismatch");
+        if (config.snapshot.verifyChecksums && !ready.equals(Hashing.sha256(checksums)))
+            throw new IOException("READY marker checksum mismatch");
         Set<String> listed = new HashSet<>();
         Map<String, String> verifiedDigests = new HashMap<>();
         List<String> verifiedPayloadLines = new ArrayList<>();
         Map<String, DestinationMetadata> destinationMetadata = new HashMap<>();
         try (var reader = AtomicFiles.boundedTextReader(checksums, 64L * 1024L * 1024L)) {
-        String line;
-        while ((line = readChecksumLine(reader)) != null) {
-            if (line.isBlank()) continue;
-            int separator = line.indexOf("  ");
-            if (separator <= 0) throw new IOException("Malformed checksum line");
-            String digest = line.substring(0, separator).trim();
-            if (!digest.matches("[0-9a-fA-F]{64}")) throw new IOException("Malformed checksum digest");
-            String relative = line.substring(separator + 2).trim().replace('\\', '/');
-            Path file = safeRelative(normalized, relative);
-            // safeRelative above already rejects READY and checksums.sha256 themselves.
-            if (!listed.add(relative)) throw new IOException("Duplicate checksum path: " + relative);
-            boolean collectDestinationMetadata = hydrateDestinationMetadata
-                    && config.snapshot.verifyChecksums && relative.startsWith("world/");
-            BasicFileAttributes before = collectDestinationMetadata
-                    && Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
-                    ? Files.readAttributes(file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS) : null;
-            long beforeChangeTime = before == null ? 0L : changeTime(file);
-            long beforeLinkCount = before == null ? 0L : linkCount(file);
-            if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
-                    || (config.snapshot.verifyChecksums && !digest.equals(Hashing.sha256(file)))) {
-                throw new IOException("Checksum mismatch: " + relative);
-            }
-            if (before != null) {
-                BasicFileAttributes after = Files.readAttributes(file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
-                if (sameDestinationMetadata(before, beforeChangeTime, beforeLinkCount, after, file)) {
-                    destinationMetadata.put(relative.substring("world/".length()),
-                            new DestinationMetadata(after.lastModifiedTime().toMillis(),
-                                    changeTime(file), linkCount(file)));
+            String line;
+            while ((line = readChecksumLine(reader)) != null) {
+                if (line.isBlank()) continue;
+                int separator = line.indexOf("  ");
+                if (separator <= 0) throw new IOException("Malformed checksum line");
+                String digest = line.substring(0, separator).trim();
+                if (!digest.matches("[0-9a-fA-F]{64}"))
+                    throw new IOException("Malformed checksum digest");
+                String relative = line.substring(separator + 2).trim().replace('\\', '/');
+                Path file = safeRelative(normalized, relative);
+                // safeRelative above already rejects READY and checksums.sha256 themselves.
+                if (!listed.add(relative))
+                    throw new IOException("Duplicate checksum path: " + relative);
+                boolean collectDestinationMetadata =
+                        hydrateDestinationMetadata
+                                && config.snapshot.verifyChecksums
+                                && relative.startsWith("world/");
+                BasicFileAttributes before =
+                        collectDestinationMetadata
+                                        && Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                                ? Files.readAttributes(
+                                        file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS)
+                                : null;
+                long beforeChangeTime = before == null ? 0L : changeTime(file);
+                long beforeLinkCount = before == null ? 0L : linkCount(file);
+                if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                        || (config.snapshot.verifyChecksums
+                                && !digest.equals(Hashing.sha256(file)))) {
+                    throw new IOException("Checksum mismatch: " + relative);
                 }
+                if (before != null) {
+                    BasicFileAttributes after =
+                            Files.readAttributes(
+                                    file, BasicFileAttributes.class, LinkOption.NOFOLLOW_LINKS);
+                    if (sameDestinationMetadata(
+                            before, beforeChangeTime, beforeLinkCount, after, file)) {
+                        destinationMetadata.put(
+                                relative.substring("world/".length()),
+                                new DestinationMetadata(
+                                        after.lastModifiedTime().toMillis(),
+                                        changeTime(file),
+                                        linkCount(file)));
+                    }
+                }
+                verifiedDigests.put(relative, digest.toLowerCase(java.util.Locale.ROOT));
+                if (!relative.equals("manifest.json"))
+                    verifiedPayloadLines.add(digest + "  " + relative);
             }
-            verifiedDigests.put(relative, digest.toLowerCase(java.util.Locale.ROOT));
-            if (!relative.equals("manifest.json")) verifiedPayloadLines.add(digest + "  " + relative);
-        }
         }
         try (var stream = Files.walk(normalized)) {
             for (Path file : stream.toList()) {
                 if (Files.isDirectory(file, LinkOption.NOFOLLOW_LINKS)) continue;
                 PathSafety.rejectSymlink(file);
                 String relative = normalized.relativize(file).toString().replace('\\', '/');
-                if (!relative.equals("READY") && !relative.equals("checksums.sha256") && !listed.contains(relative)) throw new IOException("Unlisted checkpoint file: " + relative);
+                if (!relative.equals("READY")
+                        && !relative.equals("checksums.sha256")
+                        && !listed.contains(relative))
+                    throw new IOException("Unlisted checkpoint file: " + relative);
             }
         }
         CheckpointManifest manifest = readManifest(normalized);
-        if (manifest == null || (manifest.formatVersion != 1 && manifest.formatVersion != 2
-                && manifest.formatVersion != 3 && manifest.formatVersion != 4)) {
+        if (manifest == null
+                || (manifest.formatVersion != 1
+                        && manifest.formatVersion != 2
+                        && manifest.formatVersion != 3
+                        && manifest.formatVersion != 4)) {
             throw new IOException("Unsupported checkpoint manifest");
         }
-        if (!normalized.getFileName().toString().equals(manifest.checkpointId)) throw new IOException("Checkpoint manifest ID mismatch");
+        if (!normalized.getFileName().toString().equals(manifest.checkpointId))
+            throw new IOException("Checkpoint manifest ID mismatch");
         validateManifest(normalized, manifest, verifiedDigests);
         // Every payload file was freshly hashed above. Reconstruct the manifest payload digest
         // from those already-verified checksum entries instead of reading the entire world a
@@ -538,7 +643,8 @@ public final class CheckpointStore {
         }
         if (hydrateDestinationMetadata && !destinationMetadata.isEmpty()) {
             for (SnapshotFile snapshot : manifest.worldFiles) {
-                DestinationMetadata metadata = destinationMetadata.get(snapshot.path.replace('\\', '/'));
+                DestinationMetadata metadata =
+                        destinationMetadata.get(snapshot.path.replace('\\', '/'));
                 if (metadata == null) continue;
                 snapshot.destinationMetadataRecorded = true;
                 snapshot.storedModifiedTime = metadata.modifiedTime();
@@ -565,7 +671,8 @@ public final class CheckpointStore {
         Path checksumFile = normalized.resolve("checksums.sha256");
         if (!Files.isRegularFile(readyFile, LinkOption.NOFOLLOW_LINKS)
                 || !Files.isRegularFile(checksumFile, LinkOption.NOFOLLOW_LINKS)
-                || Files.isSymbolicLink(readyFile) || Files.isSymbolicLink(checksumFile)) {
+                || Files.isSymbolicLink(readyFile)
+                || Files.isSymbolicLink(checksumFile)) {
             throw new IOException("Checkpoint recovery metadata is incomplete");
         }
         if (Files.size(readyFile) > 1024L || Files.size(checksumFile) > 64L * 1024L * 1024L) {
@@ -579,28 +686,37 @@ public final class CheckpointStore {
         Map<String, String> digests = new HashMap<>();
         List<String> payloadLines = new ArrayList<>();
         try (var reader = AtomicFiles.boundedTextReader(checksumFile, 64L * 1024L * 1024L)) {
-        String line;
-        while ((line = readChecksumLine(reader)) != null) {
-            if (line.isBlank()) continue;
-            int separator = line.indexOf("  ");
-            if (separator <= 0) throw new IOException("Malformed checkpoint recovery checksum");
-            String digest = line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
-            String relative = line.substring(separator + 2).trim().replace('\\', '/');
-            if (!digest.matches("[0-9a-f]{64}") || relative.equals("READY")
-                    || relative.equals("checksums.sha256") || digests.putIfAbsent(relative, digest) != null) {
-                throw new IOException("Invalid checkpoint recovery checksum entry");
+            String line;
+            while ((line = readChecksumLine(reader)) != null) {
+                if (line.isBlank()) continue;
+                int separator = line.indexOf("  ");
+                if (separator <= 0) throw new IOException("Malformed checkpoint recovery checksum");
+                String digest =
+                        line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
+                String relative = line.substring(separator + 2).trim().replace('\\', '/');
+                if (!digest.matches("[0-9a-f]{64}")
+                        || relative.equals("READY")
+                        || relative.equals("checksums.sha256")
+                        || digests.putIfAbsent(relative, digest) != null) {
+                    throw new IOException("Invalid checkpoint recovery checksum entry");
+                }
+                safeRelative(normalized, relative);
+                if (!relative.equals("manifest.json")) payloadLines.add(digest + "  " + relative);
             }
-            safeRelative(normalized, relative);
-            if (!relative.equals("manifest.json")) payloadLines.add(digest + "  " + relative);
-        }
         }
 
-        for (String required : List.of("manifest.json", "runtime-capsule.json",
-                "players.json", "fakeplayers.json")) {
+        for (String required :
+                List.of(
+                        "manifest.json",
+                        "runtime-capsule.json",
+                        "players.json",
+                        "fakeplayers.json")) {
             String expected = digests.get(required);
             Path file = normalized.resolve(required);
-            if (expected == null || !Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
-                    || Files.isSymbolicLink(file) || !expected.equals(Hashing.sha256(file))) {
+            if (expected == null
+                    || !Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                    || Files.isSymbolicLink(file)
+                    || !expected.equals(Hashing.sha256(file))) {
                 throw new IOException("Checkpoint recovery payload checksum mismatch: " + required);
             }
         }
@@ -612,15 +728,19 @@ public final class CheckpointStore {
                 if (Files.isDirectory(file, LinkOption.NOFOLLOW_LINKS)) continue;
                 PathSafety.rejectSymlink(file);
                 String relative = normalized.relativize(file).toString().replace('\\', '/');
-                if (!relative.equals("READY") && !relative.equals("checksums.sha256")
+                if (!relative.equals("READY")
+                        && !relative.equals("checksums.sha256")
                         && !digests.containsKey(relative)) {
                     throw new IOException("Unlisted checkpoint recovery file: " + relative);
                 }
             }
         }
         CheckpointManifest manifest = readManifest(normalized);
-        if (manifest == null || (manifest.formatVersion != 1 && manifest.formatVersion != 2
-                && manifest.formatVersion != 3 && manifest.formatVersion != 4)
+        if (manifest == null
+                || (manifest.formatVersion != 1
+                        && manifest.formatVersion != 2
+                        && manifest.formatVersion != 3
+                        && manifest.formatVersion != 4)
                 || !normalized.getFileName().toString().equals(manifest.checkpointId)) {
             throw new IOException("Unsupported checkpoint recovery manifest");
         }
@@ -635,7 +755,10 @@ public final class CheckpointStore {
     public Path find(String id) throws IOException {
         if (id == null || !ID_PATTERN.matcher(id).matches()) return null;
         Path candidate = PathSafety.requireChild(directory, directory.resolve(id));
-        return Files.isDirectory(candidate, LinkOption.NOFOLLOW_LINKS) && !Files.isSymbolicLink(candidate) ? candidate : null;
+        return Files.isDirectory(candidate, LinkOption.NOFOLLOW_LINKS)
+                        && !Files.isSymbolicLink(candidate)
+                ? candidate
+                : null;
     }
 
     /**
@@ -644,6 +767,7 @@ public final class CheckpointStore {
      * worked off over the following commits instead of stalling one of them for minutes.
      */
     private static final int MAX_REMOVALS_PER_PASS = 8;
+
     private static final long RETENTION_PASS_BUDGET_NANOS = 2_000_000_000L;
 
     public void retain() throws IOException {
@@ -658,15 +782,15 @@ public final class CheckpointStore {
      * only the generation it restores. The parent is needed for one thing, as the link source of
      * the next generation, and that parent is the newest generation, which is never removed. An
      * earlier version kept every ancestor of a retained generation; with a chain that is never
-     * interrupted by a BASE that meant nothing was ever removed.</p>
+     * interrupted by a BASE that meant nothing was ever removed.
      *
      * <p>Unlinking an old generation changes the ctime of every inode it shares with the newest
      * one. The next generation recognises an unchanged parent file by its recorded ctime and would
      * otherwise hash the whole world again after each pass, so the record of the newest generation
      * is brought up to date here: only for files that matched their record immediately before the
-     * pass and still have the same size and mtime after it.</p>
+     * pass and still have the same size and mtime after it.
      *
-     * @param newest         the generation just committed, or null when not called from a commit
+     * @param newest the generation just committed, or null when not called from a commit
      * @param newestManifest its in-memory manifest, whose destination metadata is refreshed
      */
     private void retain(Path newest, CheckpointManifest newestManifest) throws IOException {
@@ -676,7 +800,10 @@ public final class CheckpointStore {
         if (checkpoints.isEmpty()) return;
         Path first = checkpoints.get(0);
         long now = System.currentTimeMillis();
-        long maxBytes = config.checkpoint.retentionMaxGb <= 0 ? 0 : config.checkpoint.retentionMaxGb * 1024L * 1024L * 1024L;
+        long maxBytes =
+                config.checkpoint.retentionMaxGb <= 0
+                        ? 0
+                        : config.checkpoint.retentionMaxGb * 1024L * 1024L * 1024L;
         // Sizing walks every file of every retained generation. Only the size axis needs it, and
         // it is disabled by default, so never pay for it when retention_max_gb is 0.
         long[] sizes = new long[checkpoints.size()];
@@ -692,19 +819,24 @@ public final class CheckpointStore {
         for (int i = checkpoints.size() - 1; i >= 1 && doomed.size() < MAX_REMOVALS_PER_PASS; i--) {
             Path candidate = checkpoints.get(i);
             boolean tooMany = i >= config.checkpoint.retentionCount;
-            boolean tooOld = config.checkpoint.retentionDays > 0
-                    && now - Files.getLastModifiedTime(candidate).toMillis()
-                    > config.checkpoint.retentionDays * 86_400_000L;
+            boolean tooOld =
+                    config.checkpoint.retentionDays > 0
+                            && now - Files.getLastModifiedTime(candidate).toMillis()
+                                    > config.checkpoint.retentionDays * 86_400_000L;
             boolean tooLarge = maxBytes > 0 && remaining > maxBytes;
             String candidateId = candidate.getFileName().toString();
-            if ((tooMany || tooOld || tooLarge) && !isPinned(candidateId) && !isQuarantined(candidateId)) {
+            if ((tooMany || tooOld || tooLarge)
+                    && !isPinned(candidateId)
+                    && !isQuarantined(candidateId)) {
                 doomed.add(i);
                 remaining -= sizes[i];
             }
         }
         if (doomed.isEmpty()) return;
-        Map<String, FileFacts> before = newest != null && newestManifest != null && newest.equals(first)
-                ? trustedWorldFacts(newest, newestManifest) : Map.of();
+        Map<String, FileFacts> before =
+                newest != null && newestManifest != null && newest.equals(first)
+                        ? trustedWorldFacts(newest, newestManifest)
+                        : Map.of();
         long started = System.nanoTime();
         try {
             for (int index : doomed) {
@@ -718,16 +850,23 @@ public final class CheckpointStore {
         }
     }
 
-    /** The world files of {@code checkpoint} that currently match their recorded metadata exactly. */
-    private static Map<String, FileFacts> trustedWorldFacts(Path checkpoint, CheckpointManifest manifest) {
+    /**
+     * The world files of {@code checkpoint} that currently match their recorded metadata exactly.
+     */
+    private static Map<String, FileFacts> trustedWorldFacts(
+            Path checkpoint, CheckpointManifest manifest) {
         Map<String, FileFacts> trusted = new HashMap<>();
         Path world = checkpoint.resolve("world");
         for (SnapshotFile file : manifest.worldFiles) {
-            if (file == null || file.path == null || !file.destinationMetadataRecorded
+            if (file == null
+                    || file.path == null
+                    || !file.destinationMetadataRecorded
                     || file.storedChangeTime == 0L) continue;
             try {
                 FileFacts facts = FileFacts.readOrNull(world.resolve(file.path));
-                if (facts != null && facts.regularFile() && facts.size() == file.size
+                if (facts != null
+                        && facts.regularFile()
+                        && facts.size() == file.size
                         && facts.modifiedTime() == file.storedModifiedTime
                         && facts.changeTime() == file.storedChangeTime) {
                     trusted.put(file.path, facts);
@@ -740,16 +879,19 @@ public final class CheckpointStore {
     }
 
     /** Accepts the ctime and link count a retention pass of this process left behind. */
-    private static void refreshWorldFacts(Path checkpoint, CheckpointManifest manifest,
-                                          Map<String, FileFacts> before) {
+    private static void refreshWorldFacts(
+            Path checkpoint, CheckpointManifest manifest, Map<String, FileFacts> before) {
         Path world = checkpoint.resolve("world");
         for (SnapshotFile file : manifest.worldFiles) {
             FileFacts old = file == null ? null : before.get(file.path);
             if (old == null) continue;
             try {
                 FileFacts facts = FileFacts.readOrNull(world.resolve(file.path));
-                if (facts != null && facts.regularFile() && facts.size() == old.size()
-                        && facts.modifiedTime() == old.modifiedTime() && facts.changeTime() != 0L) {
+                if (facts != null
+                        && facts.regularFile()
+                        && facts.size() == old.size()
+                        && facts.modifiedTime() == old.modifiedTime()
+                        && facts.changeTime() != 0L) {
                     file.storedChangeTime = facts.changeTime();
                     file.storedLinkCount = facts.linkCount();
                 }
@@ -759,26 +901,34 @@ public final class CheckpointStore {
         }
     }
 
-    private synchronized boolean isPinned(String id) { return pins.containsKey(id); }
+    private synchronized boolean isPinned(String id) {
+        return pins.containsKey(id);
+    }
 
     private long nextSequence() throws IOException {
         long max = 0;
         if (Files.exists(directory)) {
             try (var stream = Files.list(directory)) {
                 for (Path path : stream.toList()) {
-                    Matcher matcher = ID_PATTERN.matcher(path.getFileName().toString().replaceFirst("\\.tmp$", ""));
+                    Matcher matcher =
+                            ID_PATTERN.matcher(
+                                    path.getFileName().toString().replaceFirst("\\.tmp$", ""));
                     if (matcher.matches()) {
-                        try { max = Math.max(max, Long.parseLong(matcher.group(1))); }
-                        catch (NumberFormatException exception) { throw new IOException("Checkpoint sequence is too large", exception); }
+                        try {
+                            max = Math.max(max, Long.parseLong(matcher.group(1)));
+                        } catch (NumberFormatException exception) {
+                            throw new IOException("Checkpoint sequence is too large", exception);
+                        }
                     }
                 }
             }
         }
-        if (max >= 999_999_999_999_999_999L) throw new IOException("Checkpoint sequence is exhausted");
+        if (max >= 999_999_999_999_999_999L)
+            throw new IOException("Checkpoint sequence is exhausted");
         return max + 1;
     }
 
-    /** Sorted "digest  relative" lines for every payload file except the manifest itself. */
+    /** Sorted "digest relative" lines for every payload file except the manifest itself. */
     private List<String> checksumLines(Path root, CheckpointManifest manifest) throws IOException {
         List<String> lines = new ArrayList<>();
         Map<String, SnapshotFile> worldFiles = indexWorldFiles(manifest);
@@ -787,7 +937,9 @@ public final class CheckpointStore {
                 if (Files.isDirectory(file, LinkOption.NOFOLLOW_LINKS)) continue;
                 PathSafety.rejectSymlink(file);
                 String relative = root.relativize(file).toString().replace('\\', '/');
-                if (relative.equals("READY") || relative.equals("checksums.sha256") || relative.equals("manifest.json")) continue;
+                if (relative.equals("READY")
+                        || relative.equals("checksums.sha256")
+                        || relative.equals("manifest.json")) continue;
                 if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)) continue;
                 String digest = trustedWorldDigest(file, relative, worldFiles);
                 lines.add(digest + "  " + relative);
@@ -798,7 +950,8 @@ public final class CheckpointStore {
     }
 
     private static Map<String, SnapshotFile> indexWorldFiles(CheckpointManifest manifest) {
-        if (manifest == null || manifest.worldFiles == null || manifest.worldFiles.isEmpty()) return Map.of();
+        if (manifest == null || manifest.worldFiles == null || manifest.worldFiles.isEmpty())
+            return Map.of();
         Map<String, SnapshotFile> result = new HashMap<>();
         for (SnapshotFile file : manifest.worldFiles) {
             if (file != null && file.path != null) result.put(file.path.replace('\\', '/'), file);
@@ -806,8 +959,8 @@ public final class CheckpointStore {
         return result;
     }
 
-    private static String trustedWorldDigest(Path file, String relative,
-                                             Map<String, SnapshotFile> worldFiles) throws IOException {
+    private static String trustedWorldDigest(
+            Path file, String relative, Map<String, SnapshotFile> worldFiles) throws IOException {
         if (relative.startsWith("world/") && !worldFiles.isEmpty()) {
             SnapshotFile snapshot = worldFiles.get(relative.substring("world/".length()));
             if (snapshot != null && snapshot.sha256 != null && snapshot.size == Files.size(file)) {
@@ -829,17 +982,23 @@ public final class CheckpointStore {
     }
 
     private static Path safeRelative(Path root, String relative) throws IOException {
-        if (relative == null || relative.isBlank() || relative.equals("READY")
+        if (relative == null
+                || relative.isBlank()
+                || relative.equals("READY")
                 || relative.equals("checksums.sha256")) {
             throw new IOException("Unsafe checkpoint path: " + relative);
         }
         final Path parsed;
-        try { parsed = Path.of(relative.replace('\\', '/')); }
-        catch (RuntimeException exception) { throw new IOException("Unsafe checkpoint path: " + relative, exception); }
+        try {
+            parsed = Path.of(relative.replace('\\', '/'));
+        } catch (RuntimeException exception) {
+            throw new IOException("Unsafe checkpoint path: " + relative, exception);
+        }
         if (parsed.isAbsolute()) throw new IOException("Unsafe checkpoint path: " + relative);
         for (Path part : parsed) {
             String name = part.toString();
-            if (name.equals(".") || name.equals("..")) throw new IOException("Unsafe checkpoint path: " + relative);
+            if (name.equals(".") || name.equals(".."))
+                throw new IOException("Unsafe checkpoint path: " + relative);
         }
         return PathSafety.requireChild(root, root.resolve(parsed));
     }
@@ -850,10 +1009,14 @@ public final class CheckpointStore {
         }
     }
 
-    private static boolean sameDestinationMetadata(BasicFileAttributes before, long beforeChangeTime,
-                                                    long beforeLinkCount, BasicFileAttributes after,
-                                                    Path file) {
-        return before.isRegularFile() && after.isRegularFile()
+    private static boolean sameDestinationMetadata(
+            BasicFileAttributes before,
+            long beforeChangeTime,
+            long beforeLinkCount,
+            BasicFileAttributes after,
+            Path file) {
+        return before.isRegularFile()
+                && after.isRegularFile()
                 && before.size() == after.size()
                 && before.lastModifiedTime().equals(after.lastModifiedTime())
                 && beforeChangeTime == changeTime(file)
@@ -878,25 +1041,33 @@ public final class CheckpointStore {
         }
     }
 
-    private record DestinationMetadata(long modifiedTime, long changeTime, long linkCount) {
-    }
+    private record DestinationMetadata(long modifiedTime, long changeTime, long linkCount) {}
 
-    private static void validateManifest(Path checkpoint, CheckpointManifest manifest,
-                                         Map<String, String> digests) throws IOException {
+    private static void validateManifest(
+            Path checkpoint, CheckpointManifest manifest, Map<String, String> digests)
+            throws IOException {
         if (!CheckpointManifest.CURRENT_MINECRAFT_VERSION.equals(manifest.minecraftVersion)) {
-            throw new IOException("Checkpoint Minecraft version mismatch: expected "
-                    + CheckpointManifest.CURRENT_MINECRAFT_VERSION + ", actual " + manifest.minecraftVersion);
+            throw new IOException(
+                    "Checkpoint Minecraft version mismatch: expected "
+                            + CheckpointManifest.CURRENT_MINECRAFT_VERSION
+                            + ", actual "
+                            + manifest.minecraftVersion);
         }
         if (!RuntimeCapsule.supportsFormatVersion(manifest.runtimeCapsuleVersion)) {
-            throw new IOException("Unsupported Runtime Capsule version: "
-                    + manifest.runtimeCapsuleVersion);
+            throw new IOException(
+                    "Unsupported Runtime Capsule version: " + manifest.runtimeCapsuleVersion);
         }
-        if (!manifest.clean || manifest.worldFiles == null
-                || manifest.snapshotBackend == null || manifest.utcTimestamp == null) {
+        if (!manifest.clean
+                || manifest.worldFiles == null
+                || manifest.snapshotBackend == null
+                || manifest.utcTimestamp == null) {
             throw new IOException("Checkpoint manifest is incomplete");
         }
-        try { Instant.parse(manifest.utcTimestamp); }
-        catch (Exception exception) { throw new IOException("Checkpoint timestamp is invalid", exception); }
+        try {
+            Instant.parse(manifest.utcTimestamp);
+        } catch (Exception exception) {
+            throw new IOException("Checkpoint timestamp is invalid", exception);
+        }
         if (manifest.formatVersion >= 2 && manifest.parentCheckpointId != null) {
             if (!ID_PATTERN.matcher(manifest.parentCheckpointId).matches()
                     || sequence(manifest.parentCheckpointId) >= sequence(manifest.checkpointId)) {
@@ -905,21 +1076,33 @@ public final class CheckpointStore {
         }
         if (manifest.timelineParentCheckpointId != null
                 && (!ID_PATTERN.matcher(manifest.timelineParentCheckpointId).matches()
-                || sequence(manifest.timelineParentCheckpointId) >= sequence(manifest.checkpointId))) {
+                        || sequence(manifest.timelineParentCheckpointId)
+                                >= sequence(manifest.checkpointId))) {
             throw new IOException("Checkpoint timeline parent ID is invalid");
         }
-        if (manifest.snapshotDurationMs < 0 || manifest.barrierDurationMs < 0
+        if (manifest.snapshotDurationMs < 0
+                || manifest.barrierDurationMs < 0
                 || manifest.finalizationDurationMs < 0
-                || manifest.totalBytes < 0 || manifest.changedFiles < 0 || manifest.reusedFiles < 0
-                || manifest.playerSnapshotCount < 0 || manifest.fakePlayerCount < 0
-                || manifest.blockEventCount < 0 || manifest.loadedChunkCount < 0
-                || manifest.fullChunkCount < 0 || manifest.blockTickingChunkCount < 0
-                || manifest.entityTickingChunkCount < 0 || manifest.forcedChunkCount < 0
-                || manifest.blockEntityTickerCount < 0 || manifest.entityOrderCount < 0
-                || manifest.torchBurnoutCount < 0 || manifest.ticketCount < 0
+                || manifest.totalBytes < 0
+                || manifest.changedFiles < 0
+                || manifest.reusedFiles < 0
+                || manifest.playerSnapshotCount < 0
+                || manifest.fakePlayerCount < 0
+                || manifest.blockEventCount < 0
+                || manifest.loadedChunkCount < 0
+                || manifest.fullChunkCount < 0
+                || manifest.blockTickingChunkCount < 0
+                || manifest.entityTickingChunkCount < 0
+                || manifest.forcedChunkCount < 0
+                || manifest.blockEntityTickerCount < 0
+                || manifest.entityOrderCount < 0
+                || manifest.torchBurnoutCount < 0
+                || manifest.ticketCount < 0
                 || manifest.transientChunkCount < 0
-                || manifest.transientChunksMadeDirty < 0 || manifest.movingPistonCount < 0
-                || manifest.scheduledTickCount < 0 || manifest.orderedScheduledTickCount < 0
+                || manifest.transientChunksMadeDirty < 0
+                || manifest.movingPistonCount < 0
+                || manifest.scheduledTickCount < 0
+                || manifest.orderedScheduledTickCount < 0
                 || manifest.orderedMovingPistonCount < 0
                 || manifest.orderedTransientEntityCount < 0
                 || manifest.logicalDeltaFormatVersion < 0
@@ -941,13 +1124,21 @@ public final class CheckpointStore {
         if (manifest.runtimeCapsuleVersion >= 6) validateV6Manifest(manifest);
         Set<String> dimensions = new HashSet<>();
         for (String dimension : manifest.dimensions) {
-            if (dimension == null || dimension.isBlank() || dimension.length() > 512
+            if (dimension == null
+                    || dimension.isBlank()
+                    || dimension.length() > 512
                     || !dimensions.add(dimension)) {
                 throw new IOException("Checkpoint manifest contains an invalid dimension");
             }
         }
-        for (String required : List.of("manifest.json", "runtime-capsule.json", "players.json", "fakeplayers.json")) {
-            if (!digests.containsKey(required)) throw new IOException("Missing checkpoint payload: " + required);
+        for (String required :
+                List.of(
+                        "manifest.json",
+                        "runtime-capsule.json",
+                        "players.json",
+                        "fakeplayers.json")) {
+            if (!digests.containsKey(required))
+                throw new IOException("Missing checkpoint payload: " + required);
         }
         if (manifest.formatVersion >= 4
                 && "LOGICAL_DELTA".equalsIgnoreCase(manifest.checkpointEngine)
@@ -957,28 +1148,39 @@ public final class CheckpointStore {
         Set<String> manifestPaths = new HashSet<>();
         long totalBytes = 0;
         for (SnapshotFile snapshot : manifest.worldFiles) {
-            if (snapshot == null || snapshot.path == null || snapshot.sha256 == null
-                    || snapshot.size < 0 || SnapshotFilters.excluded(snapshot.path)) {
+            if (snapshot == null
+                    || snapshot.path == null
+                    || snapshot.sha256 == null
+                    || snapshot.size < 0
+                    || SnapshotFilters.excluded(snapshot.path)) {
                 throw new IOException("Invalid world file metadata in manifest");
             }
             String relative = snapshot.path.replace('\\', '/');
             safeRelative(checkpoint.resolve("world"), relative);
-            if (!manifestPaths.add(relative)) throw new IOException("Duplicate world file metadata: " + relative);
+            if (!manifestPaths.add(relative))
+                throw new IOException("Duplicate world file metadata: " + relative);
             String digest = digests.get("world/" + relative);
             if (digest == null || !digest.equalsIgnoreCase(snapshot.sha256)) {
                 throw new IOException("World manifest/checksum mismatch: " + relative);
             }
             Path file = checkpoint.resolve("world").resolve(relative).normalize();
-            if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.size(file) != snapshot.size) {
+            if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)
+                    || Files.size(file) != snapshot.size) {
                 throw new IOException("World manifest size mismatch: " + relative);
             }
-            try { totalBytes = Math.addExact(totalBytes, snapshot.size); }
-            catch (ArithmeticException exception) { throw new IOException("World manifest byte count overflow", exception); }
+            try {
+                totalBytes = Math.addExact(totalBytes, snapshot.size);
+            } catch (ArithmeticException exception) {
+                throw new IOException("World manifest byte count overflow", exception);
+            }
         }
         Set<String> actualWorldPaths = new HashSet<>();
-        for (String relative : digests.keySet()) if (relative.startsWith("world/")) actualWorldPaths.add(relative.substring(6));
-        if (!actualWorldPaths.equals(manifestPaths)) throw new IOException("World manifest file set mismatch");
-        if (manifest.totalBytes != totalBytes) throw new IOException("World manifest total byte count mismatch");
+        for (String relative : digests.keySet())
+            if (relative.startsWith("world/")) actualWorldPaths.add(relative.substring(6));
+        if (!actualWorldPaths.equals(manifestPaths))
+            throw new IOException("World manifest file set mismatch");
+        if (manifest.totalBytes != totalBytes)
+            throw new IOException("World manifest total byte count mismatch");
         if ((long) manifest.changedFiles + manifest.reusedFiles != manifest.worldFiles.size()) {
             throw new IOException("World manifest file counters are inconsistent");
         }
@@ -986,8 +1188,9 @@ public final class CheckpointStore {
         validateGenerationSeal(checkpoint, manifest, digests);
     }
 
-    private static void validateGenerationSeal(Path checkpoint, CheckpointManifest manifest,
-                                                Map<String, String> digests) throws IOException {
+    private static void validateGenerationSeal(
+            Path checkpoint, CheckpointManifest manifest, Map<String, String> digests)
+            throws IOException {
         if (!"PORTABLE_GENERATION".equalsIgnoreCase(manifest.snapshotBackend)
                 || manifest.generationSealFormatVersion <= 0) {
             return;
@@ -996,8 +1199,10 @@ public final class CheckpointStore {
             throw new IOException("Portable generation is missing its seal journal");
         }
         Path sealPath = checkpoint.resolve("generation-seal.json");
-        GenerationSeal seal = AtomicFiles.readJson(sealPath, GenerationSeal.class, 16L * 1024L * 1024L);
-        if (seal == null || seal.formatVersion != manifest.generationSealFormatVersion
+        GenerationSeal seal =
+                AtomicFiles.readJson(sealPath, GenerationSeal.class, 16L * 1024L * 1024L);
+        if (seal == null
+                || seal.formatVersion != manifest.generationSealFormatVersion
                 || !safeEquals(seal.parentCheckpointId, manifest.parentCheckpointId)
                 || seal.logicalCutServerTick != manifest.logicalCutServerTick
                 || seal.logicalCutMonotonicNanos != manifest.logicalCutMonotonicNanos
@@ -1006,13 +1211,15 @@ public final class CheckpointStore {
                 || seal.inheritedCount != manifest.generationInheritedFiles
                 || seal.sealedCount != manifest.generationSealedFiles
                 || seal.tombstoneCount != manifest.generationTombstoneFiles
-                || seal.fileSet == null || seal.fileSet.size() != manifest.fileSet.size()) {
+                || seal.fileSet == null
+                || seal.fileSet.size() != manifest.fileSet.size()) {
             throw new IOException("Portable generation seal does not match manifest");
         }
         for (int index = 0; index < manifest.fileSet.size(); index++) {
             GenerationFileEntry expected = manifest.fileSet.get(index);
             GenerationFileEntry actual = seal.fileSet.get(index);
-            if (expected == null || actual == null
+            if (expected == null
+                    || actual == null
                     || !safeEquals(expected.path, actual.path)
                     || !safeEquals(expected.state, actual.state)
                     || !safeEquals(expected.captureKind, actual.captureKind)
@@ -1029,8 +1236,9 @@ public final class CheckpointStore {
         return left == null ? right == null : left.equals(right);
     }
 
-    private static void validateGenerationFileSet(Path checkpoint, CheckpointManifest manifest,
-                                                   Set<String> worldPaths) throws IOException {
+    private static void validateGenerationFileSet(
+            Path checkpoint, CheckpointManifest manifest, Set<String> worldPaths)
+            throws IOException {
         if (manifest.fileSet == null || manifest.fileSet.isEmpty()) return;
         Set<String> seen = new HashSet<>();
         Set<String> present = new HashSet<>();
@@ -1048,7 +1256,9 @@ public final class CheckpointStore {
             }
         }
         for (GenerationFileEntry entry : manifest.fileSet) {
-            if (entry == null || entry.path == null || entry.state == null
+            if (entry == null
+                    || entry.path == null
+                    || entry.state == null
                     || !seen.add(entry.path.replace('\\', '/'))) {
                 throw new IOException("Invalid checkpoint generation file set");
             }
@@ -1061,17 +1271,22 @@ public final class CheckpointStore {
                 throw new IOException("Unknown generation file state: " + entry.state, exception);
             }
             if (state == GenerationFileState.PRESENT) {
-                if (entry.sha256 == null || !entry.sha256.matches("[0-9a-fA-F]{64}")
-                        || entry.size < 0 || entry.captureKind == null) {
+                if (entry.sha256 == null
+                        || !entry.sha256.matches("[0-9a-fA-F]{64}")
+                        || entry.size < 0
+                        || entry.captureKind == null) {
                     throw new IOException("Invalid PRESENT generation file entry: " + path);
                 }
                 SnapshotFile worldFile = worldFilesByPath.get(path);
-                if (worldFile == null || worldFile.size != entry.size
+                if (worldFile == null
+                        || worldFile.size != entry.size
                         || !entry.sha256.equalsIgnoreCase(worldFile.sha256)) {
-                    throw new IOException("Generation file entry does not match world metadata: " + path);
+                    throw new IOException(
+                            "Generation file entry does not match world metadata: " + path);
                 }
                 try {
-                    GenerationCaptureKind captureKind = GenerationCaptureKind.valueOf(entry.captureKind);
+                    GenerationCaptureKind captureKind =
+                            GenerationCaptureKind.valueOf(entry.captureKind);
                     if (captureKind == GenerationCaptureKind.INHERITED
                             && manifest.parentCheckpointId == null) {
                         throw new IOException("Inherited generation file has no parent: " + path);
@@ -1079,13 +1294,18 @@ public final class CheckpointStore {
                     if (captureKind == GenerationCaptureKind.INHERITED) inheritedCount++;
                     else sealedCount++;
                 } catch (IllegalArgumentException exception) {
-                    throw new IOException("Unknown generation capture kind: " + entry.captureKind, exception);
+                    throw new IOException(
+                            "Unknown generation capture kind: " + entry.captureKind, exception);
                 }
                 present.add(path);
                 presentCount++;
-            } else if (entry.captureKind != null || entry.sha256 != null || entry.size != 0L
-                    || entry.modifiedTime != 0L || entry.changeTime != 0L) {
-                throw new IOException("Non-PRESENT generation entry contains payload metadata: " + path);
+            } else if (entry.captureKind != null
+                    || entry.sha256 != null
+                    || entry.size != 0L
+                    || entry.modifiedTime != 0L
+                    || entry.changeTime != 0L) {
+                throw new IOException(
+                        "Non-PRESENT generation entry contains payload metadata: " + path);
             } else if (state == GenerationFileState.TOMBSTONE) {
                 tombstoneCount++;
             } else {
@@ -1105,8 +1325,8 @@ public final class CheckpointStore {
     }
 
     /**
-     * v6 manifests carry the independently authenticated exact-domain and runtime evidence. Do
-     * not let a syntactically valid but incomplete manifest reach the runtime payload validator.
+     * v6 manifests carry the independently authenticated exact-domain and runtime evidence. Do not
+     * let a syntactically valid but incomplete manifest reach the runtime payload validator.
      */
     private static void validateV6Manifest(CheckpointManifest manifest) throws IOException {
         if (manifest.fidelity == null
@@ -1115,15 +1335,19 @@ public final class CheckpointStore {
                 || !manifest.chunkDomainHash.matches("[0-9a-fA-F]{64}")
                 || manifest.carpetCaptureStatus == null
                 || !Set.of("CAPTURED", "NOT_APPLICABLE", "INCOMPLETE", "UNSUPPORTED")
-                .contains(manifest.carpetCaptureStatus)
+                        .contains(manifest.carpetCaptureStatus)
                 || manifest.unsupportedRuntimeState == null
                 || manifest.unsupportedRuntimeState.size() > 10_000) {
             throw new IOException("Checkpoint v6 manifest runtime evidence is incomplete");
         }
         Set<String> markers = new HashSet<>();
         for (String marker : manifest.unsupportedRuntimeState) {
-            if (marker == null || marker.isBlank() || marker.length() > 256 || !markers.add(marker)) {
-                throw new IOException("Checkpoint v6 manifest contains an invalid unsupported-state marker");
+            if (marker == null
+                    || marker.isBlank()
+                    || marker.length() > 256
+                    || !markers.add(marker)) {
+                throw new IOException(
+                        "Checkpoint v6 manifest contains an invalid unsupported-state marker");
             }
         }
         if (manifest.fullChunkCount > 1_000_000
@@ -1136,24 +1360,45 @@ public final class CheckpointStore {
                 || manifest.ticketCount > 1_000_000
                 || manifest.checkpointPlayerCount > 100_000
                 || (manifest.checkpointPlayerHash != null
-                && !manifest.checkpointPlayerHash.matches("[0-9a-fA-F]{64}"))) {
+                        && !manifest.checkpointPlayerHash.matches("[0-9a-fA-F]{64}"))) {
             throw new IOException("Checkpoint v6 manifest runtime counters are too large");
         }
     }
 
     private static long size(Path path) throws IOException {
-        try (var stream = Files.walk(path)) { return stream.filter(p -> Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS)).mapToLong(p -> { try { return Files.size(p); } catch (IOException e) { return 0; } }).sum(); }
+        try (var stream = Files.walk(path)) {
+            return stream.filter(p -> Files.isRegularFile(p, LinkOption.NOFOLLOW_LINKS))
+                    .mapToLong(p -> {
+                        try {
+                            return Files.size(p);
+                        } catch (IOException e) {
+                            return 0;
+                        }
+                    })
+                    .sum();
+        }
     }
 
-    private static long sequence(Path path) { return sequence(path.getFileName().toString()); }
-    private static long sequence(String id) { Matcher matcher = ID_PATTERN.matcher(id == null ? "" : id); if(!matcher.matches())return -1;try{return Long.parseLong(matcher.group(1));}catch(NumberFormatException ignored){return -1;} }
+    private static long sequence(Path path) {
+        return sequence(path.getFileName().toString());
+    }
+
+    private static long sequence(String id) {
+        Matcher matcher = ID_PATTERN.matcher(id == null ? "" : id);
+        if (!matcher.matches()) return -1;
+        try {
+            return Long.parseLong(matcher.group(1));
+        } catch (NumberFormatException ignored) {
+            return -1;
+        }
+    }
 
     /**
      * Makes every newly written checkpoint file durable.
      *
-     * <p>World entries that are hard links to the parent checkpoint are skipped: those inodes
-     * were already fsynced when that parent was committed, and re-forcing them made an
-     * incremental capture open and sync thousands of unchanged region files for nothing.</p>
+     * <p>World entries that are hard links to the parent checkpoint are skipped: those inodes were
+     * already fsynced when that parent was committed, and re-forcing them made an incremental
+     * capture open and sync thousands of unchanged region files for nothing.
      */
     private void forceFiles(Path root, CheckpointManifest manifest) throws IOException {
         Map<String, SnapshotFile> worldFiles = indexWorldFiles(manifest);
@@ -1210,8 +1455,8 @@ public final class CheckpointStore {
                 }
                 long remaining = TimeUnit.SECONDS.toNanos(1L) - Math.max(0L, elapsed);
                 try {
-                    TimeUnit.NANOSECONDS.sleep(Math.max(1L, Math.min(remaining,
-                            TimeUnit.MILLISECONDS.toNanos(50L))));
+                    TimeUnit.NANOSECONDS.sleep(
+                            Math.max(1L, Math.min(remaining, TimeUnit.MILLISECONDS.toNanos(50L))));
                 } catch (InterruptedException exception) {
                     Thread.currentThread().interrupt();
                     throw new InterruptedIOException("Checkpoint I/O throttle interrupted");
