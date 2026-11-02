@@ -16,7 +16,9 @@ public abstract class VersionedChunkStorageMixin {
      * method writes a "__context" key into it. Vanilla races its own IO thread there; a sealed
      * checkpoint also writes that object into its generation, so it gets a private copy instead.
      */
-    @ModifyVariable(method = "updateChunkNbt", at = @At("HEAD"), argsOnly = true)
+    // Newer overloads also take a context NBT. Slot 1 is the chunk payload; select the first
+    // NBT argument explicitly instead of relying on Mixin's single-candidate discriminator.
+    @ModifyVariable(method = "updateChunkNbt", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private NbtCompound anticrash$copySealedChunk(NbtCompound nbt) {
         return SealedNbt.isSealed(nbt) ? nbt.copy() : nbt;
     }

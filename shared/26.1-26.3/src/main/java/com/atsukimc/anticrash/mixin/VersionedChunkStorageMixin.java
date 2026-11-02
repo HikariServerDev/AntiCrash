@@ -16,7 +16,8 @@ public abstract class VersionedChunkStorageMixin {
      * method writes a "__context" key into it. Vanilla races its own IO thread there; a sealed
      * checkpoint also writes that object into its generation, so it gets a private copy instead.
      */
-    @ModifyVariable(method = "upgradeChunkTag", at = @At("HEAD"), argsOnly = true)
+    // The first CompoundTag is chunkTag (slot 1); a later tag is data-fix context, not data.
+    @ModifyVariable(method = "upgradeChunkTag", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private CompoundTag anticrash$copySealedChunk(CompoundTag nbt) {
         return SealedNbt.isSealed(nbt) ? nbt.copy() : nbt;
     }

@@ -226,7 +226,7 @@ public final class ChunkStateSnapshot {
             result.level = holder.getTicketLevel();
             result.completedLevel = holder.getQueueLevel();
             result.levelType =
-                    holder.getFullStatus() == null ? null : holder.getFullStatus().name();
+                    holder.getFullStatus() == null ? null : ChunkDomainLevel.canonical(holder.getFullStatus().name());
             return result;
         }
 
