@@ -911,7 +911,7 @@ public final class CarpetIntegration {
         if (data.motionFrameNbt != null)
             com.atsukimc.anticrash.runtime.EntityMotionFrame.read(
                     NbtCodec.decodeCompound(data.motionFrameNbt));
-        // LivingEntity initializes lastKineticHitFeedbackTime to Integer.MIN_VALUE (as long).
+        // LivingEntity initializes lastKineticAttackTime to Integer.MIN_VALUE (as long).
         // Preserve that never-hit sentinel, while still rejecting other invalid negative times.
         if (data.lastKineticAttackTime != null
                 && data.lastKineticAttackTime < -1

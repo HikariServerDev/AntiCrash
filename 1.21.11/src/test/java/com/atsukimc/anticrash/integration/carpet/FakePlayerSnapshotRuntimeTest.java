@@ -77,4 +77,61 @@ class FakePlayerSnapshotRuntimeTest {
         assertNotEquals(drawing.canonical(), later.canonical());
         assertFalse(drawing.canonical().equals(player().canonical()));
     }
+
+    @Test
+    void nativeNeverHitSentinelPassesTheProductionSnapshotValidator() throws Exception {
+        var game = new org.objectweb.asm.tree.ClassNode();
+        try (var input =
+                net.minecraft.entity.LivingEntity.class.getResourceAsStream("LivingEntity.class")) {
+            new org.objectweb.asm.ClassReader(input).accept(game, 0);
+        }
+        boolean initialized =
+                game.methods.stream()
+                        .filter(m -> m.name.equals("<init>"))
+                        .anyMatch(m -> {
+                            for (var instruction : m.instructions) {
+                                if (!(instruction
+                                                instanceof
+                                                org.objectweb.asm.tree.FieldInsnNode field)
+                                        || field.getOpcode() != org.objectweb.asm.Opcodes.PUTFIELD
+                                        || !field.name.equals("lastKineticAttackTime")) continue;
+                                var previous = instruction.getPrevious();
+                                return previous
+                                                instanceof
+                                                org.objectweb.asm.tree.LdcInsnNode constant
+                                        && Long.valueOf(Integer.MIN_VALUE).equals(constant.cst);
+                            }
+                            return false;
+                        });
+        org.junit.jupiter.api.Assertions.assertTrue(initialized, "Verify the actual game sentinel");
+        var config = new com.atsukimc.anticrash.config.AntiCrashConfig();
+        var options = config.fakePlayer.snapshot;
+        options.inventory = false;
+        options.selectedSlot = false;
+        options.actions = false;
+        options.actionInternalTiming = false;
+        options.itemUseCooldown = false;
+        options.blockBreakProgress = false;
+        var validate =
+                CarpetIntegration.class.getDeclaredMethod(
+                        "validate",
+                        FakePlayerSnapshot.class,
+                        com.atsukimc.anticrash.config.AntiCrashConfig.class);
+        validate.setAccessible(true);
+        var snapshot = player();
+        for (long value : new long[] {Integer.MIN_VALUE, -1, 0, 1337}) {
+            snapshot.lastKineticAttackTime = value;
+            org.junit.jupiter.api.Assertions.assertDoesNotThrow(
+                    () -> validate.invoke(null, snapshot, config));
+        }
+        for (long value : new long[] {-2, Long.MIN_VALUE}) {
+            snapshot.lastKineticAttackTime = value;
+            var error =
+                    org.junit.jupiter.api.Assertions.assertThrows(
+                            java.lang.reflect.InvocationTargetException.class,
+                            () -> validate.invoke(null, snapshot, config));
+            org.junit.jupiter.api.Assertions.assertInstanceOf(
+                    IllegalArgumentException.class, error.getCause());
+        }
+    }
 }
