@@ -12,6 +12,13 @@ public final class AntiCrashMod implements ModInitializer {
         controller = new AntiCrashController();
     }
 
+    public static String minecraftVersion() {
+        return net.fabricmc.loader.api.FabricLoader.getInstance()
+                .getModContainer("minecraft")
+                .map(container -> container.getMetadata().getVersion().getFriendlyString())
+                .orElse("unknown");
+    }
+
     public static AntiCrashController controller() {
         return controller;
     }

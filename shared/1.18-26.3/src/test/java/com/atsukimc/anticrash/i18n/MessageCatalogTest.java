@@ -46,6 +46,16 @@ class MessageCatalogTest {
         assertEquals(japanese.stringPropertyNames(), english.stringPropertyNames());
     }
 
+    @Test
+    void initializationUsesTheTargetVersionInBothLanguages() {
+        assertEquals(
+                "AntiCrash 1.0.1 initialized for Minecraft 26.3",
+                MessageCatalog.text("en", "anticrash.initialized", "1.0.1", "26.3"));
+        assertEquals(
+                "AntiCrash 1.0.1 を Minecraft 26.3 用に初期化しました",
+                MessageCatalog.text("ja", "anticrash.initialized", "1.0.1", "26.3"));
+    }
+
     private static Properties load(String resource) throws Exception {
         Properties properties = new Properties();
         try (var stream = MessageCatalogTest.class.getResourceAsStream(resource)) {

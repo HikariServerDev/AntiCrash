@@ -210,7 +210,8 @@ public final class AntiCrashController {
         consistency = consistencyManager;
         CarpetIntegration.initialize(logger);
         bootstrapRecovery();
-        logger.normalKey("anticrash.initialized", AntiCrashMod.VERSION);
+        logger.normalKey(
+                "anticrash.initialized", AntiCrashMod.VERSION, AntiCrashMod.minecraftVersion());
     }
 
     private void bootstrapRecovery() {

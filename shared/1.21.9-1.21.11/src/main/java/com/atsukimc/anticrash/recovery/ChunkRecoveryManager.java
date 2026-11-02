@@ -24,12 +24,11 @@ import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
 /**
- * Prepares only a bounded set of recovery chunks while the server remains frozen.
+ * Rebuilds the configured recovery domain in bounded batches while game time remains frozen.
  *
- * <p>World files contain the persistent chunk data. A checkpoint's loaded and entity-ticking lists
- * describe the old JVM's cache and ticket graph; keeping the whole graph resident during startup
- * duplicates Vanilla's normal loading and caused the observed 1 GiB heap exhaustion. The plan is
- * therefore selected before any ticket is added, and the default selects only critical anchors.
+ * <p>ALL restores every checkpoint chunk at its recorded readiness. OPTIMIZED may use a smaller
+ * configured plan. STRICT never truncates its expected domain: concurrent-load and heap limits
+ * control preparation pressure, and insufficient capacity fails recovery closed.
  */
 public final class ChunkRecoveryManager {
     // An ephemeral, non-persisted type, distinct from Vanilla's finite spawn-search tickets;
