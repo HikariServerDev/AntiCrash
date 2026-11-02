@@ -1,9 +1,6 @@
 # AntiCrash
 
-**Minecraft Fabric server mod** — by AtsukiMC · **1.0.1** · **LGPL-3.0-only**
-
-Automatic checkpoints and recovery for Technical Minecraft servers.
-Technical Minecraftサーバー向けの、自動チェックポイント・復旧Modです。
+**Minecraft Fabric** — by AtsukiMC · **v1.0.1** · **LGPL-3.0-only**
 
 [English](#english) · [日本語](#日本語)
 
@@ -11,154 +8,377 @@ Technical Minecraftサーバー向けの、自動チェックポイント・復�
 
 ## English
 
-### What is AntiCrash?
+### Overview
 
-AntiCrash periodically saves **checkpoints**: world data together with supported runtime state needed to resume machines. After an unexpected shutdown, it can restore a valid checkpoint and keep game time paused until you run `/ac start`.
+AntiCrash regularly saves the world along with states that Minecraft does not normally save, such as piston movement and queued block events. These saves are called **checkpoints**. Restoring one after an unexpected shutdown helps protect Technical Minecraft machines from breaking.
 
-It is designed for Technical Minecraft, including piston machines and Carpet fake players. Recovery support depends on the Minecraft version and installed mods; exact restoration of every machine or runtime state is not guaranteed.
+After restoration, AntiCrash prepares the required chunks and keeps **game time paused until `/ac start`**. This gives players time to join and get ready before their machines resume. With Carpet installed, AntiCrash also restores saved fake players and their actions.
 
-**Players do not need to install AntiCrash. Keep separate world backups.**
+| Feature | Default or requirement |
+| --- | --- |
+| Install on | **Server only** |
+| Automatic checkpoints | **Every 30 seconds** |
+| Recovery after an unexpected shutdown | **Automatic** (`AUTO`) |
+| After restoration | **Paused until `/ac start`** |
+| Fabric API | **Not required for basic use** |
+| Carpet | **Optional** |
 
 ### Installation
 
-1. Stop the server and back up its world.
-2. Choose the **1.0.1 Mod JAR matching your exact Minecraft version** from the repository's `build/` directory. For 1.18.2, use `AntiCrash-1.0.1+mc1.18.2.jar`.
-3. Put it in the server's `mods/` directory and start the Fabric server.
-4. AntiCrash creates `config/anticrash.toml`. Automatic checkpoints are enabled by default, every **30 seconds**.
+Stop the server and back up the world first. Choose the v1.0.1 Mod JAR for your **exact Minecraft version** from the repository's `build/` directory. For Minecraft 1.18.2, use `AntiCrash-1.0.1+mc1.18.2.jar`.
 
-Fabric API is not required for basic use. Carpet is optional; integration varies by Minecraft version. Players can join with an unmodded client.
+Put the Mod JAR in the server's `mods/` folder, then start the Fabric server. AntiCrash creates `config/anticrash.toml`, where you can change its settings. Players do not need to install the mod.
 
-| JAR | Where it goes | Purpose |
+The Supervisor is a separate program for automatic restarts. If you use it, place its JAR in the server directory, **outside `mods/`**.
+
+| File | Location | Purpose |
 | --- | --- | --- |
-| `AntiCrash-1.0.1+mc<VERSION>.jar` | Server `mods/` | Checkpoints and recovery |
-| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | Server directory, outside `mods/` | Optional monitoring and same-console restarts |
+| `AntiCrash-1.0.1+mc<VERSION>.jar` | Server `mods/` folder | Checkpoints and restoration |
+| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | Server directory | Process monitoring and restarts |
 
-#### Supported versions
+#### Supported Minecraft versions
 
-| Minecraft | Fabric Loader | Java to run the mod |
+| Minecraft | Minimum Fabric Loader | Minimum Java for the server |
 | --- | --- | --- |
-| 1.18, 1.18.1, 1.18.2 | 0.17.3+ | 17+ |
-| 1.19–1.19.4 | 0.17.3+ | 17+ |
-| 1.20–1.20.4 | 0.17.3+ | 17+ |
-| 1.20.5, 1.20.6 | 0.17.3+ | 21+ |
-| 1.21–1.21.10 | 0.17.3+ | 21+ |
-| 1.21.11 | 0.18.4+ | 21+ |
-| 26.1 | 0.18.4+ | 25+ |
-| 26.2 | 0.19.3+ | 25+ |
-| 26.3 | 0.19.5+ | 25+ |
+| 1.18, 1.18.1, 1.18.2 | 0.17.3 | 17 |
+| 1.19–1.19.4 | 0.17.3 | 17 |
+| 1.20–1.20.4 | 0.17.3 | 17 |
+| 1.20.5–1.20.6 | 0.17.3 | 21 |
+| 1.21–1.21.10 | 0.17.3 | 21 |
+| 1.21.11 | 0.18.4 | 21 |
+| 26.1 | 0.18.4 | 25 |
+| 26.2 | 0.19.3 | 25 |
+| 26.3 | 0.19.5 | 25 |
 
-Each version in a range has its own JAR. These **30 targets passed builds, unit tests, and artifact checks**; this does not establish live-server compatibility. Loader requirements are those declared by each target. The 1.16.1 port is paused and has no release JAR.
+Each listed Minecraft version has its own JAR. These 30 versions have passed builds and automated checks; live-server compatibility still needs testing. The 1.16.1 port is paused and has no release JAR.
 
-### How recovery works
+### Recovery guide
 
-With the default settings:
+#### After an unexpected shutdown
 
-1. AntiCrash creates checkpoints while the server runs.
-2. After an unexpected shutdown, the next startup validates and restores a valid checkpoint.
-3. Game time stays paused while required chunks and runtime state are prepared.
-4. Check `/ac status` and `/ac recovery verify`, then run `/ac start` when ready. A message confirms when game time resumes.
+With the default settings, the next startup checks and restores a valid checkpoint. AntiCrash then prepares the required chunks and saved state while game time stays paused.
 
-**Restoring a checkpoint and resuming game time are separate steps.** `/ac start` resumes an already prepared world; it does not select or restore a checkpoint. Any player can use it by default; diagnostic commands require permission level 4.
+When preparation finishes, run **`/ac start`** to resume. A message confirms that game time has started. You can check progress with `/ac status`.
 
-#### When to restore: recovery policy
+By default, **any player can run `/ac start`**. Other commands require permission level 4. `/ac start` resumes the restored world; it does not choose a checkpoint.
 
-Set `policy` in `[recovery]`:
+#### Recovery policy
+
+In the `[recovery]` section of the config, `policy` controls when to restore.
 
 | Policy | After an unexpected shutdown | After a normal shutdown |
 | --- | --- | --- |
-| `AUTO` — default | Restore a valid checkpoint automatically. | Start the saved world without rollback. |
-| `ASK` | Ask whether to restore. No answer defaults to **Y**. | Ask whether to restore the shutdown checkpoint. No answer defaults to **N**. |
-| `MANUAL` | Require an explicit decision; do not restore automatically. | Start the saved world normally. |
+| `AUTO` — default | Restore automatically | Start normally |
+| `ASK` | Ask; no answer means **Y** | Ask; no answer means **N** |
+| `MANUAL` | Ask; do not restore without an answer | Start normally |
 
-For `ASK`, wait for the **AntiCrash Y/N prompt**, then type `Y` or `N` and press Enter **in the server console**, before the world loads. `Y` chooses restoration, subject to validation; `N` starts the current saved world without rollback.
+When the question appears **before the world loads**, type `Y` or `N` in the **server console** and press Enter. `Y` restores a checkpoint after validation. `N` starts the saved world without restoring a checkpoint.
 
-The deadline is `ask_timeout_seconds` (default **60 seconds**); `0` waits indefinitely. The compatibility setting `ask_default_action` does not override these defaults. `MANUAL` does not silently choose restoration when no answer is available.
+The answer deadline is `ask_timeout_seconds`, which defaults to **60 seconds**. Set it to `0` to wait indefinitely. With `MANUAL`, reaching the deadline is treated as a recovery failure; it does not automatically restore. The older `ask_default_action` setting is kept for compatibility and does not change these rules.
 
-After a normal shutdown, `Y` restores the shutdown checkpoint's supported runtime state too. `N` follows a normal Vanilla startup, so a machine saved mid-cycle may not continue in the same way.
+After a normal shutdown, choosing `Y` also restores the supported machine state saved in the checkpoint. Choosing `N` starts the world as Vanilla would, so a machine stopped mid-cycle may not continue in the same way.
 
-#### How strictly to check: recovery fidelity
+#### Recovery mode
+
+In `[recovery]`, `fidelity` controls how strictly AntiCrash checks the restored state.
 
 | Mode | Behavior |
 | --- | --- |
-| `OPTIMIZED` — default | Best-effort recovery using the configured chunk preparation strategy. |
-| `STRICT` | Compare observable chunk/runtime state with the checkpoint; stay paused if required state is missing, unsupported, or mismatched. |
+| `OPTIMIZED` — default | Restore as much as the selected recovery method supports |
+| `STRICT` | Keep game time paused if required state is missing, unsupported, or different from the checkpoint |
 
-**OPTIMIZED does not guarantee tick-boundary equivalence.** STRICT cannot reproduce every mod, random state, asynchronous task, or thread schedule either. Inspect blocking reasons before changing its safeguards.
+If STRICT refuses to start, `/ac recovery verify --verbose` shows the reason. **OPTIMIZED does not guarantee tick-boundary equivalence**: machines may not resume with exactly the same timing as at the checkpoint.
 
 ### Configuration
 
-Edit `config/anticrash.toml`. These are common defaults: **update the existing sections rather than replacing the whole file or adding duplicate sections**.
+Edit **`config/anticrash.toml`**, then run `/ac config reload` to apply changes. Change startup recovery settings before the next startup. To edit an existing file, replace the relevant values without adding a second copy of the same section.
+
+#### Language and automatic saving
+
+At the top of the file, `language = "ja"` selects Japanese and `language = "en"` selects English. This changes AntiCrash messages, not Minecraft or Fabric logs.
+
+Under `[checkpoint]`, `enabled = true` enables automatic checkpoints. `interval_seconds = 30` saves every 30 seconds of real time, regardless of the game's tick rate.
+
+#### How many checkpoints to keep
+
+The following settings are all under `[checkpoint]`.
+
+**`retention_count = 20`** keeps the newest 20 checkpoints, subject to the other limits below. Use a whole number of at least 1. **`0` does not mean unlimited; AntiCrash changes it to `1` when loading the config.**
+
+**`retention_days = 7`** makes checkpoints older than 7 days eligible for deletion. Set it to `0` to keep them regardless of age.
+
+**`retention_max_gb = 0`** means there is no storage-size limit. For example, `10` enables a 10 GB limit and makes older checkpoints eligible for deletion when their total size exceeds it.
+
+Exceeding any one of these limits can make an old checkpoint eligible for deletion. The newest checkpoint is always kept. With the defaults, AntiCrash keeps up to 20 checkpoints and removes ones older than 7 days, except for the newest one.
+
+At 30 seconds per checkpoint, 20 checkpoints cover roughly the last 10 minutes. Setting `retention_days = 7` alone does not keep seven days of saves if the count limit is reached first.
+
+#### Pausing after restoration and permissions
+
+To wait for `/ac start` after restoration, keep both `freeze_after_restore` and `require_manual_start` set to `true` under `[recovery]`. Setting either to `false` requests automatic resume after preparation and checks.
+
+Under `[commands]`, `start_permission_level = 0` lets all players resume game time. Change it to `4` to restrict this to administrators with permission level 4. The other commands default to level 4 and have their own permission settings.
+
+#### Chunk loading
+
+Under `[recovery]`, `preload_mode = "ALL"` prepares all chunks that were loaded at the checkpoint. `ENTITY_TICKING` selects chunks where entities were ticking; `CRITICAL` selects important locations such as moving pistons and fake players. These narrower selections can leave part of a machine unprepared. STRICT requires its full recorded chunk set regardless of this choice.
+
+`max_preload_chunks` is the preparation limit, **100,000** by default. If more chunks are required, recovery fails instead of dropping them. Under `[recovery.chunks]`, `max_concurrent_loads = 4` limits simultaneous loads to four; it does not reduce the total number needed.
+
+#### Players, fake players, and messages
+
+By default, real players have only their dimension, position, and rotation restored. Inventory and experience are not rolled back. Optional fields under `[player_snapshot]` can change this, so check for conflicts before enabling them alongside a player-data synchronization mod.
+
+Fake-player restoration is enabled under `[fakeplayer]`. With a compatible Carpet version, it restores saved actions and their timing as well as position and inventory. Recovery normally waits for all required fake players before resuming.
+
+Checkpoint creation does **not** display an action-bar message. `[notifications].frozen_action_bar` controls messages while the world is paused for recovery. Under `[logging]`, `level = "NORMAL"` controls how much detail is logged.
+
+#### All default settings
+
+The full v1.0.1 defaults are below. Comments are omitted to make the values easier to find.
+
+<details>
+<summary>Show all 156 settings</summary>
 
 ```toml
-language = "ja" # "ja" or "en"
+config_version = 1
+language = "ja"
 
 [checkpoint]
 enabled = true
 interval_seconds = 30
+create_on_manual_command = true
+create_on_clean_shutdown = true
+shutdown_timeout_seconds = 5
 retention_count = 20
 retention_days = 7
 retention_max_gb = 0
+save_batch_chunks = 256
+
+[checkpoint.performance]
+target_barrier_ms = 20
+warn_barrier_ms = 50
+critical_barrier_ms = 100
+warn_checkpoint_ms = 5000
+rolling_enabled = true
+rolling_budget_ms_per_tick = 1.0
+rolling_max_budget_ms_per_tick = 3.0
+adaptive_budget = true
+warn_finalize_ms = 1000
+
+[checkpoint.pipeline]
+max_inflight_generations = 2
+
+[checkpoint.incremental]
+base_interval = 0
+max_chain_depth = 0
+
+[checkpoint.io]
+background_threads = 1
+max_mb_per_second = 0
+
+[checkpoint.storage]
+minimum_free_mb = 256
+
+[checkpoint.durability]
+mode = "SAFE"
+
+[checkpoint.engine]
+mode = "LOGICAL_DELTA"
+fallback = "PORTABLE_GENERATION"
+single_inflight = true
+allow_unsupported_persistent_state = false
+
+[checkpoint.cache]
+max_mb = 256
+budget_ms_per_tick = 1.0
+
+[checkpoint.mirror]
+enabled = true
+audit_interval_seconds = 300
+trace_limit = 64
 
 [commands]
-start_permission_level = 0
+help_permission_level = 4
 status_permission_level = 4
+start_permission_level = 0
+start_force_permission_level = 4
+freeze_permission_level = 4
 checkpoint_permission_level = 4
 recovery_permission_level = 4
+fakeplayers_permission_level = 4
+journal_permission_level = 4
+config_permission_level = 4
+debug_permission_level = 4
+
+[snapshot]
+backend = "AUTO"
+verify_checksums = true
+keep_crash_raw_world = true
+crash_raw_retention_count = 10
+io_threads = 0
 
 [recovery]
-policy = "AUTO" # AUTO, ASK, MANUAL
-fidelity = "OPTIMIZED" # OPTIMIZED, STRICT
+policy = "AUTO"
+fidelity = "OPTIMIZED"
 freeze_after_restore = true
 require_manual_start = true
+start_command = "/ac start"
+restore_latest_valid_checkpoint = true
+allow_restore_older_checkpoint = true
+fallback_to_previous_checkpoint = true
 ask_timeout_seconds = 60
+ask_default_action = "ABORT"
+allow_start_with_failed_validation = false
+spawn_restart_helper = false
+temporary_ticket_release_ticks = 100
 preload_mode = "ALL"
+max_preload_chunks = 100000
+chunk_ready_timeout_seconds = 120
 
 [recovery.chunks]
 max_concurrent_loads = 4
+
+[recovery.strict]
+allow_unsupported_runtime_state = false
+allow_unsupported_carpet_state = false
+require_entity_order = true
+require_block_entity_ticker_order = true
+require_ticket_ledger = true
+
+[recovery.strict.players]
+require_checkpoint_players = false
+
+[recovery.lock]
+allow_login = true
+allow_chat = true
+allow_commands = true
+allow_player_movement = true
+allow_player_look = true
+allow_sneak = true
+allow_block_break = false
+allow_block_place = false
+allow_item_use = false
+allow_entity_attack = false
+allow_entity_interact = false
+allow_container_interaction = false
+allow_item_drop = false
+allow_item_pickup = false
+
+[player_snapshot]
+enabled = true
+dimension = true
+position = true
+rotation = true
+gamemode = false
+abilities = false
+inventory_main = false
+inventory_armor = false
+inventory_offhand = false
+selected_hotbar_slot = false
+experience_level = false
+experience_progress = false
+experience_total = false
+ender_chest = false
+health = false
+absorption = false
+food_level = false
+food_saturation = false
+food_exhaustion = false
+potion_effects = false
+velocity = false
+fall_distance = false
+fire_ticks = false
+air = false
+spawn_point = false
+
+[player_snapshot.vanilla_files]
+restore_playerdata = false
+restore_stats = false
+restore_advancements = false
+
+[fakeplayer]
+enabled = true
+auto_rejoin = true
+restore_before_unfreeze = true
+require_all_ready_before_start = true
+
+[fakeplayer.snapshot]
+dimension = true
+position = true
+rotation = true
+gamemode = true
+flying = true
+inventory = true
+selected_slot = true
+health = true
+hunger = true
+effects = true
+sneaking = true
+sprinting = true
+movement = true
+actions = true
+action_internal_timing = true
+item_use_cooldown = true
+block_break_progress = true
+
+[login]
+retry_timeout_seconds = 5
+
+[notifications]
+frozen_action_bar = true
+checkpoint_action_bar_delay_ticks = 10
+ask_prompt_in_game = true
+
+[consistency]
+mode = "IGNORE"
+
+[logging]
+level = "NORMAL"
+console = true
+console_color = "AUTO"
+chat_color = true
+file = true
+max_file_mb = 50
+retained_files = 10
+show_checkpoint_contents = false
+show_player_details = false
+show_fakeplayer_details = true
+show_block_events = false
+show_file_operations = false
+show_transaction_details = false
 ```
 
-| Setting | Meaning |
-| --- | --- |
-| `language` | AntiCrash messages only: Japanese `ja` (default) or English `en`. Minecraft/Fabric logs keep their own language. |
-| `interval_seconds` | Real-time checkpoint interval, independent of game tick rate. Range: 1–86,400 seconds. |
-| `retention_count` / `retention_days` / `retention_max_gb` | Retention limits. At least the newest checkpoint is kept. `0` disables the days or GB limit, not the count limit. |
-| `freeze_after_restore` + `require_manual_start` | Keep both `true` to wait for `/ac start`. Setting either to `false` requests automatic resume after preparation and checks. |
-| `preload_mode` | `ALL`: all checkpoint-loaded chunks at recorded readiness. `ENTITY_TICKING`: entity-ticking chunks. `CRITICAL`: important anchors. STRICT still requires its complete expected domain. |
-| `max_preload_chunks` | Chunk preparation safety limit (default 100,000). Exceeding it fails recovery instead of silently dropping chunks. |
-| `max_concurrent_loads` | Simultaneous recovery chunk loads. This does not reduce the final required set or guarantee that it fits in memory. |
+</details>
 
-Permissions range from **0 to 4**; 0 allows non-operators. Only `/ac start` defaults to 0; other command permissions default to 4. Raise `start_permission_level` if only administrators should resume the world. Help, debug, config reload, and other command groups also have individual permission settings.
+### Main commands
 
-Use `/ac config reload` after editing. Change startup recovery settings before the next startup; reloading cannot undo a completed restore.
-
-### Commands
-
-These use the in-game `/` prefix. Omit it in the server console.
+Use the leading `/` in game; omit it in the server console.
 
 | Command | Purpose |
 | --- | --- |
-| `/ac help` | Show command help. |
-| `/ac status` | Show checkpoint/recovery progress. |
-| `/ac start` | Request resume after recovery checks pass. |
-| `/ac freeze` | Pause game time manually. |
-| `/ac checkpoint now` | Request a checkpoint. |
-| `/ac checkpoint list` | List checkpoints. |
-| `/ac checkpoint info <id>` | Inspect a checkpoint. |
-| `/ac checkpoint base` | Create an independent base checkpoint. |
-| `/ac checkpoint restore <id\|latest>` | Schedule restoration and restart. **Rolls world data back.** |
-| `/ac recovery verify [--verbose]` | Check readiness and blocking reasons. |
-| `/ac debug equivalence [--verbose]` | Show differences from checkpoint state. |
-| `/ac recovery abort` | Abort recovery; where available, return to the preserved pre-rollback world. |
-| `/ac fakeplayers` | Show saved Carpet fake-player information. |
-| `/ac config reload` | Reload configuration. |
+| `/ac help` | Show command help |
+| `/ac status` | Show saving and recovery progress |
+| `/ac start` | Resume game time |
+| `/ac freeze` | Pause game time |
+| `/ac checkpoint now` | Save a checkpoint now |
+| `/ac checkpoint list` | List saved checkpoints |
+| `/ac checkpoint info <id>` | Show a checkpoint's details |
+| `/ac checkpoint base` | Create an independent base checkpoint |
+| `/ac checkpoint restore <id>` | Schedule restoration and restart; rolls back the world |
+| `/ac recovery verify` | Check whether recovery is ready |
+| `/ac debug equivalence` | Show differences from the checkpoint |
+| `/ac recovery abort` | Cancel recovery and schedule a return to the preserved pre-rollback world, if available |
+| `/ac fakeplayers` | Show saved fake-player information |
+| `/ac config reload` | Reload settings |
 
-`[--verbose]` means optional; for example, `/ac recovery verify --verbose`.
+Use `latest` instead of an ID to restore the latest checkpoint, for example `/ac checkpoint restore latest`. Add `--verbose` to either diagnostic command for details, for example `/ac recovery verify --verbose`.
 
-### Automatic restart in the same console
+### Restarting in the same console
 
-**The Supervisor is optional for checkpoints, but recommended for automatic restarts in one console.** It stays in the foreground, launches Minecraft as a child process, and shares console input/output, including Y/N answers.
+To restart Minecraft automatically in the same window, launch it through the **Supervisor**. The Supervisor keeps watching Minecraft and shares the console, so you can still answer Y/N there. A normal `/stop` does not trigger a restart.
 
-Place the matching Supervisor JAR in the server directory. Launch it instead of launching Minecraft directly. Example for 1.18.2:
+Place the matching Supervisor JAR in the server directory and use a command such as this one for 1.18.2:
 
 ```sh
 java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
@@ -166,31 +386,21 @@ java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
 
-Adjust the path, version, server JAR, and memory options. After `--` comes your normal Minecraft launch command. **The 1 GB example is not a memory requirement or guarantee.**
+Replace the path, version, server JAR name, and memory options with your own. The command after `--` is your usual server launch command. The 1 GB setting is only an example; required memory depends on the world.
 
-The Supervisor handles controlled restore restarts and retries abnormal exits. A normal `/stop` does not restart the server. Repeated short failures stop at the retry limit; logs include PID, exit code, and retry count.
+You can use checkpoints without the Supervisor. If you want its restart handling, change `start.sh` or your management tool to launch this command. PID, exit-code, and retry logs help identify a failed restart.
 
-Change `start.sh` or your management tool's launch command only if using this monitoring method. Direct launch still supports checkpoints and recovery, without the Supervisor's same-console restart handling.
+### When something goes wrong
 
-### Troubleshooting and limits
+If game time stays paused, check `/ac status`. If `/ac start` is rejected, run `/ac recovery verify --verbose` and `/ac debug equivalence --verbose` to see what is missing or different.
 
-| Symptom | What to check |
-| --- | --- |
-| Game time stays paused | Check `/ac status` and `/ac recovery verify --verbose`. Use `/ac start` after preparation succeeds. |
-| Start is rejected | Read the missing-chunk/runtime mismatch reason. Use `/ac debug equivalence --verbose` for details. STRICT deliberately blocks unsafe resume. |
-| No Y/N question | Default policy is `AUTO`. With `ASK`, watch the startup console before world loading. |
-| Restart does not happen | Check whether you launched through the Supervisor, then inspect its exit/retry logs. |
-| Out of memory | World size and loaded chunks affect requirements. Checkpointing/recovery need extra memory; no fixed heap size is guaranteed. |
+AntiCrash cannot guarantee recovery of every machine, mod, or asynchronous operation. Keep independent backups and test important machines on a world copy. Restoration rolls changes back to the selected checkpoint; it does not roll back external databases. Do not restore checkpoints across Minecraft versions.
 
-Keep independent backups and test on a world copy. Never restore across Minecraft versions. Sudden termination can lose changes since the last valid checkpoint. Player-data rollback depends on selective snapshot settings; external databases are not rolled back along with the world.
+### Building and license
 
-### Building and contributing
+To build, clone the whole repository and run `./gradlew test build` inside the desired version directory. Use Java 21 for older targets' Gradle builds or Java 25 for 26.x, with JDK 17 installed for the Supervisor toolchain.
 
-Clone the whole repository; version directories need shared sources. Run `./gradlew test build` inside the desired version directory. Use Java 21 for older targets' Gradle builds, Java 25 for 26.x, and install JDK 17 for the Supervisor toolchain. Server runtime requirements are listed above.
-
-At the root, `python3 scripts/check_sources.py` checks source membership; `python3 scripts/format_java.py --check` checks Java formatting using JDK 25. Version-specific adapters stay separate; shared code lives in `common/`, `shared/`, and `supervisor/`.
-
-1.0.1 preserves checkpoint formats, recovery behavior, defaults, and permissions. Shared-source/audit improvements incorporate aomona's contribution; the experimental Stonecutter build is not required. Older 1.0.0 JARs remain for comparison; choose 1.0.1 for this release. Existing 1.0.0 checkpoints still require integrity validation and the same Minecraft version.
+Version 1.0.1 keeps the existing save format. The shared-source and audit improvements incorporate aomona's contribution. Older 1.0.0 JARs remain in `build/` for comparison; choose 1.0.1 for this release.
 
 License: **GNU Lesser General Public License v3.0 only** (`LGPL-3.0-only`).
 
@@ -198,154 +408,377 @@ License: **GNU Lesser General Public License v3.0 only** (`LGPL-3.0-only`).
 
 ## 日本語
 
-### AntiCrashとは？
+### 概要
 
-AntiCrashは、**チェックポイント**を定期的に保存するModです。ワールドデータと、装置の再開に必要な実行中の状態のうち対応するものを記録します。異常終了後に有効なチェックポイントを復元し、`/ac start`を実行するまでゲーム内時間を停止しておけます。
+AntiCrashは、Minecraftが通常は保存しないピストンの動作やブロックイベントなどの状態を、ワールドと一緒に定期保存するModです。この保存を**チェックポイント**と呼びます。異常終了後にチェックポイントへ戻すことで、TMC装置の破損を防ぐことを目指します。
 
-ピストン装置やCarpetのフェイクプレイヤーなど、Technical Minecraftでの利用を想定しています。復旧できる範囲はMinecraft版や導入Modで異なり、あらゆる装置・実行状態の完全復元を保証するものではありません。
+復元後は必要なチャンクを読み込み、**`/ac start`を実行するまでゲーム内時間を停止**できます。プレイヤーが関わる装置でも、参加して準備を整えてから再開できます。Carpetを導入している場合は、保存したFakePlayerとその操作も自動で復元します。
 
-**プレイヤー側への導入は不要です。通常のワールドバックアップも別途保管してください。**
+| 主な仕様 | 初期設定・条件 |
+| --- | --- |
+| 導入先 | **サーバーのみ** |
+| 自動保存 | **30秒ごと** |
+| 異常終了後の復旧 | **自動復元**（`AUTO`） |
+| 復元後 | **`/ac start`まで停止** |
+| Fabric API | 基本利用では**不要** |
+| Carpet | **任意** |
 
 ### 導入方法
 
-1. サーバーを停止し、ワールドをバックアップします。
-2. リポジトリの`build/`から、**Minecraft版が完全に一致する1.0.1のMod JAR**を選びます。1.18.2の場合は`AntiCrash-1.0.1+mc1.18.2.jar`です。
-3. サーバーの`mods/`へ入れ、Fabricサーバーを起動します。
-4. `config/anticrash.toml`が生成されます。初期設定では**30秒ごとの自動チェックポイント作成**が有効です。
+サーバーを停止してワールドをバックアップしてから、リポジトリの`build/`にある、**Minecraftのバージョンと完全に一致するv1.0.1のMod JAR**を選んでください。Minecraft 1.18.2の場合は`AntiCrash-1.0.1+mc1.18.2.jar`です。
 
-基本利用にFabric APIは不要です。Carpetも必須ではありませんが、連携できる機能はMinecraft版によって異なります。Modなしのクライアントでも参加できます。
+Mod JARをサーバーの`mods/`に入れ、Fabricサーバーを起動します。`config/anticrash.toml`が生成され、このファイルから設定を変更できます。プレイヤー側へのMod導入は不要です。
 
-| JAR | 配置先 | 用途 |
+Supervisorは、自動再起動のための別プログラムです。使う場合は、JARを**`mods/`の外にあるサーバーディレクトリ**へ置いてください。
+
+| ファイル | 配置先 | 用途 |
 | --- | --- | --- |
-| `AntiCrash-1.0.1+mc<VERSION>.jar` | サーバーの`mods/` | チェックポイント作成・復旧 |
-| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | `mods/`の外、サーバーディレクトリ | 任意で使う監視・同一コンソールでの再起動 |
+| `AntiCrash-1.0.1+mc<VERSION>.jar` | サーバーの`mods/` | 保存・復元 |
+| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | サーバーディレクトリ | プロセス監視・再起動 |
 
-#### 対応バージョン
+#### 対応Minecraftバージョン
 
-| Minecraft | Fabric Loader | Mod実行時のJava |
+| Minecraft | Fabric Loaderの最低バージョン | サーバー実行時のJavaの最低バージョン |
 | --- | --- | --- |
-| 1.18・1.18.1・1.18.2 | 0.17.3以上 | 17以上 |
-| 1.19〜1.19.4 | 0.17.3以上 | 17以上 |
-| 1.20〜1.20.4 | 0.17.3以上 | 17以上 |
-| 1.20.5・1.20.6 | 0.17.3以上 | 21以上 |
-| 1.21〜1.21.10 | 0.17.3以上 | 21以上 |
-| 1.21.11 | 0.18.4以上 | 21以上 |
-| 26.1 | 0.18.4以上 | 25以上 |
-| 26.2 | 0.19.3以上 | 25以上 |
-| 26.3 | 0.19.5以上 | 25以上 |
+| 1.18・1.18.1・1.18.2 | 0.17.3 | 17 |
+| 1.19〜1.19.4 | 0.17.3 | 17 |
+| 1.20〜1.20.4 | 0.17.3 | 17 |
+| 1.20.5〜1.20.6 | 0.17.3 | 21 |
+| 1.21〜1.21.10 | 0.17.3 | 21 |
+| 1.21.11 | 0.18.4 | 21 |
+| 26.1 | 0.18.4 | 25 |
+| 26.2 | 0.19.3 | 25 |
+| 26.3 | 0.19.5 | 25 |
 
-範囲内の各バージョンに専用JARがあります。**30版でビルド・ユニットテスト・成果物検査を通過**していますが、実サーバーでの互換性確認を意味しません。Loader欄は各版が宣言する要件です。1.16.1の移植は中断中で、配布用JARはありません。
+各バージョンに専用のJARがあります。上記30版はビルドと自動検査を通過していますが、実サーバーでの動作確認は別途必要です。1.16.1の移植は中断中で、配布用JARはありません。
 
-### 復旧の流れ
+### 復旧ガイド
 
-初期設定では、次のように動作します。
+#### 異常終了後の動作
 
-1. 稼働中にチェックポイントを自動作成します。
-2. 異常終了後の次回起動時に、有効なチェックポイントを検証・復元します。
-3. 必要なチャンクや実行状態を準備する間、ゲーム内時間を停止します。
-4. `/ac status`と`/ac recovery verify`で状況を確認し、準備完了後に`/ac start`で再開します。再開完了時にはメッセージが出ます。
+初期設定では、次回起動時に有効なチェックポイントを確認して復元します。その後、ゲーム内時間を止めたまま、必要なチャンクや保存した状態を準備します。
 
-**「チェックポイントの復元」と「ゲーム内時間の再開」は別の操作です。** `/ac start`は準備済みのワールドを再開するコマンドで、復元するチェックポイントを選ぶものではありません。初期設定では誰でも使えますが、状態確認コマンドには権限レベル4が必要です。
+準備が終わったら**`/ac start`**を実行してください。ゲーム内時間が再開され、完了メッセージが表示されます。途中の状況は`/ac status`で確認できます。
 
-#### いつ復元するか：復旧ポリシー
+初期設定では、**`/ac start`は誰でも実行できます**。その他のコマンドには権限レベル4が必要です。`/ac start`は復元済みのワールドを再開するもので、チェックポイントを選ぶコマンドではありません。
 
-`[recovery]`の`policy`で指定します。
+#### 復旧ポリシー
 
-| 設定 | 異常終了後 | 正常終了後 |
+設定ファイルの`[recovery]`にある`policy`で、いつ復元するかを選びます。
+
+| ポリシー | 異常終了後 | 正常終了後 |
 | --- | --- | --- |
-| `AUTO`（初期設定） | 有効なチェックポイントを自動復元 | 巻き戻さず、保存済みワールドで起動 |
-| `ASK` | 復元するか質問。無回答は**Y** | 停止時チェックポイントを復元するか質問。無回答は**N** |
-| `MANUAL` | 明示的な判断を待ち、自動復元しない | 保存済みワールドで通常起動 |
+| `AUTO`（初期設定） | 自動復元 | 通常起動 |
+| `ASK` | 復元するか質問。無回答は**Y** | 復元するか質問。無回答は**N** |
+| `MANUAL` | 復元するか質問。無回答では復元しない | 通常起動 |
 
-`ASK`では、**AntiCrashのY/N質問が表示されたら、サーバーコンソールに`Y`または`N`を入力し、Enterを押します。** ワールド読み込み前に判断します。`Y`は検証のうえで復元、`N`は巻き戻さず保存済みワールドで起動する選択です。
+**ワールド読み込み前に質問が表示されたら、サーバーコンソールに`Y`または`N`を入力し、Enterを押します。** `Y`なら検証後に復元し、`N`ならチェックポイントを使わず通常起動します。
 
-回答期限は`ask_timeout_seconds`（初期値**60秒**）です。`0`なら無期限で待ちます。互換性用の`ask_default_action`は、この無回答時の動作を変更しません。`MANUAL`では、無回答を理由に自動復元へ進みません。
+回答期限は`ask_timeout_seconds`で、初期値は**60秒**です。`0`なら無期限で待ちます。`MANUAL`で期限を過ぎた場合は、自動復元せず復旧失敗として扱います。旧設定の`ask_default_action`は互換性のために残っている項目で、これらの動作は変更しません。
 
-正常終了後でも、`Y`を選ぶと停止時チェックポイントに含まれる対応済みの実行状態を復元します。`N`はVanillaと同じ通常起動なので、動作途中で保存された装置が同じように動き続けるとは限りません。
+正常終了後に`Y`を選ぶと、停止時のチェックポイントに保存された装置の状態も復元します。`N`はVanillaと同じ通常起動なので、動作途中で停止した装置が同じように動き続けるとは限りません。
 
-#### どこまで厳密に確認するか：復旧モード
+#### 復旧モード
+
+`[recovery]`の`fidelity`で、復元した状態をどこまで厳密に確認するかを選びます。
 
 | モード | 動作 |
 | --- | --- |
-| `OPTIMIZED`（初期設定） | 設定されたチャンク準備方式で、可能な範囲の復旧を行います。 |
-| `STRICT` | 観測できるチャンク・実行状態を照合し、必須状態の欠落・未対応・不一致があれば停止を維持します。 |
+| `OPTIMIZED`（初期設定） | 選んだ復旧方式で対応できる範囲を復元 |
+| `STRICT` | 必要な状態が欠けている・未対応・保存時と異なる場合は、時間を止めたままにする |
 
-**OPTIMIZEDはtick境界の等価性を保証しません。** STRICTでも、あらゆるMod・乱数・非同期処理・スレッドの実行順を再現できるわけではありません。安全制限を変更する前に、再開できない理由を確認してください。
+STRICTで再開できないときは、`/ac recovery verify --verbose`で理由を確認できます。OPTIMIZEDでは、保存時とまったく同じ動作タイミングで再開する保証はありません。
 
-### 設定
+### 設定方法
 
-`config/anticrash.toml`を編集します。以下は主な初期値です。**ファイル全体を置き換えたり、同じセクションを追加したりせず、既存の該当項目を書き換えてください。**
+**`config/anticrash.toml`**を編集し、`/ac config reload`で再読み込みします。起動時の復旧設定は、次回起動前に変更してください。既存ファイルを編集するときは、同じセクションを追加せず、その項目の値を書き換えます。
+
+#### 言語と自動保存
+
+ファイル先頭の`language = "ja"`で日本語、`language = "en"`で英語になります。変わるのはAntiCrashのメッセージで、MinecraftやFabricのログの言語は変わりません。
+
+`[checkpoint]`の`enabled = true`で自動保存が有効になります。`interval_seconds = 30`は、実時間で30秒ごとに保存する設定です。ゲーム内のtick速度を変えても、この秒数は変わりません。
+
+#### 保存を何件残すか
+
+次の3項目は、すべて`[checkpoint]`内の設定です。
+
+**`retention_count = 20`**は、新しいチェックポイントを20件残す設定です。指定できるのは1以上の整数です。**`0`は無制限という意味にはならず、読み込み時に`1`へ補正されます。**
+
+**`retention_days = 7`**は、作成から7日を過ぎたチェックポイントを削除対象にする設定です。`0`なら、日数を理由に削除しません。
+
+**`retention_max_gb = 0`**は、保存容量に上限を設けない設定です。例えば`10`にすると、合計が10GBを超えたときに古いチェックポイントが削除対象になります。
+
+件数・日数・容量のどれかの上限を超えると、古いチェックポイントが削除対象になります。ただし、最新の1件は残します。初期設定では「新しいものを最大20件残し、7日を過ぎたものは削除する。ただし最新の1件は残す」という動作です。
+
+30秒ごとに保存して20件残す場合、保存されるのはおおよそ直近10分です。`retention_days = 7`にしていても、件数の上限に先に達すれば7日分は残りません。
+
+#### 復元後の停止と権限
+
+復元後に`/ac start`を待たせるには、`[recovery]`の`freeze_after_restore`と`require_manual_start`を両方`true`にします。どちらかを`false`にすると、準備と検証が終わったあとに自動再開する設定になります。
+
+`[commands]`の`start_permission_level = 0`では、誰でも時間を再開できます。`4`に変えると、権限レベル4の管理者だけが再開できます。他のコマンドは初期値が4で、それぞれ個別に権限を設定できます。
+
+#### チャンクの読み込み
+
+`[recovery]`の`preload_mode = "ALL"`では、保存時に読み込まれていた全チャンクを準備します。`ENTITY_TICKING`はエンティティが動作していたチャンク、`CRITICAL`は移動中のピストンやFakePlayerなどの重要地点を選びます。対象を絞ると、装置の一部が準備されないことがあります。STRICTでは、この設定にかかわらず保存時の必要な全チャンクが要求されます。
+
+`max_preload_chunks`は準備するチャンク数の上限で、初期値は**100,000**です。必要数が上限を超えた場合、対象を減らして続行せず、復旧を失敗させます。`[recovery.chunks]`の`max_concurrent_loads = 4`は、同時に読み込む数を4件にする設定で、最終的に必要なチャンク数は変わりません。
+
+#### プレイヤー・FakePlayer・通知
+
+通常プレイヤーは、初期設定ではディメンション・位置・向きだけを復元します。インベントリや経験値は巻き戻しません。`[player_snapshot]`で対象を増やせますが、プレイヤーデータを同期するModと併用する場合は、設定が競合しないか確認してください。
+
+FakePlayerの復元は`[fakeplayer]`で有効になっています。対応するCarpetを導入していれば、位置や持ち物に加え、保存した操作とそのタイミングも復元します。通常は、必要なFakePlayerがそろってから時間を再開します。
+
+チェックポイント作成中にアクションバーの文字は表示しません。`[notifications].frozen_action_bar`は復旧中の停止表示に関する設定です。ログの詳しさは`[logging]`の`level = "NORMAL"`で変更できます。
+
+#### 初期設定の全項目
+
+v1.0.1の初期値は次のとおりです。値を探しやすいよう、説明コメントは省略しています。
+
+<details>
+<summary>全156項目の初期設定を表示する</summary>
 
 ```toml
-language = "ja" # "ja" または "en"
+config_version = 1
+language = "ja"
 
 [checkpoint]
 enabled = true
 interval_seconds = 30
+create_on_manual_command = true
+create_on_clean_shutdown = true
+shutdown_timeout_seconds = 5
 retention_count = 20
 retention_days = 7
 retention_max_gb = 0
+save_batch_chunks = 256
+
+[checkpoint.performance]
+target_barrier_ms = 20
+warn_barrier_ms = 50
+critical_barrier_ms = 100
+warn_checkpoint_ms = 5000
+rolling_enabled = true
+rolling_budget_ms_per_tick = 1.0
+rolling_max_budget_ms_per_tick = 3.0
+adaptive_budget = true
+warn_finalize_ms = 1000
+
+[checkpoint.pipeline]
+max_inflight_generations = 2
+
+[checkpoint.incremental]
+base_interval = 0
+max_chain_depth = 0
+
+[checkpoint.io]
+background_threads = 1
+max_mb_per_second = 0
+
+[checkpoint.storage]
+minimum_free_mb = 256
+
+[checkpoint.durability]
+mode = "SAFE"
+
+[checkpoint.engine]
+mode = "LOGICAL_DELTA"
+fallback = "PORTABLE_GENERATION"
+single_inflight = true
+allow_unsupported_persistent_state = false
+
+[checkpoint.cache]
+max_mb = 256
+budget_ms_per_tick = 1.0
+
+[checkpoint.mirror]
+enabled = true
+audit_interval_seconds = 300
+trace_limit = 64
 
 [commands]
-start_permission_level = 0
+help_permission_level = 4
 status_permission_level = 4
+start_permission_level = 0
+start_force_permission_level = 4
+freeze_permission_level = 4
 checkpoint_permission_level = 4
 recovery_permission_level = 4
+fakeplayers_permission_level = 4
+journal_permission_level = 4
+config_permission_level = 4
+debug_permission_level = 4
+
+[snapshot]
+backend = "AUTO"
+verify_checksums = true
+keep_crash_raw_world = true
+crash_raw_retention_count = 10
+io_threads = 0
 
 [recovery]
-policy = "AUTO" # AUTO・ASK・MANUAL
-fidelity = "OPTIMIZED" # OPTIMIZED・STRICT
+policy = "AUTO"
+fidelity = "OPTIMIZED"
 freeze_after_restore = true
 require_manual_start = true
+start_command = "/ac start"
+restore_latest_valid_checkpoint = true
+allow_restore_older_checkpoint = true
+fallback_to_previous_checkpoint = true
 ask_timeout_seconds = 60
+ask_default_action = "ABORT"
+allow_start_with_failed_validation = false
+spawn_restart_helper = false
+temporary_ticket_release_ticks = 100
 preload_mode = "ALL"
+max_preload_chunks = 100000
+chunk_ready_timeout_seconds = 120
 
 [recovery.chunks]
 max_concurrent_loads = 4
+
+[recovery.strict]
+allow_unsupported_runtime_state = false
+allow_unsupported_carpet_state = false
+require_entity_order = true
+require_block_entity_ticker_order = true
+require_ticket_ledger = true
+
+[recovery.strict.players]
+require_checkpoint_players = false
+
+[recovery.lock]
+allow_login = true
+allow_chat = true
+allow_commands = true
+allow_player_movement = true
+allow_player_look = true
+allow_sneak = true
+allow_block_break = false
+allow_block_place = false
+allow_item_use = false
+allow_entity_attack = false
+allow_entity_interact = false
+allow_container_interaction = false
+allow_item_drop = false
+allow_item_pickup = false
+
+[player_snapshot]
+enabled = true
+dimension = true
+position = true
+rotation = true
+gamemode = false
+abilities = false
+inventory_main = false
+inventory_armor = false
+inventory_offhand = false
+selected_hotbar_slot = false
+experience_level = false
+experience_progress = false
+experience_total = false
+ender_chest = false
+health = false
+absorption = false
+food_level = false
+food_saturation = false
+food_exhaustion = false
+potion_effects = false
+velocity = false
+fall_distance = false
+fire_ticks = false
+air = false
+spawn_point = false
+
+[player_snapshot.vanilla_files]
+restore_playerdata = false
+restore_stats = false
+restore_advancements = false
+
+[fakeplayer]
+enabled = true
+auto_rejoin = true
+restore_before_unfreeze = true
+require_all_ready_before_start = true
+
+[fakeplayer.snapshot]
+dimension = true
+position = true
+rotation = true
+gamemode = true
+flying = true
+inventory = true
+selected_slot = true
+health = true
+hunger = true
+effects = true
+sneaking = true
+sprinting = true
+movement = true
+actions = true
+action_internal_timing = true
+item_use_cooldown = true
+block_break_progress = true
+
+[login]
+retry_timeout_seconds = 5
+
+[notifications]
+frozen_action_bar = true
+checkpoint_action_bar_delay_ticks = 10
+ask_prompt_in_game = true
+
+[consistency]
+mode = "IGNORE"
+
+[logging]
+level = "NORMAL"
+console = true
+console_color = "AUTO"
+chat_color = true
+file = true
+max_file_mb = 50
+retained_files = 10
+show_checkpoint_contents = false
+show_player_details = false
+show_fakeplayer_details = true
+show_block_events = false
+show_file_operations = false
+show_transaction_details = false
 ```
 
-| 項目 | 意味 |
-| --- | --- |
-| `language` | AntiCrashのメッセージ言語。初期値は日本語の`ja`、英語は`en`です。Minecraft・Fabricのログの言語は変わりません。 |
-| `interval_seconds` | 自動作成の間隔。ゲームのtick速度に依存しない実時間の秒数で、1〜86,400を指定できます。 |
-| `retention_count`・`retention_days`・`retention_max_gb` | 保持数・日数・容量の制限。最新の1件は最低限保持します。日数・GBの`0`はその制限なしですが、保持数には指定できません。 |
-| `freeze_after_restore`＋`require_manual_start` | 両方が`true`なら復元後に`/ac start`を待ちます。どちらかを`false`にすると、準備・検査後の自動再開を要求します。 |
-| `preload_mode` | `ALL`は保存時にロードされていた全チャンクを当時の準備状態まで読み込みます。`ENTITY_TICKING`はエンティティtick対象、`CRITICAL`は重要地点を選択。STRICTでは必要な全対象の一致が要求されます。 |
-| `max_preload_chunks` | チャンク準備数の安全上限。初期値は100,000で、超過時は対象を黙って削らず復旧を失敗させます。 |
-| `max_concurrent_loads` | 復旧時の同時チャンク読み込み数。最終的な必要数を減らす設定ではなく、メモリ不足を必ず防げるものでもありません。 |
+</details>
 
-権限レベルは**0〜4**で、0はOPなしでも使用可能です。初期値が0なのは`/ac start`だけで、他のコマンド権限は4です。管理者だけが再開できるようにするには`start_permission_level`を上げます。ヘルプ・デバッグ・設定再読み込みなどにも個別の権限設定があります。
+### 主なコマンド
 
-編集後は`/ac config reload`で再読み込みできます。起動時の復元設定は次回起動前に変更してください。再読み込みで完了済みの復元が取り消されることはありません。
-
-### コマンド
-
-以下はゲーム内での表記です。サーバーコンソールでは先頭の`/`を省きます。
+ゲーム内では先頭に`/`を付け、サーバーコンソールでは省きます。
 
 | コマンド | 用途 |
 | --- | --- |
 | `/ac help` | コマンドヘルプを表示 |
-| `/ac status` | チェックポイント・復旧の進行状況を表示 |
-| `/ac start` | 復旧検査に通過したワールドの再開を要求 |
-| `/ac freeze` | ゲーム内時間を手動で停止 |
-| `/ac checkpoint now` | チェックポイント作成を要求 |
-| `/ac checkpoint list` | チェックポイント一覧を表示 |
-| `/ac checkpoint info <id>` | 指定チェックポイントの情報を表示 |
+| `/ac status` | 保存・復旧の進行状況を表示 |
+| `/ac start` | ゲーム内時間を再開 |
+| `/ac freeze` | ゲーム内時間を停止 |
+| `/ac checkpoint now` | 今すぐチェックポイントを作成 |
+| `/ac checkpoint list` | 保存済みチェックポイントを一覧表示 |
+| `/ac checkpoint info <id>` | 指定したチェックポイントの詳細を表示 |
 | `/ac checkpoint base` | 独立した基準チェックポイントを作成 |
-| `/ac checkpoint restore <id\|latest>` | 復元と再起動を予約。**ワールドデータが巻き戻ります。** |
-| `/ac recovery verify [--verbose]` | 復旧の準備状況と再開できない理由を確認 |
-| `/ac debug equivalence [--verbose]` | チェックポイントとの状態差分を表示 |
-| `/ac recovery abort` | 復旧を中止。利用可能な場合、退避した巻き戻し前ワールドへ戻す |
-| `/ac fakeplayers` | Carpetのフェイクプレイヤー保存情報を表示 |
+| `/ac checkpoint restore <id>` | 復元と再起動を予約。ワールドが巻き戻ります。 |
+| `/ac recovery verify` | 復旧の準備ができているか確認 |
+| `/ac debug equivalence` | 保存時の状態との差分を表示 |
+| `/ac recovery abort` | 復旧を中止し、退避済みの巻き戻し前ワールドへ戻す処理を予約 |
+| `/ac fakeplayers` | 保存したFakePlayerの情報を表示 |
 | `/ac config reload` | 設定を再読み込み |
 
-`[--verbose]`は省略可能な引数です。詳細表示する場合は、例えば`/ac recovery verify --verbose`と入力します。
+最新の保存へ戻す場合は、IDの代わりに`latest`を指定し、`/ac checkpoint restore latest`と入力します。詳しい診断結果を見る場合は、`/ac recovery verify --verbose`や`/ac debug equivalence --verbose`を使います。
 
-### 同じコンソールで自動再起動する
+### 同じコンソールで再起動する方法
 
-**チェックポイント機能にSupervisorは必須ではありませんが、同じコンソールで自動再起動したい場合に推奨します。** Supervisorが前面に残ってMinecraftを子プロセスとして起動し、Y/Nの入力を含むコンソールの入出力を共有します。
+Minecraftを同じウィンドウで自動再起動したい場合は、**Supervisor**から起動します。SupervisorがMinecraftの監視を続け、同じコンソールでログ確認やY/N入力ができます。通常の`/stop`では自動再起動しません。
 
-対応するSupervisor JARをサーバーディレクトリに置き、Minecraftを直接起動する代わりにSupervisorから起動します。1.18.2の例です。
+対応するSupervisor JARをサーバーディレクトリに置き、次のように起動します。1.18.2の例です。
 
 ```sh
 java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
@@ -353,30 +786,20 @@ java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
 
-パス・Minecraft版・サーバーJAR名・メモリ指定は環境に合わせます。`--`より後ろが普段のMinecraft起動コマンドです。**例の1GBは必要メモリ量や動作保証ではありません。**
+パス・Minecraft版・サーバーJAR名・メモリ指定は、自分の環境に合わせて変更してください。`--`より後ろには、普段使っているサーバーの起動コマンドを指定します。1GBは例であり、必要なメモリ量はワールドによって変わります。
 
-Supervisorは復元に伴う再起動や異常終了時の再試行を行います。通常の`/stop`では再起動しません。短時間で失敗が続く場合は再試行上限で停止し、PID・終了コード・試行回数をログで確認できます。
+Supervisorなしでも保存・復元は使えます。Supervisorの再起動機能を使う場合に、`start.sh`や管理ツールの起動コマンドを変更してください。再起動できなかった場合は、PID・終了コード・試行回数のログを確認できます。
 
-`start.sh`や管理ツールの起動コマンドを変更するのは、この監視方式を使う場合です。直接起動でもチェックポイント・復旧機能は使えますが、Supervisorによる同一コンソールでの再起動処理は利用できません。
+### うまく動かないときは
 
-### 困ったとき・注意事項
+時間が止まったままなら、まず`/ac status`で状況を確認してください。`/ac start`が拒否される場合は、`/ac recovery verify --verbose`と`/ac debug equivalence --verbose`で、不足しているものや保存時との違いを確認できます。
 
-| 症状 | 確認すること |
-| --- | --- |
-| ゲーム内時間が止まっている | `/ac status`と`/ac recovery verify --verbose`を確認し、準備完了後に`/ac start`を実行します。 |
-| 再開が拒否される | 必要チャンク・実行状態の不一致を確認します。詳細は`/ac debug equivalence --verbose`で表示できます。STRICTは安全に再開できない場合、停止を維持します。 |
-| Y/Nの質問が出ない | 初期設定は`AUTO`です。`ASK`の場合はワールド読み込み前の起動コンソールを確認します。 |
-| 再起動が行われない | Supervisor経由で起動したかと、終了・再試行ログを確認します。 |
-| メモリ不足になる | 必要量はワールドやロード対象に依存します。保存・復旧時には追加メモリが必要で、一定のヒープサイズでの動作保証はありません。 |
+すべての装置・Mod・非同期処理の復元を保証するものではありません。通常のバックアップも残し、大切な装置はワールドのコピーで復旧を試してください。復元すると選んだチェックポイント以降の変更は巻き戻りますが、外部データベースまでは巻き戻りません。異なるMinecraft版のチェックポイントは使用しないでください。
 
-独立したバックアップを保管し、ワールドのコピーで復旧を試してください。異なるMinecraft版間での復元はできません。突然の終了では最後の有効チェックポイント以降の変更が失われることがあります。プレイヤーデータを巻き戻す範囲は選択保存の設定によって異なり、外部データベースまでワールドと一緒に巻き戻るわけではありません。
+### ビルドとライセンス
 
-### ビルド・開発
+自分でビルドする場合はリポジトリ全体を取得し、対象バージョンのディレクトリで`./gradlew test build`を実行します。旧版のGradle実行にはJava 21、26.xにはJava 25を使い、Supervisor用にJDK 17も用意します。
 
-共通ソースが必要なため、リポジトリ全体を取得します。対象バージョンのディレクトリで`./gradlew test build`を実行してください。旧版のGradle実行にはJava 21、26.xにはJava 25を使い、Supervisor用にJDK 17も用意します。サーバー実行時のJava要件は上の表のとおりです。
+1.0.1では従来の保存形式を維持しています。共通化・監査の改善にはaomonaさんの提案を取り入れています。`build/`には比較用の1.0.0もありますが、今回の配布物は1.0.1です。
 
-ルートの`python3 scripts/check_sources.py`でソースの所属・重複を、`python3 scripts/format_java.py --check`でJava書式を検査できます（書式検査はJDK 25）。版別アダプターは分離し、共通コードは`common/`・`shared/`・`supervisor/`に置いています。
-
-1.0.1は保存形式・復旧動作・初期値・権限を維持した保守更新です。aomonaさんの提案から共通化・監査の改善を取り入れています。実験的なStonecutter構成は不要です。比較用に1.0.0のJARも残っていますが、今回の配布物は1.0.1です。既存の1.0.0チェックポイントにも、整合性検査と同じMinecraft版であることが必要です。
-
-ライセンス：**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）。
+ライセンスは**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）です。
