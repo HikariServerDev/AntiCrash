@@ -1,6 +1,6 @@
 # AntiCrash
 
-**Minecraft Fabric** — by AtsukiMC · **v1.0.1** · **LGPL-3.0-only**
+**Minecraft Fabric** — by AtsukiMC · **v1.0.2** · **LGPL-3.0-only**
 
 [English](#english) · [日本語](#日本語)
 
@@ -25,7 +25,7 @@ After restoration, AntiCrash prepares the required chunks and keeps **game time 
 
 ### Installation
 
-Stop the server and back up the world first. Choose the v1.0.1 Mod JAR for your **exact Minecraft version** from the repository's `build/` directory. For Minecraft 1.18.2, use `AntiCrash-1.0.1+mc1.18.2.jar`.
+Stop the server and back up the world first. Choose the v1.0.2 Mod JAR for your **exact Minecraft version** from [Release 1.0.2](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.2). For Minecraft 1.18.2, use `AntiCrash-1.0.2+mc1.18.2.jar`.
 
 Put the Mod JAR in the server's `mods/` folder, then start the Fabric server. AntiCrash creates `config/anticrash.toml`, where you can change its settings. Players do not need to install the mod.
 
@@ -33,8 +33,8 @@ The Supervisor is a separate program for automatic restarts. If you use it, plac
 
 | File | Location | Purpose |
 | --- | --- | --- |
-| `AntiCrash-1.0.1+mc<VERSION>.jar` | Server `mods/` folder | Checkpoints and restoration |
-| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | Server directory | Process monitoring and restarts |
+| `AntiCrash-1.0.2+mc<VERSION>.jar` | Server `mods/` folder | Checkpoints and restoration |
+| `AntiCrash-Supervisor-1.0.2+mc<VERSION>.jar` | Server directory | Process monitoring and restarts |
 
 #### Supported Minecraft versions
 
@@ -50,7 +50,7 @@ The Supervisor is a separate program for automatic restarts. If you use it, plac
 | 26.2 | 0.19.3 | 25 |
 | 26.3 | 0.19.5 | 25 |
 
-Each listed Minecraft version has its own JAR. These 30 versions have passed builds and automated checks; live-server compatibility still needs testing. The 1.16.1 port is paused and has no release JAR.
+Each listed Minecraft version has its own JAR. All 30 versions pass builds and automated checks. The same implementation was tested for basic checkpoint creation and recovery on isolated servers; this does not guarantee every machine or mod combination.
 
 ### Recovery guide
 
@@ -135,7 +135,7 @@ Checkpoint creation does **not** display an action-bar message. `[notifications]
 
 #### All default settings
 
-The full v1.0.1 defaults are below. Comments are omitted to make the values easier to find.
+The full v1.0.2 defaults are below. Comments are omitted to make the values easier to find.
 
 <details>
 <summary>Show all 156 settings</summary>
@@ -381,7 +381,7 @@ To restart Minecraft automatically in the same window, launch it through the **S
 Place the matching Supervisor JAR in the server directory and use a command such as this one for 1.18.2:
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
+java -jar AntiCrash-Supervisor-1.0.2+mc1.18.2.jar \
   --workdir /path/to/server -- \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
@@ -400,7 +400,7 @@ AntiCrash cannot guarantee recovery of every machine, mod, or asynchronous opera
 
 To build, clone the whole repository and run `./gradlew test build` inside the desired version directory. Use Java 21 for older targets' Gradle builds or Java 25 for 26.x, with JDK 17 installed for the Supervisor toolchain.
 
-Version 1.0.1 keeps the existing save format. The shared-source and audit improvements incorporate aomona's contribution. Older 1.0.0 JARs remain in `build/` for comparison; choose 1.0.1 for this release.
+Version 1.0.2 fixes the chunk-storage Mixin failure and BASE checkpoint failure, and improves shared code, recovery validation, diagnostics, configuration tests, and Carpet integration. The save format is unchanged. The shared-source and audit improvements incorporate aomona's contribution. Download all supported Minecraft JARs from [GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases): tags `1.0.0`, `1.0.1`, and `1.0.2` identify each Mod release. Older releases are preserved unchanged; use 1.0.2 for the fixes. After building, run `python3 scripts/verify_artifacts.py --version 26.3 --collect` from the repository root, replacing `26.3` with the target version. This verifies the JARs and collects them in `dist/1.0.2/`. Generated JARs and logs are not stored in Git.
 
 License: **GNU Lesser General Public License v3.0 only** (`LGPL-3.0-only`).
 
@@ -425,7 +425,7 @@ AntiCrashは、Minecraftが通常は保存しないピストンの動作やブ�
 
 ### 導入方法
 
-サーバーを停止してワールドをバックアップしてから、リポジトリの`build/`にある、**Minecraftのバージョンと完全に一致するv1.0.1のMod JAR**を選んでください。Minecraft 1.18.2の場合は`AntiCrash-1.0.1+mc1.18.2.jar`です。
+サーバーを停止してワールドをバックアップしてから、[Release 1.0.2](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.2)にある、**Minecraftのバージョンと完全に一致するv1.0.2のMod JAR**を選んでください。Minecraft 1.18.2の場合は`AntiCrash-1.0.2+mc1.18.2.jar`です。
 
 Mod JARをサーバーの`mods/`に入れ、Fabricサーバーを起動します。`config/anticrash.toml`が生成され、このファイルから設定を変更できます。プレイヤー側へのMod導入は不要です。
 
@@ -433,8 +433,8 @@ Supervisorは、自動再起動のための別プログラムです。使う場�
 
 | ファイル | 配置先 | 用途 |
 | --- | --- | --- |
-| `AntiCrash-1.0.1+mc<VERSION>.jar` | サーバーの`mods/` | 保存・復元 |
-| `AntiCrash-Supervisor-1.0.1+mc<VERSION>.jar` | サーバーディレクトリ | プロセス監視・再起動 |
+| `AntiCrash-1.0.2+mc<VERSION>.jar` | サーバーの`mods/` | 保存・復元 |
+| `AntiCrash-Supervisor-1.0.2+mc<VERSION>.jar` | サーバーディレクトリ | プロセス監視・再起動 |
 
 #### 対応Minecraftバージョン
 
@@ -450,7 +450,7 @@ Supervisorは、自動再起動のための別プログラムです。使う場�
 | 26.2 | 0.19.3 | 25 |
 | 26.3 | 0.19.5 | 25 |
 
-各バージョンに専用のJARがあります。上記30版はビルドと自動検査を通過していますが、実サーバーでの動作確認は別途必要です。1.16.1の移植は中断中で、配布用JARはありません。
+各バージョンに専用のJARがあります。30版すべてでビルドと自動検査を通過しています。同じ実装で隔離サーバーの基本的な保存・復旧も確認していますが、すべての装置やModの組み合わせを保証するものではありません。
 
 ### 復旧ガイド
 
@@ -535,7 +535,7 @@ FakePlayerの復元は`[fakeplayer]`で有効になっています。対応す�
 
 #### 初期設定の全項目
 
-v1.0.1の初期値は次のとおりです。値を探しやすいよう、説明コメントは省略しています。
+v1.0.2の初期値は次のとおりです。値を探しやすいよう、説明コメントは省略しています。
 
 <details>
 <summary>全156項目の初期設定を表示する</summary>
@@ -781,7 +781,7 @@ Minecraftを同じウィンドウで自動再起動したい場合は、**Superv
 対応するSupervisor JARをサーバーディレクトリに置き、次のように起動します。1.18.2の例です。
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.1+mc1.18.2.jar \
+java -jar AntiCrash-Supervisor-1.0.2+mc1.18.2.jar \
   --workdir /path/to/server -- \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
@@ -800,6 +800,8 @@ Supervisorなしでも保存・復元は使えます。Supervisorの再起動機
 
 自分でビルドする場合はリポジトリ全体を取得し、対象バージョンのディレクトリで`./gradlew test build`を実行します。旧版のGradle実行にはJava 21、26.xにはJava 25を使い、Supervisor用にJDK 17も用意します。
 
-1.0.1では従来の保存形式を維持しています。共通化・監査の改善にはaomonaさんの提案を取り入れています。`build/`には比較用の1.0.0もありますが、今回の配布物は1.0.1です。
+1.0.2ではチャンク保存時のMixin適用失敗とBASE保存失敗を修正し、共有コード・復旧判定・診断・設定テスト・Carpet連携を改善しました。従来の保存形式は維持しています。共通化・監査の改善にはaomonaさんの提案を取り入れています。
+
+各Minecraft版のJARは[GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases)で配布します。タグ`1.0.0`・`1.0.1`・`1.0.2`がModの各版に対応します。過去版は当時のJARをそのまま残しています。今回の修正を使う場合は1.0.2を選んでください。ビルド後、リポジトリのルートで`python3 scripts/verify_artifacts.py --version 26.3 --collect`を実行すると、JARを検査して`dist/1.0.2/`へ集められます。`26.3`は対象のMinecraft版に置き換えてください。生成物やログはGitには含めません。
 
 ライセンスは**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）です。

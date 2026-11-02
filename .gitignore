@@ -1,8 +1,5 @@
 **/.gradle/
 **/build/
-!/build/
-/build/*
-!/build/*.jar
 **/__pycache__/
 **/*.log
 **/logs/
@@ -20,3 +17,6 @@
 **/*.hprof
 **/hs_err_pid*.log
 .toolchains/
+/dist/
+/assets/
+/tools/

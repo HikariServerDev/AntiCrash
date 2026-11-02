@@ -12,10 +12,15 @@ import java.util.zip.ZipFile;
 
 /** Offline comparison of executable classes, excluding debug information and the version bump. */
 public final class BytecodeParity {
+    private static String oldVersion = "1.0.0";
+    private static String newVersion = "1.0.1";
+
     private static Object versionOnly(Object value) {
         if (!(value instanceof String text)) return value;
-        if (text.equals("1.0.0")) return "1.0.1";
-        return text.replace("# AntiCrash 1.0.0 - complete", "# AntiCrash 1.0.1 - complete");
+        if (text.equals(oldVersion)) return newVersion;
+        return text.replace(
+                "# AntiCrash " + oldVersion + " - complete",
+                "# AntiCrash " + newVersion + " - complete");
     }
 
     private static byte[] normalized(byte[] bytes) throws Exception {
@@ -42,8 +47,13 @@ public final class BytecodeParity {
     }
 
     public static void main(String[] args) throws Exception {
-        if (args.length != 2)
-            throw new IllegalArgumentException("BytecodeParity <1.0.0.jar> <1.0.1.jar>");
+        if (args.length != 2 && args.length != 4)
+            throw new IllegalArgumentException(
+                    "BytecodeParity <old.jar> <new.jar> [oldVersion newVersion]");
+        if (args.length == 4) {
+            oldVersion = args[2];
+            newVersion = args[3];
+        }
         try (var expected = new ZipFile(Path.of(args[0]).toFile());
                 var actual = new ZipFile(Path.of(args[1]).toFile())) {
             var names = classes(expected);

@@ -19,7 +19,6 @@ def java_sources(root):
     versions = json.loads((root / "versions.json").read_text())["versions"]
     roots = [root / name for name in ["common", "shared", "supervisor/src", "scripts"]]
     roots += [root / version["minecraft"] / "src" for version in versions]
-    roots += [root / "1.16.1/adapter-core/src"]
     return sorted({path for base in roots for path in base.rglob("*.java")})
 
 
@@ -28,7 +27,7 @@ def main():
     parser.add_argument("--check", action="store_true", help="Verify without editing sources")
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    cache = root / "build/tooling"
+    cache = root / ".toolchains/formatters"
     cache.mkdir(parents=True, exist_ok=True)
     jar = cache / f"google-java-format-{FORMATTER}-all-deps.jar"
     if not jar.exists():

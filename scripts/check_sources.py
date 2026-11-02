@@ -68,7 +68,6 @@ def validate_release(root, versions, release):
 
 def baseline(root, ref, versions):
     paths = [f"{v}/{part}" for v in versions for part in ["src", "supervisor/src"]]
-    paths.append("1.16.1/adapter-core/src")
     result = {v: {} for v in versions}
     with subprocess.Popen(["git", "archive", ref, "--", *paths], cwd=root, stdout=subprocess.PIPE) as process:
         with tarfile.open(fileobj=process.stdout, mode="r|") as archive:
