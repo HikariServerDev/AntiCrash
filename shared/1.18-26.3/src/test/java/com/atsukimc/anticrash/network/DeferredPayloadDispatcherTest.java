@@ -77,4 +77,30 @@ class DeferredPayloadDispatcherTest {
             assertEquals(0, dispatcher.drain().handlerFailed());
         }
     }
+
+    @Test
+    void queueLimitWarningRemainsVisibleAtImportantLoggingLevel(
+            @org.junit.jupiter.api.io.TempDir java.nio.file.Path temp) throws Exception {
+        var config = new com.atsukimc.anticrash.config.AntiCrashConfig();
+        config.logging.level = "IMPORTANT";
+        config.logging.console = false;
+        var logger = new com.atsukimc.anticrash.logging.AntiCrashLogger(temp, config.logging);
+        try (var dispatcher =
+                new DeferredPayloadDispatcher<Integer, String>(
+                        id -> false, id -> Runnable::run, (id, packet) -> {}, logger)) {
+            for (int i = 0; i < DeferredPayloads.LIMIT; i++)
+                org.junit.jupiter.api.Assertions.assertTrue(dispatcher.defer(1, "packet"));
+            org.junit.jupiter.api.Assertions.assertFalse(dispatcher.defer(1, "over limit"));
+            var result = dispatcher.drain();
+            org.junit.jupiter.api.Assertions.assertEquals(1, result.queueRejected());
+            org.junit.jupiter.api.Assertions.assertEquals(
+                    DeferredPayloads.LIMIT, result.disconnected());
+            String warning =
+                    com.atsukimc.anticrash.i18n.MessageCatalog.text(
+                            "ja", "recovery.deferred_payloads_dropped", 1);
+            org.junit.jupiter.api.Assertions.assertTrue(
+                    java.nio.file.Files.readString(temp.resolve("anticrash.log"))
+                            .contains(warning));
+        }
+    }
 }

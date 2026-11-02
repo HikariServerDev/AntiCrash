@@ -79,6 +79,8 @@ public final class DeferredPayloadDispatcher<H, P> implements AutoCloseable {
                     failure,
                     stats.schedulingFailed(),
                     stats.handlerFailed());
+        if (logger != null && stats.queueRejected() > 0)
+            logger.importantKey("recovery.deferred_payloads_dropped", stats.queueRejected());
         if (logger != null
                 && (stats.scheduled()
                                 + stats.schedulingFailed()
