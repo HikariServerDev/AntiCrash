@@ -6,4 +6,17 @@
 **/__pycache__/
 **/*.log
 **/logs/
+**/*.log.gz
+**/crash-reports/
+**/run/
+**/.anticrash/
+**/eula.txt
+**/server.properties
+**/usercache.json
+**/banned-ips.json
+**/banned-players.json
+**/ops.json
+**/whitelist.json
+**/*.hprof
+**/hs_err_pid*.log
 .toolchains/
