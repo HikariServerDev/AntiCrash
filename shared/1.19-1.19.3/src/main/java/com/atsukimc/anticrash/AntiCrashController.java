@@ -116,10 +116,21 @@ public final class AntiCrashController {
             StartupRecoveryPlan.continueCurrentWorld(StartupRecoveryPlan.PreviousExit.CLEAN);
 
     public AntiCrashController() {
-        configFile = FabricLoader.getInstance().getConfigDir().resolve("anticrash.toml");
-        internal =
-                new InternalStateManager(
-                        FabricLoader.getInstance().getGameDir(), BOOT_LOGGER::warn);
+        this(
+                FabricLoader.getInstance().getGameDir(),
+                FabricLoader.getInstance().getConfigDir(),
+                com.atsukimc.anticrash.recovery.PreWorldDecisionInput::await);
+    }
+
+    private final com.atsukimc.anticrash.recovery.PreWorldDecisionInput.Reader decisionInput;
+
+    AntiCrashController(
+            Path gameDirectory,
+            Path configDirectory,
+            com.atsukimc.anticrash.recovery.PreWorldDecisionInput.Reader decisionInput) {
+        this.decisionInput = decisionInput;
+        configFile = configDirectory.resolve("anticrash.toml");
+        internal = new InternalStateManager(gameDirectory, BOOT_LOGGER::warn);
         String initializationError = null;
         try {
             internal.initializeDirectories();
@@ -424,7 +435,7 @@ public final class AntiCrashController {
         logger.importantKey("recovery.preworld_ask_deferred", selectedCheckpointId, exit);
         long decisionWaitStarted = System.nanoTime();
         PreWorldDecisionInput.Answer answer =
-                PreWorldDecisionInput.await(
+                decisionInput.read(
                         prompt, safeMillis(timeoutSeconds), PreWorldDecisionInput.Answer.TIMEOUT);
         logStartupPhase("startup.decision_wait", decisionWaitStarted);
 
@@ -467,7 +478,7 @@ public final class AntiCrashController {
         logger.importantKey("recovery.preworld_ask_deferred", selectedCheckpointId, cause);
         long decisionWaitStarted = System.nanoTime();
         PreWorldDecisionInput.Answer answer =
-                PreWorldDecisionInput.await(
+                decisionInput.read(
                         prompt, safeMillis(timeoutSeconds), PreWorldDecisionInput.Answer.TIMEOUT);
         logStartupPhase("startup.decision_wait", decisionWaitStarted);
 
@@ -1120,16 +1131,16 @@ public final class AntiCrashController {
     private int permanentTicketsMissing = -1;
     private int permanentTicketStallTicks;
 
-    private final com.atsukimc.anticrash.network.DeferredPayloads<
+    private volatile com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
                     net.minecraft.server.network.ServerPlayNetworkHandler,
                     net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket>
-            deferredPayloads = new com.atsukimc.anticrash.network.DeferredPayloads<>();
+            deferredPayloads;
 
     /** Keeps a mod payload received during the recovery freeze; any thread. */
     public void deferCustomPayload(
             net.minecraft.server.network.ServerPlayNetworkHandler handler,
             net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket packet) {
-        deferredPayloads.defer(handler, packet);
+        payloadDelivery().defer(handler, packet);
     }
 
     /**
@@ -1142,49 +1153,39 @@ public final class AntiCrashController {
      * event loop also keeps the payloads in order with whatever the client sends next.
      */
     private void deliverDeferredPayloads() {
-        if (deferredPayloads.isEmpty() || isRecoveryFrozen() || server == null) return;
-        int delivered =
-                deferredPayloads.deliver((handler, packet) -> {
-                    if (handler.player == null || handler.player.isDisconnected()) return;
-                    Runnable delivery =
-                            () -> {
+        var delivery = deferredPayloads;
+        if (delivery == null || delivery.isIdle() || isRecoveryFrozen() || server == null) return;
+        delivery.drain();
+    }
+
+    private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
+                    net.minecraft.server.network.ServerPlayNetworkHandler,
+                    net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket>
+            payloadDelivery() {
+        if (deferredPayloads == null)
+            deferredPayloads =
+                    new com.atsukimc.anticrash.network.DeferredPayloadDispatcher<>(
+                            handler -> !(handler.player == null || handler.player.isDisconnected()),
+                            handler -> {
+                                var channel =
+                                        ((com.atsukimc.anticrash.mixin
+                                                                .ClientConnectionAccessorMixin)
+                                                        handler.connection)
+                                                .anticrash$getChannel();
+                                return channel != null && channel.isOpen()
+                                        ? channel.eventLoop()
+                                        : null;
+                            },
+                            (handler, packet) -> {
                                 try {
                                     handler.onCustomPayload(packet);
                                 } catch (net.minecraft.network.OffThreadException rescheduled) {
-                                    // Minecraft moved the packet to the server thread, as it does
-                                    // for every packet.
-                                } catch (RuntimeException failure) {
-                                    logger.verboseKey(
-                                            "recovery.deferred_payload_failed",
-                                            packet.getChannel(),
-                                            String.valueOf(failure));
+                                    // Vanilla scheduled the packet on its server thread; this is
+                                    // success.
                                 }
-                            };
-                    io.netty.channel.Channel channel =
-                            ((com.atsukimc.anticrash.mixin.ClientConnectionAccessorMixin)
-                                            handler.connection)
-                                    .anticrash$getChannel();
-                    if (channel != null && channel.isOpen()) channel.eventLoop().execute(delivery);
-                    else payloadDelivery().execute(delivery);
-                });
-        int dropped = deferredPayloads.takeDropped();
-        if (delivered > 0) logger.normalKey("recovery.deferred_payloads_delivered", delivered);
-        if (dropped > 0) logger.importantKey("recovery.deferred_payloads_dropped", dropped);
-    }
-
-    private java.util.concurrent.ExecutorService payloadDeliveryExecutor;
-
-    /** For a connection without a network channel; started only if one ever defers a payload. */
-    private synchronized java.util.concurrent.ExecutorService payloadDelivery() {
-        if (payloadDeliveryExecutor == null) {
-            payloadDeliveryExecutor =
-                    java.util.concurrent.Executors.newSingleThreadExecutor(runnable -> {
-                        Thread thread = new Thread(runnable, "AntiCrash-Payload-Delivery");
-                        thread.setDaemon(true);
-                        return thread;
-                    });
-        }
-        return payloadDeliveryExecutor;
+                            },
+                            logger);
+        return deferredPayloads;
     }
 
     private boolean awaitPermanentTickets() {
@@ -1917,6 +1918,7 @@ public final class AntiCrashController {
     }
 
     public void onShutdownCompleted() {
+        if (deferredPayloads != null) deferredPayloads.close();
         // Captured before the internal state is torn down below. It is non-null only on the stop
         // that was requested in order to apply a restore, never on a later ordinary stop, because
         // the next startup clears the pending request as soon as it has replaced the world.
@@ -2277,21 +2279,22 @@ public final class AntiCrashController {
     }
 
     /** Reason a start request would be refused right now, or {@code null} when it is accepted. */
-    public String startRejectionReason(boolean force) {
+    private com.atsukimc.anticrash.recovery.RecoveryStartGate.Decision evaluateStart(
+            boolean force) {
         if ("STRICT".equalsIgnoreCase(config.recovery.fidelity)
                 && equivalenceExpectedCapsule != null) refreshEquivalenceReport();
-        String validation = startValidationReason(force);
-        if (validation != null) return validation;
         AntiCrashState state = states.get();
-        boolean failedOverride =
-                state == AntiCrashState.RECOVERY_FAILED
-                        && force
-                        && config.recovery.allowStartWithFailedValidation
-                        && forceStartEligible;
-        if (state != AntiCrashState.READY_TO_START
-                && state != AntiCrashState.RECOVERY_FROZEN
-                && !failedOverride) return reason("start.reason.wrong_state", state);
-        return null;
+        return com.atsukimc.anticrash.recovery.RecoveryStartGate.evaluate(
+                state,
+                force,
+                config.recovery.allowStartWithFailedValidation,
+                forceStartEligible,
+                startValidationReason(force),
+                reason("start.reason.wrong_state", state));
+    }
+
+    public String startRejectionReason(boolean force) {
+        return evaluateStart(force).reason();
     }
 
     private String reason(String key, Object... arguments) {
@@ -2312,18 +2315,7 @@ public final class AntiCrashController {
     }
 
     public boolean requestStart(boolean force) {
-        if ("STRICT".equalsIgnoreCase(config.recovery.fidelity)
-                && equivalenceExpectedCapsule != null) refreshEquivalenceReport();
-        AntiCrashState state = states.get();
-        boolean failedOverride =
-                state == AntiCrashState.RECOVERY_FAILED
-                        && force
-                        && config.recovery.allowStartWithFailedValidation
-                        && forceStartEligible;
-        if (state != AntiCrashState.READY_TO_START
-                && state != AntiCrashState.RECOVERY_FROZEN
-                && !failedOverride) return false;
-        if (!checkStartValidation(force) || !states.set(AntiCrashState.STARTING)) return false;
+        if (!evaluateStart(force).allowed() || !states.set(AntiCrashState.STARTING)) return false;
         pendingStart = true;
         return true;
     }

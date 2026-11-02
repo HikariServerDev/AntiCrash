@@ -97,6 +97,7 @@
     "EntityRuntimeAccessorMixin",
     "EndGatewayBlockEntityAccessorMixin",
     "UserCacheMixin",
-    "CarpetFakePlayerProfileMixin"
+    "CarpetFakePlayerProfileMixin",
+    "PersistentDataStorageAccessorMixin"
   ]
 }

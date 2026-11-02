@@ -98,67 +98,7 @@ public final class RecoveryEquivalenceReport {
 
     /** Renders the report using the AntiCrash language setting. */
     public String render(boolean verbose, String language) {
-        boolean japanese = "ja".equalsIgnoreCase(language);
-        StringBuilder output = new StringBuilder();
-        output.append(japanese ? "AntiCrash 復旧等価性" : "AntiCrash Recovery Equivalence")
-                .append('\n')
-                .append(japanese ? "チェックポイント: " : "Checkpoint: ")
-                .append(checkpointId == null ? "-" : checkpointId)
-                .append('\n')
-                .append(japanese ? "復旧モード: " : "Fidelity: ")
-                .append(fidelity == null ? "-" : fidelity)
-                .append('\n');
-        for (EquivalenceCheck check : checks) {
-            output.append(categoryLabel(check.category, japanese))
-                    .append(": ")
-                    .append(check.status)
-                    .append(' ')
-                    .append(check.expectedCount)
-                    .append('/')
-                    .append(check.actualCount);
-            if (check.expectedFingerprint != null || check.actualFingerprint != null) {
-                output.append(" expected=")
-                        .append(shortHash(check.expectedFingerprint))
-                        .append(" actual=")
-                        .append(shortHash(check.actualFingerprint));
-            }
-            output.append('\n');
-            if (verbose) {
-                for (String difference : check.differences) {
-                    output.append("  ").append(difference).append('\n');
-                }
-            }
-        }
-        output.append(japanese ? "結果: " : "Result: ")
-                .append(ready ? (japanese ? "準備完了" : "READY") : (japanese ? "未準備" : "NOT READY"))
-                .append('\n');
-        if (blockingReason != null) {
-            output.append(japanese ? "停止理由: " : "Blocking reason: ")
-                    .append(blockingReason)
-                    .append('\n');
-        }
-        return output.toString().stripTrailing();
-    }
-
-    private static String categoryLabel(String category, boolean japanese) {
-        if (!japanese || category == null) return category;
-        return switch (category) {
-            case EquivalenceCategory.CHUNK_DOMAIN -> "CHUNK_DOMAIN（Chunk実行領域）";
-            case EquivalenceCategory.BLOCK_EVENTS -> "BLOCK_EVENTS（Block Event）";
-            case EquivalenceCategory.SCHEDULED_TICKS -> "SCHEDULED_TICKS（Scheduled Tick）";
-            case EquivalenceCategory.MOVING_PISTONS -> "MOVING_PISTONS（Moving Piston）";
-            case EquivalenceCategory.BLOCK_ENTITY_TICKERS -> "BLOCK_ENTITY_TICKERS（BlockEntity順序）";
-            case EquivalenceCategory.ENTITIES -> "ENTITIES（Entity順序）";
-            case EquivalenceCategory.REDSTONE_RUNTIME -> "REDSTONE_RUNTIME（Torch Burnout）";
-            case EquivalenceCategory.WORLD_RUNTIME -> "WORLD_RUNTIME（World Runtime）";
-            case EquivalenceCategory.WORLD_RNG -> "WORLD_RNG（World RNG）";
-            case EquivalenceCategory.TICKET_LEDGER -> "TICKET_LEDGER（Chunk Ticket）";
-            case EquivalenceCategory.CARPET -> "CARPET";
-            case EquivalenceCategory.FAKEPLAYERS -> "FAKEPLAYERS（FakePlayer）";
-            case EquivalenceCategory.PLAYERS -> "PLAYERS（Player）";
-            case EquivalenceCategory.CHECKPOINT_INTEGRITY -> "CHECKPOINT_INTEGRITY（Checkpoint整合性）";
-            default -> category;
-        };
+        return RecoveryReportFormatter.render(this, verbose, language);
     }
 
     private static String shortHash(String value) {

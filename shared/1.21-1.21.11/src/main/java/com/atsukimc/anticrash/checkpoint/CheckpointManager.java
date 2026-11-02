@@ -926,6 +926,7 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : barrier.worlds) {
             savePointsOfInterest(barrierWorld.world);
         }
+        com.atsukimc.anticrash.snapshot.PersistentDataFlush.await(server);
         barrier.timing.end("vanilla_save");
         long minimumFreeBytes = Math.max(0L, config.checkpoint.minimumFreeMb) * 1024L * 1024L;
         if (minimumFreeBytes > 0L
@@ -1168,7 +1169,6 @@ public final class CheckpointManager {
     }
 
     public String engineIncidentStatus(String language) {
-        boolean ja = "ja".equalsIgnoreCase(language);
         Runtime jvm = Runtime.getRuntime();
         String status =
                 failureGate.suspended()
@@ -1176,7 +1176,7 @@ public final class CheckpointManager {
                                 ? "SUSPENDED_NEEDS_REBASE"
                                 : "SUSPENDED")
                         : "ACTIVE";
-        return (ja ? "Checkpointエンジン: " : "Checkpoint engine: ")
+        return com.atsukimc.anticrash.i18n.MessageCatalog.text(language, "diagnostics.engine")
                 + status
                 + "; reason="
                 + failureGate.category()
@@ -1201,9 +1201,8 @@ public final class CheckpointManager {
                 + "; effectiveSaveBatch="
                 + queuedChunkBudget(jvm.maxMemory(), config.checkpoint.saveBatchChunks)
                 + (failureGate.suspended()
-                        ? (ja
-                                ? "; 確認後 /ac checkpoint base で独立BASEを作成できます"
-                                : "; review, then /ac checkpoint base for independent rebase")
+                        ? com.atsukimc.anticrash.i18n.MessageCatalog.text(
+                                language, "diagnostics.rebase")
                         : "");
     }
 
@@ -1303,7 +1302,7 @@ public final class CheckpointManager {
                 failure == null || failure.getMessage() == null
                         ? String.valueOf(failure)
                         : failure.getMessage();
-        logger.importantKey("checkpoint.barrier_failed", message);
+        logger.failureKey("checkpoint.barrier_failed", failure, activePhase + ": " + message);
         lastFinalizationError = activePhase + ": " + message;
         PendingBarrier barrier = pendingBarrier;
         pendingBarrier = null;
@@ -1571,8 +1570,9 @@ public final class CheckpointManager {
             if (context.detachedGeneration != null) context.detachedGeneration.discard();
             // Small phase/allocation evidence, not a heap dump or a whole-world report.
             Runtime jvm = Runtime.getRuntime();
-            logger.importantKey(
+            logger.failureKey(
                     "checkpoint.failed",
+                    exception,
                     "category="
                             + CheckpointFailureGate.classify(exception)
                             + "; phase="
@@ -1582,9 +1582,9 @@ public final class CheckpointManager {
                             + "/"
                             + jvm.maxMemory()
                             + "; at="
-                            + (exception.getStackTrace().length == 0
-                                    ? "unknown"
-                                    : exception.getStackTrace()[0]));
+                            + (exception instanceof OutOfMemoryError
+                                    ? "omitted (OOM)"
+                                    : exception.getClass().getName()));
             if (temporary != null) {
                 try {
                     SnapshotManager.deleteTree(temporary);
@@ -1834,7 +1834,7 @@ public final class CheckpointManager {
             }
             lastFinalizationError = result.error == null ? "unknown" : result.error.getMessage();
             failureGate.failed(result.error, System.nanoTime());
-            logger.importantKey("checkpoint.failed", lastFinalizationError);
+            logger.failureKey("checkpoint.failed", result.error, lastFinalizationError);
             if (!states.isRecovery())
                 enterCheckpointState(AntiCrashState.CHECKPOINT_FINALIZE_FAILED);
             resetDeadline();
@@ -2130,130 +2130,20 @@ public final class CheckpointManager {
     }
 
     public String checkpointPerformanceReport(String language, boolean verbose) {
-        boolean japanese = "ja".equalsIgnoreCase(language);
-        CheckpointManifest manifest = lastManifest;
-        CheckpointTiming timing = lastTiming;
-        StringBuilder result = new StringBuilder();
-        result.append(
-                        japanese
-                                ? "AntiCrash Checkpoint Performance"
-                                : "AntiCrash Checkpoint Performance")
-                .append('\n')
-                .append(japanese ? "状態: " : "State: ")
-                .append(states.get())
-                .append('\n')
-                .append(japanese ? "進行中: " : "In flight: ")
-                .append(isCapturing())
-                .append('\n')
-                .append(engineIncidentStatus(language))
-                .append('\n')
-                .append(
-                        japanese
-                                ? "閾値 target/warn/critical ms: "
-                                : "Threshold target/warn/critical ms: ")
-                .append(config.checkpoint.targetBarrierMs)
-                .append('/')
-                .append(config.checkpoint.warnBarrierMs)
-                .append('/')
-                .append(config.checkpoint.criticalBarrierMs)
-                .append('\n');
-        if (manifest == null) {
-            result.append(japanese ? "まだ確定済みcheckpointはありません。" : "No committed checkpoint yet.");
-            if (lastFinalizationError != null) {
-                result.append('\n')
-                        .append(japanese ? "直近エラー: " : "Last error: ")
-                        .append(lastFinalizationError);
-            }
-            return result.toString();
-        }
-        result.append(japanese ? "Checkpoint: " : "Checkpoint: ")
-                .append(manifest.checkpointId)
-                .append('\n')
-                .append(japanese ? "Backend: " : "Backend: ")
-                .append(manifest.snapshotBackend)
-                .append('\n')
-                .append(japanese ? "Engine: " : "Engine: ")
-                .append(manifest.checkpointEngine)
-                .append('\n')
-                .append(japanese ? "Parent: " : "Parent: ")
-                .append(manifest.parentCheckpointId)
-                .append('\n')
-                .append(japanese ? "論理カット: " : "Logical cut: ")
-                .append(manifest.logicalCutServerTick)
-                .append('\n')
-                .append(japanese ? "Barrier ms: " : "Barrier ms: ")
-                .append(manifest.barrierDurationMs)
-                .append('\n')
-                .append(japanese ? "Finalization ms: " : "Finalization ms: ")
-                .append(manifest.finalizationDurationMs)
-                .append('\n')
-                .append(
-                        japanese
-                                ? "Generation files present/absent/inherited/sealed/tombstone: "
-                                : "Generation files present/absent/inherited/sealed/tombstone: ")
-                .append(manifest.generationPresentFiles)
-                .append('/')
-                .append(manifest.generationAbsentFiles)
-                .append('/')
-                .append(manifest.generationInheritedFiles)
-                .append('/')
-                .append(manifest.generationSealedFiles)
-                .append('/')
-                .append(manifest.generationTombstoneFiles)
-                .append('\n')
-                .append(japanese ? "Heap before/after/max: " : "Heap before/after/max: ")
-                .append(manifest.heapUsedBeforeBytes)
-                .append('/')
-                .append(manifest.heapUsedAfterBytes)
-                .append('/')
-                .append(manifest.heapMaxBytes)
-                .append('\n')
-                .append(
-                        japanese
-                                ? "Phase ms（barrier等の親phaseはinclusive）: "
-                                : "Phase ms (parent phases such as barrier are inclusive): ")
-                .append(timing == null ? manifest.phaseDurationsMs : timing.durationsMs())
-                .append('\n')
-                .append(japanese ? "Logical delta: " : "Logical delta: ")
-                .append(manifest.logicalDeltaChunkCount)
-                .append(" chunks / ")
-                .append(manifest.logicalDeltaEntityChunkCount)
-                .append(" entity chunks / ")
-                .append(manifest.logicalDeltaTombstoneCount)
-                .append(" tombstones / ")
-                .append(manifest.logicalDeltaPayloadBytes)
-                .append(" bytes")
-                .append('\n')
-                .append(japanese ? "Candidate cache: " : "Candidate cache: ")
-                .append(logicalDeltaEngine.candidateReport())
-                .append('\n')
-                .append(japanese ? "Mirror: " : "Mirror: ")
-                .append(checkpointMirror.snapshot().compact());
-        if (lastCompactionError != null) {
-            result.append('\n')
-                    .append(japanese ? "直近compactionエラー: " : "Last compaction error: ")
-                    .append(lastCompactionError);
-        }
-        if (verbose) {
-            result.append('\n')
-                    .append(
-                            japanese
-                                    ? "詳細phase（親phaseはinclusive）: "
-                                    : "Detailed phases (parent phases are inclusive): ")
-                    .append(timing == null ? manifest.phaseDurationsMs : timing.durationsMs())
-                    .append('\n')
-                    .append(japanese ? "未対応状態: " : "Unsupported state: ")
-                    .append(manifest.logicalDeltaComponentStatus)
-                    .append('\n')
-                    .append(japanese ? "Runtime unsupported: " : "Runtime unsupported: ")
-                    .append(manifest.unsupportedRuntimeState);
-        }
-        if (lastFinalizationError != null) {
-            result.append('\n')
-                    .append(japanese ? "直近エラー: " : "Last error: ")
-                    .append(lastFinalizationError);
-        }
-        return result.toString();
+        return CheckpointDiagnostics.render(
+                new CheckpointDiagnostics.View(
+                        states.get(),
+                        isCapturing(),
+                        engineIncidentStatus(language),
+                        config.checkpoint,
+                        lastManifest,
+                        lastTiming,
+                        logicalDeltaEngine.candidateReport(),
+                        checkpointMirror.snapshot().compact(),
+                        lastFinalizationError,
+                        lastCompactionError),
+                language,
+                verbose);
     }
 
     public String checkpointMirrorReport(String language, boolean audit) {

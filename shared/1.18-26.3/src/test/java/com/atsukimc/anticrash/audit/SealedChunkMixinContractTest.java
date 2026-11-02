@@ -29,21 +29,37 @@ class SealedChunkMixinContractTest {
     @Test
     void sealedChunkCopySelectsThePayloadArgumentEvenWithAnExtraContextTag() throws Exception {
         var mixin = read("com/atsukimc/anticrash/mixin/VersionedChunkStorageMixin");
-        var owner = mixin.invisibleAnnotations.stream()
-                .filter(a -> a.desc.endsWith("/Mixin;")).findFirst().orElseThrow();
+        var owner =
+                mixin.invisibleAnnotations.stream()
+                        .filter(a -> a.desc.endsWith("/Mixin;"))
+                        .findFirst()
+                        .orElseThrow();
         Type target = (Type) ((List<?>) value(owner, "value")).get(0);
         var game = read(target.getInternalName());
-        var handler = mixin.methods.stream()
-                .filter(m -> m.name.equals("anticrash$copySealedChunk")).findFirst().orElseThrow();
-        var injection = handler.visibleAnnotations.stream()
-                .filter(a -> a.desc.endsWith("/ModifyVariable;")).findFirst().orElseThrow();
-        assertEquals(0, value(injection, "ordinal"), "Implicit selection breaks when a context NBT is present");
+        var handler =
+                mixin.methods.stream()
+                        .filter(m -> m.name.equals("anticrash$copySealedChunk"))
+                        .findFirst()
+                        .orElseThrow();
+        var injection =
+                handler.visibleAnnotations.stream()
+                        .filter(a -> a.desc.endsWith("/ModifyVariable;"))
+                        .findFirst()
+                        .orElseThrow();
+        assertEquals(
+                0,
+                value(injection, "ordinal"),
+                "Implicit selection breaks when a context NBT is present");
         assertEquals(true, value(injection, "argsOnly"));
         var nbt = Type.getArgumentTypes(handler.desc)[0];
         String selector = (String) ((List<?>) value(injection, "method")).get(0);
-        long overloads = game.methods.stream().filter(m -> m.name.equals(selector))
-                .filter(m -> java.util.Arrays.asList(Type.getArgumentTypes(m.desc)).contains(nbt))
-                .count();
+        long overloads =
+                game.methods.stream()
+                        .filter(m -> m.name.equals(selector))
+                        .filter(m ->
+                                java.util.Arrays.asList(Type.getArgumentTypes(m.desc))
+                                        .contains(nbt))
+                        .count();
         assertTrue(overloads > 0, target + ": " + selector);
         // Every overload with an NBT payload must still return that NBT type. The selected
         // ordinal is the first NBT argument, never a later data-fixer context argument.

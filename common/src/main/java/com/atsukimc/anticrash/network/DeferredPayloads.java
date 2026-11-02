@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
+import java.util.function.BiFunction;
 
 /**
  * Custom payloads a client sent while recovery kept the world frozen.
@@ -35,6 +36,15 @@ public final class DeferredPayloads<H, P> {
     static final int LIMIT = 4096;
 
     private record Entry<H, P>(H handler, P payload) {}
+
+    public enum Disposition {
+        ACCEPTED,
+        DISCARDED
+    }
+
+    /** ACCEPTED means handed to the callback, not completion of asynchronous network work. */
+    public record DeliveryResult(
+            int accepted, int failed, int discarded, RuntimeException firstFailure) {}
 
     private final ConcurrentLinkedQueue<Entry<H, P>> queue = new ConcurrentLinkedQueue<>();
     private final AtomicInteger size = new AtomicInteger();
@@ -73,20 +83,35 @@ public final class DeferredPayloads<H, P> {
      * @return the number delivered
      */
     public int deliver(BiConsumer<H, P> delivery) {
+        return drain(
+                        (handler, payload) -> {
+                            delivery.accept(handler, payload);
+                            return Disposition.ACCEPTED;
+                        })
+                .accepted();
+    }
+
+    public DeliveryResult drain(BiFunction<H, P, Disposition> delivery) {
         List<Entry<H, P>> pending = new ArrayList<>();
         for (Entry<H, P> entry; (entry = queue.poll()) != null; ) {
             size.decrementAndGet();
             pending.add(entry);
         }
         int delivered = 0;
+        int failed = 0;
+        int discarded = 0;
+        RuntimeException firstFailure = null;
         for (Entry<H, P> entry : pending) {
             try {
-                delivery.accept(entry.handler(), entry.payload());
-                delivered++;
+                if (delivery.apply(entry.handler(), entry.payload()) == Disposition.ACCEPTED)
+                    delivered++;
+                else discarded++;
             } catch (RuntimeException failure) {
                 // One mod's handler must not cost the other clients their handshakes.
+                failed++;
+                if (firstFailure == null) firstFailure = failure;
             }
         }
-        return delivered;
+        return new DeliveryResult(delivered, failed, discarded, firstFailure);
     }
 }

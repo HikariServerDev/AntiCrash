@@ -6,7 +6,6 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.ReflectionUtil;
-import com.mojang.authlib.GameProfile;
 
 import net.minecraft.entity.effect.StatusEffectInstance;
 import net.minecraft.nbt.NbtElement;
@@ -466,6 +465,7 @@ public final class CarpetIntegration {
                 data.gamemode == null
                         ? GameMode.SURVIVAL
                         : GameMode.byName(data.gamemode, GameMode.SURVIVAL);
+        String unsupportedFactory = null;
         for (String className : FAKE_CLASSES)
             try {
                 Class<?> type = Class.forName(className);
@@ -475,7 +475,10 @@ public final class CarpetIntegration {
                                     || method.getName().equals("createFakePlayer"))) {
                         Object[] args =
                                 arguments(method.getParameterTypes(), server, world, data, mode);
-                        if (args == null) continue;
+                        if (args == null) {
+                            unsupportedFactory = method.toGenericString();
+                            continue;
+                        }
                         Object result = method.invoke(null, args);
                         if (result instanceof ServerPlayerEntity player) return player;
                         ServerPlayerEntity found = find(server, data);
@@ -485,6 +488,9 @@ public final class CarpetIntegration {
                 throw new IOException("Carpet FakePlayer factory failed", failure.getCause());
             } catch (Exception | LinkageError ignored) {
             }
+        if (unsupportedFactory != null)
+            throw new IOException(
+                    "Unsupported Carpet FakePlayer factory signature: " + unsupportedFactory);
         // Command fallback: only characters a Brigadier word accepts, so the name cannot alter it.
         if (data.name != null && data.name.matches("[A-Za-z0-9_.+-]{1,16}")) {
             try {
@@ -506,45 +512,43 @@ public final class CarpetIntegration {
             ServerWorld world,
             FakePlayerSnapshot data,
             GameMode mode) {
-        Object[] args = new Object[types.length];
-        int doubles = 0, floats = 0, booleans = 0;
-        double[] doubleValues = {data.x, data.y, data.z, data.yaw, data.pitch};
-        float[] floatValues = {data.yaw, data.pitch};
-        for (int i = 0; i < types.length; i++) {
-            Class<?> t = types[i];
-            if (t == net.minecraft.util.math.Vec3d.class) {
-                args[i] = new net.minecraft.util.math.Vec3d(data.x, data.y, data.z);
-                doubles = 3;
-            } else if (t == String.class) args[i] = data.name;
-            else if (t == MinecraftServer.class
-                    || server != null && t.isAssignableFrom(server.getClass())) args[i] = server;
-            else if (t == ServerWorld.class
-                    || world != null && t.isAssignableFrom(world.getClass())) args[i] = world;
-            else if (t == RegistryKey.class) args[i] = world.getRegistryKey();
-            else if (t == GameProfile.class)
-                try {
-                    args[i] = new GameProfile(UUID.fromString(data.uuid), data.name);
-                } catch (Exception e) {
-                    return null;
-                }
-            else if (t == GameMode.class) args[i] = mode;
-            else if (t == double.class || t == Double.class) {
-                if (doubles >= doubleValues.length) return null;
-                args[i] = doubleValues[doubles++];
-            } else if (t == float.class || t == Float.class) {
-                if (floats >= floatValues.length) return null;
-                args[i] = floatValues[floats++];
-            } else if (t == boolean.class || t == Boolean.class) {
-                args[i] = booleans++ == 0 ? data.flying : false;
-            } else if (t == UUID.class)
-                try {
-                    args[i] = UUID.fromString(data.uuid);
-                } catch (Exception e) {
-                    return null;
-                }
-            else return null;
-        }
-        return args;
+        FakePlayerFactoryContract contract =
+                FakePlayerFactoryContract.resolve(
+                        types,
+                        MinecraftServer.class,
+                        net.minecraft.util.math.Vec3d.class,
+                        RegistryKey.class,
+                        GameMode.class);
+        if (contract == null) return null;
+        Object dimension = world == null ? null : world.getRegistryKey();
+        Object[] arguments =
+                switch (contract) {
+                    case SCALAR ->
+                            new Object[] {
+                                data.name,
+                                server,
+                                data.x,
+                                data.y,
+                                data.z,
+                                (double) data.yaw,
+                                (double) data.pitch,
+                                dimension,
+                                mode,
+                                data.flying
+                            };
+                    case VECTOR, VECTOR_WITH_FAILURE_HANDLER ->
+                            new Object[] {
+                                data.name,
+                                server,
+                                new net.minecraft.util.math.Vec3d(data.x, data.y, data.z),
+                                (double) data.yaw,
+                                (double) data.pitch,
+                                dimension,
+                                mode,
+                                data.flying
+                            };
+                };
+        return contract.withFailureHandler(arguments);
     }
 
     private static void apply(

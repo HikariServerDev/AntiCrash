@@ -28,9 +28,13 @@ class FakePlayerCreationArgumentsTest {
                         method.invoke(
                                 null,
                                 new Class<?>[] {
+                                    String.class,
+                                    net.minecraft.server.MinecraftServer.class,
                                     net.minecraft.util.math.Vec3d.class,
                                     double.class,
                                     double.class,
+                                    dimensionKeyType(),
+                                    modeType(),
                                     boolean.class
                                 },
                                 null,
@@ -38,9 +42,19 @@ class FakePlayerCreationArgumentsTest {
                                 data,
                                 null);
         assertNotNull(args);
-        assertEquals(new net.minecraft.util.math.Vec3d(120, 90, -450), args[0]);
-        assertEquals(73.0D, args[1]);
-        assertEquals(-21.0D, args[2]);
-        assertEquals(true, args[3]);
+        assertEquals(new net.minecraft.util.math.Vec3d(120, 90, -450), args[2]);
+        assertEquals(73.0D, args[3]);
+        assertEquals(-21.0D, args[4]);
+        assertEquals(true, args[7]);
+    }
+
+    private static Class<?> dimensionKeyType() throws Exception {
+        return net.minecraft.server.world.ServerWorld.class
+                .getMethod("getRegistryKey")
+                .getReturnType();
+    }
+
+    private static Class<?> modeType() {
+        return net.minecraft.world.GameMode.class;
     }
 }

@@ -773,6 +773,74 @@ public final class AntiCrashConfig {
         } else {
             language = MessageCatalog.normalize(language);
         }
+        validateCheckpoint(warning);
+        commands.validate(language, warning);
+        String publicCommands = publicMutatingCommands();
+        if (!publicCommands.isEmpty()) {
+            warning.accept(
+                    MessageCatalog.text(
+                            language, "security.public_mutating_commands", publicCommands));
+        }
+        if (!oneOf(
+                snapshot.backend,
+                "AUTO",
+                "PORTABLE_GENERATION",
+                "GENERATION",
+                "JAVA_INCREMENTAL",
+                "LEGACY_SAFE",
+                "REFLINK",
+                "BTRFS",
+                "CRIU_EXPERIMENTAL")) {
+            warning.accept(MessageCatalog.text(language, "config.snapshot_backend"));
+            snapshot.backend = "AUTO";
+        }
+        if (!snapshot.verifyChecksums)
+            warning.accept(MessageCatalog.text(language, "security.checksums_disabled"));
+        validateRecovery(warning);
+        String recoveryMutations = enabledRecoveryMutations();
+        if (!recoveryMutations.isEmpty()) {
+            warning.accept(
+                    MessageCatalog.text(
+                            language, "security.recovery_mutations_enabled", recoveryMutations));
+        }
+        if (!fakePlayer.snapshot.actions && fakePlayer.snapshot.actionInternalTiming) {
+            warning.accept(
+                    MessageCatalog.text(language, "config.fakeplayer_timing_requires_actions"));
+            fakePlayer.snapshot.actionInternalTiming = false;
+        }
+        if (login.retryTimeoutSeconds < 0 || login.retryTimeoutSeconds > 20) {
+            warning.accept(MessageCatalog.text(language, "config.login_retry_range"));
+            login.retryTimeoutSeconds = 5;
+        }
+        if (notifications.checkpointActionBarDelayTicks < 0
+                || notifications.checkpointActionBarDelayTicks > 1_200) {
+            warning.accept(MessageCatalog.text(language, "config.action_bar_delay_range"));
+            notifications.checkpointActionBarDelayTicks = 10;
+        }
+        if (!oneOf(consistency.mode, "IGNORE", "WARN", "JOURNAL")) {
+            warning.accept(MessageCatalog.text(language, "config.consistency_mode"));
+            consistency.mode = "IGNORE";
+        }
+        if (!oneOf(logging.level, "OFF", "IMPORTANT", "NORMAL", "VERBOSE", "TRACE")) {
+            warning.accept(MessageCatalog.text(language, "config.logging_level"));
+            logging.level = "NORMAL";
+        }
+        if (logging.maxFileMb < 1 || logging.maxFileMb > 10_240) {
+            warning.accept(MessageCatalog.text(language, "config.log_size_range"));
+            logging.maxFileMb = 50;
+        }
+        if (logging.retainedFiles < 1 || logging.retainedFiles > 1_000) {
+            warning.accept(MessageCatalog.text(language, "config.log_retention_range"));
+            logging.retainedFiles = 10;
+        }
+        if (snapshot.crashRawRetentionCount < 1) snapshot.crashRawRetentionCount = 1;
+        if (snapshot.ioThreads < 0 || snapshot.ioThreads > 64) {
+            warning.accept(MessageCatalog.text(language, "config.io_threads_range"));
+            snapshot.ioThreads = 0;
+        }
+    }
+
+    private void validateCheckpoint(Consumer<String> warning) {
         if (checkpoint.intervalSeconds <= 0 || checkpoint.intervalSeconds > 86_400) {
             warning.accept(MessageCatalog.text(language, "config.interval_range"));
             checkpoint.intervalSeconds = 30;
@@ -871,28 +939,9 @@ public final class AntiCrashConfig {
             warning.accept(MessageCatalog.text(language, "config.checkpoint_mirror_trace_range"));
             checkpoint.mirrorTraceLimit = 64;
         }
-        commands.validate(language, warning);
-        String publicCommands = publicMutatingCommands();
-        if (!publicCommands.isEmpty()) {
-            warning.accept(
-                    MessageCatalog.text(
-                            language, "security.public_mutating_commands", publicCommands));
-        }
-        if (!oneOf(
-                snapshot.backend,
-                "AUTO",
-                "PORTABLE_GENERATION",
-                "GENERATION",
-                "JAVA_INCREMENTAL",
-                "LEGACY_SAFE",
-                "REFLINK",
-                "BTRFS",
-                "CRIU_EXPERIMENTAL")) {
-            warning.accept(MessageCatalog.text(language, "config.snapshot_backend"));
-            snapshot.backend = "AUTO";
-        }
-        if (!snapshot.verifyChecksums)
-            warning.accept(MessageCatalog.text(language, "security.checksums_disabled"));
+    }
+
+    private void validateRecovery(Consumer<String> warning) {
         if (!oneOf(recovery.policy, "AUTO", "ASK", "MANUAL")) {
             warning.accept(MessageCatalog.text(language, "config.recovery_policy"));
             recovery.policy = "AUTO";
@@ -938,47 +987,6 @@ public final class AntiCrashConfig {
                 || recovery.temporaryTicketReleaseTicks > 1_200_000) {
             warning.accept(MessageCatalog.text(language, "config.ticket_release_range"));
             recovery.temporaryTicketReleaseTicks = 100;
-        }
-        String recoveryMutations = enabledRecoveryMutations();
-        if (!recoveryMutations.isEmpty()) {
-            warning.accept(
-                    MessageCatalog.text(
-                            language, "security.recovery_mutations_enabled", recoveryMutations));
-        }
-        if (!fakePlayer.snapshot.actions && fakePlayer.snapshot.actionInternalTiming) {
-            warning.accept(
-                    MessageCatalog.text(language, "config.fakeplayer_timing_requires_actions"));
-            fakePlayer.snapshot.actionInternalTiming = false;
-        }
-        if (login.retryTimeoutSeconds < 0 || login.retryTimeoutSeconds > 20) {
-            warning.accept(MessageCatalog.text(language, "config.login_retry_range"));
-            login.retryTimeoutSeconds = 5;
-        }
-        if (notifications.checkpointActionBarDelayTicks < 0
-                || notifications.checkpointActionBarDelayTicks > 1_200) {
-            warning.accept(MessageCatalog.text(language, "config.action_bar_delay_range"));
-            notifications.checkpointActionBarDelayTicks = 10;
-        }
-        if (!oneOf(consistency.mode, "IGNORE", "WARN", "JOURNAL")) {
-            warning.accept(MessageCatalog.text(language, "config.consistency_mode"));
-            consistency.mode = "IGNORE";
-        }
-        if (!oneOf(logging.level, "OFF", "IMPORTANT", "NORMAL", "VERBOSE", "TRACE")) {
-            warning.accept(MessageCatalog.text(language, "config.logging_level"));
-            logging.level = "NORMAL";
-        }
-        if (logging.maxFileMb < 1 || logging.maxFileMb > 10_240) {
-            warning.accept(MessageCatalog.text(language, "config.log_size_range"));
-            logging.maxFileMb = 50;
-        }
-        if (logging.retainedFiles < 1 || logging.retainedFiles > 1_000) {
-            warning.accept(MessageCatalog.text(language, "config.log_retention_range"));
-            logging.retainedFiles = 10;
-        }
-        if (snapshot.crashRawRetentionCount < 1) snapshot.crashRawRetentionCount = 1;
-        if (snapshot.ioThreads < 0 || snapshot.ioThreads > 64) {
-            warning.accept(MessageCatalog.text(language, "config.io_threads_range"));
-            snapshot.ioThreads = 0;
         }
     }
 
@@ -1209,7 +1217,7 @@ public final class AntiCrashConfig {
         #   After a normal stop, Y resumes from the stop-time checkpoint (running machinery
         #   continues; the start takes longer) and N starts the saved world as Vanilla does
         #   (machinery caught mid-cycle may stop).
-        # MANUAL: remain frozen for an explicit recovery command.
+        # MANUAL: ask before World load; timeout/unavailable input never selects an implicit restore.
         policy = "%s"
         # STRICT verifies the checkpoint tick domain and captured runtime categories
         # before the first resumed tick. OPTIMIZED keeps the lightweight legacy planner.
@@ -1222,7 +1230,10 @@ public final class AntiCrashConfig {
         restore_latest_valid_checkpoint = %s
         allow_restore_older_checkpoint = %s
         fallback_to_previous_checkpoint = %s
-        # ASK starts this timer only after server startup completes. 0 means no timeout; maximum 86400.
+        # The timer starts with the pre-world console question. Maximum 86400 seconds.
+        # 0 waits indefinitely only with a usable terminal or already available input.
+        # Without either, input is UNAVAILABLE: ASK uses its exit-dependent default;
+        # MANUAL fails closed instead of restoring or continuing without a decision.
         # No answer within the timeout: Y (restore) after a crash, N after a normal stop.
         ask_timeout_seconds = %d
         # Compatibility key only; current ASK timeout logic does not use this value.

@@ -71,108 +71,11 @@ public final class RuntimeExtensionSnapshot {
         lines.get(NATIVE_TICK).addAll(NativeTickState.capture(server).lines());
         for (ServerWorld world : server.getWorlds()) {
             String dimension = world.getRegistryKey().getValue().toString();
-            // Experimental trial-spawner logic has non-codec detector/force-activation state.
-            // Do not claim exact runtime support merely because its ordinary data has a codec.
-            var holders =
-                    ((com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                                    world.getChunkManager().threadedAnvilChunkStorage)
-                            .anticrash$getCurrentChunkHolders();
-            for (var holder : holders.values()) {
-                WorldChunk loaded = holder.getWorldChunk();
-                if (loaded == null) continue;
-                for (BlockEntity entity : loaded.getBlockEntities().values()) {
-                    if (entity instanceof net.minecraft.block.entity.TrialSpawnerBlockEntity
-                            && !capsule.unsupportedRuntimeState.contains("TRIAL_SPAWNER_RUNTIME")) {
-                        capsule.unsupportedRuntimeState.add("TRIAL_SPAWNER_RUNTIME");
-                    }
-                }
-            }
-            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
-            for (List<BlockEntityTickInvoker> tickers :
-                    List.of(
-                            accessor.anticrash$getBlockEntityTickers(),
-                            accessor.anticrash$getPendingBlockEntityTickers())) {
-                for (BlockEntityTickInvoker ticker : tickers) {
-                    if (BlockEntityTickerSnapshot.removed(ticker)) continue;
-                    BlockPos pos = ticker.getPos();
-                    WorldChunk chunk =
-                            world.getChunkManager().getWorldChunk(pos.getX() >> 4, pos.getZ() >> 4);
-                    BlockEntity blockEntity =
-                            chunk == null ? null : chunk.getBlockEntities().get(pos);
-                    String where =
-                            dimension + "|" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
-                    if (blockEntity instanceof BrewingStandBlockEntity) {
-                        BrewingStandBlockEntityTimerAccessor stand =
-                                (BrewingStandBlockEntityTimerAccessor) blockEntity;
-                        if (stand.anticrash$getBrewTime() > 0) {
-                            lines.get(BREWING)
-                                    .add(
-                                            where
-                                                    + "|"
-                                                    + stand.anticrash$getBrewTime()
-                                                    + "|"
-                                                    + (stand.anticrash$getItemBrewing() == null
-                                                            ? "null"
-                                                            : Registries.ITEM.getId(
-                                                                    stand
-                                                                            .anticrash$getItemBrewing())));
-                        }
-                    } else if (blockEntity instanceof EndGatewayBlockEntity) {
-                        int cooldown =
-                                ((EndGatewayBlockEntityAccessorMixin) blockEntity)
-                                        .anticrash$getTeleportCooldown();
-                        if (cooldown > 0) lines.get(END_GATEWAY).add(where + "|" + cooldown);
-                    }
-                    String sculk = SculkRuntimeFingerprint.capture(blockEntity);
-                    if (sculk != null) lines.get(SCULK).add(where + "|" + sculk);
-                }
-            }
+            captureBlockRuntime(world, dimension, lines, capsule);
             ((ServerWorldAccessorMixin) world)
                     .anticrash$getEntityList()
-                    .forEach(entity -> {
-                        if (entity == null
-                                || entity.isRemoved()
-                                || entity instanceof net.minecraft.entity.player.PlayerEntity)
-                            return;
-                        EntityRuntimeAccessorMixin runtime = (EntityRuntimeAccessorMixin) entity;
-                        String id = dimension + "|" + entity.getUuidAsString();
-                        if (runtime.anticrash$isInNetherPortal()
-                                || runtime.anticrash$getNetherPortalTime() > 0) {
-                            lines.get(PORTAL)
-                                    .add(
-                                            id
-                                                    + "|"
-                                                    + runtime.anticrash$isInNetherPortal()
-                                                    + "|"
-                                                    + runtime.anticrash$getNetherPortalTime());
-                        }
-                        StringBuilder line = new StringBuilder(id);
-                        line.append("|groundCollision=")
-                                .append(entity.groundCollision)
-                                .append("|support=")
-                                .append(entity.supportingBlockPos)
-                                .append("|forceSupport=")
-                                .append(runtime.anticrash$forceSupportUpdate());
-                        line.append("|ticked=").append(!runtime.anticrash$isFirstUpdate());
-                        if (!runtime.anticrash$isFirstUpdate())
-                            line.append("|water=").append(runtime.anticrash$isTouchingWater());
-                        if (runtime.anticrash$getRidingCooldown() > 0)
-                            line.append("|riding=").append(runtime.anticrash$getRidingCooldown());
-                        if (entity.timeUntilRegen > 0) {
-                            line.append("|regen=").append(entity.timeUntilRegen);
-                            if (entity instanceof LivingEntity living) {
-                                line.append("|lastDamage=")
-                                        .append(
-                                                ((LivingEntityAccessorMixin) living)
-                                                        .anticrash$getLastDamageTaken());
-                            }
-                        }
-                        if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity)
-                            line.append("|age=").append(entity.age);
-                        if (entity instanceof ItemPhaseHolder item)
-                            line.append("|phase=").append(item.anticrash$idPhase());
-                        lines.get(ENTITY_TRANSIENT).add(line.toString());
-                    });
+                    .forEach(entity ->
+                            captureEntityRuntime(server, world, entity, dimension, lines, capsule));
         }
         if (capsule.ticketLedger != null) {
             for (TicketLedgerSnapshot.Entry ticket : capsule.ticketLedger) {
@@ -226,6 +129,117 @@ public final class RuntimeExtensionSnapshot {
         }
         for (List<String> category : lines.values()) Collections.sort(category);
         return lines;
+    }
+
+    /** Block-entity traversal stays in the original world/ticker order. */
+    private static void captureBlockRuntime(
+            ServerWorld world,
+            String dimension,
+            Map<String, List<String>> lines,
+            RuntimeCapsule capsule) {
+        // Experimental trial-spawner logic has non-codec detector/force-activation state.
+        // Do not claim exact runtime support merely because its ordinary data has a codec.
+        var holders =
+                ((com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
+                                world.getChunkManager().threadedAnvilChunkStorage)
+                        .anticrash$getCurrentChunkHolders();
+        for (var holder : holders.values()) {
+            WorldChunk loaded = holder.getWorldChunk();
+            if (loaded == null) continue;
+            for (BlockEntity entity : loaded.getBlockEntities().values()) {
+                if (entity instanceof net.minecraft.block.entity.TrialSpawnerBlockEntity
+                        && !capsule.unsupportedRuntimeState.contains("TRIAL_SPAWNER_RUNTIME")) {
+                    capsule.unsupportedRuntimeState.add("TRIAL_SPAWNER_RUNTIME");
+                }
+            }
+        }
+        WorldAccessorMixin accessor = (WorldAccessorMixin) world;
+        for (List<BlockEntityTickInvoker> tickers :
+                List.of(
+                        accessor.anticrash$getBlockEntityTickers(),
+                        accessor.anticrash$getPendingBlockEntityTickers())) {
+            for (BlockEntityTickInvoker ticker : tickers) {
+                if (BlockEntityTickerSnapshot.removed(ticker)) continue;
+                BlockPos pos = ticker.getPos();
+                WorldChunk chunk =
+                        world.getChunkManager().getWorldChunk(pos.getX() >> 4, pos.getZ() >> 4);
+                BlockEntity blockEntity = chunk == null ? null : chunk.getBlockEntities().get(pos);
+                String where = dimension + "|" + pos.getX() + "," + pos.getY() + "," + pos.getZ();
+                if (blockEntity instanceof BrewingStandBlockEntity) {
+                    BrewingStandBlockEntityTimerAccessor stand =
+                            (BrewingStandBlockEntityTimerAccessor) blockEntity;
+                    if (stand.anticrash$getBrewTime() > 0) {
+                        lines.get(BREWING)
+                                .add(
+                                        where
+                                                + "|"
+                                                + stand.anticrash$getBrewTime()
+                                                + "|"
+                                                + (stand.anticrash$getItemBrewing() == null
+                                                        ? "null"
+                                                        : Registries.ITEM.getId(
+                                                                stand.anticrash$getItemBrewing())));
+                    }
+                } else if (blockEntity instanceof EndGatewayBlockEntity) {
+                    int cooldown =
+                            ((EndGatewayBlockEntityAccessorMixin) blockEntity)
+                                    .anticrash$getTeleportCooldown();
+                    if (cooldown > 0) lines.get(END_GATEWAY).add(where + "|" + cooldown);
+                }
+                String sculk = SculkRuntimeFingerprint.capture(blockEntity);
+                if (sculk != null) lines.get(SCULK).add(where + "|" + sculk);
+            }
+        }
+    }
+
+    /** One entity's canonical fields and unsupported markers, without changing traversal order. */
+    private static void captureEntityRuntime(
+            MinecraftServer server,
+            ServerWorld world,
+            net.minecraft.entity.Entity entity,
+            String dimension,
+            Map<String, List<String>> lines,
+            RuntimeCapsule capsule) {
+        if (entity == null
+                || entity.isRemoved()
+                || entity instanceof net.minecraft.entity.player.PlayerEntity) return;
+        EntityRuntimeAccessorMixin runtime = (EntityRuntimeAccessorMixin) entity;
+        String id = dimension + "|" + entity.getUuidAsString();
+        if (runtime.anticrash$isInNetherPortal() || runtime.anticrash$getNetherPortalTime() > 0) {
+            lines.get(PORTAL)
+                    .add(
+                            id
+                                    + "|"
+                                    + runtime.anticrash$isInNetherPortal()
+                                    + "|"
+                                    + runtime.anticrash$getNetherPortalTime());
+        }
+        StringBuilder line = new StringBuilder(id);
+        line.append("|groundCollision=")
+                .append(entity.groundCollision)
+                .append("|support=")
+                .append(entity.supportingBlockPos)
+                .append("|forceSupport=")
+                .append(runtime.anticrash$forceSupportUpdate());
+        line.append("|ticked=").append(!runtime.anticrash$isFirstUpdate());
+        if (!runtime.anticrash$isFirstUpdate())
+            line.append("|water=").append(runtime.anticrash$isTouchingWater());
+        if (runtime.anticrash$getRidingCooldown() > 0)
+            line.append("|riding=").append(runtime.anticrash$getRidingCooldown());
+        if (entity.timeUntilRegen > 0) {
+            line.append("|regen=").append(entity.timeUntilRegen);
+            if (entity instanceof LivingEntity living) {
+                line.append("|lastDamage=")
+                        .append(
+                                ((LivingEntityAccessorMixin) living)
+                                        .anticrash$getLastDamageTaken());
+            }
+        }
+        if (entity instanceof ItemEntity || entity instanceof ExperienceOrbEntity)
+            line.append("|age=").append(entity.age);
+        if (entity instanceof ItemPhaseHolder item)
+            line.append("|phase=").append(item.anticrash$idPhase());
+        lines.get(ENTITY_TRANSIENT).add(line.toString());
     }
 
     /**

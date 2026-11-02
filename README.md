@@ -74,7 +74,7 @@ In the `[recovery]` section of the config, `policy` controls when to restore.
 
 When the question appears **before the world loads**, type `Y` or `N` in the **server console** and press Enter. `Y` restores a checkpoint after validation. `N` starts the saved world without restoring a checkpoint.
 
-The answer deadline is `ask_timeout_seconds`, which defaults to **60 seconds**. Set it to `0` to wait indefinitely. With `MANUAL`, reaching the deadline is treated as a recovery failure; it does not automatically restore. The older `ask_default_action` setting is kept for compatibility and does not change these rules.
+The answer deadline is `ask_timeout_seconds`, which defaults to **60 seconds**. Set it to `0` to wait indefinitely when an interactive terminal or input is available. Without either, `ASK` uses the default above and `MANUAL` refuses recovery. With `MANUAL`, reaching the deadline is treated as a recovery failure; it does not automatically restore. The older `ask_default_action` setting is kept for compatibility and does not change these rules.
 
 After a normal shutdown, choosing `Y` also restores the supported machine state saved in the checkpoint. Choosing `N` starts the world as Vanilla would, so a machine stopped mid-cycle may not continue in the same way.
 
@@ -474,7 +474,7 @@ Supervisorは、自動再起動のための別プログラムです。使う場�
 
 **ワールド読み込み前に質問が表示されたら、サーバーコンソールに`Y`または`N`を入力し、Enterを押します。** `Y`なら検証後に復元し、`N`ならチェックポイントを使わず通常起動します。
 
-回答期限は`ask_timeout_seconds`で、初期値は**60秒**です。`0`なら無期限で待ちます。`MANUAL`で期限を過ぎた場合は、自動復元せず復旧失敗として扱います。旧設定の`ask_default_action`は互換性のために残っている項目で、これらの動作は変更しません。
+回答期限は`ask_timeout_seconds`で、初期値は**60秒**です。`0`では、操作できる端末や到着済みの入力がある場合に無期限で待ちます。入力手段がない場合、`ASK`は上の表の回答を使い、`MANUAL`は復旧を開始しません。`MANUAL`で期限を過ぎた場合は、自動復元せず復旧失敗として扱います。旧設定の`ask_default_action`は互換性のために残っている項目で、これらの動作は変更しません。
 
 正常終了後に`Y`を選ぶと、停止時のチェックポイントに保存された装置の状態も復元します。`N`はVanillaと同じ通常起動なので、動作途中で停止した装置が同じように動き続けるとは限りません。
 

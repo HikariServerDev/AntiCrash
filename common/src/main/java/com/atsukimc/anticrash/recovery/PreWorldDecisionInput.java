@@ -27,6 +27,11 @@ public final class PreWorldDecisionInput {
         void sleep(long millis) throws InterruptedException;
     }
 
+    @FunctionalInterface
+    public interface Reader {
+        Answer read(String prompt, long timeoutMillis, Answer timeoutAnswer);
+    }
+
     private PreWorldDecisionInput() {}
 
     public static Answer await(String prompt, long timeoutMillis, Answer timeoutAnswer) {

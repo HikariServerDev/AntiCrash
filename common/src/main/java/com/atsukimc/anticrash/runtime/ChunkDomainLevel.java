@@ -10,7 +10,8 @@ public final class ChunkDomainLevel {
             case "INACCESSIBLE", "ENTITY_TICKING", "BORDER", "TICKING" -> nativeName;
             case "FULL" -> "BORDER";
             case "BLOCK_TICKING" -> "TICKING";
-            default -> throw new IllegalArgumentException("Unknown chunk level type: " + nativeName);
+            default ->
+                    throw new IllegalArgumentException("Unknown chunk level type: " + nativeName);
         };
     }
 }

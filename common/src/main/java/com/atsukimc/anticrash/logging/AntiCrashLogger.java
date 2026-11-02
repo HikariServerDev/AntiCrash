@@ -35,6 +35,10 @@ public final class AntiCrashLogger {
     private final Supplier<String> languageSupplier;
     private AntiCrashConfig.Logging config;
     private final ConsoleRouter consoleRouter = new ConsoleRouter();
+    private final java.util.concurrent.atomic.AtomicLong nextFailureLog =
+            new java.util.concurrent.atomic.AtomicLong();
+    private final java.util.concurrent.atomic.AtomicInteger suppressedFailures =
+            new java.util.concurrent.atomic.AtomicInteger();
 
     public AntiCrashLogger(Path logDirectory, AntiCrashConfig.Logging config) {
         this(logDirectory, config, () -> MessageCatalog.DEFAULT_LANGUAGE);
@@ -65,6 +69,29 @@ public final class AntiCrashLogger {
 
     public void importantKey(String key, Object... args) {
         writeKey(Level.IMPORTANT, "IMPORTANT", key, args, false);
+    }
+
+    /** At most one detailed failure per second; other failures are counted, never retried. */
+    public void failureKey(String key, Throwable failure, Object... args) {
+        long now = System.nanoTime();
+        long next = nextFailureLog.get();
+        if (next != 0 && now - next < 0
+                || !nextFailureLog.compareAndSet(next, now + 1_000_000_000L)) {
+            suppressedFailures.incrementAndGet();
+            return;
+        }
+        importantKey(key, args);
+        int suppressed = suppressedFailures.getAndSet(0);
+        if (suppressed > 0) importantKey("logging.failures_suppressed", suppressed);
+        if (failure instanceof OutOfMemoryError || !config.file || !enabled(Level.IMPORTANT))
+            return;
+        try {
+            append("DETAIL", "event=" + key + " " + FailureDetails.describe(failure));
+        } catch (IOException exception) {
+            LOGGER.warn(
+                    MessageCatalog.text(languageSupplier.get(), "logging.file_write_failed"),
+                    exception);
+        }
     }
 
     public void normalKey(String key, Object... args) {
