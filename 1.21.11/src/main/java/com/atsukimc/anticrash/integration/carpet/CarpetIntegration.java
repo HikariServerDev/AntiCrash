@@ -911,7 +911,11 @@ public final class CarpetIntegration {
         if (data.motionFrameNbt != null)
             com.atsukimc.anticrash.runtime.EntityMotionFrame.read(
                     NbtCodec.decodeCompound(data.motionFrameNbt));
-        if (data.lastKineticAttackTime != null && data.lastKineticAttackTime < -1)
+        // LivingEntity initializes lastKineticHitFeedbackTime to Integer.MIN_VALUE (as long).
+        // Preserve that never-hit sentinel, while still rejecting other invalid negative times.
+        if (data.lastKineticAttackTime != null
+                && data.lastKineticAttackTime < -1
+                && data.lastKineticAttackTime != Integer.MIN_VALUE)
             throw new IllegalArgumentException("Invalid kinetic attack time");
         // Carpet accepts any name Vanilla's login would (e.g. "bot.bed"): printable ASCII without
         // spaces, at most 16 characters. The old [A-Za-z0-9_] rule refused a whole restore.
