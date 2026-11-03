@@ -15,13 +15,64 @@ SHA256 = "c78feb48c549fa7114b7ea11db3b456808f7b371ffe84e6643a44dd2f9588639"
 URL = f"https://github.com/google/google-java-format/releases/download/v{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
 
 
+# Java literals precede comment tokens so comment-shaped text inside a string
+# or text block never becomes a placeholder.
+JAVA_TRIVIA = re.compile(
+    r'"""(?:\\.|(?!""").)*"""|"(?:\\.|[^"\\])*"|'
+    r"'(?:\\.|[^'\\])*'|//[^\n]*|/\*.*?\*/", re.DOTALL)
+BLOCK_PREFIX = "__ANTICRASH_FORMAT_BLOCK_"
+
+
+def mask_block_comments(text):
+    if BLOCK_PREFIX in text:
+        raise ValueError("Formatter placeholder collides with source text")
+    blocks = []
+    def replace(match):
+        token = match.group()
+        if not token.startswith("/*"):
+            return token
+        index = len(blocks)
+        blocks.append(token)
+        return f"/*{BLOCK_PREFIX}{index}__*/"
+    return JAVA_TRIVIA.sub(replace, text), blocks
+
+
+def restore_block_comments(text, blocks):
+    seen = []
+    def replace(match):
+        index = int(match.group(1))
+        if index >= len(blocks):
+            raise ValueError("Unknown formatter placeholder")
+        seen.append(index)
+        return blocks[index]
+    pattern = r"/\*\s*" + BLOCK_PREFIX + r"([0-9]+)__\s*\*/"
+    text = re.sub(pattern, replace, text)
+    if sorted(seen) != list(range(len(blocks))):
+        raise ValueError("Formatter lost or duplicated a block comment")
+    return text
+
+
+def restore_formatted(text, blocks):
+    def restore_marker(match):
+        token = match.group()
+        if token.startswith("//"):
+            return re.sub(r'^//[ \t]+\?(?= if\b|\})', '//?', token)
+        return token
+    text = JAVA_TRIVIA.sub(restore_marker, text)
+    # Compact only the formatter's placeholder terminator. Nested inactive
+    # source and literal contents are restored afterwards, without any edits.
+    pattern = r'(/\*\s*' + BLOCK_PREFIX + r'([0-9]+)__\s*\*/)\s*(//\?\})'
+    def compact_ghost(match):
+        if blocks[int(match.group(2))].startswith('/**'):
+            return match.group()
+        return match.group(1) + match.group(3)
+    text = re.sub(pattern, compact_ghost, text)
+    return restore_block_comments(text, blocks)
+
+
 def preserve_directives(text):
-    text = re.sub(r'(?m)^([ \t]*(?:\*/|\^/)?//) \?', r'\1?', text)
-    # A split ghost terminator becomes an extra source line on each native switch.
-    # Keep Stonecutter's compact terminator, trimming only non-executable trailing
-    # whitespace before it. Nested inactive comments use the escaped ^/ form.
-    return re.sub(r'\n(?:[ \t]*\n)*[ \t]*(\*/|\^/)[ \t]*\n[ \t]*(//\?\})',
-                  r'\n\1\2', text)
+    masked, blocks = mask_block_comments(text)
+    return restore_formatted(masked, blocks)
 
 
 def java_sources(root):
@@ -53,18 +104,21 @@ def main():
     sources = java_sources(root)
     with tempfile.TemporaryDirectory(prefix="anticrash-format-") as temporary:
         staged = []
+        comments = []
         for index, source in enumerate(sources):
             destination = Path(temporary) / str(index) / source.name
             destination.parent.mkdir()
-            destination.write_bytes(source.read_bytes())
+            masked, blocks = mask_block_comments(source.read_text(encoding='utf-8'))
+            destination.write_text(masked, encoding='utf-8')
+            comments.append(blocks)
             staged.append(destination)
         subprocess.run([str(java), "-Xmx1024m", "-XX:ActiveProcessorCount=2", "-jar", str(jar),
                         "--aosp", "--skip-sorting-imports", "--skip-removing-unused-imports",
                         "--skip-javadoc-formatting", "--skip-reordering-modifiers", "--cleanup=false",
                         "--replace", *map(str, staged)], cwd=root, check=True)
         changed = []
-        for source, formatted in zip(sources, staged):
-            content = preserve_directives(formatted.read_text(encoding='utf-8'))
+        for source, formatted, blocks in zip(sources, staged, comments):
+            content = restore_formatted(formatted.read_text(encoding='utf-8'), blocks)
             if content != source.read_text(encoding='utf-8'):
                 changed.append(source)
                 if not args.check:

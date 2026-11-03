@@ -1,13 +1,13 @@
 # Changelog
 
-## Unreleased — source/build structure
+## 1.0.3 — source/build structure
 
 - Consolidate Minecraft implementation and unit tests into one Stonecutter-managed `src` tree.
 - Centralize target properties, dependency pins and build tasks; keep ordered Mixin profiles and field-audit fixtures explicit.
 - Keep Supervisor independent and separate isolated qualification probes from the distributed Mod. Repair stale probe-only API calls without changing distributed runtime code.
 - Add sequential all-target builds, bounded resources, candidate artifact collection and executable/resource parity checks.
-- Preserve Stonecutter directives through formatting and use the existing AST-based save-scope audit consistently in 1.21.5.
-- Preserve Mod version 1.0.2, checkpoint formats, runtime class identities and published release artifacts. This migration does not publish a new release.
+- Preserve Stonecutter directives and inactive comment bodies through formatting; prevent indentation growth on repeated runs. Use the existing AST-based save-scope audit consistently in 1.21.5.
+- Preserve checkpoint formats and runtime class identities. Publish new versioned JARs because build metadata and debugging information changed; keep older releases unchanged.
 
 ## 1.0.2
 

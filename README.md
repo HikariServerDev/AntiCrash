@@ -1,6 +1,6 @@
 # AntiCrash
 
-**Minecraft Fabric** — by AtsukiMC · **v1.0.2** · **LGPL-3.0-only**
+**Minecraft Fabric** — by AtsukiMC · **v1.0.3** · **LGPL-3.0-only**
 
 [English](#english) · [日本語](#日本語)
 
@@ -25,7 +25,7 @@ After restoration, AntiCrash prepares the required chunks and keeps **game time 
 
 ### Installation
 
-Stop the server and back up the world first. Choose the v1.0.2 Mod JAR for your **exact Minecraft version** from [Release 1.0.2](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.2). For Minecraft 1.18.2, use `AntiCrash-1.0.2+mc1.18.2.jar`.
+Stop the server and back up the world first. Choose the v1.0.3 Mod JAR for your **exact Minecraft version** from [Release 1.0.3](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.3). For Minecraft 1.18.2, use `AntiCrash-1.0.3+mc1.18.2.jar`.
 
 Put the Mod JAR in the server's `mods/` folder, then start the Fabric server. AntiCrash creates `config/anticrash.toml`, where you can change its settings. Players do not need to install the mod.
 
@@ -33,8 +33,8 @@ The Supervisor is a separate program for automatic restarts. If you use it, plac
 
 | File | Location | Purpose |
 | --- | --- | --- |
-| `AntiCrash-1.0.2+mc<VERSION>.jar` | Server `mods/` folder | Checkpoints and restoration |
-| `AntiCrash-Supervisor-1.0.2+mc<VERSION>.jar` | Server directory | Process monitoring and restarts |
+| `AntiCrash-1.0.3+mc<VERSION>.jar` | Server `mods/` folder | Checkpoints and restoration |
+| `AntiCrash-Supervisor-1.0.3+mc<VERSION>.jar` | Server directory | Process monitoring and restarts |
 
 #### Supported Minecraft versions
 
@@ -135,7 +135,7 @@ Checkpoint creation does **not** display an action-bar message. `[notifications]
 
 #### All default settings
 
-The full v1.0.2 defaults are below. Comments are omitted to make the values easier to find.
+The full v1.0.3 defaults are below. Comments are omitted to make the values easier to find.
 
 <details>
 <summary>Show all 156 settings</summary>
@@ -381,7 +381,7 @@ To restart Minecraft automatically in the same window, launch it through the **S
 Place the matching Supervisor JAR in the server directory and use a command such as this one for 1.18.2:
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.2+mc1.18.2.jar \
+java -jar AntiCrash-Supervisor-1.0.3+mc1.18.2.jar \
   --workdir /path/to/server -- \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
@@ -405,13 +405,13 @@ Clone the whole repository. Run Gradle with **JDK 25** and install **JDK 17 and 
 python3 scripts/build_matrix.py --all --qualification
 ```
 
-The first command builds one version. The second tests and builds all 30 versions sequentially, checks the JARs, and collects candidates in `dist/refactor/1.0.2/`. The root `./gradlew buildAll` builds all targets in one Gradle invocation; the Python runner is recommended to keep memory usage bounded. Python 3.11 or newer is required for these scripts.
+The first command builds one version. The second tests and builds all 30 versions sequentially, checks the JARs, and collects candidates in `dist/refactor/1.0.3/`. The root `./gradlew buildAll` builds all targets in one Gradle invocation; the Python runner is recommended to keep memory usage bounded. Python 3.11 or newer is required for these scripts.
 
 There is one `src/main/java` tree and one `src/test/java` tree. Stonecutter selects API differences using version conditions in the same files; `stonecutter.properties.toml` holds the target versions and pinned dependencies. `gradle/mixins` contains ordered Mixin profiles. `supervisor/` is an independent Java component. Isolated server probes live in `src/qualification` and never enter the Mod JAR. The generated `versions/` and `build/` directories are not source directories.
 
 To add a Minecraft target, add its dependency/API properties to the TOML matrix, review all affected source conditions and Mixin targets against mapped bytecode, then run its tests, build, artifact inspection and isolated server checks. Do not assume nearby versions have identical APIs.
 
-Version 1.0.2 fixes the chunk-storage Mixin failure and BASE checkpoint failure, and improves shared code, recovery validation, diagnostics, configuration tests, and Carpet integration. The save format is unchanged. The shared-source and audit improvements incorporate aomona's contribution. Download all supported Minecraft JARs from [GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases): tags `1.0.0`, `1.0.1`, and `1.0.2` identify each Mod release. Older releases are preserved unchanged; use 1.0.2 for the fixes. After building, run `python3 scripts/verify_artifacts.py --version 26.3 --collect` from the repository root, replacing `26.3` with the target version. This verifies the JARs and collects them in `dist/refactor/1.0.2/`. Generated JARs and logs are not stored in Git.
+Version 1.0.3 adopts a single Stonecutter source tree and unified builds for all 30 Minecraft versions. Runtime behavior and checkpoint formats are preserved; the JARs are republished because their build metadata and debugging information changed. It includes the chunk-storage Mixin and BASE checkpoint fixes from 1.0.2. The shared-source and audit improvements incorporate aomona's contribution. Download all supported Minecraft JARs from [GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases): tags `1.0.0`, `1.0.1`, `1.0.2`, and `1.0.3` identify each Mod release. Older releases are preserved unchanged; use 1.0.3 for the fixes. After building, run `python3 scripts/verify_artifacts.py --version 26.3 --collect` from the repository root, replacing `26.3` with the target version. This verifies the JARs and collects them in `dist/refactor/1.0.3/`. Generated JARs and logs are not stored in Git.
 
 License: **GNU Lesser General Public License v3.0 only** (`LGPL-3.0-only`).
 
@@ -436,7 +436,7 @@ AntiCrashは、Minecraftが通常は保存しないピストンの動作やブ�
 
 ### 導入方法
 
-サーバーを停止してワールドをバックアップしてから、[Release 1.0.2](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.2)にある、**Minecraftのバージョンと完全に一致するv1.0.2のMod JAR**を選んでください。Minecraft 1.18.2の場合は`AntiCrash-1.0.2+mc1.18.2.jar`です。
+サーバーを停止してワールドをバックアップしてから、[Release 1.0.3](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.3)にある、**Minecraftのバージョンと完全に一致するv1.0.3のMod JAR**を選んでください。Minecraft 1.18.2の場合は`AntiCrash-1.0.3+mc1.18.2.jar`です。
 
 Mod JARをサーバーの`mods/`に入れ、Fabricサーバーを起動します。`config/anticrash.toml`が生成され、このファイルから設定を変更できます。プレイヤー側へのMod導入は不要です。
 
@@ -444,8 +444,8 @@ Supervisorは、自動再起動のための別プログラムです。使う場�
 
 | ファイル | 配置先 | 用途 |
 | --- | --- | --- |
-| `AntiCrash-1.0.2+mc<VERSION>.jar` | サーバーの`mods/` | 保存・復元 |
-| `AntiCrash-Supervisor-1.0.2+mc<VERSION>.jar` | サーバーディレクトリ | プロセス監視・再起動 |
+| `AntiCrash-1.0.3+mc<VERSION>.jar` | サーバーの`mods/` | 保存・復元 |
+| `AntiCrash-Supervisor-1.0.3+mc<VERSION>.jar` | サーバーディレクトリ | プロセス監視・再起動 |
 
 #### 対応Minecraftバージョン
 
@@ -546,7 +546,7 @@ FakePlayerの復元は`[fakeplayer]`で有効になっています。対応す�
 
 #### 初期設定の全項目
 
-v1.0.2の初期値は次のとおりです。値を探しやすいよう、説明コメントは省略しています。
+v1.0.3の初期値は次のとおりです。値を探しやすいよう、説明コメントは省略しています。
 
 <details>
 <summary>全156項目の初期設定を表示する</summary>
@@ -792,7 +792,7 @@ Minecraftを同じウィンドウで自動再起動したい場合は、**Superv
 対応するSupervisor JARをサーバーディレクトリに置き、次のように起動します。1.18.2の例です。
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.2+mc1.18.2.jar \
+java -jar AntiCrash-Supervisor-1.0.3+mc1.18.2.jar \
   --workdir /path/to/server -- \
   java -Xms1G -Xmx1G -jar fabric-server-launch.jar nogui
 ```
@@ -816,14 +816,14 @@ Supervisorなしでも保存・復元は使えます。Supervisorの再起動機
 python3 scripts/build_matrix.py --all --qualification
 ```
 
-1つ目は1.18.2だけをビルドします。2つ目は全30版を順番にテスト・ビルドし、JARの検査後に`dist/refactor/1.0.2/`へ集めます。ルートの`./gradlew buildAll`でも全版をビルドできます。メモリを抑える場合は、版ごとにGradleを終了するPythonスクリプトを使ってください。スクリプトにはPython 3.11以上が必要です。
+1つ目は1.18.2だけをビルドします。2つ目は全30版を順番にテスト・ビルドし、JARの検査後に`dist/refactor/1.0.3/`へ集めます。ルートの`./gradlew buildAll`でも全版をビルドできます。メモリを抑える場合は、版ごとにGradleを終了するPythonスクリプトを使ってください。スクリプトにはPython 3.11以上が必要です。
 
 ソースは`src/main/java`、単体テストは`src/test/java`に集約しています。同じファイル内のStonecutter条件分岐でAPI差分を扱い、対応版と依存関係は`stonecutter.properties.toml`で管理します。`gradle/mixins`には登録順を維持したMixin設定、`supervisor/`には独立した監視プログラムを置いています。隔離サーバー検証用の`src/qualification`は、配布Modに含まれません。`versions/`と`build/`は生成物です。
 
 Minecraft版を追加するときは、TOMLへ依存関係とAPI設定を追加します。関係するソース条件とMixin対象を実際のバイトコードで確認し、その版のテスト・ビルド・JAR検査・隔離サーバー検証を行ってください。近いバージョンでもAPIが同じとは限りません。
 
-1.0.2ではチャンク保存時のMixin適用失敗とBASE保存失敗を修正し、共有コード・復旧判定・診断・設定テスト・Carpet連携を改善しました。従来の保存形式は維持しています。共通化・監査の改善にはaomonaさんの提案を取り入れています。
+1.0.3ではソースを単一のStonecutter構成に集約し、全30版のビルドを一元化しました。実行動作と保存形式は維持していますが、JAR内のビルド情報やデバッグ情報が変わるため、新しい版として配布します。1.0.2のMixin適用失敗・BASE保存失敗の修正も含みます。共通化・監査の改善にはaomonaさんの提案を取り入れています。
 
-各Minecraft版のJARは[GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases)で配布します。タグ`1.0.0`・`1.0.1`・`1.0.2`がModの各版に対応します。過去版は当時のJARをそのまま残しています。今回の修正を使う場合は1.0.2を選んでください。ビルド後、リポジトリのルートで`python3 scripts/verify_artifacts.py --version 26.3 --collect`を実行すると、JARを検査して`dist/refactor/1.0.2/`へ集められます。`26.3`は対象のMinecraft版に置き換えてください。生成物やログはGitには含めません。
+各Minecraft版のJARは[GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases)で配布します。タグ`1.0.0`・`1.0.1`・`1.0.2`・`1.0.3`がModの各版に対応します。過去版は当時のJARをそのまま残しています。今回の修正を使う場合は1.0.3を選んでください。ビルド後、リポジトリのルートで`python3 scripts/verify_artifacts.py --version 26.3 --collect`を実行すると、JARを検査して`dist/refactor/1.0.3/`へ集められます。`26.3`は対象のMinecraft版に置き換えてください。生成物やログはGitには含めません。
 
 ライセンスは**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）です。
