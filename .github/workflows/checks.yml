@@ -1,4 +1,4 @@
-name: Source checks
+name: Quality check
 
 on:
   push:
@@ -11,11 +11,11 @@ permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
+  group: quality-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  checks:
+  quality:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -29,9 +29,9 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
-      - name: Script unit tests
-        run: python3 -m unittest discover -s scripts -v
-      - name: Source ownership and build inputs
-        run: python3 scripts/check_sources.py
-      - name: Java formatting
-        run: python3 scripts/format_java.py --check
+      # Same entry point as local development (formatCheck, sourceCheck, scriptTest), configured
+      # for the VCS target only, which is the last entry of the matrix.
+      - name: Format, source ownership and script tests
+        run: |
+          vcs=$(grep -oE '^\["[0-9.]+"\]$' stonecutter.properties.toml | tail -1 | tr -d '[]"')
+          ./gradlew --no-daemon --max-workers=1 -PmcVersion="$vcs" qualityCheck

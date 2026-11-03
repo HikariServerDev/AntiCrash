@@ -1,11 +1,14 @@
 name: Release
 
-# Pushing a tag equal to mod_version builds every target, runs the source checks and creates a
-# draft GitHub Release with the 60 JARs, SHA256SUMS and artifacts.json. A manual run from a
-# branch only assembles the release directory as a workflow artifact.
+# Pushing a tag equal to mod_version builds every target, runs the quality check and creates a
+# draft GitHub Release with the 60 JARs, SHA256SUMS and artifacts.json. A pull request that
+# changes these workflows, or a manual run from a branch, only assembles the release directory
+# as a workflow artifact.
 on:
   push:
     tags: ['[0-9]+.[0-9]+.[0-9]+']
+  pull_request:
+    paths: ['.github/workflows/release.yml', '.github/workflows/build.yml', '.github/workflows/checks.yml']
   workflow_dispatch:
     inputs:
       publish:
