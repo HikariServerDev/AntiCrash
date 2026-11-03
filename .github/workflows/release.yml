@@ -1,0 +1,110 @@
+name: Release
+
+# Pushing a tag equal to mod_version builds every target, runs the source checks and creates a
+# draft GitHub Release with the 60 JARs, SHA256SUMS and artifacts.json. A manual run from a
+# branch only assembles the release directory as a workflow artifact.
+on:
+  push:
+    tags: ['[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+    inputs:
+      publish:
+        description: Create the draft release (the selected ref must be the release tag)
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  version:
+    runs-on: ubuntu-latest
+    outputs:
+      mod: ${{ steps.version.outputs.mod }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - id: version
+        run: |
+          mod=$(sed -n 's/^mod_version=\([^[:space:]]*\)[[:space:]]*$/\1/p' gradle.properties)
+          if [ -z "$mod" ] || [ "$(printf '%s\n' "$mod" | wc -l)" != 1 ]; then
+            echo "Exactly one mod_version is required in gradle.properties" >&2
+            exit 1
+          fi
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "$GITHUB_REF_NAME" != "$mod" ]; then
+            echo "Tag $GITHUB_REF_NAME does not match mod_version=$mod" >&2
+            exit 1
+          fi
+          echo "mod=$mod" >> "$GITHUB_OUTPUT"
+
+  checks:
+    needs: version
+    uses: ./.github/workflows/checks.yml
+
+  build:
+    needs: version
+    uses: ./.github/workflows/build.yml
+
+  release:
+    needs: [version, checks, build]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      MOD: ${{ needs.version.outputs.mod }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+        with:
+          pattern: verification-*
+          path: verification
+          merge-multiple: true
+      - name: Assemble release files
+        run: |
+          set -euo pipefail
+          export LC_ALL=C
+          targets=$(grep -cE '^\["[0-9.]+"\]$' stonecutter.properties.toml)
+          mkdir release
+          find verification -path '*/build/libs/*' -name "AntiCrash-${MOD}+mc*.jar" ! -name '*-sources.jar' -exec cp {} release/ \;
+          find verification -path '*/build/libs/*' -name "AntiCrash-Supervisor-${MOD}+mc*.jar" -exec cp {} release/ \;
+          jars=$(find release -name '*.jar' | wc -l)
+          if [ "$jars" -ne $((targets * 2)) ]; then
+            echo "Expected $((targets * 2)) JARs for $targets targets, found $jars" >&2
+            exit 1
+          fi
+          count_tests() { grep -ho ' tests="[0-9]*"' "$@" | awk -F'"' '{ total += $2 } END { print total + 0 }'; }
+          main_tests=$(count_tests verification/versions/*/build/test-results/test/TEST-*.xml)
+          supervisor_tests=$(count_tests verification/supervisor/build/test-results/test/TEST-*.xml)
+          (cd release && sha256sum -- *.jar > SHA256SUMS)
+          run_url="$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/actions/runs/$GITHUB_RUN_ID"
+          while read -r sha name; do
+            printf '%s\t%s\t%s\t%s\t%s\n' "$name" "${name#*+mc}" "$([ "${name#AntiCrash-Supervisor-}" != "$name" ] && echo supervisor || echo mod)" "$sha" "$(stat -c %s "release/$name")"
+          done < release/SHA256SUMS | sed 's/\.jar\t/\t/2' \
+            | jq -R -s --arg mod "$MOD" --arg commit "$GITHUB_SHA" --arg run "$run_url" \
+                 --argjson main "$main_tests" --argjson supervisor "$supervisor_tests" --argjson targets "$targets" '
+              {mod_version: $mod, commit: $commit, workflow_run: $run,
+               artifacts: [split("\n")[] | select(length > 0) | split("\t")
+                 | {name: .[0], minecraft: .[1], kind: .[2], sha256: .[3], size: (.[4] | tonumber)}],
+               verification: {main_tests: $main, supervisor_tests: $supervisor,
+                 minecraft_targets: $targets, release_jars: (($targets) * 2)}}' > release/artifacts.json
+          {
+            echo "Built from \`$GITHUB_SHA\` by [workflow run]($run_url)."
+            echo
+            echo "$targets Minecraft targets, $((targets * 2)) JARs. Tests: $main_tests Mod, $supervisor_tests Supervisor."
+            echo "\`SHA256SUMS\` and \`artifacts.json\` describe the JARs."
+          } > notes.md
+          cat notes.md
+          jq '.artifacts | length' release/artifacts.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: release-${{ needs.version.outputs.mod }}
+          path: release/
+      - name: Create draft release
+        if: github.event_name == 'push' || inputs.publish
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$MOD" --draft --verify-tag --title "Release $MOD" --notes-file notes.md release/*

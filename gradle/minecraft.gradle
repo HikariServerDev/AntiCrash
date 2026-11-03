@@ -96,6 +96,7 @@ if (target.qualification.toBoolean()) {
         addNestedDependencies = false
         destinationDirectory = layout.buildDirectory.dir('qualification')
     }
+    tasks.named('build') { dependsOn tasks.named('probeJar') }
 }
 // Supervisor has no Minecraft dependency; compile and test the component once.
 evaluationDependsOn(':supervisor')
@@ -106,4 +107,46 @@ tasks.register('collectArtifacts', Copy) {
     from(supervisorJar.flatMap { it.archiveFile })
     into rootProject.file("dist/refactor/${project.version}")
 }
-tasks.named('build') { dependsOn tasks.named('collectArtifacts') }
+// Distribution checks for both JARs of this target. scripts/verify_artifacts.py keeps only the
+// optional comparison against a previous release.
+def modJar = tasks.named(obfuscated ? 'remapJar' : 'jar').flatMap { it.archiveFile }
+tasks.register('verifyDistribution') {
+    group = 'verification'
+    dependsOn tasks.named('collectArtifacts')
+    inputs.file(modJar)
+    inputs.file(supervisorJar.flatMap { it.archiveFile })
+    doLast {
+        def require = { boolean ok, String message -> if (!ok) throw new GradleException(message) }
+        def license = rootProject.file('LICENSE').bytes
+        def jars = [(modJar.get().asFile): false, (supervisorJar.get().archiveFile.get().asFile): true]
+        jars.each { File jar, boolean supervisor ->
+            new java.util.zip.ZipFile(jar).withCloseable { zip ->
+                def entries = zip.entries().toList()
+                def names = entries*.name
+                require(names.size() == names.toSet().size(), "Duplicate entries: ${jar.name}")
+                // Reading every entry to the end verifies the stored CRC.
+                entries.each { entry -> zip.getInputStream(entry).withCloseable { it.transferTo(OutputStream.nullOutputStream()) } }
+                def bytes = { String name ->
+                    require(zip.getEntry(name) != null, "Missing ${name}: ${jar.name}")
+                    zip.getInputStream(zip.getEntry(name)).withCloseable { it.readAllBytes() }
+                }
+                def text = { String name -> new String(bytes(name), 'UTF-8') }
+                require(names.every { !it.contains('org/junit/') && !it.contains('OfflineGameAccessTransformer') && !it.startsWith('com/atsukimc/anticrash/probe/') },
+                        "Test or probe classes packaged: ${jar.name}")
+                require(Arrays.equals(bytes(supervisor ? 'LICENSE_AntiCrash-Supervisor' : 'LICENSE_AntiCrash'), license), "License changed: ${jar.name}")
+                if (supervisor) {
+                    require(text('META-INF/MANIFEST.MF').contains('Main-Class: com.atsukimc.anticrash.supervisor.SupervisorMain'), "Supervisor Main-Class missing: ${jar.name}")
+                } else {
+                    def metadata = new groovy.json.JsonSlurper().parseText(text('fabric.mod.json'))
+                    require(metadata.id == 'anticrash' && metadata.version == project.version.toString(), "fabric.mod.json id/version: ${jar.name}")
+                    require(metadata.environment == 'server' && metadata.license == 'LGPL-3.0-only', "fabric.mod.json environment/license: ${jar.name}")
+                    require(metadata.depends.minecraft == "=${mc}".toString(), "fabric.mod.json Minecraft dependency: ${jar.name}")
+                    require(Arrays.equals(bytes(metadata.icon), rootProject.file("src/main/resources/${metadata.icon}").bytes), "Icon changed: ${jar.name}")
+                    def mixins = new groovy.json.JsonSlurper().parseText(text('anticrash.mixins.json'))
+                    require(mixins.mixins.contains('UserCacheMixin'), "UserCacheMixin not registered: ${jar.name}")
+                }
+            }
+        }
+    }
+}
+tasks.named('build') { dependsOn tasks.named('collectArtifacts'), tasks.named('verifyDistribution') }
