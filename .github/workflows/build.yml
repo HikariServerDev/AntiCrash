@@ -1,9 +1,19 @@
 name: Verify every version
 
-on: [push, pull_request, workflow_dispatch]
+on:
+  push:
+    branches: [main]
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE']
+  pull_request:
+    paths-ignore: ['**.md', 'docs/**', 'LICENSE']
+  workflow_dispatch:
 
 permissions:
   contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   layout:
@@ -33,18 +43,21 @@ jobs:
           from pathlib import Path
           from build_model import load_targets, mod_version
           root = Path.cwd()
-          targets = [{'minecraft': version, 'mod': mod_version(root)} for version in load_targets(root)]
+          versions = list(load_targets(root))
+          # Two targets per job keeps every shard inside one wave of the 20-job concurrency limit.
+          shards = [versions[i:i + 2] for i in range(0, len(versions), 2)]
+          targets = [{'id': '-'.join(shard), 'versions': ' '.join(shard), 'mod': mod_version(root)} for shard in shards]
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY
 
   build:
     needs: layout
+    name: build ${{ matrix.versions }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
       fail-fast: false
-      max-parallel: 3
       matrix: ${{ fromJSON(needs.layout.outputs.targets) }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
@@ -58,19 +71,34 @@ jobs:
             21
             25
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
+        with:
+          cache-disabled: true
+      # Per-shard cache: Loom keeps one Minecraft copy per version outside Gradle's cleanup,
+      # so a shared Gradle home grows to every target's game files.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ matrix.id }}-${{ hashFiles('stonecutter.properties.toml', '**/*.gradle.kts', 'gradle/minecraft.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ matrix.id }}-
       - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
         with:
           python-version: '3.12'
-      - run: python3 scripts/build_matrix.py --version ${{ matrix.minecraft }} --qualification --output build/ci
-      - run: python3 scripts/verify_artifacts.py --version ${{ matrix.minecraft }}
-        working-directory: .
+      - env:
+          VERSIONS: ${{ matrix.versions }}
+        run: |
+          args=()
+          for version in $VERSIONS; do args+=(--version "$version"); done
+          python3 scripts/build_matrix.py "${args[@]}" --qualification --output build/ci
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
-          name: verification-${{ matrix.minecraft }}
+          name: verification-${{ matrix.id }}
           path: |
-            versions/${{ matrix.minecraft }}/build/reports/
+            versions/*/build/reports/
             supervisor/build/reports/
-            versions/${{ matrix.minecraft }}/build/libs/AntiCrash-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
-            supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
+            versions/*/build/libs/AntiCrash-${{ matrix.mod }}+mc*.jar
+            !versions/*/build/libs/*-sources.jar
+            supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc*.jar
             build/ci/
