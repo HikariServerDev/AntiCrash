@@ -1,19 +1,15 @@
 name: Verify every version
 
 on:
-  push:
-    branches: [main]
-    paths-ignore: ['**.md', 'docs/**', 'LICENSE']
-  pull_request:
-    paths-ignore: ['**.md', 'docs/**', 'LICENSE']
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
 
 concurrency:
-  group: ${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
+  group: build-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   layout:
@@ -24,52 +20,29 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
-        with:
-          python-version: '3.12'
       - id: matrix
+        # Same target pattern as settings.gradle.kts. Two targets per job keeps every shard
+        # inside one wave of the 20-job concurrency limit.
         run: |
-          python3 - <<'PY'
-          import json, os
-          import sys
-          sys.path.insert(0, 'scripts')
-          from pathlib import Path
-          from build_model import load_targets, mod_version
-          root = Path.cwd()
-          versions = list(load_targets(root))
-          # Two targets per job keeps every shard inside one wave of the 20-job concurrency limit.
-          shards = [versions[i:i + 2] for i in range(0, len(versions), 2)]
-          targets = [{'id': '-'.join(shard), 'versions': ' '.join(shard), 'mod': mod_version(root)} for shard in shards]
-          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
-              output.write('targets=' + json.dumps({'include': targets}) + '\n')
-          PY
-
-  quality:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
-        with:
-          python-version: '3.12'
-      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
-        with:
-          distribution: temurin
-          java-version: '25'
-      - run: ./gradlew --no-daemon --max-workers=1 -PmcVersion=26.3 qualityCheck
+          targets=$(grep -oE '^\["[0-9.]+"\]$' stonecutter.properties.toml | tr -d '[]"' \
+            | paste -d ' ' - - | sed 's/ *$//' \
+            | jq -R -c '{versions: ., id: gsub(" "; "-")}' | jq -s -c '{include: .}')
+          echo "$targets"
+          echo "targets=$targets" >> "$GITHUB_OUTPUT"
 
   build:
-    needs: [layout, quality]
+    needs: layout
     name: build ${{ matrix.versions }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
       fail-fast: false
       matrix: ${{ fromJSON(needs.layout.outputs.targets) }}
+    env:
+      # Forked test JVMs see the same bounded CPU count as Gradle itself.
+      JAVA_TOOL_OPTIONS: -XX:ActiveProcessorCount=2
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           persist-credentials: false
       - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad # v6.1.0
@@ -91,23 +64,24 @@ jobs:
             ~/.gradle/wrapper
           key: gradle-${{ matrix.id }}-${{ hashFiles('stonecutter.properties.toml', '**/*.gradle.kts', 'gradle/minecraft.gradle', 'gradle.properties', 'gradle/wrapper/gradle-wrapper.properties') }}
           restore-keys: gradle-${{ matrix.id }}-
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
-        with:
-          python-version: '3.12'
-      - env:
+      # One Gradle process per target bounds the retained Minecraft models. `build` compiles,
+      # tests, builds the probe where supported and verifies both distribution JARs.
+      - name: Build, test and verify
+        env:
           VERSIONS: ${{ matrix.versions }}
         run: |
-          args=()
-          for version in $VERSIONS; do args+=(--version "$version"); done
-          python3 scripts/build_matrix.py "${args[@]}" --qualification --output build/ci
+          for version in $VERSIONS; do
+            ./gradlew --no-daemon --no-build-cache --max-workers=1 -PmcVersion="$version" ":$version:build"
+          done
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         if: always()
         with:
           name: verification-${{ matrix.id }}
           path: |
             versions/*/build/reports/
+            versions/*/build/test-results/test/*.xml
             supervisor/build/reports/
-            versions/*/build/libs/AntiCrash-${{ matrix.mod }}+mc*.jar
+            supervisor/build/test-results/test/*.xml
+            versions/*/build/libs/AntiCrash-*+mc*.jar
             !versions/*/build/libs/*-sources.jar
-            supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc*.jar
-            build/ci/
+            supervisor/build/libs/AntiCrash-Supervisor-*+mc*.jar
