@@ -1,5 +1,5 @@
 //? if (>=1.18 && <=1.21.11) {
-package com.atsukimc.anticrash.probe;
+/*package com.atsukimc.anticrash.probe;
 
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
@@ -26,16 +26,16 @@ import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
+/^import net.minecraft.core.registries.BuiltInRegistries;
+^///?}
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.core.Registry;
-//?}
+/^import net.minecraft.core.Registry;
+^///?}
 
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
@@ -50,7 +50,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
-/**
+/^*
  * Test-only. Runs a script of commands at exact game ticks and writes the simulation state at the
  * end of every tick, so that an uninterrupted run (control) and a crash-and-recover run (recovery)
  * that start from the same checkpoint can be compared tick by tick.
@@ -60,7 +60,7 @@ import java.util.TreeMap;
  * after load> <command>}; turned into absolute game times once and kept as {@code script.abs.txt}
  * so the recovery run continues the same script). Directives: {@code @checkpoint}, {@code @halt}
  * (kill the JVM in a control run, stop cleanly in a recovery run) and {@code @stop}.
- */
+ ^/
 public final class RuntimeStateProbe implements ModInitializer {
     private record Box(
             String dimension, int x1, int y1, int z1, int x2, int y2, int z2, boolean blocks) {
@@ -90,11 +90,10 @@ public final class RuntimeStateProbe implements ModInitializer {
     private String lastDump = "";
     private boolean audited;
     //? if (>=1.18 && <=1.21.10) {
-    private static final net.minecraft.resources.ResourceLocation ECHO_CHANNEL =
-            //?}
-            //? if 1.21.11 {
-            /*private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
-    *///?}
+    /^private static final net.minecraft.resources.ResourceLocation ECHO_CHANNEL =
+            ^///?} else if 1.21.11 {
+            /^private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
+    ^///?}
             identifier("anticrash_probe", "echo");
     private final java.util.concurrent.atomic.AtomicInteger echoReceived =
             new java.util.concurrent.atomic.AtomicInteger();
@@ -103,82 +102,77 @@ public final class RuntimeStateProbe implements ModInitializer {
     private String payloadFrozenResult;
 
     //? if (>=1.18 && <=1.21.10) {
-    private static net.minecraft.resources.ResourceLocation identifier(
+    /^private static net.minecraft.resources.ResourceLocation identifier(
             String namespace, String path) {
-        //?}
-        //? if 1.21.11 {
-        /*private static net.minecraft.resources.Identifier identifier(String namespace, String path) {
-    *///?}
+        ^///?} else if 1.21.11 {
+        /^private static net.minecraft.resources.Identifier identifier(String namespace, String path) {
+    ^///?}
         //? if <=1.20.6 {
-        return new net.minecraft.resources.ResourceLocation(namespace, path);
-        //?}
-        //? if (>=1.21 && <=1.21.10) {
-        /*return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(namespace, path);
-*///?}
-        //? if 1.21.11 {
-        /*return net.minecraft.resources.Identifier.fromNamespaceAndPath(namespace, path);
-*///?}
+        /^return new net.minecraft.resources.ResourceLocation(namespace, path);
+        ^///?} else if (>=1.21 && <=1.21.10) {
+        /^return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(namespace, path);
+^///?} else if 1.21.11 {
+        /^return net.minecraft.resources.Identifier.fromNamespaceAndPath(namespace, path);
+^///?}
     }
 
     // Use the actual wire decoder once payload packets become typed records.
     // This preserves channel data and lets installed mods decode their own payloads.
     //? if <=1.20.1 {
-    private static net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket payload(
-            //?} else {
-            /*private static net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket payload(
-*///?}
+    /^private static net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket payload(
+            ^///?} else {
+            private static net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket payload(
+//?}
             //? if (>=1.18 && <=1.21.10) {
-            net.minecraft.resources.ResourceLocation channel,
+            /^net.minecraft.resources.ResourceLocation channel,
             net.minecraft.network.FriendlyByteBuf data) {
-        //?}
-        //? if 1.21.11 {
-        /*net.minecraft.resources.Identifier channel, net.minecraft.network.FriendlyByteBuf data) {
-            *///?}
+        ^///?} else if 1.21.11 {
+        /^net.minecraft.resources.Identifier channel, net.minecraft.network.FriendlyByteBuf data) {
+            ^///?}
         //? if <=1.20.1 {
-        return new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(
+        /^return new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(
                 channel, data);
-        //?} else {
-        /*var wire = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        ^///?} else {
+        var wire = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
         try {
             //? if (>=1.20.2 && <=1.21.10) {
             /^wire.writeResourceLocation(channel);
-            ^///?}
-            //? if 1.21.11 {
+            ^///?} else if 1.21.11 {
             /^wire.writeIdentifier(channel);
             ^///?}
             wire.writeBytes(data, data.readerIndex(), data.readableBytes());
             //? if <=1.20.4 {
-            return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(wire);
-            //?} else {
-            /^return net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket.STREAM_CODEC.decode(wire);
-            ^///?}
+            /^return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(wire);
+            ^///?} else {
+            return net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket.STREAM_CODEC.decode(wire);
+            //?}
         } finally {
             wire.release();
             data.release();
         }
-*///?}
+//?}
     }
 
     private static CompoundTag blockEntityNbt(BlockEntity entity, ServerLevel world) {
         //? if <=1.20.4 {
-        return entity.saveWithId();
-        //?} else if <=1.21.5 {
-        /*return entity.saveWithId(world.registryAccess());
-*///?} else {
-        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(world.registryAccess());
+        /^return entity.saveWithId();
+        ^///?} else if <=1.21.5 {
+        /^return entity.saveWithId(world.registryAccess());
+^///?} else {
+        var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(world.registryAccess());
         entity.saveWithId(view);
         return view.buildResult();
-*///?}
+//?}
     }
 
     private static CompoundTag entityNbt(Entity entity) {
         //? if <=1.21.5 {
-        return entity.saveWithoutId(new CompoundTag());
-        //?} else {
-        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(entity.registryAccess());
+        /^return entity.saveWithoutId(new CompoundTag());
+        ^///?} else {
+        var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(entity.registryAccess());
         entity.saveWithoutId(view);
         return view.buildResult();
-*///?}
+//?}
     }
 
     private static String carpetRules() throws ReflectiveOperationException {
@@ -237,11 +231,11 @@ public final class RuntimeStateProbe implements ModInitializer {
         return false;
     }
 
-    /**
+    /^*
      * What a client that joins during the recovery freeze sends: its channel registration, the
      * Carpet handshake and an ordinary mod payload. Records what the server made of each while
      * frozen and again after the world was started.
-     */
+     ^/
     private void payloadTest(MinecraftServer server) throws Exception {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null || server.getPlayerList().getPlayers().isEmpty()) return;
@@ -272,11 +266,10 @@ public final class RuntimeStateProbe implements ModInitializer {
                             payload(identifier("minecraft", "register"), register),
                             payload(
                                     //? if (>=1.18 && <=1.21.10) {
-                                    (net.minecraft.resources.ResourceLocation)
-                                            //?}
-                                            //? if 1.21.11 {
-                                            /*(net.minecraft.resources.Identifier)
-                                    *///?}
+                                    /^(net.minecraft.resources.ResourceLocation)
+                                            ^///?} else if 1.21.11 {
+                                            /^(net.minecraft.resources.Identifier)
+                                    ^///?}
                                             client.getField("CARPET_CHANNEL").get(null),
                                     hello),
                             payload(
@@ -297,7 +290,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                                     try {
                                         player.connection.handleCustomPayload(packet);
                                     } catch (RuntimeException offThread) {
-                                        /* rescheduled to the server thread */
+                                        /^ rescheduled to the server thread ^/
                                     }
                                 }
                             },
@@ -434,10 +427,10 @@ public final class RuntimeStateProbe implements ModInitializer {
         }
     }
 
-    /**
+    /^*
      * Incident-only workload; never packaged in the distributable mod. Manual cuts every 5 s stress
      * allocation/retention without changing the configured 30 s automatic interval.
-     */
+     ^/
     private void incidentTick(MinecraftServer server) throws IOException {
         if (!incidentInitialized) {
             incidentInitialized = true;
@@ -599,13 +592,13 @@ public final class RuntimeStateProbe implements ModInitializer {
             // Minecraft 1.19.1 renamed the command-source entry point; the
             // ParseResults overload named execute is not equivalent.
             //? if <=1.19 {
-            default ->
+            /^default ->
                     server.getCommands().performCommand(server.createCommandSourceStack(), command);
-                //?} else if <=1.21.9 {
-                /*default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
-*///?} else {
-                /*default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
-*///?}
+                ^///?} else if <=1.21.9 {
+                /^default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+^///?} else {
+                default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
+//?}
         }
     }
 
@@ -615,21 +608,20 @@ public final class RuntimeStateProbe implements ModInitializer {
         Map<String, ServerLevel> worlds = new TreeMap<>();
         for (ServerLevel world : server.getAllLevels())
             //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
-        //?}
-        //? if 1.21.11 {
-        /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
+            /^worlds.put(world.dimension().location().toString(), world);
+        ^///?} else if 1.21.11 {
+        /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
         for (Map.Entry<String, ServerLevel> entry : worlds.entrySet())
             world(out, entry.getKey(), entry.getValue());
         capsule(out, server);
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             out.append("[player] ")
                     //? if <=1.21.8 {
-                    .append(player.getGameProfile().getName())
-                    //?} else {
-                    /*.append(player.getGameProfile().name())
-*///?}
+                    /^.append(player.getGameProfile().getName())
+                    ^///?} else {
+                    .append(player.getGameProfile().name())
+//?}
                     .append(
                             String.format(
                                     Locale.ROOT,
@@ -647,10 +639,10 @@ public final class RuntimeStateProbe implements ModInitializer {
                     .append(
                             player.getCooldowns()
                                     //? if <=1.21.1 {
-                                    .isOnCooldown(player.getMainHandItem().getItem())
-                            //?} else {
-                            /*.isOnCooldown(player.getMainHandItem())
-*///?}
+                                    /^.isOnCooldown(player.getMainHandItem().getItem())
+                            ^///?} else {
+                            .isOnCooldown(player.getMainHandItem())
+//?}
                             )
                     .append(" health=")
                     .append(player.getHealth())
@@ -800,11 +792,10 @@ public final class RuntimeStateProbe implements ModInitializer {
                     if (entity instanceof ServerPlayer || !inBoxes(dimension, entity)) return;
 
                     //? if (>=1.18 && <=1.19.2) {
-                    String id = Registry.ENTITY_TYPE.getKey(entity.getType()).toString();
-                    //?}
-                    //? if (>=1.19.3 && <=1.21.11) {
-                    /*String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
-*///?}
+                    /^String id = Registry.ENTITY_TYPE.getKey(entity.getType()).toString();
+                    ^///?} else if (>=1.19.3 && <=1.21.11) {
+                    /^String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
+^///?}
 
                     String where =
                             String.format(
@@ -850,7 +841,7 @@ public final class RuntimeStateProbe implements ModInitializer {
         return false;
     }
 
-    /** The runtime state AntiCrash itself captures, in a form that does not depend on the JVM. */
+    /^* The runtime state AntiCrash itself captures, in a form that does not depend on the JVM. ^/
     private void capsule(StringBuilder out, MinecraftServer server) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null) return;
@@ -957,4 +948,4 @@ public final class RuntimeStateProbe implements ModInitializer {
         }
     }
 }
-//?}
+*///?}

@@ -1,5 +1,5 @@
 //? if (>=1.21.2 && <=26.3) {
-/*package com.atsukimc.anticrash.audit;
+package com.atsukimc.anticrash.audit;
 
 import net.fabricmc.loader.impl.transformer.PackageAccessFixer;
 
@@ -8,10 +8,10 @@ import org.objectweb.asm.*;
 import java.nio.file.*;
 import java.util.zip.*;
 
-/^*
+/**
  * Test fixture only: use Loader's own development package-access transform. No Mixin application,
  * gameplay alterations, server entrypoint, threads, or writes to the shared Loom game cache.
- ^/
+ */
 public final class OfflineGameAccessTransformer {
     public static void main(String[] args) throws Exception {
         Path output = Path.of(args[1]);
@@ -37,4 +37,4 @@ public final class OfflineGameAccessTransformer {
         }
     }
 }
-*///?}
+//?}

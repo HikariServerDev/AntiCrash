@@ -6,37 +6,37 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.NbtCodec;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.item.ItemStack;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.BlockPos;
+/*import net.minecraft.world.item.ItemStack;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.BlockPos;
+//?}
 
 //? if (>=1.19.3 && <=1.21.11) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
+import net.minecraft.core.registries.BuiltInRegistries;
+//?}
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ServerPlayer;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerPlayer;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.core.BlockPos;
-//?}
+/*import net.minecraft.core.BlockPos;
+*///?}
 
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.core.Registry;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.item.ItemStack;
+/*import net.minecraft.core.Registry;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.item.ItemStack;
+//?}
 
 import java.util.List;
 import java.util.Locale;
@@ -93,6 +93,15 @@ public final class ConsistencyManager implements AutoCloseable {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public void record(
+            String type,
+            ServerPlayer player,
+            String source,
+            String destination,
+            BlockPos pos,
+            ItemStack stack,
+            MinecraftServer server)
+                *///?} else if (>=26.1 && <=26.3) {
     public void record(
             String type,
             ServerPlayer player,
@@ -102,16 +111,6 @@ public final class ConsistencyManager implements AutoCloseable {
             ItemStack stack,
             MinecraftServer server)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public void record(
-                            String type,
-                            ServerPlayer player,
-                            String source,
-                            String destination,
-                            BlockPos pos,
-                            ItemStack stack,
-                            MinecraftServer server)
-*///?}
             {
         String mode = config.consistency.mode.toUpperCase(Locale.ROOT);
         if (mode.equals("IGNORE")) return;
@@ -122,49 +121,43 @@ public final class ConsistencyManager implements AutoCloseable {
         transaction.fallbackCheckpointId = transactionFallbackCheckpointId;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*transaction.serverTick = server == null ? 0 : server.getTickCount();
+        *///?} else if (>=26.1 && <=26.3) {
         transaction.serverTick = server == null ? 0 : server.getTickCount();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*transaction.serverTick = server == null ? 0 : server.getTickCount();
-*///?}
 
         transaction.wallClockEpochMs = System.currentTimeMillis();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*transaction.playerUuid = player == null ? null : player.getStringUUID();
+        *///?} else if (>=26.1 && <=26.3) {
         transaction.playerUuid = player == null ? null : player.getStringUUID();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*transaction.playerUuid = player == null ? null : player.getStringUUID();
-*///?}
 
         transaction.transactionType = type;
         transaction.source = source;
         transaction.destination = destination;
 
         //? if (>=1.18 && <=1.21.8) {
-        transaction.dimension =
+        /*transaction.dimension =
                 //? if (>=1.18 && <=1.19.4) {
-                player == null ? null : player.getLevel().dimension().location().toString();
-        //?}
-        //? if (>=1.20 && <=1.21.8) {
-        /*player == null ? null : player.level().dimension().location().toString();
-                *///?}
-        //?}
-        //? if (>=1.21.9 && <=1.21.11) {
+                /^player == null ? null : player.getLevel().dimension().location().toString();
+        ^///?} else if (>=1.20 && <=1.21.8) {
+        /^player == null ? null : player.level().dimension().location().toString();
+                ^///?}
+        *///?} else if (>=1.21.9 && <=1.21.11) {
         /*transaction.dimension =
                         player == null
                                 ? null
                                 //? if (>=1.21.9 && <=1.21.10) {
                                 /^: player.level().dimension().location().toString();
-                                ^///?}
-                                //? if 1.21.11 {
+                                ^///?} else if 1.21.11 {
                                 /^: player.level().dimension().identifier().toString();
                                 ^///?}
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*transaction.dimension =
-                        player == null ? null : player.level().dimension().identifier().toString();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        transaction.dimension =
+                player == null ? null : player.level().dimension().identifier().toString();
+        //?}
 
         if (pos != null) {
             transaction.x = pos.getX();
@@ -174,55 +167,49 @@ public final class ConsistencyManager implements AutoCloseable {
         if (stack != null) {
 
             //? if (>=1.18 && <=1.19.2) {
-            transaction.itemStackId = Registry.ITEM.getKey(stack.getItem()).toString();
+            /*transaction.itemStackId = Registry.ITEM.getKey(stack.getItem()).toString();
+            *///?} else if (>=1.19.3 && <=1.21.11) {
+            /*transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+*///?} else if (>=26.1 && <=26.3) {
+            transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
             //?}
-            //? if (>=1.19.3 && <=1.21.11) {
-            /*transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
-*///?}
 
             transaction.count = stack.getCount();
             try {
 
                 //? if (>=1.18 && <=1.20.4) {
-                transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
+                /*transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
+                *///?} else if (>=1.20.5 && <=1.21.1) {
+                /*transaction.nbt =
+                                        NbtCodec.encode(
+                                                stack.saveOptional(
+                                                        player != null
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
+*///?} else if (>=1.21.2 && <=1.21.4) {
+                /*transaction.nbt =
+                                        NbtCodec.encode(
+                                                stack.saveOptional(
+                                                        player != null
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
+*///?} else if (>=1.21.5 && <=1.21.11) {
+                /*transaction.nbt =
+                                        NbtCodec.encode(
+                                                com.atsukimc.anticrash.runtime.VersionNbt.item(
+                                                        stack,
+                                                        player != null
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
+*///?} else if (>=26.1 && <=26.3) {
+                transaction.nbt =
+                        NbtCodec.encode(
+                                com.atsukimc.anticrash.runtime.VersionNbt.item(
+                                        stack,
+                                        player != null
+                                                ? player.registryAccess()
+                                                : server.registryAccess()));
                 //?}
-                //? if (>=1.20.5 && <=1.21.1) {
-                /*transaction.nbt =
-                                        NbtCodec.encode(
-                                                stack.saveOptional(
-                                                        player != null
-                                                                ? player.registryAccess()
-                                                                : server.registryAccess()));
-*///?}
-                //? if (>=1.21.2 && <=1.21.4) {
-                /*transaction.nbt =
-                                        NbtCodec.encode(
-                                                stack.saveOptional(
-                                                        player != null
-                                                                ? player.registryAccess()
-                                                                : server.registryAccess()));
-*///?}
-                //? if (>=1.21.5 && <=1.21.11) {
-                /*transaction.nbt =
-                                        NbtCodec.encode(
-                                                com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                                        stack,
-                                                        player != null
-                                                                ? player.registryAccess()
-                                                                : server.registryAccess()));
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*transaction.nbt =
-                                        NbtCodec.encode(
-                                                com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                                        stack,
-                                                        player != null
-                                                                ? player.registryAccess()
-                                                                : server.registryAccess()));
-*///?}
 
             } catch (Exception ignored) {
                 transaction.nbt = "UNAVAILABLE";

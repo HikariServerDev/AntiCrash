@@ -5,11 +5,11 @@ import com.atsukimc.anticrash.AntiCrashMod;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.ServerFunctionManager;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.ServerFunctionManager;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.ServerFunctionManager;
+//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -22,39 +22,36 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MinecraftServerMixin {
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "loadLevel", at = @At("HEAD"))
+    private void anticrash$worldLoadBeginning(CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "loadLevel", at = @At("HEAD"))
     private void anticrash$worldLoadBeginning(CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "loadLevel", at = @At("HEAD"))
-                    private void anticrash$worldLoadBeginning(CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onWorldLoadBeginning();
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "loadLevel", at = @At("RETURN"))
+    private void anticrash$worldLoaded(CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "loadLevel", at = @At("RETURN"))
     private void anticrash$worldLoaded(CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "loadLevel", at = @At("RETURN"))
-                    private void anticrash$worldLoaded(CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onServerStarted((MinecraftServer) (Object) this);
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "tickServer", at = @At("RETURN"))
+    private void anticrash$tickEnd(CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "tickServer", at = @At("RETURN"))
     private void anticrash$tickEnd(CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "tickServer", at = @At("RETURN"))
-                    private void anticrash$tickEnd(CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onTickEnd((MinecraftServer) (Object) this);
@@ -77,19 +74,26 @@ public abstract class MinecraftServerMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)
+    private void anticrash$holdTasksDuringCheckpoint(CallbackInfoReturnable<Boolean> callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)
     private void anticrash$holdTasksDuringCheckpoint(CallbackInfoReturnable<Boolean> callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)
-                    private void anticrash$holdTasksDuringCheckpoint(CallbackInfoReturnable<Boolean> callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null && controller.holdsServerTasks()) callbackInfo.setReturnValue(false);
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Redirect(
+            method = "tickChildren",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
+    private void anticrash$skipFunctionsDuringRecovery(ServerFunctionManager manager)
+                *///?} else if (>=26.1 && <=26.3) {
     @Redirect(
             method = "tickChildren",
             at =
@@ -98,15 +102,6 @@ public abstract class MinecraftServerMixin {
                             target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
     private void anticrash$skipFunctionsDuringRecovery(ServerFunctionManager manager)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Redirect(
-                            method = "tickChildren",
-                            at =
-                                    @At(
-                                            value = "INVOKE",
-                                            target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
-                    private void anticrash$skipFunctionsDuringRecovery(ServerFunctionManager manager)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null || !controller.isWorldFrozen()) manager.tick();
@@ -115,59 +110,57 @@ public abstract class MinecraftServerMixin {
     /** 26.1 clocks advance outside ServerLevel.tick, so the world freeze alone is insufficient. */
 
     //? if (>=26.1 && <=26.3) {
-    /*@Redirect(
-                method = "tickChildren",
-                at =
-                        @At(
-                                value = "INVOKE",
-                                target = "Lnet/minecraft/world/clock/ServerClockManager;tick()V"))
-        private void anticrash$skipClocksDuringRecovery(
-                net.minecraft.world.clock.ServerClockManager clocks) {
-            AntiCrashController controller = AntiCrashMod.controller();
-*///?}
+    @Redirect(
+            method = "tickChildren",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/world/clock/ServerClockManager;tick()V"))
+    private void anticrash$skipClocksDuringRecovery(
+            net.minecraft.world.clock.ServerClockManager clocks) {
+        AntiCrashController controller = AntiCrashMod.controller();
+        //?}
 
-    //? if (>=26.1 && <=26.3) {
-    /*if (controller == null || !controller.isWorldFrozen()) clocks.tick();
-        }
-*///?}
+        //? if (>=26.1 && <=26.3) {
+        if (controller == null || !controller.isWorldFrozen()) clocks.tick();
+    }
+
+    //?}
 
     // Never cancellable: AntiCrash only classifies the stop request here and always lets
     // Minecraft's own stop transition proceed.
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "halt", at = @At("HEAD"))
+    private void anticrash$stopRequested(boolean wait, CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "halt", at = @At("HEAD"))
     private void anticrash$stopRequested(boolean wait, CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "halt", at = @At("HEAD"))
-                    private void anticrash$stopRequested(boolean wait, CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onStopRequested();
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "stopServer", at = @At("HEAD"))
+    private void anticrash$shutdownBeginning(CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "stopServer", at = @At("HEAD"))
     private void anticrash$shutdownBeginning(CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "stopServer", at = @At("HEAD"))
-                    private void anticrash$shutdownBeginning(CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onShutdownBeginning();
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@Inject(method = "stopServer", at = @At("RETURN"))
+    private void anticrash$shutdownCompleted(CallbackInfo callbackInfo)
+                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "stopServer", at = @At("RETURN"))
     private void anticrash$shutdownCompleted(CallbackInfo callbackInfo)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "stopServer", at = @At("RETURN"))
-                    private void anticrash$shutdownCompleted(CallbackInfo callbackInfo)
-*///?}
             {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) controller.onShutdownCompleted();

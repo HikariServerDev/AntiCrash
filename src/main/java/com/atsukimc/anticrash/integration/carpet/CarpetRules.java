@@ -154,27 +154,25 @@ public final class CarpetRules {
             for (Method method : rule.getClass().getMethods()) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*if (method.getName().equals("set")
+                        && method.getParameterCount() == 2
+                        && method.getParameterTypes()[1] == String.class
+                        && method.getParameterTypes()[0].isInstance(
+                                server.createCommandSourceStack()))
+                *///?} else if (>=26.1 && <=26.3) {
                 if (method.getName().equals("set")
                         && method.getParameterCount() == 2
                         && method.getParameterTypes()[1] == String.class
                         && method.getParameterTypes()[0].isInstance(
                                 server.createCommandSourceStack()))
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*if (method.getName().equals("set")
-                                        && method.getParameterCount() == 2
-                                        && method.getParameterTypes()[1] == String.class
-                                        && method.getParameterTypes()[0].isInstance(
-                                                server.createCommandSourceStack()))
-*///?}
                 {
 
                     //? if (>=1.18 && <=1.21.11) {
+                    /*return method.invoke(rule, server.createCommandSourceStack(), value) != null;
+                    *///?} else if (>=26.1 && <=26.3) {
                     return method.invoke(rule, server.createCommandSourceStack(), value) != null;
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*return method.invoke(rule, server.createCommandSourceStack(), value) != null;
-*///?}
 
                 }
             }

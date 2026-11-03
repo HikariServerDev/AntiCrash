@@ -1,20 +1,21 @@
 package com.atsukimc.anticrash.snapshot;
 
 //? if (>=1.21.2 && <=26.3) {
-/*import com.atsukimc.anticrash.mixin.PersistentDataStorageAccessorMixin;
-*///?}
+import com.atsukimc.anticrash.mixin.PersistentDataStorageAccessorMixin;
+//?}
 
 import net.minecraft.server.MinecraftServer;
 
 /** These versions complete SavedData writes synchronously in the Vanilla save. */
 
 //? if (>=1.21.2 && <=26.3) {
-/*import java.util.ArrayList;
-*///?}
+import java.util.ArrayList;
+//?}
 
 //? if (>=1.21.2 && <=26.3) {
-/*import java.util.concurrent.CompletableFuture;
-*///?}
+import java.util.concurrent.CompletableFuture;
+
+//?}
 
 /**
  * Vanilla schedules saved-data IO separately from chunk IO. The saved-data future must finish
@@ -25,35 +26,33 @@ public final class PersistentDataFlush {
     private PersistentDataFlush() {}
 
     //? if (>=1.18 && <=1.21.1) {
-    public static void await(MinecraftServer server) {}
-    //?}
-    //? if (>=1.21.2 && <=26.3) {
-    /*public static void await(MinecraftServer server) throws Exception {
-            var writes = new ArrayList<CompletableFuture<?>>();
-*///?}
+    /*public static void await(MinecraftServer server) {}
+    *///?} else if (>=1.21.2 && <=26.3) {
+    public static void await(MinecraftServer server) throws Exception {
+        var writes = new ArrayList<CompletableFuture<?>>();
+        //?}
 
-    //? if (>=1.21.2 && <=1.21.11) {
-    /*for (var world : server.getAllLevels())
+        //? if (>=1.21.2 && <=1.21.11) {
+        /*for (var world : server.getAllLevels())
                 writes.add(
                         ((PersistentDataStorageAccessorMixin) world.getDataStorage())
                                 .anticrash$getPendingWrite());
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*writes.add(
-                    ((PersistentDataStorageAccessorMixin) server.getDataStorage())
+*///?} else if (>=26.1 && <=26.3) {
+        writes.add(
+                ((PersistentDataStorageAccessorMixin) server.getDataStorage())
+                        .anticrash$getPendingWrite());
+        //?}
+
+        //? if (>=26.1 && <=26.3) {
+        for (var world : server.getAllLevels())
+            writes.add(
+                    ((PersistentDataStorageAccessorMixin) world.getDataStorage())
                             .anticrash$getPendingWrite());
-*///?}
+        //?}
 
-    //? if (>=26.1 && <=26.3) {
-    /*for (var world : server.getAllLevels())
-                writes.add(
-                        ((PersistentDataStorageAccessorMixin) world.getDataStorage())
-                                .anticrash$getPendingWrite());
-*///?}
-
-    //? if (>=1.21.2 && <=26.3) {
-    /*PendingStorageWrites.await(writes, 10000L);
-        }
-*///?}
+        //? if (>=1.21.2 && <=26.3) {
+        PendingStorageWrites.await(writes, 10000L);
+    }
+    //?}
 
 }

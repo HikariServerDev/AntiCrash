@@ -4,18 +4,18 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.entity.BlockEntity;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.entity.Entity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.entity.Entity;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BlockEntity;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.entity.Entity;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.entity.Entity;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.entity.BlockEntity;
+//?}
 
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +53,7 @@ class RuntimeStateAuditCoverageTest {
      */
 
     //? if (>=1.18 && <=1.21.1) {
-    private static final List<String> REQUIRED_ENTITIES =
+    /*private static final List<String> REQUIRED_ENTITIES =
             List.of(
                     "net.minecraft.world.entity.Entity",
                     "net.minecraft.world.entity.item.ItemEntity",
@@ -69,8 +69,7 @@ class RuntimeStateAuditCoverageTest {
                     "net.minecraft.world.entity.projectile.Projectile",
                     "net.minecraft.world.entity.projectile.AbstractArrow");
 
-    //?}
-    //? if (>=1.21.2 && <=1.21.11) {
+    *///?} else if (>=1.21.2 && <=1.21.11) {
     /*private static final List<String> REQUIRED_ENTITIES =
                 List.of(
                         "net.minecraft.world.entity.Entity",
@@ -80,72 +79,64 @@ class RuntimeStateAuditCoverageTest {
                         "net.minecraft.world.entity.ExperienceOrb",
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractMinecart",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecart",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartHopper",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartHopper",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartFurnace",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartFurnace",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartTNT",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartTNT",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractMinecartContainer",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.Boat",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.boat.Boat",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractBoat",
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.boat.AbstractBoat",
                         ^///?}
                         "net.minecraft.world.entity.projectile.Projectile",
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.projectile.AbstractArrow");
-                        ^///?}
-                        //? if 1.21.11 {
+                        ^///?} else if 1.21.11 {
                         /^"net.minecraft.world.entity.projectile.arrow.AbstractArrow");
                         ^///?}
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*private static final List<String> REQUIRED_ENTITIES =
-                List.of(
-                        "net.minecraft.world.entity.Entity",
-                        "net.minecraft.world.entity.item.ItemEntity",
-                        "net.minecraft.world.entity.item.PrimedTnt",
-                        "net.minecraft.world.entity.item.FallingBlockEntity",
-                        "net.minecraft.world.entity.ExperienceOrb",
-                        "net.minecraft.world.entity.vehicle.minecart.AbstractMinecart",
-                        "net.minecraft.world.entity.vehicle.minecart.MinecartHopper",
-                        "net.minecraft.world.entity.vehicle.minecart.MinecartFurnace",
-                        "net.minecraft.world.entity.vehicle.minecart.MinecartTNT",
-                        "net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer",
-                        "net.minecraft.world.entity.vehicle.boat.Boat",
-                        "net.minecraft.world.entity.vehicle.boat.AbstractBoat",
-                        "net.minecraft.world.entity.projectile.Projectile",
-                        "net.minecraft.world.entity.projectile.arrow.AbstractArrow");
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+    private static final List<String> REQUIRED_ENTITIES =
+            List.of(
+                    "net.minecraft.world.entity.Entity",
+                    "net.minecraft.world.entity.item.ItemEntity",
+                    "net.minecraft.world.entity.item.PrimedTnt",
+                    "net.minecraft.world.entity.item.FallingBlockEntity",
+                    "net.minecraft.world.entity.ExperienceOrb",
+                    "net.minecraft.world.entity.vehicle.minecart.AbstractMinecart",
+                    "net.minecraft.world.entity.vehicle.minecart.MinecartHopper",
+                    "net.minecraft.world.entity.vehicle.minecart.MinecartFurnace",
+                    "net.minecraft.world.entity.vehicle.minecart.MinecartTNT",
+                    "net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer",
+                    "net.minecraft.world.entity.vehicle.boat.Boat",
+                    "net.minecraft.world.entity.vehicle.boat.AbstractBoat",
+                    "net.minecraft.world.entity.projectile.Projectile",
+                    "net.minecraft.world.entity.projectile.arrow.AbstractArrow");
+
+    //?}
 
     private static Map<String, Set<String>> matrix(String resource) throws Exception {
         Map<String, Set<String>> fields = new LinkedHashMap<>();
@@ -177,19 +168,18 @@ class RuntimeStateAuditCoverageTest {
         Map<String, Set<String>> audited = matrix("/runtime-audit/block-entities.tsv");
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, List<String>> actual =
+                RuntimeFieldDump.declaredFields(
+                        BlockEntity.class,
+                        "net/minecraft/world/level/block/entity",
+                        "net/minecraft/world/level/block/piston");
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, List<String>> actual =
                 RuntimeFieldDump.declaredFields(
                         BlockEntity.class,
                         "net/minecraft/world/level/block/entity",
                         "net/minecraft/world/level/block/piston");
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, List<String>> actual =
-                        RuntimeFieldDump.declaredFields(
-                                BlockEntity.class,
-                                "net/minecraft/world/level/block/entity",
-                                "net/minecraft/world/level/block/piston");
-*///?}
 
         List<String> problems = new ArrayList<>();
         for (Map.Entry<String, List<String>> type : actual.entrySet()) {
@@ -214,13 +204,12 @@ class RuntimeStateAuditCoverageTest {
         Map<String, Set<String>> audited = matrix("/runtime-audit/entities.tsv");
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, List<String>> actual =
+                RuntimeFieldDump.declaredFields(Entity.class, "net/minecraft/world/entity");
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, List<String>> actual =
                 RuntimeFieldDump.declaredFields(Entity.class, "net/minecraft/world/entity");
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, List<String>> actual =
-                        RuntimeFieldDump.declaredFields(Entity.class, "net/minecraft/world/entity");
-*///?}
 
         List<String> problems = new ArrayList<>();
         for (String required : REQUIRED_ENTITIES) {

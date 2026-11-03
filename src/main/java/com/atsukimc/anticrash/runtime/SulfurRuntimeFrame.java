@@ -1,9 +1,9 @@
 //? if (>=26.2 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import net.minecraft.nbt.CompoundTag;
 
-/^* Native countdown is saved but not dirtied; eruption phase is absent from native NBT. ^/
+/** Native countdown is saved but not dirtied; eruption phase is absent from native NBT. */
 public record SulfurRuntimeFrame(int countdown, long eruptionTick) {
     public CompoundTag write() {
         var nbt = new CompoundTag();
@@ -21,4 +21,4 @@ public record SulfurRuntimeFrame(int countdown, long eruptionTick) {
         return countdown + "|" + eruptionTick;
     }
 }
-*///?}
+//?}

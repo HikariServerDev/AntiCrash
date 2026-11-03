@@ -16,6 +16,15 @@ class FakePlayerCreationArgumentsTest {
         data.flying = true;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*var method =
+                CarpetIntegration.class.getDeclaredMethod(
+                        "arguments",
+                        Class[].class,
+                        net.minecraft.server.MinecraftServer.class,
+                        net.minecraft.server.level.ServerLevel.class,
+                        FakePlayerSnapshot.class,
+                        net.minecraft.world.level.GameType.class);
+        *///?} else if (>=26.1 && <=26.3) {
         var method =
                 CarpetIntegration.class.getDeclaredMethod(
                         "arguments",
@@ -25,21 +34,11 @@ class FakePlayerCreationArgumentsTest {
                         FakePlayerSnapshot.class,
                         net.minecraft.world.level.GameType.class);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*var method =
-                        CarpetIntegration.class.getDeclaredMethod(
-                                "arguments",
-                                Class[].class,
-                                net.minecraft.server.MinecraftServer.class,
-                                net.minecraft.server.level.ServerLevel.class,
-                                FakePlayerSnapshot.class,
-                                net.minecraft.world.level.GameType.class);
-*///?}
 
         method.setAccessible(true);
 
         //? if (>=1.18 && <=1.20.1) || (>=1.20.3 && <=1.21.11) {
-        Object[] args =
+        /*Object[] args =
                 (Object[])
                         method.invoke(
                                 null,
@@ -57,7 +56,7 @@ class FakePlayerCreationArgumentsTest {
                                 null,
                                 data,
                                 null);
-        //?}
+        *///?}
         //? if 1.20.2 {
         /*Object[] args =
                         (Object[])
@@ -78,36 +77,34 @@ class FakePlayerCreationArgumentsTest {
                                         null,
                                         data,
                                         null);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*Object[] args =
-                        (Object[])
-                                method.invoke(
-                                        null,
-                                        new Class<?>[] {
-                                            String.class,
-                                            net.minecraft.server.MinecraftServer.class,
-                                            net.minecraft.world.phys.Vec3.class,
-                                            double.class,
-                                            double.class,
-                                            dimensionKeyType(),
-                                            modeType(),
-                                            boolean.class
-                                        },
-                                        null,
-                                        null,
-                                        data,
-                                        null);
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        Object[] args =
+                (Object[])
+                        method.invoke(
+                                null,
+                                new Class<?>[] {
+                                    String.class,
+                                    net.minecraft.server.MinecraftServer.class,
+                                    net.minecraft.world.phys.Vec3.class,
+                                    double.class,
+                                    double.class,
+                                    dimensionKeyType(),
+                                    modeType(),
+                                    boolean.class
+                                },
+                                null,
+                                null,
+                                data,
+                                null);
+        //?}
 
         assertNotNull(args);
 
         //? if (>=1.18 && <=1.21.11) {
+        /*assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
+        *///?} else if (>=26.1 && <=26.3) {
         assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
-*///?}
 
         assertEquals(73.0D, args[3]);
         assertEquals(-21.0D, args[4]);
@@ -122,22 +119,20 @@ class FakePlayerCreationArgumentsTest {
     private static Class<?> dimensionKeyType() throws Exception {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
+        *///?} else if (>=26.1 && <=26.3) {
         return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
-*///?}
 
     }
 
     private static Class<?> modeType() {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*return net.minecraft.world.level.GameType.class;
+        *///?} else if (>=26.1 && <=26.3) {
         return net.minecraft.world.level.GameType.class;
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*return net.minecraft.world.level.GameType.class;
-*///?}
 
     }
 }

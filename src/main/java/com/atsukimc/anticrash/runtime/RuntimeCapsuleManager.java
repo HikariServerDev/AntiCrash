@@ -8,98 +8,98 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.Block;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.BlockPos;
+/*import net.minecraft.world.level.block.Block;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.BlockPos;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
+/*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.registries.BuiltInRegistries;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.material.Fluid;
-//?}
+/*import net.minecraft.world.level.material.Fluid;
+*///?}
 
 //? if (>=1.19.3 && <=1.21.11) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.resources.Identifier;
-*///?}
+import net.minecraft.resources.Identifier;
+//?}
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ServerLevel;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerLevel;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-//? if (>=1.18 && <=1.21.10) {
-import net.minecraft.resources.ResourceLocation;
-//?}
+/*//? if (>=1.18 && <=1.21.10) {
+/^import net.minecraft.resources.ResourceLocation;
+^///?}
 //? if 1.21.11 {
-/*import net.minecraft.resources.Identifier;
+/^import net.minecraft.resources.Identifier;
+^///?}
 *///?}
-//?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.core.BlockPos;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.block.Block;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
 import net.minecraft.world.level.ChunkPos;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
-*///?}
-
-//? if (>=1.18 && <=1.19.2) {
-import net.minecraft.core.Registry;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-*///?}
 
 //? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.core.BlockPos;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.Block;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.ChunkPos;
+*///?}
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
+
+//? if (>=1.18 && <=1.19.2) {
+/*import net.minecraft.core.Registry;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
+*///?}
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.LevelChunk;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.material.Fluid;
-*///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.ticks.LevelChunkTicks;
-//?}
+/*import net.minecraft.world.level.chunk.LevelChunk;
+*///?}
 //? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.material.Fluid;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
 /*import net.minecraft.world.ticks.LevelChunkTicks;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.ticks.LevelChunkTicks;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.ticks.ScheduledTick;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.ticks.ScheduledTick;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.ticks.ScheduledTick;
+//?}
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -191,46 +191,42 @@ public final class RuntimeCapsuleManager {
         capsule.fidelity = config == null ? "OPTIMIZED" : config.recovery.fidelity;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*capsule.serverTick = server.getTickCount();
+        *///?} else if (>=26.1 && <=26.3) {
         capsule.serverTick = server.getTickCount();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*capsule.serverTick = server.getTickCount();
-*///?}
 
         //? if (>=1.20.3 && <=26.3) {
-        /*capsule.nativeTickState = NativeTickState.capture(server);
-*///?}
+        capsule.nativeTickState = NativeTickState.capture(server);
+        //?}
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = ClockSnapshot.capture(server);
-*///?}
+        capsule.clockStates = ClockSnapshot.capture(server);
+        //?}
 
         //? if (>=1.20.3 && <=26.3) {
-        /*if (capsule.nativeTickState.sprinting)
-                    capsule.unsupportedRuntimeState.add("VANILLA_TICK_SPRINT");
-*///?}
+        if (capsule.nativeTickState.sprinting)
+            capsule.unsupportedRuntimeState.add("VANILLA_TICK_SPRINT");
+        //?}
 
         capsule.capturedAtEpochMs = System.currentTimeMillis();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            String dimension = world.dimension().location().toString();
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^String dimension = world.dimension().location().toString();
+            ^///?} else if 1.21.11 {
+            /^String dimension = world.dimension().identifier().toString();
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            String dimension = world.dimension().identifier().toString();
             //?}
-            //? if 1.21.11 {
-            /*String dimension = world.dimension().identifier().toString();
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*String dimension = world.dimension().identifier().toString();
-*///?}
 
             long phaseStart = System.nanoTime();
             ChunkStateSnapshot chunks =
@@ -246,18 +242,16 @@ public final class RuntimeCapsuleManager {
             worldRuntime.dimension = chunks.dimension;
 
             //? if (>=1.18 && <=1.21.11) {
+            /*worldRuntime.gameTime = world.getGameTime();
+            *///?} else if (>=26.1 && <=26.3) {
             worldRuntime.gameTime = world.getGameTime();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worldRuntime.gameTime = world.getGameTime();
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            worldRuntime.timeOfDay = world.getDayTime();
+            /*worldRuntime.timeOfDay = world.getDayTime();
+            *///?} else if (>=26.1 && <=26.3) {
+            worldRuntime.timeOfDay = world.getDefaultClockTime();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worldRuntime.timeOfDay = world.getDefaultClockTime();
-*///?}
 
             com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
                     (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
@@ -269,15 +263,14 @@ public final class RuntimeCapsuleManager {
             for (Long packed : chunks.loadedChunks) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*net.minecraft.world.level.chunk.LevelChunk loaded =
+                        world.getChunkSource()
+                                .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
+                *///?} else if (>=26.1 && <=26.3) {
                 net.minecraft.world.level.chunk.LevelChunk loaded =
                         world.getChunkSource()
                                 .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*net.minecraft.world.level.chunk.LevelChunk loaded =
-                                        world.getChunkSource()
-                                                .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
-*///?}
 
                 if (loaded == null) continue;
                 inhabited.chunks.add(packed);
@@ -331,21 +324,19 @@ public final class RuntimeCapsuleManager {
         long phaseStart = System.nanoTime();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*capsule.ticketLedger.addAll(TicketLedgerSnapshot.capture(server.getAllLevels()));
+        *///?} else if (>=26.1 && <=26.3) {
         capsule.ticketLedger.addAll(TicketLedgerSnapshot.capture(server.getAllLevels()));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*capsule.ticketLedger.addAll(TicketLedgerSnapshot.capture(server.getAllLevels()));
-*///?}
 
         recordPhase(timing, "runtime.ticket_ledger", phaseStart);
         phaseStart = System.nanoTime();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*capsule.blockEvents = BlockEventSnapshot.capture(server.getAllLevels());
+        *///?} else if (>=26.1 && <=26.3) {
         capsule.blockEvents = BlockEventSnapshot.capture(server.getAllLevels());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*capsule.blockEvents = BlockEventSnapshot.capture(server.getAllLevels());
-*///?}
 
         recordPhase(timing, "runtime.block_events", phaseStart);
         phaseStart = System.nanoTime();
@@ -387,48 +378,43 @@ public final class RuntimeCapsuleManager {
         capsule.unsupportedRuntimeState.add("WORLD_RNG");
 
         //? if (>=1.18 && <=26.1) {
-        capsule.entityIdCounter =
-                com.atsukimc.anticrash.mixin.EntityRuntimeAccessorMixin.anticrash$currentId().get();
-        //?}
-        //? if (>=26.2 && <=26.3) {
         /*capsule.entityIdCounter =
-                        com.atsukimc.anticrash.mixin.ServerEntityIdAccessor.anticrash$currentId().get();
-*///?}
+                com.atsukimc.anticrash.mixin.EntityRuntimeAccessorMixin.anticrash$currentId().get();
+        *///?} else if (>=26.2 && <=26.3) {
+        capsule.entityIdCounter =
+                com.atsukimc.anticrash.mixin.ServerEntityIdAccessor.anticrash$currentId().get();
+        //?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers())
+        *///?} else if (>=26.1 && <=26.3) {
         for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*if (player.containerMenu != null && player.containerMenu != player.inventoryMenu)
+            *///?} else if (>=26.1 && <=26.3) {
             if (player.containerMenu != null && player.containerMenu != player.inventoryMenu)
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (player.containerMenu != null && player.containerMenu != player.inventoryMenu)
-*///?}
             {
 
                 //? if (>=1.18 && <=1.21.8) {
-                capsule.containerSessions.add(
+                /*capsule.containerSessions.add(
                         player.getGameProfile().getName()
                                 + "|"
                                 + player.containerMenu.getClass().getSimpleName());
+                *///?} else if (>=1.21.9 && <=1.21.11) {
+                /*capsule.containerSessions.add(
+                                        player.getGameProfile().name()
+                                                + "|"
+                                                + player.containerMenu.getClass().getSimpleName());
+*///?} else if (>=26.1 && <=26.3) {
+                capsule.containerSessions.add(
+                        player.getGameProfile().name()
+                                + "|"
+                                + player.containerMenu.getClass().getSimpleName());
                 //?}
-                //? if (>=1.21.9 && <=1.21.11) {
-                /*capsule.containerSessions.add(
-                                        player.getGameProfile().name()
-                                                + "|"
-                                                + player.containerMenu.getClass().getSimpleName());
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*capsule.containerSessions.add(
-                                        player.getGameProfile().name()
-                                                + "|"
-                                                + player.containerMenu.getClass().getSimpleName());
-*///?}
 
             }
         }
@@ -458,65 +444,57 @@ public final class RuntimeCapsuleManager {
     private static List<ScheduledTickSnapshot> captureActiveScheduledTicks(MinecraftServer server) {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : worlds.values())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : worlds.values())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : worlds.values())
-*///?}
         {
 
             //? if (>=1.18 && <=1.20.6) {
-            ThreadedAnvilChunkStorageAccessorMixin storage =
+            /*ThreadedAnvilChunkStorageAccessorMixin storage =
                     (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-            //?}
-            //? if (>=1.21 && <=1.21.11) {
+            *///?} else if (>=1.21 && <=1.21.11) {
             /*ThreadedAnvilChunkStorageAccessorMixin storage =
                                 (ThreadedAnvilChunkStorageAccessorMixin)
                                         world.getChunkSource().chunkMap;
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                                (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            ThreadedAnvilChunkStorageAccessorMixin storage =
+                    (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
+            //?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*for (net.minecraft.server.level.ChunkHolder holder :
+                    storage.anticrash$getCurrentChunkHolders().values())
+            *///?} else if (>=26.1 && <=26.3) {
             for (net.minecraft.server.level.ChunkHolder holder :
                     storage.anticrash$getCurrentChunkHolders().values())
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*for (net.minecraft.server.level.ChunkHolder holder :
-                                storage.anticrash$getCurrentChunkHolders().values())
-*///?}
             {
                 if (holder == null) continue;
                 // LevelTicks uses block-ticking readiness. ENTITY_TICKING would omit
@@ -524,11 +502,10 @@ public final class RuntimeCapsuleManager {
                 // state out of the capsule.
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*var future = holder.getFullChunkFuture();
+                *///?} else if (>=26.1 && <=26.3) {
                 var future = holder.getFullChunkFuture();
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*var future = holder.getFullChunkFuture();
-*///?}
 
                 if (future == null || !future.isDone() || future.isCompletedExceptionally())
                     continue;
@@ -536,39 +513,34 @@ public final class RuntimeCapsuleManager {
                     var value = future.getNow(null);
 
                     //? if (>=1.18 && <=1.20.4) {
-                    if (value != null && value.left().isPresent())
+                    /*if (value != null && value.left().isPresent())
+                    *///?} else if (>=1.20.5 && <=1.21.11) {
+                    /*if (value != null && value.isSuccess())
+*///?} else if (>=26.1 && <=26.3) {
+                    if (value != null && value.isSuccess())
                     //?}
-                    //? if (>=1.20.5 && <=1.21.11) {
-                    /*if (value != null && value.isSuccess())
-*///?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*if (value != null && value.isSuccess())
-*///?}
                     {
 
                         //? if (>=1.18 && <=1.20.4) {
-                        result.addAll(
+                        /*result.addAll(
                                 ScheduledTickSnapshot.capture(
                                         world.dimension().location().toString(),
                                         value.left().get()));
-                        //?}
-                        //? if (>=1.20.5 && <=1.21.11) {
+                        *///?} else if (>=1.20.5 && <=1.21.11) {
                         /*result.addAll(
                                                         ScheduledTickSnapshot.capture(
                                                                 //? if (>=1.20.5 && <=1.21.10) {
                                                                 /^world.dimension().location().toString(),
-                                                                ^///?}
-                                                                //? if 1.21.11 {
+                                                                ^///?} else if 1.21.11 {
                                                                 /^world.dimension().identifier().toString(),
                                                                 ^///?}
                                                                 value.orElse(null)));
-*///?}
-                        //? if (>=26.1 && <=26.3) {
-                        /*result.addAll(
-                                                        ScheduledTickSnapshot.capture(
-                                                                world.dimension().identifier().toString(),
-                                                                value.orElse(null)));
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+                        result.addAll(
+                                ScheduledTickSnapshot.capture(
+                                        world.dimension().identifier().toString(),
+                                        value.orElse(null)));
+                        //?}
 
                     }
                 } catch (RuntimeException ignored) {
@@ -622,15 +594,14 @@ public final class RuntimeCapsuleManager {
                 RuntimeFingerprint.hashLines(RuntimeFingerprint.ticketLines(capsule.ticketLedger)));
 
         //? if (>=1.18 && <=1.21.11) {
-        capsule.expectedFingerprints.put(
+        /*capsule.expectedFingerprints.put(
                 EquivalenceCategory.WORLD_RUNTIME,
                 RuntimeFingerprint.hashLines(RuntimeFingerprint.worldLines(capsule.worlds)));
+        *///?} else if (>=26.1 && <=26.3) {
+        capsule.expectedFingerprints.put(
+                EquivalenceCategory.WORLD_RUNTIME,
+                RuntimeFingerprint.hashLines(RuntimeFingerprint.worldLines(capsule)));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*capsule.expectedFingerprints.put(
-                        EquivalenceCategory.WORLD_RUNTIME,
-                        RuntimeFingerprint.hashLines(RuntimeFingerprint.worldLines(capsule)));
-*///?}
 
         capsule.expectedFingerprints.put(
                 EquivalenceCategory.WORLD_RNG,
@@ -650,31 +621,27 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
@@ -684,11 +651,10 @@ public final class RuntimeCapsuleManager {
             snapshot.nextTickOrder = normalized;
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(snapshot.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(snapshot.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(snapshot.dimension);
-*///?}
 
             if (world == null) {
                 throw new IllegalStateException(
@@ -718,8 +684,8 @@ public final class RuntimeCapsuleManager {
         restoreWorldLcgBlockSeed(server, capsule);
 
         //? if (>=1.20.3 && <=26.3) {
-        /*if (capsule.nativeTickState != null) capsule.nativeTickState.restore(server);
-*///?}
+        if (capsule.nativeTickState != null) capsule.nativeTickState.restore(server);
+        //?}
 
         carpetRestoreDetail = null;
         if (capsule.carpetTickSpeed == null) {
@@ -745,13 +711,12 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*BlockEventSnapshot.RestoreResult result =
+                capsule.blockEvents.restore(server.getAllLevels());
+        *///?} else if (>=26.1 && <=26.3) {
         BlockEventSnapshot.RestoreResult result =
                 capsule.blockEvents.restore(server.getAllLevels());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*BlockEventSnapshot.RestoreResult result =
-                        capsule.blockEvents.restore(server.getAllLevels());
-*///?}
 
         logger.normalKey("runtime.block_events", result.restored, result.failed);
         return result;
@@ -769,41 +734,36 @@ public final class RuntimeCapsuleManager {
         if (capsule.formatVersion < 6) return;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(snapshot.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(snapshot.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(snapshot.dimension);
-*///?}
 
             if (world == null)
                 throw new IllegalStateException(
@@ -828,25 +788,23 @@ public final class RuntimeCapsuleManager {
             // would add the whole age of the world. At a tick boundary it equals the world time.
 
             //? if (>=1.18 && <=1.21.11) {
-            ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
+            /*((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
                             (Object) world.getChunkSource())
                     .anticrash$setLastMobSpawningTime(world.getGameTime());
-            //?}
-            //? if (>=26.1 && <=26.2) {
+            *///?} else if (>=26.1 && <=26.2) {
             /*((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
                                         (Object) world.getChunkSource())
                                 .anticrash$setLastMobSpawningTime(world.getGameTime());
 *///?}
             //? if (>=1.18 && <=26.2) {
 
-        }
-        //?}
-        //? if 26.3 {
+            /*}
+        *///?} else if 26.3 {
 
-        /*// 26.3 incrementInhabitedTime() increments once per spawning tick. There is no
+            // 26.3 incrementInhabitedTime() increments once per spawning tick. There is no
             // lastInhabitedUpdate field or elapsed-world-time accumulator to reset anymore.
         }
-*///?}
+        //?}
 
     }
 
@@ -862,42 +820,37 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         int restored = 0;
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(snapshot.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(snapshot.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(snapshot.dimension);
-*///?}
 
             if (world == null) {
                 throw new IllegalStateException(
@@ -921,61 +874,54 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         // Registry resolution belongs to runtime preflight (Minecraft is bootstrapped here), not
         // the format-only validator used by offline tests and checkpoint inspection.
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
             //? if (>=1.18 && <=1.21.10) {
-            ResourceLocation id = tick.typeIdentifier();
+            /*ResourceLocation id = tick.typeIdentifier();
+            *///?} else if (>=1.21.11 && <=26.3) {
+            Identifier id = tick.typeIdentifier();
             //?}
-            //? if (>=1.21.11 && <=26.3) {
-            /*Identifier id = tick.typeIdentifier();
-            *///?}
 
             //? if (>=1.18 && <=1.19.2) {
-            boolean registered =
+            /*boolean registered =
                     ScheduledTickSnapshot.BLOCK.equals(tick.kind)
                             ? Registry.BLOCK.containsKey(id)
                             : Registry.FLUID.containsKey(id);
+            *///?} else if (>=1.19.3 && <=1.21.11) {
+            /*boolean registered =
+                                ScheduledTickSnapshot.BLOCK.equals(tick.kind)
+                                        ? BuiltInRegistries.BLOCK.containsKey(id)
+                                        : BuiltInRegistries.FLUID.containsKey(id);
+*///?} else if (>=26.1 && <=26.3) {
+            boolean registered =
+                    ScheduledTickSnapshot.BLOCK.equals(tick.kind)
+                            ? BuiltInRegistries.BLOCK.containsKey(id)
+                            : BuiltInRegistries.FLUID.containsKey(id);
             //?}
-            //? if (>=1.19.3 && <=1.21.11) {
-            /*boolean registered =
-                                ScheduledTickSnapshot.BLOCK.equals(tick.kind)
-                                        ? BuiltInRegistries.BLOCK.containsKey(id)
-                                        : BuiltInRegistries.FLUID.containsKey(id);
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*boolean registered =
-                                ScheduledTickSnapshot.BLOCK.equals(tick.kind)
-                                        ? BuiltInRegistries.BLOCK.containsKey(id)
-                                        : BuiltInRegistries.FLUID.containsKey(id);
-*///?}
 
             if (!registered) {
                 throw new IllegalStateException("Unknown scheduled-tick type: " + tick.type);
@@ -989,11 +935,10 @@ public final class RuntimeCapsuleManager {
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
 
             //? if (>=1.18 && <=1.21.11) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            *///?} else if (>=26.1 && <=26.3) {
+            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
-*///?}
 
             queueChunks.add(new QueueChunkKey(tick.dimension, packed));
             tickChunks.add(new QueueChunkKey(tick.dimension, packed));
@@ -1036,18 +981,16 @@ public final class RuntimeCapsuleManager {
             QueueKey key = entry.getKey();
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(key.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(key.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(key.dimension);
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            ChunkPos pos = new ChunkPos(key.packedChunkPosition);
+            /*ChunkPos pos = new ChunkPos(key.packedChunkPosition);
+            *///?} else if (>=26.1 && <=26.3) {
+            ChunkPos pos = ChunkPos.unpack(key.packedChunkPosition);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ChunkPos pos = ChunkPos.unpack(key.packedChunkPosition);
-*///?}
 
             if (world == null) {
                 throw new IllegalStateException(
@@ -1058,11 +1001,10 @@ public final class RuntimeCapsuleManager {
             // the accessible LevelChunk here. Resolve it without joining a future.
 
             //? if (>=1.18 && <=1.21.11) {
+            /*LevelChunk chunk = resolveAccessibleChunk(world, pos);
+            *///?} else if (>=26.1 && <=26.3) {
             LevelChunk chunk = resolveAccessibleChunk(world, pos);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*LevelChunk chunk = resolveAccessibleChunk(world, pos);
-*///?}
 
             if (chunk == null
                     && !tickChunks.contains(
@@ -1096,55 +1038,49 @@ public final class RuntimeCapsuleManager {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static LevelChunk resolveAccessibleChunk(ServerLevel world, ChunkPos position)
+                *///?} else if (>=26.1 && <=26.3) {
     private static LevelChunk resolveAccessibleChunk(ServerLevel world, ChunkPos position)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static LevelChunk resolveAccessibleChunk(ServerLevel world, ChunkPos position)
-*///?}
             {
 
         //? if (>=1.18 && <=1.20.6) {
-        ThreadedAnvilChunkStorageAccessorMixin storage =
+        /*ThreadedAnvilChunkStorageAccessorMixin storage =
                 (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-        //?}
-        //? if (>=1.21 && <=1.21.11) {
+        *///?} else if (>=1.21 && <=1.21.11) {
         /*ThreadedAnvilChunkStorageAccessorMixin storage =
                         (ThreadedAnvilChunkStorageAccessorMixin)
                                 world.getChunkSource().chunkMap;
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                        (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        ThreadedAnvilChunkStorageAccessorMixin storage =
+                (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
+        //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        net.minecraft.server.level.ChunkHolder holder =
-                storage.anticrash$getCurrentChunkHolders().get(position.toLong());
-        //?}
-        //? if (>=26.1 && <=26.3) {
         /*net.minecraft.server.level.ChunkHolder holder =
-                        storage.anticrash$getCurrentChunkHolders().get(position.pack());
-*///?}
+                storage.anticrash$getCurrentChunkHolders().get(position.toLong());
+        *///?} else if (>=26.1 && <=26.3) {
+        net.minecraft.server.level.ChunkHolder holder =
+                storage.anticrash$getCurrentChunkHolders().get(position.pack());
+        //?}
 
         if (holder == null) return null;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*var future = holder.getFullChunkFuture();
+        *///?} else if (>=26.1 && <=26.3) {
         var future = holder.getFullChunkFuture();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*var future = holder.getFullChunkFuture();
-*///?}
 
         if (future == null || !future.isDone() || future.isCompletedExceptionally()) return null;
         try {
             var value = future.getNow(null);
 
             //? if (>=1.18 && <=1.20.4) {
-            return value == null ? null : value.left().orElse(null);
+            /*return value == null ? null : value.left().orElse(null);
+            *///?} else if (>=1.20.5 && <=26.3) {
+            return value == null ? null : value.orElse(null);
             //?}
-            //? if (>=1.20.5 && <=26.3) {
-            /*return value == null ? null : value.orElse(null);
-*///?}
 
         } catch (RuntimeException ignored) {
             return null;
@@ -1162,56 +1098,50 @@ public final class RuntimeCapsuleManager {
         if (capsule.inhabitedTimes == null) return new int[] {0, 0};
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         for (RuntimeCapsule.InhabitedTimes inhabited : capsule.inhabitedTimes) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = inhabited == null ? null : worlds.get(inhabited.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = inhabited == null ? null : worlds.get(inhabited.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = inhabited == null ? null : worlds.get(inhabited.dimension);
-*///?}
 
             if (world == null || inhabited.chunks.size() != inhabited.times.size()) continue;
             for (int index = 0; index < inhabited.chunks.size(); index++) {
                 long packed = inhabited.chunks.get(index);
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*net.minecraft.world.level.chunk.LevelChunk chunk =
+                        world.getChunkSource()
+                                .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
+                *///?} else if (>=26.1 && <=26.3) {
                 net.minecraft.world.level.chunk.LevelChunk chunk =
                         world.getChunkSource()
                                 .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*net.minecraft.world.level.chunk.LevelChunk chunk =
-                                        world.getChunkSource()
-                                                .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
-*///?}
 
                 if (chunk == null) {
                     missing++;
@@ -1241,31 +1171,27 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         Map<String, List<MovingPistonTickSnapshot>> byDimension = new LinkedHashMap<>();
@@ -1280,11 +1206,10 @@ public final class RuntimeCapsuleManager {
         for (Map.Entry<String, List<MovingPistonTickSnapshot>> entry : byDimension.entrySet()) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(entry.getKey());
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(entry.getKey());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(entry.getKey());
-*///?}
 
             if (world == null) {
                 throw new IllegalStateException(
@@ -1292,22 +1217,20 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> tickers =
+                    ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
+                            .anticrash$getBlockEntityTickers();
+            *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> tickers =
                     ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
                             .anticrash$getBlockEntityTickers();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*List<TickingBlockEntity> tickers =
-                                ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                                        .anticrash$getBlockEntityTickers();
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*Map<BlockPos, TickingBlockEntity> targetTickers = new HashMap<>();
+            *///?} else if (>=26.1 && <=26.3) {
             Map<BlockPos, TickingBlockEntity> targetTickers = new HashMap<>();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*Map<BlockPos, TickingBlockEntity> targetTickers = new HashMap<>();
-*///?}
 
             Set<BlockPos> expected = new HashSet<>();
             for (MovingPistonTickSnapshot snapshot : entry.getValue()) {
@@ -1315,15 +1238,14 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
+            /*for (TickingBlockEntity pending :
+                    ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
+                            .anticrash$getPendingBlockEntityTickers())
+            *///?} else if (>=26.1 && <=26.3) {
             for (TickingBlockEntity pending :
                     ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
                             .anticrash$getPendingBlockEntityTickers())
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*for (TickingBlockEntity pending :
-                                ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                                        .anticrash$getPendingBlockEntityTickers())
-*///?}
             {
                 if (!BlockEntityTickerSnapshot.removed(pending)
                         && expected.contains(pending.getPos())) {
@@ -1335,26 +1257,24 @@ public final class RuntimeCapsuleManager {
             for (int index = 0; index < tickers.size(); index++) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*TickingBlockEntity ticker = tickers.get(index);
+                *///?} else if (>=26.1 && <=26.3) {
                 TickingBlockEntity ticker = tickers.get(index);
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*TickingBlockEntity ticker = tickers.get(index);
-*///?}
 
                 if (BlockEntityTickerSnapshot.removed(ticker)) continue;
                 BlockPos position = ticker.getPos();
                 if (!expected.contains(position)) continue;
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
+                                instanceof PistonMovingBlockEntity)
+                        || targetTickers.put(position, ticker) != null)
+                *///?} else if (>=26.1 && <=26.3) {
                 if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                                 instanceof PistonMovingBlockEntity)
                         || targetTickers.put(position, ticker) != null)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                                                instanceof PistonMovingBlockEntity)
-                                        || targetTickers.put(position, ticker) != null)
-*///?}
                 {
                     throw new IllegalStateException("Moving-piston ticker is invalid: " + position);
                 }
@@ -1366,20 +1286,18 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> ordered = new ArrayList<>();
+            *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> ordered = new ArrayList<>();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*List<TickingBlockEntity> ordered = new ArrayList<>();
-*///?}
 
             for (MovingPistonTickSnapshot snapshot : entry.getValue()) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*TickingBlockEntity ticker = targetTickers.get(snapshot.position());
+                *///?} else if (>=26.1 && <=26.3) {
                 TickingBlockEntity ticker = targetTickers.get(snapshot.position());
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*TickingBlockEntity ticker = targetTickers.get(snapshot.position());
-*///?}
 
                 if (ticker == null) {
                     throw new IllegalStateException(
@@ -1409,31 +1327,27 @@ public final class RuntimeCapsuleManager {
             MinecraftServer server, RuntimeCapsule capsule) {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         Map<PistonPositionKey, String> expectedQueues = new HashMap<>();
@@ -1458,11 +1372,10 @@ public final class RuntimeCapsuleManager {
         for (Map.Entry<String, List<MovingPistonTickSnapshot>> dimension : byDimension.entrySet()) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(dimension.getKey());
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(dimension.getKey());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(dimension.getKey());
-*///?}
 
             if (world == null)
                 throw new IllegalStateException(
@@ -1494,6 +1407,15 @@ public final class RuntimeCapsuleManager {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void prepareOptimizedPistonQueue(
+            List<PreparedPistonOrder> output,
+            ServerLevel world,
+            String dimension,
+            String queue,
+            List<MovingPistonTickSnapshot> snapshots,
+            Map<PistonPositionKey, String> expectedQueues,
+            List<TickingBlockEntity> live)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void prepareOptimizedPistonQueue(
             List<PreparedPistonOrder> output,
             ServerLevel world,
@@ -1503,16 +1425,6 @@ public final class RuntimeCapsuleManager {
             Map<PistonPositionKey, String> expectedQueues,
             List<TickingBlockEntity> live)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void prepareOptimizedPistonQueue(
-                            List<PreparedPistonOrder> output,
-                            ServerLevel world,
-                            String dimension,
-                            String queue,
-                            List<MovingPistonTickSnapshot> snapshots,
-                            Map<PistonPositionKey, String> expectedQueues,
-                            List<TickingBlockEntity> live)
-*///?}
             {
         List<MovingPistonTickSnapshot> expected = new ArrayList<>();
         Set<BlockPos> positions = new HashSet<>();
@@ -1536,36 +1448,33 @@ public final class RuntimeCapsuleManager {
         if (expected.isEmpty()) return;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<BlockPos, TickingBlockEntity> targets = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<BlockPos, TickingBlockEntity> targets = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<BlockPos, TickingBlockEntity> targets = new HashMap<>();
-*///?}
 
         List<Integer> slots = new ArrayList<>();
         for (int index = 0; index < live.size(); index++) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*TickingBlockEntity ticker = live.get(index);
+            *///?} else if (>=26.1 && <=26.3) {
             TickingBlockEntity ticker = live.get(index);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*TickingBlockEntity ticker = live.get(index);
-*///?}
 
             if (BlockEntityTickerSnapshot.removed(ticker) || !positions.contains(ticker.getPos()))
                 continue;
             BlockPos position = ticker.getPos();
 
             //? if (>=1.18 && <=1.21.11) {
+            /*if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
+                            instanceof PistonMovingBlockEntity)
+                    || targets.put(position, ticker) != null)
+            *///?} else if (>=26.1 && <=26.3) {
             if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                             instanceof PistonMovingBlockEntity)
                     || targets.put(position, ticker) != null)
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (!(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                                        instanceof PistonMovingBlockEntity)
-                                || targets.put(position, ticker) != null)
-*///?}
             {
                 throw new IllegalStateException(
                         "Moving-piston ticker is invalid: " + dimension + " " + position);
@@ -1585,20 +1494,18 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
+        *///?} else if (>=26.1 && <=26.3) {
         List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
-*///?}
 
         for (MovingPistonTickSnapshot snapshot : expected) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*TickingBlockEntity ticker = targets.get(snapshot.position());
+            *///?} else if (>=26.1 && <=26.3) {
             TickingBlockEntity ticker = targets.get(snapshot.position());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*TickingBlockEntity ticker = targets.get(snapshot.position());
-*///?}
 
             if (ticker == null)
                 throw new IllegalStateException(
@@ -1614,52 +1521,46 @@ public final class RuntimeCapsuleManager {
     private static void verifyMovingPistonsPresent(MinecraftServer server, RuntimeCapsule capsule) {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         for (MovingPistonTickSnapshot snapshot : capsule.movingPistonTickOrder) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(snapshot.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(snapshot.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(snapshot.dimension);
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*if (world == null
+                    || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, snapshot.position())
+                            instanceof PistonMovingBlockEntity))
+            *///?} else if (>=26.1 && <=26.3) {
             if (world == null
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, snapshot.position())
                             instanceof PistonMovingBlockEntity))
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (world == null
-                                || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, snapshot.position())
-                                        instanceof PistonMovingBlockEntity))
-*///?}
             {
                 throw new IllegalStateException(
                         "Moving-piston block entity is unavailable: "
@@ -1684,19 +1585,17 @@ public final class RuntimeCapsuleManager {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static boolean containsTicker(List<TickingBlockEntity> tickers, BlockPos position)
+                *///?} else if (>=26.1 && <=26.3) {
     private static boolean containsTicker(List<TickingBlockEntity> tickers, BlockPos position)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static boolean containsTicker(List<TickingBlockEntity> tickers, BlockPos position)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (TickingBlockEntity ticker : tickers)
+        *///?} else if (>=26.1 && <=26.3) {
         for (TickingBlockEntity ticker : tickers)
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (TickingBlockEntity ticker : tickers)
-*///?}
         {
             if (!BlockEntityTickerSnapshot.removed(ticker) && position.equals(ticker.getPos()))
                 return true;
@@ -1729,31 +1628,27 @@ public final class RuntimeCapsuleManager {
         if (capsule.formatVersion < 6) return 0;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         Map<String, Map<String, List<BlockEntityTickerSnapshot>>> expected = new LinkedHashMap<>();
@@ -1774,11 +1669,10 @@ public final class RuntimeCapsuleManager {
                 expected.entrySet()) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(dimension.getKey());
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(dimension.getKey());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(dimension.getKey());
-*///?}
 
             if (world == null)
                 throw new IllegalStateException(
@@ -1808,6 +1702,13 @@ public final class RuntimeCapsuleManager {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void prepareTickerQueue(
+            List<PreparedTickerOrder> output,
+            ServerLevel world,
+            String queue,
+            List<BlockEntityTickerSnapshot> expected,
+            List<TickingBlockEntity> live)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void prepareTickerQueue(
             List<PreparedTickerOrder> output,
             ServerLevel world,
@@ -1815,31 +1716,21 @@ public final class RuntimeCapsuleManager {
             List<BlockEntityTickerSnapshot> expected,
             List<TickingBlockEntity> live)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void prepareTickerQueue(
-                            List<PreparedTickerOrder> output,
-                            ServerLevel world,
-                            String queue,
-                            List<BlockEntityTickerSnapshot> expected,
-                            List<TickingBlockEntity> live)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, TickingBlockEntity> byKey = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, TickingBlockEntity> byKey = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, TickingBlockEntity> byKey = new HashMap<>();
-*///?}
 
         int liveCount = 0;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (TickingBlockEntity ticker : live)
+        *///?} else if (>=26.1 && <=26.3) {
         for (TickingBlockEntity ticker : live)
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (TickingBlockEntity ticker : live)
-*///?}
         {
             // Removed tickers are never captured (Vanilla drops them unrun), so they are neither
             // matched here nor kept: leaving them out of the reordered list is what the next
@@ -1850,67 +1741,61 @@ public final class RuntimeCapsuleManager {
             if (key == null || byKey.put(key, ticker) != null) {
 
                 //? if (>=1.18 && <=1.21.11) {
-                throw new IllegalStateException(
+                /*throw new IllegalStateException(
                         "Duplicate or invalid "
                                 + queue
                                 + " BlockEntity ticker in "
                                 //? if (>=1.18 && <=1.21.10) {
-                                + world.dimension().location());
+                                /^+ world.dimension().location());
+                ^///?} else if 1.21.11 {
+                /^+ world.dimension().identifier());
+                                ^///?}
+                *///?} else if (>=26.1 && <=26.3) {
+                throw new IllegalStateException(
+                        "Duplicate or invalid "
+                                + queue
+                                + " BlockEntity ticker in "
+                                + world.dimension().identifier());
                 //?}
-                //? if 1.21.11 {
-                /*+ world.dimension().identifier());
-                                *///?}
-                //?}
-                //? if (>=26.1 && <=26.3) {
-                /*throw new IllegalStateException(
-                                        "Duplicate or invalid "
-                                                + queue
-                                                + " BlockEntity ticker in "
-                                                + world.dimension().identifier());
-*///?}
 
             }
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
+        *///?} else if (>=26.1 && <=26.3) {
         List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
-*///?}
 
         Set<String> seen = new HashSet<>();
         for (BlockEntityTickerSnapshot snapshot : expected) {
             String key = snapshot.key();
 
             //? if (>=1.18 && <=1.21.11) {
+            /*TickingBlockEntity ticker = byKey.get(key);
+            *///?} else if (>=26.1 && <=26.3) {
             TickingBlockEntity ticker = byKey.get(key);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*TickingBlockEntity ticker = byKey.get(key);
-*///?}
 
             if (ticker == null || !seen.add(key)) {
 
                 //? if (>=1.18 && <=1.21.11) {
-                throw new IllegalStateException(
+                /*throw new IllegalStateException(
                         "BlockEntity ticker is missing or duplicated: "
                                 //? if (>=1.18 && <=1.21.10) {
-                                + world.dimension().location()
-                                //?}
-                                //? if 1.21.11 {
-                                /*+ world.dimension().identifier()
-                                *///?}
+                                /^+ world.dimension().location()
+                                ^///?} else if 1.21.11 {
+                                /^+ world.dimension().identifier()
+                                ^///?}
+                                + " "
+                                + key);
+                *///?} else if (>=26.1 && <=26.3) {
+                throw new IllegalStateException(
+                        "BlockEntity ticker is missing or duplicated: "
+                                + world.dimension().identifier()
                                 + " "
                                 + key);
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*throw new IllegalStateException(
-                                        "BlockEntity ticker is missing or duplicated: "
-                                                + world.dimension().identifier()
-                                                + " "
-                                                + key);
-*///?}
 
             }
             ordered.add(ticker);
@@ -1918,14 +1803,23 @@ public final class RuntimeCapsuleManager {
         if (ordered.size() != liveCount) {
 
             //? if (>=1.18 && <=1.21.11) {
-            throw new IllegalStateException(
+            /*throw new IllegalStateException(
                     "BlockEntity ticker set changed in "
                             //? if (>=1.18 && <=1.21.10) {
-                            + world.dimension().location()
-                            //?}
-                            //? if 1.21.11 {
-                            /*+ world.dimension().identifier()
-                            *///?}
+                            /^+ world.dimension().location()
+                            ^///?} else if 1.21.11 {
+                            /^+ world.dimension().identifier()
+                            ^///?}
+                            + " "
+                            + queue
+                            + " expected="
+                            + ordered.size()
+                            + " actual="
+                            + liveCount);
+            *///?} else if (>=26.1 && <=26.3) {
+            throw new IllegalStateException(
+                    "BlockEntity ticker set changed in "
+                            + world.dimension().identifier()
                             + " "
                             + queue
                             + " expected="
@@ -1933,17 +1827,6 @@ public final class RuntimeCapsuleManager {
                             + " actual="
                             + liveCount);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*throw new IllegalStateException(
-                                "BlockEntity ticker set changed in "
-                                        + world.dimension().identifier()
-                                        + " "
-                                        + queue
-                                        + " expected="
-                                        + ordered.size()
-                                        + " actual="
-                                        + liveCount);
-*///?}
 
         }
         output.add(new PreparedTickerOrder(live, ordered));
@@ -1955,41 +1838,36 @@ public final class RuntimeCapsuleManager {
         if (capsule.formatVersion < 6) return 0;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> worlds = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> worlds = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            worlds.put(world.dimension().location().toString(), world);
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^worlds.put(world.dimension().location().toString(), world);
+            ^///?} else if 1.21.11 {
+            /^worlds.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            worlds.put(world.dimension().identifier().toString(), world);
             //?}
-            //? if 1.21.11 {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*worlds.put(world.dimension().identifier().toString(), world);
-*///?}
 
         }
         for (RedstoneTorchBurnoutSnapshot snapshot : capsule.redstoneTorchBurnout) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = worlds.get(snapshot.dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = worlds.get(snapshot.dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = worlds.get(snapshot.dimension);
-*///?}
 
             if (world == null)
                 throw new IllegalStateException(
@@ -2141,41 +2019,39 @@ public final class RuntimeCapsuleManager {
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        addComparison(
+        /*addComparison(
                 report,
                 EquivalenceCategory.WORLD_RUNTIME,
                 RuntimeFingerprint.worldLines(expected.worlds),
                 RuntimeFingerprint.worldLines(actual.worlds),
                 true);
+        *///?} else if (>=26.1 && <=26.3) {
+        addComparison(
+                report,
+                EquivalenceCategory.WORLD_RUNTIME,
+                RuntimeFingerprint.worldLines(expected),
+                RuntimeFingerprint.worldLines(actual),
+                true);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*addComparison(
-                        report,
-                        EquivalenceCategory.WORLD_RUNTIME,
-                        RuntimeFingerprint.worldLines(expected),
-                        RuntimeFingerprint.worldLines(actual),
-                        true);
-*///?}
 
         //? if (>=1.18 && <=1.18.2) {
-        report.add(
+        /*report.add(
                 RecoveryEquivalenceReport.unsupportedComparison(
                         EquivalenceCategory.WORLD_RNG,
                         RuntimeFingerprint.worldRngLines(),
                         RuntimeFingerprint.worldRngLines(),
                         true,
                         "java.util.Random internal state is not safely exposed on 1.18.2"));
+        *///?} else if (>=1.19 && <=26.3) {
+        report.add(
+                RecoveryEquivalenceReport.unsupportedComparison(
+                        EquivalenceCategory.WORLD_RNG,
+                        RuntimeFingerprint.worldRngLines(),
+                        RuntimeFingerprint.worldRngLines(),
+                        true,
+                        "Minecraft Random implementation state is not restored by this Minecraft"
+                                + " version adapter"));
         //?}
-        //? if (>=1.19 && <=26.3) {
-        /*report.add(
-                        RecoveryEquivalenceReport.unsupportedComparison(
-                                EquivalenceCategory.WORLD_RNG,
-                                RuntimeFingerprint.worldRngLines(),
-                                RuntimeFingerprint.worldRngLines(),
-                                true,
-                                "Minecraft Random implementation state is not restored by this Minecraft"
-                                        + " version adapter"));
-*///?}
 
         compareCarpet(
                 report, expected, actual, strict == null || strict.allowUnsupportedCarpetState);
@@ -2352,9 +2228,9 @@ public final class RuntimeCapsuleManager {
         if (capsule.worlds == null) missing.add("WORLD_RUNTIME");
 
         //? if (>=26.1 && <=26.3) {
-        /*if (capsule.formatVersion < 8 || capsule.clockStates == null)
-                    missing.add("WORLD_CLOCKS_V8");
-*///?}
+        if (capsule.formatVersion < 8 || capsule.clockStates == null)
+            missing.add("WORLD_CLOCKS_V8");
+        //?}
 
         if (capsule.chunks == null) {
             missing.add("CHUNK_DOMAIN");
@@ -2624,38 +2500,38 @@ public final class RuntimeCapsuleManager {
             throw new IllegalStateException("Runtime capsule is incomplete");
 
         //? if (>=26.1 && <=26.3) {
-        /*if (capsule.formatVersion >= 8 && capsule.clockStates == null)
-                    throw new IllegalStateException("Runtime capsule is missing world clocks");
-*///?}
+        if (capsule.formatVersion >= 8 && capsule.clockStates == null)
+            throw new IllegalStateException("Runtime capsule is missing world clocks");
+        //?}
 
         //? if (>=26.1 && <=26.3) {
-        /*if (capsule.clockStates != null) {
-                    if (capsule.clockStates.size() > 65536)
-                        throw new IllegalStateException("Too many world clocks");
-*///?}
+        if (capsule.clockStates != null) {
+            if (capsule.clockStates.size() > 65536)
+                throw new IllegalStateException("Too many world clocks");
+            //?}
 
-        //? if (>=26.1 && <=26.3) {
-        /*Set<String> ids = new HashSet<>();
-*///?}
+            //? if (>=26.1 && <=26.3) {
+            Set<String> ids = new HashSet<>();
+            //?}
 
-        //? if (>=26.1 && <=26.3) {
-        /*for (ClockSnapshot clock : capsule.clockStates) {
-                        if (clock == null || !ids.add(clock.id()))
-                            throw new IllegalStateException("Duplicate/invalid clock");
-*///?}
+            //? if (>=26.1 && <=26.3) {
+            for (ClockSnapshot clock : capsule.clockStates) {
+                if (clock == null || !ids.add(clock.id()))
+                    throw new IllegalStateException("Duplicate/invalid clock");
+                //?}
 
-        // Validate deserialized state too; the Gson version need not invoke a constructor.
+                // Validate deserialized state too; the Gson version need not invoke a constructor.
 
-        //? if (>=26.1 && <=26.3) {
-        /*new ClockSnapshot(
-                                clock.id(),
-                                clock.totalTicks(),
-                                clock.partialTick(),
-                                clock.rate(),
-                                clock.paused());
-                    }
-                }
-*///?}
+                //? if (>=26.1 && <=26.3) {
+                new ClockSnapshot(
+                        clock.id(),
+                        clock.totalTicks(),
+                        clock.partialTick(),
+                        clock.rate(),
+                        clock.paused());
+            }
+        }
+        //?}
 
         Set<String> dimensions = new HashSet<>();
         Map<String, ChunkStateSnapshot> chunksByDimension = new HashMap<>();
@@ -2789,11 +2665,10 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            long packed = new ChunkPos(entity.chunkX, entity.chunkZ).toLong();
+            /*long packed = new ChunkPos(entity.chunkX, entity.chunkZ).toLong();
+            *///?} else if (>=26.1 && <=26.3) {
+            long packed = new ChunkPos(entity.chunkX, entity.chunkZ).pack();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*long packed = new ChunkPos(entity.chunkX, entity.chunkZ).pack();
-*///?}
 
             ChunkStateSnapshot chunks = chunksByDimension.get(entity.dimension);
             if (!unique.add(uuid)
@@ -2841,11 +2716,10 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).toLong();
+            /*long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).toLong();
+            *///?} else if (>=26.1 && <=26.3) {
+            long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).pack();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).pack();
-*///?}
 
             ChunkStateSnapshot chunks = chunksByDimension.get(piston.dimension);
             // A piston can be caught mid-move in a chunk that is loaded but no longer ticking
@@ -2878,11 +2752,10 @@ public final class RuntimeCapsuleManager {
         Set<ScheduledTickKey> unique = new HashSet<>();
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
             //? if (>=1.18 && <=1.21.10) {
-            ResourceLocation id;
+            /*ResourceLocation id;
+            *///?} else if (>=1.21.11 && <=26.3) {
+            Identifier id;
             //?}
-            //? if (>=1.21.11 && <=26.3) {
-            /*Identifier id;
-            *///?}
             if (tick == null
                     || tick.dimension == null
                     || !dimensions.contains(tick.dimension)
@@ -2891,11 +2764,10 @@ public final class RuntimeCapsuleManager {
                     || tick.type == null
                     || tick.type.length() > 512
                     //? if (>=1.18 && <=1.21.10) {
-                    || (id = ResourceLocation.tryParse(tick.type)) == null
+                    /*|| (id = ResourceLocation.tryParse(tick.type)) == null
+                    *///?} else if (>=1.21.11 && <=26.3) {
+                    || (id = Identifier.tryParse(tick.type)) == null
                     //?}
-                    //? if (>=1.21.11 && <=26.3) {
-                    /*|| (id = Identifier.tryParse(tick.type)) == null
-                    *///?}
                     || tick.priority < TickPriorityBounds.MIN
                     || tick.priority > TickPriorityBounds.MAX) {
                 throw new IllegalStateException(
@@ -2904,11 +2776,10 @@ public final class RuntimeCapsuleManager {
             ChunkStateSnapshot chunks = chunksByDimension.get(tick.dimension);
 
             //? if (>=1.18 && <=1.21.11) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            *///?} else if (>=26.1 && <=26.3) {
+            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
-*///?}
 
             boolean recoveryReady =
                     chunks != null
@@ -2928,53 +2799,54 @@ public final class RuntimeCapsuleManager {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void restoreBlockQueue(
+            ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void restoreBlockQueue(
             ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void restoreBlockQueue(
-                            ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
-*///?}
             {
         ChunkPos pos = chunk.getPos();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*LevelChunkTicks<Block> scheduler = ScheduledTickSnapshot.blockScheduler(chunk);
+        *///?} else if (>=26.1 && <=26.3) {
         LevelChunkTicks<Block> scheduler = ScheduledTickSnapshot.blockScheduler(chunk);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*LevelChunkTicks<Block> scheduler = ScheduledTickSnapshot.blockScheduler(chunk);
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*world.getBlockTicks().removeContainer(pos);
+        *///?} else if (>=26.1 && <=26.3) {
         world.getBlockTicks().removeContainer(pos);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*world.getBlockTicks().removeContainer(pos);
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*scheduler.removeIf(ignored -> true);
+        *///?} else if (>=26.1 && <=26.3) {
         scheduler.removeIf(ignored -> true);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*scheduler.removeIf(ignored -> true);
-*///?}
 
         for (ScheduledTickSnapshot tick : ticks) {
 
             //? if (>=1.18 && <=1.19.2) {
-            Block type = Registry.BLOCK.get(tick.typeIdentifier());
-            //?}
-            //? if (>=1.19.3 && <=1.21.1) {
+            /*Block type = Registry.BLOCK.get(tick.typeIdentifier());
+            *///?} else if (>=1.19.3 && <=1.21.1) {
             /*Block type = BuiltInRegistries.BLOCK.get(tick.typeIdentifier());
-            *///?}
-            //? if (>=1.21.2 && <=1.21.11) {
+            *///?} else if (>=1.21.2 && <=1.21.11) {
             /*Block type = BuiltInRegistries.BLOCK.getValue(tick.typeIdentifier());
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            /*Block type = BuiltInRegistries.BLOCK.getValue(tick.typeIdentifier());
-*///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            Block type = BuiltInRegistries.BLOCK.getValue(tick.typeIdentifier());
+            //?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*scheduler.schedule(
+                    new ScheduledTick<>(
+                            type,
+                            tick.position(),
+                            tick.triggerTick,
+                            tick.tickPriority(),
+                            tick.subTickOrder));
+            *///?} else if (>=26.1 && <=26.3) {
             scheduler.schedule(
                     new ScheduledTick<>(
                             type,
@@ -2983,75 +2855,66 @@ public final class RuntimeCapsuleManager {
                             tick.tickPriority(),
                             tick.subTickOrder));
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*scheduler.schedule(
-                                new ScheduledTick<>(
-                                        type,
-                                        tick.position(),
-                                        tick.triggerTick,
-                                        tick.tickPriority(),
-                                        tick.subTickOrder));
-*///?}
 
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*world.getBlockTicks().addContainer(pos, scheduler);
+        *///?} else if (>=26.1 && <=26.3) {
         world.getBlockTicks().addContainer(pos, scheduler);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*world.getBlockTicks().addContainer(pos, scheduler);
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void restoreFluidQueue(
+            ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void restoreFluidQueue(
             ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void restoreFluidQueue(
-                            ServerLevel world, LevelChunk chunk, List<ScheduledTickSnapshot> ticks)
-*///?}
             {
         ChunkPos pos = chunk.getPos();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*LevelChunkTicks<Fluid> scheduler = ScheduledTickSnapshot.fluidScheduler(chunk);
+        *///?} else if (>=26.1 && <=26.3) {
         LevelChunkTicks<Fluid> scheduler = ScheduledTickSnapshot.fluidScheduler(chunk);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*LevelChunkTicks<Fluid> scheduler = ScheduledTickSnapshot.fluidScheduler(chunk);
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*world.getFluidTicks().removeContainer(pos);
+        *///?} else if (>=26.1 && <=26.3) {
         world.getFluidTicks().removeContainer(pos);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*world.getFluidTicks().removeContainer(pos);
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*scheduler.removeIf(ignored -> true);
+        *///?} else if (>=26.1 && <=26.3) {
         scheduler.removeIf(ignored -> true);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*scheduler.removeIf(ignored -> true);
-*///?}
 
         for (ScheduledTickSnapshot tick : ticks) {
 
             //? if (>=1.18 && <=1.19.2) {
-            Fluid type = Registry.FLUID.get(tick.typeIdentifier());
-            //?}
-            //? if (>=1.19.3 && <=1.21.1) {
+            /*Fluid type = Registry.FLUID.get(tick.typeIdentifier());
+            *///?} else if (>=1.19.3 && <=1.21.1) {
             /*Fluid type = BuiltInRegistries.FLUID.get(tick.typeIdentifier());
-            *///?}
-            //? if (>=1.21.2 && <=1.21.11) {
+            *///?} else if (>=1.21.2 && <=1.21.11) {
             /*Fluid type = BuiltInRegistries.FLUID.getValue(tick.typeIdentifier());
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            /*Fluid type = BuiltInRegistries.FLUID.getValue(tick.typeIdentifier());
-*///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            Fluid type = BuiltInRegistries.FLUID.getValue(tick.typeIdentifier());
+            //?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*scheduler.schedule(
+                    new ScheduledTick<>(
+                            type,
+                            tick.position(),
+                            tick.triggerTick,
+                            tick.tickPriority(),
+                            tick.subTickOrder));
+            *///?} else if (>=26.1 && <=26.3) {
             scheduler.schedule(
                     new ScheduledTick<>(
                             type,
@@ -3060,24 +2923,14 @@ public final class RuntimeCapsuleManager {
                             tick.tickPriority(),
                             tick.subTickOrder));
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*scheduler.schedule(
-                                new ScheduledTick<>(
-                                        type,
-                                        tick.position(),
-                                        tick.triggerTick,
-                                        tick.tickPriority(),
-                                        tick.subTickOrder));
-*///?}
 
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*world.getFluidTicks().addContainer(pos, scheduler);
+        *///?} else if (>=26.1 && <=26.3) {
         world.getFluidTicks().addContainer(pos, scheduler);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*world.getFluidTicks().addContainer(pos, scheduler);
-*///?}
 
     }
 
@@ -3088,18 +2941,16 @@ public final class RuntimeCapsuleManager {
     private record PreparedQueue(
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world
+                    *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*ServerLevel world
-*///?}
                     ,
             //? if (>=1.18 && <=1.21.11) {
+            /*LevelChunk chunk
+                    *///?} else if (>=26.1 && <=26.3) {
             LevelChunk chunk
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*LevelChunk chunk
-*///?}
                     ,
             String kind,
             List<ScheduledTickSnapshot> ticks) {}
@@ -3112,37 +2963,33 @@ public final class RuntimeCapsuleManager {
     private record PreparedPistonOrder(
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> tickers
+                    *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> tickers
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*List<TickingBlockEntity> tickers
-*///?}
                     ,
             List<Integer> slots,
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> ordered
+            *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> ordered
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*List<TickingBlockEntity> ordered
-*///?}
             ) {}
 
     private record PreparedTickerOrder(
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> live
+                    *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> live
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*List<TickingBlockEntity> live
-*///?}
                     ,
             //? if (>=1.18 && <=1.21.11) {
+            /*List<TickingBlockEntity> ordered
+            *///?} else if (>=26.1 && <=26.3) {
             List<TickingBlockEntity> ordered
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*List<TickingBlockEntity> ordered
-*///?}
             ) {}
 
     private static final class TickPriorityBounds {

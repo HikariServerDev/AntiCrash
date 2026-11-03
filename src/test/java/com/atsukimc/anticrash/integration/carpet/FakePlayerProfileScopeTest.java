@@ -29,25 +29,22 @@ class FakePlayerProfileScopeTest {
             assertNotNull(selected);
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals(CHECKPOINT_ID, selected.getId());
+            /*assertEquals(CHECKPOINT_ID, selected.getId());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals(CHECKPOINT_ID, selected.id());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals(CHECKPOINT_ID, selected.id());
-*///?}
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals("msbot", selected.getName());
+            /*assertEquals("msbot", selected.getName());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals("msbot", selected.name());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals("msbot", selected.name());
-*///?}
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals(OTHER_ID, cached.getId());
+            /*assertEquals(OTHER_ID, cached.getId());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals(OTHER_ID, cached.id());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals(OTHER_ID, cached.id());
-*///?}
 
         }
         assertNull(FakePlayerProfileScope.lookup(cache, "msbot"));
@@ -59,11 +56,10 @@ class FakePlayerProfileScopeTest {
         try (var scope = FakePlayerProfileScope.open(cache, CHECKPOINT_ID, "MsBot")) {
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").getName());
+            /*assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").getName());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").name());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").name());
-*///?}
 
             assertNull(FakePlayerProfileScope.lookup(new Object(), "MsBot"));
             assertNull(FakePlayerProfileScope.lookup(cache, "another_player"));
@@ -81,11 +77,10 @@ class FakePlayerProfileScopeTest {
                             .get(5, TimeUnit.SECONDS));
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
-*///?}
 
         }
     }
@@ -111,20 +106,18 @@ class FakePlayerProfileScopeTest {
                 assertNull(FakePlayerProfileScope.lookup(cache, "msbot"));
 
                 //? if (>=1.18 && <=1.21.8) {
-                assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
+                /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
+                *///?} else if (>=1.21.9 && <=26.3) {
+                assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
                 //?}
-                //? if (>=1.21.9 && <=26.3) {
-                /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
-*///?}
 
             }
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
-*///?}
 
         }
         assertNull(FakePlayerProfileScope.lookup(cache, "msbot"));
@@ -145,11 +138,10 @@ class FakePlayerProfileScopeTest {
                     () -> FakePlayerProfileScope.open(cache, OTHER_ID, "bad name"));
 
             //? if (>=1.18 && <=1.21.8) {
-            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
+            *///?} else if (>=1.21.9 && <=26.3) {
+            assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
-            //? if (>=1.21.9 && <=26.3) {
-            /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
-*///?}
 
         }
     }
@@ -165,11 +157,10 @@ class FakePlayerProfileScopeTest {
                 assertThrows(IllegalStateException.class, outer::close);
 
                 //? if (>=1.18 && <=1.21.8) {
-                assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
+                /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
+                *///?} else if (>=1.21.9 && <=26.3) {
+                assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
                 //?}
-                //? if (>=1.21.9 && <=26.3) {
-                /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
-*///?}
 
             }
             outer.close();

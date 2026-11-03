@@ -280,26 +280,24 @@ public final class DetachedGeneration {
                 Files.createDirectories(target.getParent());
 
                 //? if (>=1.18 && <=1.20.4) {
-                net.minecraft.world.level.chunk.storage.RegionFile file =
+                /*net.minecraft.world.level.chunk.storage.RegionFile file =
                         new net.minecraft.world.level.chunk.storage.RegionFile(
                                 target, target.getParent(), false);
+                *///?} else if (>=1.20.5 && <=1.21.11) {
+                /*net.minecraft.world.level.chunk.storage.RegionFile file =
+                                        new net.minecraft.world.level.chunk.storage.RegionFile(
+                                                com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
+                                                target,
+                                                target.getParent(),
+                                                false);
+*///?} else if (>=26.1 && <=26.3) {
+                net.minecraft.world.level.chunk.storage.RegionFile file =
+                        new net.minecraft.world.level.chunk.storage.RegionFile(
+                                com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
+                                target,
+                                target.getParent(),
+                                false);
                 //?}
-                //? if (>=1.20.5 && <=1.21.11) {
-                /*net.minecraft.world.level.chunk.storage.RegionFile file =
-                                        new net.minecraft.world.level.chunk.storage.RegionFile(
-                                                com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
-                                                target,
-                                                target.getParent(),
-                                                false);
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*net.minecraft.world.level.chunk.storage.RegionFile file =
-                                        new net.minecraft.world.level.chunk.storage.RegionFile(
-                                                com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
-                                                target,
-                                                target.getParent(),
-                                                false);
-*///?}
 
                 try {
                     for (QueuedWrite queued : region.getValue()) {
@@ -307,14 +305,12 @@ public final class DetachedGeneration {
                         if (write.nbt() == null) {
 
                             //? if (>=1.18 && <=1.19.1) {
+                            /*file.clear(write.pos());
+                            *///?} else if (>=1.19.2 && <=1.21.11) {
+                            /*file.clear(write.pos());
+*///?} else if (>=26.1 && <=26.3) {
                             file.clear(write.pos());
                             //?}
-                            //? if (>=1.19.2 && <=1.21.11) {
-                            /*file.clear(write.pos());
-*///?}
-                            //? if (>=26.1 && <=26.3) {
-                            /*file.clear(write.pos());
-*///?}
 
                         } else {
                             if (write.nbt().contains("__context")) {
@@ -323,30 +319,26 @@ public final class DetachedGeneration {
                             }
 
                             //? if (>=1.18 && <=1.21.11) {
+                            /*try (java.io.DataOutputStream output =
+                                    file.getChunkDataOutputStream(write.pos()))
+                            *///?} else if (>=26.1 && <=26.3) {
                             try (java.io.DataOutputStream output =
                                     file.getChunkDataOutputStream(write.pos()))
                             //?}
-                            //? if (>=26.1 && <=26.3) {
-                            /*try (java.io.DataOutputStream output =
-                                                                file.getChunkDataOutputStream(write.pos()))
-*///?}
                             {
 
                                 //? if (>=1.18 && <=1.21.11) {
-                                //? if (>=1.18 && <=1.20.1) {
-                                net.minecraft.nbt.NbtIo.write(write.nbt(), output);
+                                /*//? if (>=1.18 && <=1.20.1) {
+                                /^net.minecraft.nbt.NbtIo.write(write.nbt(), output);
+                                ^///?} else if 1.20.2 {
+                                /^net.minecraft.nbt.NbtIo.writeUnnamedTag(write.nbt(), output);
+                                ^///?} else if (>=1.20.3 && <=1.21.11) {
+                                /^net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(write.nbt(), output);
+                                ^///?}
+                                *///?} else if (>=26.1 && <=26.3) {
+                                net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(
+                                        write.nbt(), output);
                                 //?}
-                                //? if 1.20.2 {
-                                /*net.minecraft.nbt.NbtIo.writeUnnamedTag(write.nbt(), output);
-                                *///?}
-                                //? if (>=1.20.3 && <=1.21.11) {
-                                /*net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(write.nbt(), output);
-                                *///?}
-                                //?}
-                                //? if (>=26.1 && <=26.3) {
-                                /*net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(
-                                                                        write.nbt(), output);
-*///?}
 
                             }
                         }

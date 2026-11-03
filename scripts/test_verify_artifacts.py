@@ -82,3 +82,35 @@ class BuildManifestTest(unittest.TestCase):
         for invalid in [b' continuation\n', b'Name: first\nName: second\n']:
             with self.subTest(manifest=invalid), self.assertRaises(ValueError):
                 manifest_attributes(invalid)
+
+
+class RefmapParityTest(unittest.TestCase):
+    def test_mapping_names_may_change_but_runtime_targets_must_match(self):
+        from verify_artifacts import compare_refmap
+        before = {
+            'mappings': {'example/Mixin': {'tick()V': 'Lgame/World;method_1()V'}},
+            'data': {'named:intermediary': {
+                'example/Mixin': {'tick()V': 'Lgame/World;method_1()V'}}},
+        }
+        after = {
+            'mappings': {'example/Mixin': {'serverTick()V': 'Lgame/World;method_1()V'}},
+            'data': {'named:intermediary': {
+                'example/Mixin': {'serverTick()V': 'Lgame/World;method_1()V'}}},
+        }
+        compare_refmap(json.dumps(before).encode(), json.dumps(after).encode())
+
+        after['data']['named:intermediary']['example/Mixin']['serverTick()V'] = 'Lgame/World;method_2()V'
+        with self.assertRaises(AssertionError):
+            compare_refmap(json.dumps(before).encode(), json.dumps(after).encode())
+
+    def test_added_mixin_is_rejected(self):
+        from verify_artifacts import compare_refmap
+        before = {
+            'mappings': {'example/Mixin': {'tick()V': 'Lgame/World;method_1()V'}},
+            'data': {'named:intermediary': {
+                'example/Mixin': {'tick()V': 'Lgame/World;method_1()V'}}},
+        }
+        after = json.loads(json.dumps(before))
+        after['mappings']['example/NewMixin'] = {}
+        with self.assertRaises(AssertionError):
+            compare_refmap(json.dumps(before).encode(), json.dumps(after).encode())

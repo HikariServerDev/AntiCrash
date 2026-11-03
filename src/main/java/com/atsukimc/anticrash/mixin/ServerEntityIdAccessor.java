@@ -1,5 +1,5 @@
 //? if (>=26.2 && <=26.3) {
-/*package com.atsukimc.anticrash.mixin;
+package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.server.level.ServerLevel;
 
@@ -8,7 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.concurrent.atomic.AtomicInteger;
 
-/^* 26.2 separates client/server id allocation. getNextEntityId uses this server counter. ^/
+/** 26.2 separates client/server id allocation. getNextEntityId uses this server counter. */
 @Mixin(ServerLevel.class)
 public interface ServerEntityIdAccessor {
     @Accessor("ENTITY_COUNTER")
@@ -16,4 +16,4 @@ public interface ServerEntityIdAccessor {
         throw new AssertionError();
     }
 }
-*///?}
+//?}

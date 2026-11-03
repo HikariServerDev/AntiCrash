@@ -1,34 +1,33 @@
 //? if (>=1.21.6 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.world.entity.player.Abilities;
-^///?}
+/*import net.minecraft.world.entity.player.Abilities;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.core.HolderLookup;
-^///?}
+import net.minecraft.core.HolderLookup;
+//?}
 
 import net.minecraft.nbt.*;
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.core.HolderLookup;
-^///?}
+/*import net.minecraft.core.HolderLookup;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.entity.player.Abilities;
-^///?}
+import net.minecraft.world.entity.player.Abilities;
+//?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.world.level.storage.*;
-^///?}
+/*import net.minecraft.world.level.storage.*;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.storage.*;
-^///?}
+import net.minecraft.world.level.storage.*;
+//?}
 
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.storage.TagValueInput;
-^///?}
-
+import net.minecraft.world.level.storage.TagValueInput;
+//?}
 
 import org.junit.jupiter.api.Test;
 
@@ -39,16 +38,14 @@ class VersionStorageTest {
         RuntimeExtensionNbt.entitySave(false);
     }
 
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^private final HolderLookup.Provider registries =
+    //? if (>=1.21.6 && <=1.21.11) {
+    /*private final HolderLookup.Provider registries =
             HolderLookup.Provider.create(java.util.stream.Stream.empty());
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^private final HolderLookup.Provider registries =
+*///?} else if (>=26.1 && <=26.3) {
+    private final HolderLookup.Provider registries =
             HolderLookup.Provider.create(java.util.stream.Stream.empty());
-^///?}
 
+    //?}
 
     @Test
     void viewExtensionRoundTripPreservesPistonStateAndMergesKeys() {
@@ -57,18 +54,17 @@ class VersionStorageTest {
         RuntimeExtensionNbt.write(view, n -> n.putFloat("Progress", 0.5f));
         RuntimeExtensionNbt.write(view, n -> n.putLong("SavedWorldTime", 31));
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var read =
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var read =
                 TagValueInput.create(
                         new VersionStorage.ThrowingReporter("test"), registries, view.buildResult());
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var read =
+*///?} else if (>=26.1 && <=26.3) {
+        var read =
                 TagValueInput.create(
                         new VersionStorage.ThrowingReporter("test"),
                         registries,
                         view.buildResult());
-^///?}
+        //?}
 
         var extension = RuntimeExtensionNbt.read(read);
         assertNotNull(extension);
@@ -79,22 +75,20 @@ class VersionStorageTest {
     @Test
     void malformedViewDataCannotBeIgnored() {
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var nbt = new CompoundTag();
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var nbt = new CompoundTag();
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var nbt = new CompoundTag();
+*///?} else if (>=26.1 && <=26.3) {
+        var nbt = new CompoundTag();
+        //?}
 
         nbt.putString(RuntimeExtensionNbt.KEY, "invalid");
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var read = TagValueInput.create(new VersionStorage.ThrowingReporter("test"), registries, nbt);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var read =
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var read = TagValueInput.create(new VersionStorage.ThrowingReporter("test"), registries, nbt);
+*///?} else if (>=26.1 && <=26.3) {
+        var read =
                 TagValueInput.create(new VersionStorage.ThrowingReporter("test"), registries, nbt);
-^///?}
+        //?}
 
         assertThrows(IllegalStateException.class, () -> RuntimeExtensionNbt.read(read));
     }
@@ -107,128 +101,105 @@ class VersionStorageTest {
                         s -> com.mojang.serialization.DataResult.error(() -> "reject"),
                         s -> com.mojang.serialization.DataResult.error(() -> "reject"));
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
+*///?} else if (>=26.1 && <=26.3) {
+        assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
+        //?}
 
     }
 
     @Test
     void abilitiesPreserveFlyingAndSpeedsWithoutAWorld() {
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var abilities = new Abilities();
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var abilities = new Abilities();
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var abilities = new Abilities();
+*///?} else if (>=26.1 && <=26.3) {
+        var abilities = new Abilities();
+        //?}
 
         abilities.flying = true;
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^abilities.mayfly = true;
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^abilities.mayfly = true;
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*abilities.mayfly = true;
+*///?} else if (>=26.1 && <=26.3) {
+        abilities.mayfly = true;
+        //?}
 
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*abilities.setFlyingSpeed(0.3f);
+*///?} else if (>=26.1 && <=26.3) {
+        abilities.setFlyingSpeed(0.3f);
+        //?}
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^abilities.setFlyingSpeed(0.3f);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^abilities.setFlyingSpeed(0.3f);
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*abilities.setWalkingSpeed(0.17f);
+*///?} else if (>=26.1 && <=26.3) {
+        abilities.setWalkingSpeed(0.17f);
+        //?}
 
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var restored = new Abilities();
+*///?} else if (>=26.1 && <=26.3) {
+        var restored = new Abilities();
+        //?}
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^abilities.setWalkingSpeed(0.17f);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^abilities.setWalkingSpeed(0.17f);
-^///?}
-
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^var restored = new Abilities();
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var restored = new Abilities();
-^///?}
-
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
+*///?} else if (>=26.1 && <=26.3) {
+        restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
+        //?}
 
         assertTrue(restored.flying);
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^assertTrue(restored.mayfly);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^assertTrue(restored.mayfly);
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*assertTrue(restored.mayfly);
+*///?} else if (>=26.1 && <=26.3) {
+        assertTrue(restored.mayfly);
+        //?}
 
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*assertEquals(0.3f, restored.getFlyingSpeed());
+*///?} else if (>=26.1 && <=26.3) {
+        assertEquals(0.3f, restored.getFlyingSpeed());
+        //?}
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^assertEquals(0.3f, restored.getFlyingSpeed());
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^assertEquals(0.3f, restored.getFlyingSpeed());
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*assertEquals(0.17f, restored.getWalkingSpeed());
+*///?} else if (>=26.1 && <=26.3) {
+        assertEquals(0.17f, restored.getWalkingSpeed());
+        //?}
 
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^assertEquals(0.17f, restored.getWalkingSpeed());
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^assertEquals(0.17f, restored.getWalkingSpeed());
-^///?}
-
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^assertThrows(
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*assertThrows(
                 IllegalArgumentException.class, () -> VersionStorage.abilities(new CompoundTag()));
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^assertThrows(
+*///?} else if (>=26.1 && <=26.3) {
+        assertThrows(
                 IllegalArgumentException.class, () -> VersionStorage.abilities(new CompoundTag()));
-^///?}
+        //?}
 
     }
 
     @Test
     void invalidInventoryDoesNotPartiallyApply() {
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var inventory = new net.minecraft.world.SimpleContainer(27);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var inventory = new net.minecraft.world.SimpleContainer(27);
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var inventory = new net.minecraft.world.SimpleContainer(27);
+*///?} else if (>=26.1 && <=26.3) {
+        var inventory = new net.minecraft.world.SimpleContainer(27);
+        //?}
 
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var nbt = new ListTag();
+*///?} else if (>=26.1 && <=26.3) {
+        var nbt = new ListTag();
+        //?}
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var nbt = new ListTag();
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var nbt = new ListTag();
-^///?}
-
-
-//? if (>=1.21.6 && <=1.21.11) {
-/^nbt.add(StringTag.valueOf("invalid"));
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^nbt.add(StringTag.valueOf("invalid"));
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*nbt.add(StringTag.valueOf("invalid"));
+*///?} else if (>=26.1 && <=26.3) {
+        nbt.add(StringTag.valueOf("invalid"));
+        //?}
 
         assertThrows(RuntimeException.class, () -> VersionStorage.inventory(nbt, 27, registries));
         assertTrue(inventory.isEmpty());
@@ -237,12 +208,11 @@ class VersionStorageTest {
     @Test
     void emptyEnderChestRoundTripsItsFixedSlotShape() {
 
-//? if (>=1.21.6 && <=1.21.11) {
-/^var inventory = new net.minecraft.world.SimpleContainer(27);
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^var inventory = new net.minecraft.world.SimpleContainer(27);
-^///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*var inventory = new net.minecraft.world.SimpleContainer(27);
+*///?} else if (>=26.1 && <=26.3) {
+        var inventory = new net.minecraft.world.SimpleContainer(27);
+        //?}
 
         var encoded = VersionStorage.inventory(inventory, registries);
         var decoded = VersionStorage.inventory(encoded, 27, registries);
@@ -251,4 +221,4 @@ class VersionStorageTest {
         assertTrue(inventory.isEmpty());
     }
 }
-*///?}
+//?}

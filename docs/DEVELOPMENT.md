@@ -8,15 +8,21 @@ Gradle 9.6 を JDK 25 で実行する。JDK 17 と 21 もインストールし�
 
 ```sh
 ./gradlew -PmcVersion=1.18.2 :1.18.2:build
-python3 scripts/check_sources.py
-python3 -m unittest discover -s scripts -v
-python3 scripts/format_java.py --check
+./gradlew -PmcVersion=26.3 qualityCheck
 python3 scripts/verify_artifacts.py --version 1.18.2 --collect
 ```
 
-`-PmcVersion` は今回必要なプロジェクトだけを設定し、メモリを節約する。指定しなければ全版が IDE に表示される。Stonecutter の active を切り替える操作は、別々の Gradle 呼び出しで行う。異なる版の切替タスクを同じ呼び出しに混ぜない。コミット時の active は 1.18.2。
+`-PmcVersion` は今回必要なプロジェクトだけを設定し、メモリを節約する。指定しなければ全版が IDE に表示される。Stonecutter の active を切り替える操作は、別々の Gradle 呼び出しで行う。異なる版の切替タスクを同じ呼び出しに混ぜない。コミット時の active と `vcsVersion` は最新の対応版（現在26.3）。新版追加時はTOML末尾の版がVCS基準になる。`./gradlew -PmcVersion=26.3 stonecutterSwitchTo26.3` で基準へ戻す。
 
 ソース内の条件コメントは公式 Stonecutter が管理する。無効な枝もソースなので削除しない。formatter は import の削除・並べ替えなどを行わず、別の枝専用の import も保持する。条件コメントの追加後は対象版だけでなく、隣接する API 境界の版もビルドする。
+
+`./gradlew qualityCheck` で整形・ソース構成・Pythonスクリプトの回帰テストをまとめて実行する。個別実行は `formatCheck`、`sourceCheck`、`scriptTest`。`formatApply` はJavaソースを整形する。`./gradlew check` はこれらと現在の版・Supervisorの単体テストを実行する。CIでは `quality` ジョブで品質検査し、各ビルドジョブで版別のJavaテストと成果物検査を行う。
+
+formatterはgoogle-java-formatを使う。Pythonの前後処理は無効なStonecutter枝と条件コメントを保護するために残す。標準formatterへ直接置き換える場合は、非アクティブ版のコードやimportを削除しないことを確認する。
+
+### 条件分岐の整理
+
+連続した排他的な版別処理は `if / else if` でまとめる。同時に成立する条件は独立させる。`python3 scripts/check_conditions.py --baseline <変更前コミット>` は公式Stonecutterで変更前後を全対応版へ展開し、選択されたJavaトークンの一致を確認する。Gradle・Minecraftのコンパイルは行わない。ヒープ上限は512 MiB、認識CPU数は2。
 
 ## 全版を生成する
 

@@ -6,11 +6,11 @@ import com.atsukimc.anticrash.util.Hashing;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ServerPlayer;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerPlayer;
+//?}
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -241,23 +241,24 @@ public final class RuntimeFingerprint {
     }
 
     //? if (>=26.1 && <=26.3) {
-    /*public static List<String> worldLines(RuntimeCapsule capsule) {
-            List<String> lines = worldLines(capsule.worlds);
-*///?}
+    public static List<String> worldLines(RuntimeCapsule capsule) {
+        List<String> lines = worldLines(capsule.worlds);
+        //?}
 
-    //? if (>=26.1 && <=26.3) {
-    /*if (capsule.clockStates == null) lines.add("clock=MISSING");
-            else for (ClockSnapshot clock : capsule.clockStates) lines.add(clock.canonical());
-*///?}
+        //? if (>=26.1 && <=26.3) {
+        if (capsule.clockStates == null) lines.add("clock=MISSING");
+        else for (ClockSnapshot clock : capsule.clockStates) lines.add(clock.canonical());
+        //?}
 
-    //? if (>=26.1 && <=26.3) {
-    /*lines.sort(String::compareTo);
-*///?}
+        //? if (>=26.1 && <=26.3) {
+        lines.sort(String::compareTo);
+        //?}
 
-    //? if (>=26.1 && <=26.3) {
-    /*return lines;
-        }
-*///?}
+        //? if (>=26.1 && <=26.3) {
+        return lines;
+    }
+
+    //?}
 
     /**
      * Records the capability boundary for World.random. Minecraft 1.18.2 exposes this as a
@@ -267,17 +268,16 @@ public final class RuntimeFingerprint {
     public static List<String> worldRngLines() {
 
         //? if (>=1.18 && <=1.18.2) {
-        return List.of(
+        /*return List.of(
                 "implementation=java.util.Random",
                 "state=UNSUPPORTED",
                 "reason=internal-state-not-exposed-by-minecraft-1.18.2");
+        *///?} else if (>=1.19 && <=26.3) {
+        return List.of(
+                "implementation=net.minecraft.util.math.random.Random",
+                "state=UNSUPPORTED",
+                "reason=random-implementation-state-not-restored-by-this-adapter");
         //?}
-        //? if (>=1.19 && <=26.3) {
-        /*return List.of(
-                        "implementation=net.minecraft.util.math.random.Random",
-                        "state=UNSUPPORTED",
-                        "reason=random-implementation-state-not-restored-by-this-adapter");
-*///?}
 
     }
 
@@ -330,30 +330,27 @@ public final class RuntimeFingerprint {
         if (server == null) return lines;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerPlayer player : server.getPlayerList().getPlayers())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerPlayer player : server.getPlayerList().getPlayers())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-*///?}
         {
             if (com.atsukimc.anticrash.integration.carpet.CarpetIntegration.isFakePlayer(player)) {
                 continue;
             }
 
             //? if (>=1.18 && <=1.21.8) {
-            lines.add(
+            /*lines.add(
                     player.getStringUUID()
                             + "|"
                             + player.getGameProfile().getName()
                             + "|"
                             //? if (>=1.18 && <=1.19.4) {
-                            + player.getLevel().dimension().location());
-            //?}
-            //? if (>=1.20 && <=1.21.8) {
-            /*+ player.level().dimension().location());
-                            *///?}
-            //?}
-            //? if (>=1.21.9 && <=1.21.11) {
+                            /^+ player.getLevel().dimension().location());
+            ^///?} else if (>=1.20 && <=1.21.8) {
+            /^+ player.level().dimension().location());
+                            ^///?}
+            *///?} else if (>=1.21.9 && <=1.21.11) {
             /*lines.add(
                                 player.getStringUUID()
                                         + "|"
@@ -361,19 +358,17 @@ public final class RuntimeFingerprint {
                                         + "|"
                                         //? if (>=1.21.9 && <=1.21.10) {
                                         /^+ player.level().dimension().location());
-                                        ^///?}
-                                        //? if 1.21.11 {
+                                        ^///?} else if 1.21.11 {
                                         /^+ player.level().dimension().identifier());
                                         ^///?}
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*lines.add(
-                                player.getStringUUID()
-                                        + "|"
-                                        + player.getGameProfile().name()
-                                        + "|"
-                                        + player.level().dimension().identifier());
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            lines.add(
+                    player.getStringUUID()
+                            + "|"
+                            + player.getGameProfile().name()
+                            + "|"
+                            + player.level().dimension().identifier());
+            //?}
 
         }
         lines.sort(String::compareTo);

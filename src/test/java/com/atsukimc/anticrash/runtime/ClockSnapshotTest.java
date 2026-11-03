@@ -1,5 +1,5 @@
 //? if (>=26.1 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -60,4 +60,4 @@ class ClockSnapshotTest {
                 () -> new ClockSnapshot("minecraft:overworld", 31, 0, 0, false));
     }
 }
-*///?}
+//?}

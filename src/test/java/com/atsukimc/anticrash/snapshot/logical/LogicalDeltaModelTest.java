@@ -3,11 +3,11 @@ package com.atsukimc.anticrash.snapshot.logical;
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.ChunkPos;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.ChunkPos;
+//?}
 
 import org.junit.jupiter.api.Test;
 
@@ -51,11 +51,10 @@ class LogicalDeltaModelTest {
         ChunkMutationTracker.recordScheduler(scheduler, new ChunkPos(3, -2), "schedule");
 
         //? if (>=1.18 && <=1.21.11) {
-        assertEquals(1L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).toLong()));
+        /*assertEquals(1L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).toLong()));
+        *///?} else if (>=26.1 && <=26.3) {
+        assertEquals(1L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).pack()));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertEquals(1L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).pack()));
-*///?}
 
         assertFalse(tracker.isUncertain());
         tracker.resetForTests();
@@ -71,11 +70,10 @@ class LogicalDeltaModelTest {
         assertTrue(tracker.isUncertain());
 
         //? if (>=1.18 && <=1.21.11) {
-        assertEquals(0L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).toLong()));
+        /*assertEquals(0L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).toLong()));
+        *///?} else if (>=26.1 && <=26.3) {
+        assertEquals(0L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).pack()));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertEquals(0L, tracker.generation("minecraft:overworld", new ChunkPos(3, -2).pack()));
-*///?}
 
         tracker.resetForTests();
     }

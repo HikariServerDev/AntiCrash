@@ -1,87 +1,87 @@
 package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.Block;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.material.Fluid;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.Registry;
-*///?}
-
-//? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
-
-//? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.core.Registry;
-*///?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.resources.Identifier;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-//? if (>=1.18 && <=1.21.10) {
-import net.minecraft.resources.ResourceLocation;
-//?}
-//? if 1.21.11 {
-/*import net.minecraft.resources.Identifier;
-*///?}
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.Block;
 *///?}
-
-//? if (>=1.18 && <=1.21.11) {
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
-*///?}
 
-//? if (>=1.18 && <=1.19.2) {
-import net.minecraft.core.Registry;
-//?}
-//? if (>=26.1 && <=26.3) {
+//? if (>=1.18 && <=1.21.11) {
 /*import net.minecraft.world.level.material.Fluid;
 *///?}
-
-//? if (>=1.18 && <=1.19.2) {
-import net.minecraft.world.ticks.TickPriority;
-//?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.ticks.LevelChunkTicks;
+import net.minecraft.core.Registry;
+//?}
+
+//? if (>=1.19.3 && <=1.21.11) {
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.registries.BuiltInRegistries;
+//?}
+
+//? if (>=1.19.3 && <=1.21.11) {
+/*import net.minecraft.core.Registry;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.resources.Identifier;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
+/*//? if (>=1.18 && <=1.21.10) {
+/^import net.minecraft.resources.ResourceLocation;
+^///?}
+//? if 1.21.11 {
+/^import net.minecraft.resources.Identifier;
+^///?}
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.Block;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.core.BlockPos;
+*///?}
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.LevelChunk;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.ticks.ScheduledTick;
-*///?}
 
-//? if (>=1.18 && <=1.21.11) {
+//? if (>=1.18 && <=1.19.2) {
+/*import net.minecraft.core.Registry;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.material.Fluid;
+//?}
+
+//? if (>=1.18 && <=1.19.2) {
+/*import net.minecraft.world.ticks.TickPriority;
+*///?}
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.ticks.LevelChunkTicks;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.chunk.LevelChunk;
+*///?}
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.ticks.ScheduledTick;
 //?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.ticks.LevelChunkTicks;
+*///?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.ticks.ScheduledTick;
+*///?}
 
 //? if (>=1.19.3 && <=1.21.11) {
 /*import net.minecraft.world.ticks.TickPriority;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.ticks.TickPriority;
-*///?}
+import net.minecraft.world.ticks.TickPriority;
+//?}
 
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -129,33 +129,28 @@ public final class ScheduledTickSnapshot {
     public long subTickOrder;
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static List<ScheduledTickSnapshot> capture(String dimension, LevelChunk chunk)
+                *///?} else if (>=26.1 && <=26.3) {
     public static List<ScheduledTickSnapshot> capture(String dimension, LevelChunk chunk)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static List<ScheduledTickSnapshot> capture(String dimension, LevelChunk chunk)
-*///?}
             {
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.19.2) {
-        captureQueue(result, dimension, BLOCK, blockScheduler(chunk), Registry.BLOCK);
+        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), Registry.BLOCK);
+        *///?} else if (>=1.19.3 && <=1.21.11) {
+        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), BuiltInRegistries.BLOCK);
+*///?} else if (>=26.1 && <=26.3) {
+        captureQueue(result, dimension, BLOCK, blockScheduler(chunk), BuiltInRegistries.BLOCK);
         //?}
-        //? if (>=1.19.3 && <=1.21.11) {
-        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), BuiltInRegistries.BLOCK);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), BuiltInRegistries.BLOCK);
-*///?}
 
         //? if (>=1.18 && <=1.19.2) {
-        captureQueue(result, dimension, FLUID, fluidScheduler(chunk), Registry.FLUID);
+        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), Registry.FLUID);
+        *///?} else if (>=1.19.3 && <=1.21.11) {
+        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), BuiltInRegistries.FLUID);
+*///?} else if (>=26.1 && <=26.3) {
+        captureQueue(result, dimension, FLUID, fluidScheduler(chunk), BuiltInRegistries.FLUID);
         //?}
-        //? if (>=1.19.3 && <=1.21.11) {
-        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), BuiltInRegistries.FLUID);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), BuiltInRegistries.FLUID);
-*///?}
 
         result.sort(STABLE_ORDER);
         return result;
@@ -166,69 +161,69 @@ public final class ScheduledTickSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.10) {
-    public ResourceLocation typeIdentifier() {
+    /*public ResourceLocation typeIdentifier() {
+        *///?} else if (>=1.21.11 && <=26.3) {
+    public Identifier typeIdentifier() {
         //?}
-        //? if (>=1.21.11 && <=26.3) {
-        /*public Identifier typeIdentifier() {
-    *///?}
         //? if (>=1.18 && <=1.21.10) {
-        return ResourceLocation.tryParse(type);
+        /*return ResourceLocation.tryParse(type);
+        *///?} else if (>=1.21.11 && <=26.3) {
+        return Identifier.tryParse(type);
         //?}
-        //? if (>=1.21.11 && <=26.3) {
-        /*return Identifier.tryParse(type);
-        *///?}
     }
 
     public TickPriority tickPriority() {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*return TickPriority.byValue(priority);
+        *///?} else if (>=26.1 && <=26.3) {
         return TickPriority.byValue(priority);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*return TickPriority.byValue(priority);
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@SuppressWarnings("unchecked")
+    static LevelChunkTicks<Block> blockScheduler(LevelChunk chunk)
+                *///?} else if (>=26.1 && <=26.3) {
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Block> blockScheduler(LevelChunk chunk)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@SuppressWarnings("unchecked")
-                    static LevelChunkTicks<Block> blockScheduler(LevelChunk chunk)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*return (LevelChunkTicks<Block>) chunk.getBlockTicks();
+        *///?} else if (>=26.1 && <=26.3) {
         return (LevelChunkTicks<Block>) chunk.getBlockTicks();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*return (LevelChunkTicks<Block>) chunk.getBlockTicks();
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@SuppressWarnings("unchecked")
+    static LevelChunkTicks<Fluid> fluidScheduler(LevelChunk chunk)
+                *///?} else if (>=26.1 && <=26.3) {
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Fluid> fluidScheduler(LevelChunk chunk)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@SuppressWarnings("unchecked")
-                    static LevelChunkTicks<Fluid> fluidScheduler(LevelChunk chunk)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*return (LevelChunkTicks<Fluid>) chunk.getFluidTicks();
+        *///?} else if (>=26.1 && <=26.3) {
         return (LevelChunkTicks<Fluid>) chunk.getFluidTicks();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*return (LevelChunkTicks<Fluid>) chunk.getFluidTicks();
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static <T> void captureQueue(
+            List<ScheduledTickSnapshot> output,
+            String dimension,
+            String kind,
+            LevelChunkTicks<T> scheduler,
+            Registry<T> registry)
+                *///?} else if (>=26.1 && <=26.3) {
     private static <T> void captureQueue(
             List<ScheduledTickSnapshot> output,
             String dimension,
@@ -236,39 +231,28 @@ public final class ScheduledTickSnapshot {
             LevelChunkTicks<T> scheduler,
             Registry<T> registry)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static <T> void captureQueue(
-                            List<ScheduledTickSnapshot> output,
-                            String dimension,
-                            String kind,
-                            LevelChunkTicks<T> scheduler,
-                            Registry<T> registry)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*scheduler
+                .getAll()
+                .forEach(ordered ->
+                *///?} else if (>=26.1 && <=26.3) {
         scheduler
                 .getAll()
                 .forEach(ordered ->
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*scheduler
-                                .getAll()
-                                .forEach(ordered ->
-*///?}
                 {
 
                     //? if (>=1.18 && <=1.21.11) {
-                    //? if (>=1.18 && <=1.21.10) {
-                    ResourceLocation identifier = registry.getKey(ordered.type());
+                    /*//? if (>=1.18 && <=1.21.10) {
+                    /^ResourceLocation identifier = registry.getKey(ordered.type());
+                    ^///?} else if 1.21.11 {
+                    /^Identifier identifier = registry.getKey(ordered.type());
+                    ^///?}
+                    *///?} else if (>=26.1 && <=26.3) {
+                    Identifier identifier = registry.getKey(ordered.type());
                     //?}
-                    //? if 1.21.11 {
-                    /*Identifier identifier = registry.getKey(ordered.type());
-                    *///?}
-                    //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*Identifier identifier = registry.getKey(ordered.type());
-*///?}
 
                     if (identifier == null) {
                         throw new IllegalStateException("Scheduled tick type is not registered");
@@ -283,11 +267,10 @@ public final class ScheduledTickSnapshot {
                     snapshot.triggerTick = ordered.triggerTick();
 
                     //? if (>=1.18 && <=1.21.11) {
+                    /*snapshot.priority = ordered.priority().getValue();
+                    *///?} else if (>=26.1 && <=26.3) {
                     snapshot.priority = ordered.priority().getValue();
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*snapshot.priority = ordered.priority().getValue();
-*///?}
 
                     snapshot.subTickOrder = ordered.subTickOrder();
                     output.add(snapshot);

@@ -98,8 +98,8 @@ class RuntimeCapsuleValidationTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         capsule.fidelity = "STRICT";
         capsule.carpetCaptureStatus = "NOT_APPLICABLE";

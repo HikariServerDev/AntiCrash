@@ -7,17 +7,15 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 
 //? if (>=1.18 && <=1.21.4) {
-class RuntimeOrderRestorerTest {
-    /** Vanilla's Ticket#isExpired. */
+/*class RuntimeOrderRestorerTest {
+    /^* Vanilla's Ticket#isExpired. ^/
     private static boolean expired(long age, long tickCreated, long expiry) {
         return expiry != 0L && age - tickCreated > expiry;
     }
 
+    *///?} else if (>=1.21.5 && <=26.3) {
+class RuntimeOrderRestorerTest {
     //?}
-
-    //? if (>=1.21.5 && <=26.3) {
-    /*class RuntimeOrderRestorerTest {
-*///?}
     @Test
     void aRestoredTicketLapsesOnTheSameTickItWouldHave() {
         long[][] cases = {
@@ -28,57 +26,53 @@ class RuntimeOrderRestorerTest {
             // Live server: created at age 1000 and captured when `remaining` ticks were left.
 
             //? if (>=1.18 && <=1.21.4) {
-            long liveCreated = 1000, captureAge = liveCreated + (expiry - remaining);
-            //?}
+            /*long liveCreated = 1000, captureAge = liveCreated + (expiry - remaining);
+            *///?}
 
             // New JVM: the ticket manager's age restarted at some unrelated value.
 
             //? if (>=1.18 && <=1.21.4) {
-            long newAge = 37;
-            //?}
+            /*long newAge = 37;
+            *///?}
 
             //? if (>=1.18 && <=1.21.4) {
-            long restoredCreated = RuntimeOrderRestorer.tickCreatedFor(newAge, expiry, remaining);
+            /*long restoredCreated = RuntimeOrderRestorer.tickCreatedFor(newAge, expiry, remaining);
+            *///?} else if (>=1.21.5 && <=1.21.11) {
+            /*var type =
+                                expiry == 300
+                                        ? net.minecraft.server.level.TicketType.PORTAL
+                                        : net.minecraft.server.level.TicketType.UNKNOWN;
+*///?} else if (>=26.1 && <=26.3) {
+            var type =
+                    expiry == 300
+                            ? net.minecraft.server.level.TicketType.PORTAL
+                            : net.minecraft.server.level.TicketType.UNKNOWN;
             //?}
-            //? if (>=1.21.5 && <=1.21.11) {
-            /*var type =
-                                expiry == 300
-                                        ? net.minecraft.server.level.TicketType.PORTAL
-                                        : net.minecraft.server.level.TicketType.UNKNOWN;
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*var type =
-                                expiry == 300
-                                        ? net.minecraft.server.level.TicketType.PORTAL
-                                        : net.minecraft.server.level.TicketType.UNKNOWN;
-*///?}
 
             //? if (>=1.21.5 && <=1.21.11) {
             /*var nbt = new net.minecraft.nbt.CompoundTag();
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*var nbt = new net.minecraft.nbt.CompoundTag();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            var nbt = new net.minecraft.nbt.CompoundTag();
+            //?}
 
             //? if (>=1.21.5 && <=1.21.11) {
             /*nbt.putString(
                                 "type", net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE.getKey(type).toString());
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*nbt.putString(
-                                "type",
-                                net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE
-                                        .getKey(type)
-                                        .toString());
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            nbt.putString(
+                    "type",
+                    net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE
+                            .getKey(type)
+                            .toString());
+            //?}
 
             //? if (>=1.21.5 && <=26.3) {
-            /*nbt.putInt("level", 31);
-*///?}
+            nbt.putInt("level", 31);
+            //?}
 
             //? if (>=1.21.5 && <=26.3) {
-            /*nbt.putLong("ticks_left", remaining);
-*///?}
+            nbt.putLong("ticks_left", remaining);
+            //?}
 
             //? if (>=1.21.5 && <=1.21.11) {
             /*var restored =
@@ -86,52 +80,48 @@ class RuntimeOrderRestorerTest {
                                         .codec()
                                         .parse(net.minecraft.nbt.NbtOps.INSTANCE, nbt)
                                         .getOrThrow();
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*var restored =
-                                net.minecraft.server.level.Ticket.CODEC
-                                        .codec()
-                                        .parse(net.minecraft.nbt.NbtOps.INSTANCE, nbt)
-                                        .getOrThrow();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            var restored =
+                    net.minecraft.server.level.Ticket.CODEC
+                            .codec()
+                            .parse(net.minecraft.nbt.NbtOps.INSTANCE, nbt)
+                            .getOrThrow();
+            //?}
 
             for (int ticks = 0; ticks <= expiry + 2; ticks++) {
 
                 //? if (>=1.18 && <=1.21.4) {
-                assertEquals(
+                /*assertEquals(
                         expired(captureAge + ticks, liveCreated, expiry),
                         expired(newAge + ticks, restoredCreated, expiry),
                         "expiry " + expiry + " remaining " + remaining + " after " + ticks);
+                *///?} else if (>=1.21.5 && <=1.21.11) {
+                /*assertEquals(
+                                        remaining - ticks < 0,
+                                        restored.isTimedOut(),
+                                        "expiry " + expiry + " remaining " + remaining + " after " + ticks);
+*///?} else if (>=26.1 && <=26.3) {
+                assertEquals(
+                        remaining - ticks < 0,
+                        restored.isTimedOut(),
+                        "expiry " + expiry + " remaining " + remaining + " after " + ticks);
                 //?}
-                //? if (>=1.21.5 && <=1.21.11) {
-                /*assertEquals(
-                                        remaining - ticks < 0,
-                                        restored.isTimedOut(),
-                                        "expiry " + expiry + " remaining " + remaining + " after " + ticks);
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*assertEquals(
-                                        remaining - ticks < 0,
-                                        restored.isTimedOut(),
-                                        "expiry " + expiry + " remaining " + remaining + " after " + ticks);
-*///?}
 
                 //? if (>=1.21.5 && <=1.21.11) {
                 /*restored.decreaseTicksLeft();
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*restored.decreaseTicksLeft();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+                restored.decreaseTicksLeft();
+                //?}
 
             }
 
             //? if (>=1.18 && <=1.21.4) {
-            assertFalse(expired(newAge + remaining, restoredCreated, expiry));
-            //?}
+            /*assertFalse(expired(newAge + remaining, restoredCreated, expiry));
+            *///?}
 
             //? if (>=1.18 && <=1.21.4) {
-            assertTrue(expired(newAge + remaining + 1, restoredCreated, expiry));
-            //?}
+            /*assertTrue(expired(newAge + remaining + 1, restoredCreated, expiry));
+            *///?}
 
         }
     }
@@ -195,18 +185,16 @@ class RuntimeOrderRestorerTest {
         unknown.remainingTicks = 1L;
 
         //? if (>=1.18 && <=1.21.3) {
-        TicketLedgerSnapshot.Entry teleport = ticket("post_teleport", 0, 9, 32, 5);
+        /*TicketLedgerSnapshot.Entry teleport = ticket("post_teleport", 0, 9, 32, 5);
+        *///?} else if (>=1.21.4 && <=26.3) {
+        TicketLedgerSnapshot.Entry teleport = ticket("ender_pearl", 0, 9, 32, 40);
         //?}
-        //? if (>=1.21.4 && <=26.3) {
-        /*TicketLedgerSnapshot.Entry teleport = ticket("ender_pearl", 0, 9, 32, 40);
-*///?}
 
         //? if (>=1.18 && <=1.21.3) {
-        teleport.argument = "4274109";
+        /*teleport.argument = "4274109";
+        *///?} else if (>=1.21.4 && <=26.3) {
+        teleport.argument = "[0, 9]";
         //?}
-        //? if (>=1.21.4 && <=26.3) {
-        /*teleport.argument = "[0, 9]";
-*///?}
 
         teleport.remainingTicks = 3L;
         TicketLedgerSnapshot.Entry player = ticket("player", 0, 8, 31, 0);
@@ -219,12 +207,10 @@ class RuntimeOrderRestorerTest {
         // The network entity id of a post-teleport ticket changes with every restart.
 
         //? if (>=1.18 && <=1.21.3) {
-        assertTrue(keys.contains("minecraft:overworld|0,9|post_teleport|32|-"));
+        /*assertTrue(keys.contains("minecraft:overworld|0,9|post_teleport|32|-"));
+        *///?} else if (>=1.21.4 && <=26.3) {
+        assertTrue(keys.contains("minecraft:overworld|0,9|ender_pearl|32|[0, 9]"));
         //?}
-
-        //? if (>=1.21.4 && <=26.3) {
-        /*assertTrue(keys.contains("minecraft:overworld|0,9|ender_pearl|32|[0, 9]"));
-*///?}
 
     }
 }

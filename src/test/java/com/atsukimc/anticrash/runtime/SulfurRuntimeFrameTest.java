@@ -1,5 +1,5 @@
 //? if (>=26.2 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -36,4 +36,4 @@ class SulfurRuntimeFrameTest {
                 new SulfurRuntimeFrame(2, 41).canonical());
     }
 }
-*///?}
+//?}

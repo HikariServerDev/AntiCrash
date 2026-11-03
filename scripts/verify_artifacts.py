@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate release JARs; optionally compare executable classes with a previous release."""
 import argparse
+from collections import Counter
 import hashlib
 import json
 import os
@@ -53,6 +54,33 @@ def compare_build_manifest(expected, actual, minecraft):
         raise AssertionError('Runtime manifest attributes changed')
 
 
+def compare_refmap(expected, actual):
+    """Compare runtime targets while allowing Yarn/Mojang source-name changes."""
+    before = json.loads(expected)
+    after = json.loads(actual)
+    if set(before) != set(after):
+        raise AssertionError('Mixin refmap sections changed')
+
+    def compare_tables(old_table, new_table, label):
+        if set(old_table) != set(new_table):
+            raise AssertionError(f'Mixin refmap owners changed: {label}')
+        for owner in old_table:
+            old_entries = old_table[owner]
+            new_entries = new_table[owner]
+            if not isinstance(old_entries, dict) or not isinstance(new_entries, dict):
+                raise AssertionError(f'Invalid Mixin refmap owner: {label}/{owner}')
+            if Counter(old_entries.values()) != Counter(new_entries.values()):
+                raise AssertionError(f'Mixin runtime targets changed: {label}/{owner}')
+
+    compare_tables(before.get('mappings', {}), after.get('mappings', {}), 'mappings')
+    old_data = before.get('data', {})
+    new_data = after.get('data', {})
+    if set(old_data) != set(new_data):
+        raise AssertionError('Mixin refmap namespaces changed')
+    for namespace in old_data:
+        compare_tables(old_data[namespace], new_data[namespace], namespace)
+
+
 def asm_classpath():
     cache = Path(os.environ.get("GRADLE_USER_HOME", str(Path.home() / ".gradle")))
     base = cache / "caches/modules-2/files-2.1/org.ow2.asm"
@@ -100,7 +128,10 @@ def verify(root, minecraft, mod, collect=False, baseline=None, refactor_baseline
                         if entry.endswith('.json'):
                             if entry == 'fabric.mod.json':
                                 expected = expected.replace(('"' + baseline + '"').encode(), ('"' + mod + '"').encode())
-                            assert json.loads(expected) == json.loads(actual), (source, entry)
+                            if entry == 'AntiCrash-refmap.json':
+                                compare_refmap(expected, actual)
+                            else:
+                                assert json.loads(expected) == json.loads(actual), (source, entry)
                         elif entry.endswith('.properties'):
                             expected = expected.replace(('command.status=AntiCrash ' + baseline).encode(), ('command.status=AntiCrash ' + mod).encode())
                             assert expected == actual, (source, entry)

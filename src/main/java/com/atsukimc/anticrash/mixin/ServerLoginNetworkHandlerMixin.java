@@ -4,11 +4,11 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerLoginPacketListenerImpl;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
+//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -32,14 +32,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * hold ends, or whenever AntiCrash is not refusing at all, Vanilla decides exactly as before.
  */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerLoginPacketListenerImpl.class)
+/*@Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginNetworkHandlerMixin {
 
+    *///?} else if (>=26.1 && <=26.3) {
+@Mixin(ServerLoginPacketListenerImpl.class)
+public abstract class ServerLoginNetworkHandlerMixin {
     //?}
-    //? if (>=26.1 && <=26.3) {
-    /*@Mixin(ServerLoginPacketListenerImpl.class)
-    public abstract class ServerLoginNetworkHandlerMixin {
-*///?}
     @Unique private long anticrash$holdDeadlineNanos;
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)

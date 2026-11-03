@@ -8,91 +8,86 @@ import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.mojang.brigadier.CommandDispatcher;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.commands.Commands;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.commands.CommandSourceStack;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.commands.CommandSourceStack;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.commands.Commands;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.commands.CommandSourceStack;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.commands.CommandSourceStack;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.commands.Commands;
+//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//? if (>=1.18 && <=1.20.2) {
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-//?}
+//? if (>=1.18 && <=1.20.2) {
+/*import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+*///?}
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(Commands.class)
+/*@Mixin(Commands.class)
 public abstract class CommandManagerMixin {
 
+    *///?} else if (>=26.1 && <=26.3) {
+@Mixin(Commands.class)
+public abstract class CommandManagerMixin {
     //?}
-    //? if (>=26.1 && <=26.3) {
-    /*@Mixin(Commands.class)
-    public abstract class CommandManagerMixin {
-*///?}
     @Inject(method = "<init>", at = @At("RETURN"))
     private void anticrash$register(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*CommandDispatcher<CommandSourceStack> dispatcher =
+                    ((Commands) (Object) this).getDispatcher();
+            *///?} else if (>=26.1 && <=26.3) {
             CommandDispatcher<CommandSourceStack> dispatcher =
                     ((Commands) (Object) this).getDispatcher();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*CommandDispatcher<CommandSourceStack> dispatcher =
-                                ((Commands) (Object) this).getDispatcher();
-*///?}
 
             AntiCrashCommand.register(dispatcher, controller);
         }
     }
 
     //? if (>=1.18 && <=1.19) {
-    @Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
+    /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
     private void anticrash$blockCommandsDuringCheckpoint(
             CommandSourceStack source,
             String command,
             CallbackInfoReturnable<Integer> callbackInfo)
-                //?}
-                //? if (>=1.19.1 && <=1.20.2) {
-                /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
+                *///?} else if (>=1.19.1 && <=1.20.2) {
+    /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
                     private void anticrash$blockCommandsDuringCheckpoint(
                             com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
                             String command,
                             CallbackInfoReturnable<Integer> callbackInfo)
-*///?}
-                //? if (>=1.20.3 && <=1.21.11) {
-                /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
+*///?} else if (>=1.20.3 && <=1.21.11) {
+    /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
                     private void anticrash$blockCommandsDuringCheckpoint(
                             com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
                             String command,
                             CallbackInfo callbackInfo)
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
-                    private void anticrash$blockCommandsDuringCheckpoint(
-                            com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
-                            String command,
-                            CallbackInfo callbackInfo)
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+    @Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
+    private void anticrash$blockCommandsDuringCheckpoint(
+            com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
+            String command,
+            CallbackInfo callbackInfo)
+                //?}
             {
 
         //? if (>=1.19.1 && <=1.21.11) {
         /*CommandSourceStack source = parse.getContext().getSource();
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*CommandSourceStack source = parse.getContext().getSource();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        CommandSourceStack source = parse.getContext().getSource();
+        //?}
 
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null) return;
@@ -106,26 +101,24 @@ public abstract class CommandManagerMixin {
             if (!RecoveryCommandPolicy.allowedDuringCheckpoint(normalized)) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*source.sendFailure(
+                        controller.chat(
+                                MessageCatalog.text(
+                                        controller.config().language, "checkpoint.command_blocked"),
+                                null));
+                *///?} else if (>=26.1 && <=26.3) {
                 source.sendFailure(
                         controller.chat(
                                 MessageCatalog.text(
                                         controller.config().language, "checkpoint.command_blocked"),
                                 null));
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*source.sendFailure(
-                                        controller.chat(
-                                                MessageCatalog.text(
-                                                        controller.config().language, "checkpoint.command_blocked"),
-                                                null));
-*///?}
 
                 //? if (>=1.18 && <=1.20.2) {
-                callbackInfo.setReturnValue(0);
+                /*callbackInfo.setReturnValue(0);
+                *///?} else if (>=1.20.3 && <=26.3) {
+                callbackInfo.cancel();
                 //?}
-                //? if (>=1.20.3 && <=26.3) {
-                /*callbackInfo.cancel();
-*///?}
 
             }
             return;
@@ -138,6 +131,13 @@ public abstract class CommandManagerMixin {
                 normalized, controller.config().recovery.lock.allowCommands)) {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*source.sendFailure(
+                    controller.chat(
+                            MessageCatalog.text(
+                                    controller.config().language,
+                                    "recovery.command_mutation_blocked"),
+                            null));
+            *///?} else if (>=26.1 && <=26.3) {
             source.sendFailure(
                     controller.chat(
                             MessageCatalog.text(
@@ -145,21 +145,12 @@ public abstract class CommandManagerMixin {
                                     "recovery.command_mutation_blocked"),
                             null));
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*source.sendFailure(
-                                controller.chat(
-                                        MessageCatalog.text(
-                                                controller.config().language,
-                                                "recovery.command_mutation_blocked"),
-                                        null));
-*///?}
 
             //? if (>=1.18 && <=1.20.2) {
-            callbackInfo.setReturnValue(0);
+            /*callbackInfo.setReturnValue(0);
+            *///?} else if (>=1.20.3 && <=26.3) {
+            callbackInfo.cancel();
             //?}
-            //? if (>=1.20.3 && <=26.3) {
-            /*callbackInfo.cancel();
-*///?}
 
         }
     }

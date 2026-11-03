@@ -7,11 +7,11 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.CompoundTag;
+//?}
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -28,47 +28,42 @@ class RuntimeExtensionNbtTest {
     void extensionIsOneVersionedCompoundBesideVanillaKeys() {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag nbt = new CompoundTag();
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag nbt = new CompoundTag();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag nbt = new CompoundTag();
-*///?}
 
         nbt.putFloat("progress", 0.5f);
         RuntimeExtensionNbt.write(nbt, extension -> extension.putFloat("Progress", 1.0f));
 
         //? if (>=1.18 && <=1.21.4) {
-        assertEquals(0.5f, nbt.getFloat("progress"));
+        /*assertEquals(0.5f, nbt.getFloat("progress"));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertEquals(0.5f, nbt.getFloat("progress").orElseThrow());
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*assertEquals(0.5f, nbt.getFloat("progress").orElseThrow());
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-*///?}
 
         assertNotNull(extension);
 
         //? if (>=1.18 && <=1.21.4) {
-        assertEquals(1.0f, extension.getFloat("Progress"));
+        /*assertEquals(1.0f, extension.getFloat("Progress"));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertEquals(1.0f, extension.getFloat("Progress").orElseThrow());
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*assertEquals(1.0f, extension.getFloat("Progress").orElseThrow());
-*///?}
 
         //? if (>=1.18 && <=1.21.4) {
-        assertEquals(
-                RuntimeExtensionNbt.VERSION, nbt.getCompound(RuntimeExtensionNbt.KEY).getInt("v"));
-        //?}
-        //? if (>=1.21.5 && <=26.3) {
         /*assertEquals(
-                        RuntimeExtensionNbt.VERSION,
-                        nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
-*///?}
+                RuntimeExtensionNbt.VERSION, nbt.getCompound(RuntimeExtensionNbt.KEY).getInt("v"));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertEquals(
+                RuntimeExtensionNbt.VERSION,
+                nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
+        //?}
 
     }
 
@@ -76,11 +71,10 @@ class RuntimeExtensionNbtTest {
     void nothingIsAddedWhenThereIsNothingToSave() {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag nbt = new CompoundTag();
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag nbt = new CompoundTag();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag nbt = new CompoundTag();
-*///?}
 
         RuntimeExtensionNbt.write(nbt, extension -> {});
         assertFalse(nbt.contains(RuntimeExtensionNbt.KEY));
@@ -95,18 +89,16 @@ class RuntimeExtensionNbtTest {
     void aNewerFormatIsIgnoredInsteadOfGuessed() {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag nbt = new CompoundTag();
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag nbt = new CompoundTag();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag nbt = new CompoundTag();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag future = new CompoundTag();
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag future = new CompoundTag();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag future = new CompoundTag();
-*///?}
 
         future.putInt("v", RuntimeExtensionNbt.VERSION + 1);
         future.putFloat("Progress", 1.0f);
@@ -172,36 +164,38 @@ class RuntimeExtensionNbtTest {
     /** Every mixin that adds to a Vanilla saveAdditional must be gated by one of the two save scopes. */
 
     //? if (>=1.18 && <=1.21.5) {
-    @Test
+    /*@Test
     void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception
+                *///?}
+
+    /** Every mixin that adds to a Vanilla writeData must be gated by one of the two save scopes. */
+
+    //? if (>=1.21.6 && <=26.3) {
+    @Test
+    void everyWriteDataInjectionIsGatedByASaveScope() throws Exception
                 //?}
-
-                /** Every mixin that adds to a Vanilla writeData must be gated by one of the two save scopes. */
-
-                //? if (>=1.21.6 && <=26.3) {
-                /*@Test
-                    void everyWriteDataInjectionIsGatedByASaveScope() throws Exception
-*///?}
             {
 
         // Parse executable source, not the first 200 characters after a textual
         // annotation: inactive Stonecutter branches contain annotation-shaped comments.
         //? if <=1.21.5 {
-        int injections =
+        /*int injections =
                 com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
                         java.util.Set.of("saveAdditional", "saveWithoutId"));
-        //?} else if <=1.21.11 {
+        *///?} else if <=1.21.11 {
         /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
                 java.util.Set.of("saveAdditional", "saveWithoutId"));
 *///?} else {
-        /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                java.util.Set.of("saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
-*///?}
+        int injections =
+                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
+                        java.util.Set.of(
+                                "saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
+        //?}
         //? if <=1.18.2 {
-        assertTrue(injections >= 5, "save injections found: " + injections);
-        //?} else {
-        /*assertTrue(injections >= 4, "save injections found: " + injections);
-*///?}
+        /*assertTrue(injections >= 5, "save injections found: " + injections);
+        *///?} else {
+        assertTrue(injections >= 4, "save injections found: " + injections);
+        //?}
 
     }
 }

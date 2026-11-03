@@ -10,19 +10,18 @@ class ProfileCacheBytecodeContractTest {
     void injectionMatchesTheExactTargetVersion() throws Exception {
 
         //? if (>=1.18 && <=1.21.8) {
-        try (var input =
+        /*try (var input =
                 getClass()
                         .getClassLoader()
                         .getResourceAsStream(
                                 "net/minecraft/server/players/GameProfileCache.class"))
+        *///?} else if (>=1.21.9 && <=26.3) {
+        try (var input =
+                getClass()
+                        .getClassLoader()
+                        .getResourceAsStream(
+                                "net/minecraft/server/players/CachedUserNameToIdResolver.class"))
         //?}
-        //? if (>=1.21.9 && <=26.3) {
-        /*try (var input =
-                        getClass()
-                                .getClassLoader()
-                                .getResourceAsStream(
-                                        "net/minecraft/server/players/CachedUserNameToIdResolver.class"))
-*///?}
         {
             assertNotNull(input, "The exact mapped game class must be present");
             boolean[] found = {false};
@@ -38,16 +37,15 @@ class ProfileCacheBytecodeContractTest {
                                         String[] exceptions) {
 
                                     //? if (>=1.18 && <=1.21.11) {
-                                    if (name.equals("get")
+                                    /*if (name.equals("get")
                                             && descriptor.equals(
                                                     "(Ljava/lang/String;)Ljava/util/Optional;"))
 
+                                        *///?} else if (>=26.1 && <=26.3) {
+                                    if (name.equals("get")
+                                            && descriptor.equals(
+                                                    "(Ljava/lang/String;)Ljava/util/Optional;"))
                                         //?}
-                                        //? if (>=26.1 && <=26.3) {
-                                        /*if (name.equals("get")
-                                                                                    && descriptor.equals(
-                                                                                            "(Ljava/lang/String;)Ljava/util/Optional;"))
-*///?}
                                         found[0] = true;
                                     return null;
                                 }

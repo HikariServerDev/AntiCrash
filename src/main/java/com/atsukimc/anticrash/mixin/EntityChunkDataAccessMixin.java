@@ -5,39 +5,39 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.CompoundTag;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.ChunkPos;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.ChunkPos;
+//?}
 
 //? if (>=1.20.5 && <=1.21.10) {
 /*import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.chunk.storage.EntityStorage;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
 import net.minecraft.world.level.chunk.storage.EntityStorage;
 //?}
 
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.chunk.storage.EntityStorage;
+*///?}
+
 //? if (>=1.18 && <=1.20.4) {
-import net.minecraft.world.level.chunk.storage.IOWorker;
-//?}
+/*import net.minecraft.world.level.chunk.storage.IOWorker;
+*///?}
 //? if 1.21.11 {
 /*import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
-*///?}
+import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
+//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
@@ -47,14 +47,13 @@ import java.util.concurrent.CompletableFuture;
 
 /** Skips rewriting an unchanged entity chunk; see {@link EntityChunkWriteDeduplicator}. */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(EntityStorage.class)
+/*@Mixin(EntityStorage.class)
 public abstract class EntityChunkDataAccessMixin {
 
+    *///?} else if (>=26.1 && <=26.3) {
+@Mixin(EntityStorage.class)
+public abstract class EntityChunkDataAccessMixin {
     //?}
-    //? if (>=26.1 && <=26.3) {
-    /*@Mixin(EntityStorage.class)
-    public abstract class EntityChunkDataAccessMixin {
-*///?}
     @Unique
     private final EntityChunkWriteDeduplicator anticrash$deduplicator =
             new EntityChunkWriteDeduplicator();
@@ -65,15 +64,14 @@ public abstract class EntityChunkDataAccessMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*@com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "storeEntities")
+    private void anticrash$scopeEntitySave(
+            net.minecraft.world.level.entity.ChunkEntities<?> dataList, Operation<Void> original)
+                *///?} else if (>=26.1 && <=26.3) {
     @com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "storeEntities")
     private void anticrash$scopeEntitySave(
             net.minecraft.world.level.entity.ChunkEntities<?> dataList, Operation<Void> original)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*@com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "storeEntities")
-                    private void anticrash$scopeEntitySave(
-                            net.minecraft.world.level.entity.ChunkEntities<?> dataList, Operation<Void> original)
-*///?}
             {
         com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
         try {
@@ -84,7 +82,7 @@ public abstract class EntityChunkDataAccessMixin {
     }
 
     //? if (>=1.18 && <=1.20.4) {
-    @WrapOperation(
+    /*@WrapOperation(
             method = "storeEntities",
             at =
                     @At(
@@ -96,57 +94,53 @@ public abstract class EntityChunkDataAccessMixin {
             ChunkPos pos,
             CompoundTag nbt,
             Operation<CompletableFuture<Void>> original)
+                *///?} else if (>=1.20.5 && <=1.21.10) {
+    /*@WrapOperation(
+                            method = "storeEntities",
+                            at =
+                                    @At(
+                                            value = "INVOKE",
+                                            target =
+                                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
+                    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
+                            SimpleRegionStorage worker,
+                            ChunkPos pos,
+                            CompoundTag nbt,
+                            Operation<CompletableFuture<Void>> original)
+*///?} else if 1.21.11 {
+    /*@WrapOperation(
+                            method = "storeEntities",
+                            at =
+                                    @At(
+                                            value = "INVOKE",
+                                            target =
+                                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
+                    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
+                            SimpleRegionStorage worker,
+                            ChunkPos pos,
+                            CompoundTag nbt,
+                            Operation<CompletableFuture<Void>> original)
+*///?} else if (>=26.1 && <=26.3) {
+    @WrapOperation(
+            method = "storeEntities",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
+    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
+            SimpleRegionStorage worker,
+            ChunkPos pos,
+            CompoundTag nbt,
+            Operation<CompletableFuture<Void>> original)
                 //?}
-                //? if (>=1.20.5 && <=1.21.10) {
-                /*@WrapOperation(
-                            method = "storeEntities",
-                            at =
-                                    @At(
-                                            value = "INVOKE",
-                                            target =
-                                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
-                    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
-                            SimpleRegionStorage worker,
-                            ChunkPos pos,
-                            CompoundTag nbt,
-                            Operation<CompletableFuture<Void>> original)
-*///?}
-                //? if 1.21.11 {
-                /*@WrapOperation(
-                            method = "storeEntities",
-                            at =
-                                    @At(
-                                            value = "INVOKE",
-                                            target =
-                                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
-                    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
-                            SimpleRegionStorage worker,
-                            ChunkPos pos,
-                            CompoundTag nbt,
-                            Operation<CompletableFuture<Void>> original)
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*@WrapOperation(
-                            method = "storeEntities",
-                            at =
-                                    @At(
-                                            value = "INVOKE",
-                                            target =
-                                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Lnet/minecraft/nbt/CompoundTag;)Ljava/util/concurrent/CompletableFuture;"))
-                    private CompletableFuture<Void> anticrash$skipUnchangedEntityChunk(
-                            SimpleRegionStorage worker,
-                            ChunkPos pos,
-                            CompoundTag nbt,
-                            Operation<CompletableFuture<Void>> original)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        long chunk = pos.toLong();
+        /*long chunk = pos.toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long chunk = pos.pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long chunk = pos.pack();
-*///?}
 
         if (nbt == null) {
             anticrash$deduplicator.forget(chunk);
@@ -178,34 +172,32 @@ public abstract class EntityChunkDataAccessMixin {
                 ChunkPos pos,
                 java.util.function.Supplier<CompoundTag> value,
                 Operation<CompletableFuture<Void>> original)
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*@WrapOperation(
-                method = "storeEntities",
-                at =
-                        @At(
-                                value = "INVOKE",
-                                target =
-                                        "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Ljava/util/function/Supplier;)Ljava/util/concurrent/CompletableFuture;"))
-        private CompletableFuture<Void> anticrash$forgetDeletedEntityChunk(
-                SimpleRegionStorage storage,
-                ChunkPos pos,
-                java.util.function.Supplier<CompoundTag> value,
-                Operation<CompletableFuture<Void>> original)
-*///?}
-    //? if (>=1.21.11 && <=26.3) {
-    /*{
-*///?}
-    //? if 1.21.11 {
-    /*anticrash$deduplicator.forget(pos.toLong());
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*anticrash$deduplicator.forget(pos.pack());
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+    @WrapOperation(
+            method = "storeEntities",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Lnet/minecraft/world/level/chunk/storage/SimpleRegionStorage;write(Lnet/minecraft/world/level/ChunkPos;Ljava/util/function/Supplier;)Ljava/util/concurrent/CompletableFuture;"))
+    private CompletableFuture<Void> anticrash$forgetDeletedEntityChunk(
+            SimpleRegionStorage storage,
+            ChunkPos pos,
+            java.util.function.Supplier<CompoundTag> value,
+            Operation<CompletableFuture<Void>> original)
+                //?}
+                //? if (>=1.21.11 && <=26.3) {
+            {
+        //?}
+        //? if 1.21.11 {
+        /*anticrash$deduplicator.forget(pos.toLong());
+*///?} else if (>=26.1 && <=26.3) {
+        anticrash$deduplicator.forget(pos.pack());
+        //?}
 
-    //? if (>=1.21.11 && <=26.3) {
-    /*return original.call(storage, pos, value);
-        }
-*///?}
+        //? if (>=1.21.11 && <=26.3) {
+        return original.call(storage, pos, value);
+    }
+    //?}
 
 }

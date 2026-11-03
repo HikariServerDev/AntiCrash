@@ -1,5 +1,5 @@
 //? if (>=26.1 && <=26.3) {
-/*package com.atsukimc.anticrash.mixin;
+package com.atsukimc.anticrash.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -9,4 +9,4 @@ public interface EntityFluidAccessor {
     @Accessor("fluidInteraction")
     net.minecraft.world.entity.EntityFluidInteraction anticrash$fluids();
 }
-*///?}
+//?}

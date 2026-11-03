@@ -1,5 +1,5 @@
 //? if (>=26.1 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.clock.ClockState;
@@ -8,10 +8,10 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 
-/^*
+/**
  * 26.1 semantic clock cut; restoration is owned by the sealed Vanilla SavedData files. Public
  * setTotalTicks/setRate cannot restore fractional phase, so never approximate it.
- ^/
+ */
 public record ClockSnapshot(
         String id, long totalTicks, float partialTick, float rate, boolean paused) {
     public ClockSnapshot {
@@ -63,4 +63,4 @@ public record ClockSnapshot(
                 + paused;
     }
 }
-*///?}
+//?}

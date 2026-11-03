@@ -1,11 +1,11 @@
 package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.CompoundTag;
+//?}
 
 import java.util.function.Consumer;
 
@@ -40,11 +40,10 @@ public final class RuntimeExtensionNbt {
         //? if (>=1.21.6 && <=1.21.11) {
         /*final java.util.IdentityHashMap<net.minecraft.world.level.storage.ValueOutput, CompoundTag>
                         viewExtensions = new java.util.IdentityHashMap<>();
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*final java.util.IdentityHashMap<net.minecraft.world.level.storage.ValueOutput, CompoundTag>
-                        viewExtensions = new java.util.IdentityHashMap<>();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        final java.util.IdentityHashMap<net.minecraft.world.level.storage.ValueOutput, CompoundTag>
+                viewExtensions = new java.util.IdentityHashMap<>();
+        //?}
 
     }
 
@@ -55,19 +54,18 @@ public final class RuntimeExtensionNbt {
     public static void entitySave(boolean active) {
 
         //? if (>=1.18 && <=1.21.5) {
-        SCOPE.get().entitySave = active;
+        /*SCOPE.get().entitySave = active;
+        *///?} else if (>=1.21.6 && <=26.3) {
+        Scope scope = SCOPE.get();
         //?}
-        //? if (>=1.21.6 && <=26.3) {
-        /*Scope scope = SCOPE.get();
-*///?}
 
         //? if (>=1.21.6 && <=26.3) {
-        /*scope.entitySave = active;
-*///?}
+        scope.entitySave = active;
+        //?}
 
         //? if (>=1.21.6 && <=26.3) {
-        /*if (!active && !scope.loadedChunkSave) scope.viewExtensions.clear();
-*///?}
+        if (!active && !scope.loadedChunkSave) scope.viewExtensions.clear();
+        //?}
 
     }
 
@@ -81,8 +79,8 @@ public final class RuntimeExtensionNbt {
         if (active) scope.extensionWritten = false;
 
         //? if (>=1.21.6 && <=26.3) {
-        /*if (!active && !scope.entitySave) scope.viewExtensions.clear();
-*///?}
+        if (!active && !scope.entitySave) scope.viewExtensions.clear();
+        //?}
 
     }
 
@@ -105,28 +103,25 @@ public final class RuntimeExtensionNbt {
     /** Adds the extension to {@code nbt} when {@code writer} stored anything in it. */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static void write(CompoundTag nbt, Consumer<CompoundTag> writer)
+                *///?} else if (>=26.1 && <=26.3) {
     public static void write(CompoundTag nbt, Consumer<CompoundTag> writer)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static void write(CompoundTag nbt, Consumer<CompoundTag> writer)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.4) {
-        CompoundTag extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new CompoundTag();
+        /*CompoundTag extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new CompoundTag();
+        *///?} else if (>=1.21.5 && <=1.21.11) {
+        /*CompoundTag extension =
+                        com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
+                                ? nbt.getCompoundOrEmpty(KEY)
+                                : new CompoundTag();
+*///?} else if (>=26.1 && <=26.3) {
+        CompoundTag extension =
+                com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
+                        ? nbt.getCompoundOrEmpty(KEY)
+                        : new CompoundTag();
         //?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*CompoundTag extension =
-                        com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
-                                ? nbt.getCompoundOrEmpty(KEY)
-                                : new CompoundTag();
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag extension =
-                        com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
-                                ? nbt.getCompoundOrEmpty(KEY)
-                                : new CompoundTag();
-*///?}
 
         writer.accept(extension);
         extension.remove(VERSION_KEY);
@@ -143,37 +138,32 @@ public final class RuntimeExtensionNbt {
     /** The extension, or null when absent or written by a newer format this build cannot read. */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static CompoundTag read(CompoundTag nbt)
+                *///?} else if (>=26.1 && <=26.3) {
     public static CompoundTag read(CompoundTag nbt)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static CompoundTag read(CompoundTag nbt)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.4) {
-        if (nbt == null || !nbt.contains(KEY, 10))
+        /*if (nbt == null || !nbt.contains(KEY, 10))
+            *///?} else if (>=1.21.5 && <=26.3) {
+        if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
             //?}
-            //? if (>=1.21.5 && <=26.3) {
-            /*if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
-*///?}
             return null;
 
         //? if (>=1.18 && <=1.21.4) {
-        CompoundTag extension = nbt.getCompound(KEY);
+        /*CompoundTag extension = nbt.getCompound(KEY);
+        *///?} else if (>=1.21.5 && <=1.21.11) {
+        /*CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
+*///?} else if (>=26.1 && <=26.3) {
+        CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
         //?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
-*///?}
 
         //? if (>=1.18 && <=1.21.4) {
-        int version = extension.getInt(VERSION_KEY);
+        /*int version = extension.getInt(VERSION_KEY);
+        *///?} else if (>=1.21.5 && <=26.3) {
+        int version = extension.getInt(VERSION_KEY).orElse(0);
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*int version = extension.getInt(VERSION_KEY).orElse(0);
-*///?}
 
         return version >= 1 && version <= VERSION ? extension : null;
     }
@@ -182,96 +172,90 @@ public final class RuntimeExtensionNbt {
 
     //? if (>=1.21.6 && <=1.21.11) {
     /*public static void write(net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer)
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*public static void write(
-                net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer)
-*///?}
-    //? if (>=1.21.6 && <=26.3) {
-    /*{
-            Scope scope = SCOPE.get();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+    public static void write(
+            net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer)
+                //?}
+                //? if (>=1.21.6 && <=26.3) {
+            {
+        Scope scope = SCOPE.get();
+        //?}
 
-    // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
-    // and subclass extension contributions in one bounded save scope, then discard references.
+        // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
+        // and subclass extension contributions in one bounded save scope, then discard references.
 
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*CompoundTag encoded =
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*CompoundTag encoded =
                     scope.entitySave || scope.loadedChunkSave
                             ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
                             : new CompoundTag();
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*CompoundTag encoded =
-                    scope.entitySave || scope.loadedChunkSave
-                            ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
-                            : new CompoundTag();
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        CompoundTag encoded =
+                scope.entitySave || scope.loadedChunkSave
+                        ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
+                        : new CompoundTag();
+        //?}
 
-    //? if (>=1.21.6 && <=26.3) {
-    /*write(encoded, writer);
-*///?}
+        //? if (>=1.21.6 && <=26.3) {
+        write(encoded, writer);
+        //?}
 
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*CompoundTag extension = encoded.getCompound(KEY).orElse(null);
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*CompoundTag extension = encoded.getCompound(KEY).orElse(null);
-*///?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*CompoundTag extension = encoded.getCompound(KEY).orElse(null);
+*///?} else if (>=26.1 && <=26.3) {
+        CompoundTag extension = encoded.getCompound(KEY).orElse(null);
+        //?}
 
-    //? if (>=1.21.6 && <=26.3) {
-    /*if (extension == null) {
-*///?}
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*view.discard(KEY);
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*view.discard(KEY);
-*///?}
+        //? if (>=1.21.6 && <=26.3) {
+        if (extension == null) {
+            //?}
+            //? if (>=1.21.6 && <=1.21.11) {
+            /*view.discard(KEY);
+*///?} else if (>=26.1 && <=26.3) {
+            view.discard(KEY);
+            //?}
 
-    //? if (>=1.21.6 && <=26.3) {
-    /*return;
-            }
-*///?}
-
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*view.store(KEY, CompoundTag.CODEC, extension);
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*view.store(KEY, CompoundTag.CODEC, extension);
-*///?}
-    //? if (>=1.21.6 && <=26.3) {
-
-    /*}
-*///?}
-
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
-*///?}
-    //? if (>=1.21.6 && <=26.3) {
-    /*{
-*///?}
-    //? if (>=1.21.6 && <=1.21.11) {
-    /*return view.read(KEY, CompoundTag.CODEC)
-                    .map(extension ->
-*///?}
-    //? if (>=26.1 && <=26.3) {
-    /*return view.read(KEY, CompoundTag.CODEC)
-                    .map(extension ->
-*///?}
-    //? if (>=1.21.6 && <=26.3) {
-    /*{
-                        int version = extension.getInt(VERSION_KEY).orElse(0);
-*///?}
-
-    //? if (>=1.21.6 && <=26.3) {
-    /*return version >= 1 && version <= VERSION ? extension : null;
-                    })
-                    .orElse(null);
+            //? if (>=1.21.6 && <=26.3) {
+            return;
         }
-*///?}
+        //?}
+
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*view.store(KEY, CompoundTag.CODEC, extension);
+*///?} else if (>=26.1 && <=26.3) {
+        view.store(KEY, CompoundTag.CODEC, extension);
+        //?}
+        //? if (>=1.21.6 && <=26.3) {
+
+    }
+
+    //?}
+
+    //? if (>=1.21.6 && <=1.21.11) {
+    /*public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
+*///?} else if (>=26.1 && <=26.3) {
+    public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
+                //?}
+                //? if (>=1.21.6 && <=26.3) {
+            {
+        //?}
+        //? if (>=1.21.6 && <=1.21.11) {
+        /*return view.read(KEY, CompoundTag.CODEC)
+                    .map(extension ->
+*///?} else if (>=26.1 && <=26.3) {
+        return view.read(KEY, CompoundTag.CODEC)
+                .map(extension ->
+                //?}
+                //? if (>=1.21.6 && <=26.3) {
+                {
+                    int version = extension.getInt(VERSION_KEY).orElse(0);
+                    //?}
+
+                    //? if (>=1.21.6 && <=26.3) {
+                    return version >= 1 && version <= VERSION ? extension : null;
+                })
+                .orElse(null);
+    }
+    //?}
 
 }

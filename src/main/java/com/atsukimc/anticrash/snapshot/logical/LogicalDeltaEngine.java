@@ -6,72 +6,72 @@ import com.atsukimc.anticrash.util.Hashing;
 
 import net.minecraft.SharedConstants;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.entity.Entity;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.nbt.CompoundTag;
+/*import net.minecraft.world.entity.Entity;
 *///?}
-
-//? if (>=1.18 && <=1.21.11) {
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.nbt.CompoundTag;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.ListTag;
-//?}
-//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.nbt.CompoundTag;
+*///?}
+
+//? if (>=1.18 && <=1.21.11) {
 /*import net.minecraft.nbt.ListTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.ListTag;
+//?}
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ChunkHolder;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ChunkHolder;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ChunkHolder;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ServerLevel;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerLevel;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.ChunkPos;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.entity.Entity;
+/*import net.minecraft.world.level.ChunkPos;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.entity.Entity;
+//?}
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.world.level.chunk.storage.ChunkSerializer;
-//?}
+/*import net.minecraft.world.level.chunk.storage.ChunkSerializer;
+*///?}
 //? if (>=1.21.2 && <=1.21.11) {
 /*import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
+import net.minecraft.world.level.ChunkPos;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.chunk.LevelChunk;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.LevelChunk;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.chunk.LevelChunk;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.storage.PrimaryLevelData;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.chunk.storage.SerializableChunkData;
-*///?}
-
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.storage.PrimaryLevelData;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.chunk.storage.SerializableChunkData;
+//?}
+
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.storage.PrimaryLevelData;
+//?}
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -170,13 +170,12 @@ public final class LogicalDeltaEngine {
                 committedAccessibleChunks.add(key);
 
                 //? if (>=1.18 && <=1.21.11) {
-                committedChunkGenerations.put(
-                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().toLong()));
-                //?}
-                //? if (>=26.1 && <=26.3) {
                 /*committedChunkGenerations.put(
-                                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().pack()));
-*///?}
+                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().toLong()));
+                *///?} else if (>=26.1 && <=26.3) {
+                committedChunkGenerations.put(
+                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().pack()));
+                //?}
 
                 committedChunkHashes.put(key, "INHERITED");
             }
@@ -211,26 +210,31 @@ public final class LogicalDeltaEngine {
                 inspected++;
 
                 //? if (>=1.18 && <=1.21.11) {
-                long generation =
-                        mutations.generation(ref.dimension(), ref.chunk().getPos().toLong());
-                //?}
-                //? if (>=26.1 && <=26.3) {
                 /*long generation =
-                                        mutations.generation(ref.dimension(), ref.chunk().getPos().pack());
-*///?}
+                        mutations.generation(ref.dimension(), ref.chunk().getPos().toLong());
+                *///?} else if (>=26.1 && <=26.3) {
+                long generation =
+                        mutations.generation(ref.dimension(), ref.chunk().getPos().pack());
+                //?}
 
                 //? if (>=1.18 && <=1.21.11) {
-                if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
+                /*if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
 
+                    *///?} else if (>=26.1 && <=26.3) {
+                if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
-*///?}
                     continue;
                 String encoded = encodeChunk(ref.world(), ref.chunk());
                 byte[] payload = Base64.getDecoder().decode(encoded);
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*candidates.put(
+                        ref.key(),
+                        server.getTickCount(),
+                        generation,
+                        payload,
+                        Hashing.sha256(payload));
+                *///?} else if (>=26.1 && <=26.3) {
                 candidates.put(
                         ref.key(),
                         server.getTickCount(),
@@ -238,14 +242,6 @@ public final class LogicalDeltaEngine {
                         payload,
                         Hashing.sha256(payload));
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*candidates.put(
-                                        ref.key(),
-                                        server.getTickCount(),
-                                        generation,
-                                        payload,
-                                        Hashing.sha256(payload));
-*///?}
 
                 captured++;
                 roundRobin = (start + offset + 1) % refs.size();
@@ -374,11 +370,10 @@ public final class LogicalDeltaEngine {
             for (WorldChunkRef ref : refs) {
 
                 //? if (>=1.18 && <=1.21.11) {
-                long packed = ref.chunk().getPos().toLong();
+                /*long packed = ref.chunk().getPos().toLong();
+                *///?} else if (>=26.1 && <=26.3) {
+                long packed = ref.chunk().getPos().pack();
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*long packed = ref.chunk().getPos().pack();
-*///?}
 
                 long generation = mutations.generation(ref.dimension(), packed);
                 String key = ref.key();
@@ -487,42 +482,38 @@ public final class LogicalDeltaEngine {
     public static boolean hasUnsupportedPersistentFiles(MinecraftServer server) throws IOException {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*if (server == null || server.overworld() == null)
+            *///?} else if (>=26.1 && <=26.3) {
         if (server == null || server.overworld() == null)
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (server == null || server.overworld() == null)
-*///?}
             return true;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Path root = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
+        *///?} else if (>=26.1 && <=26.3) {
         Path root = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Path root = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
-*///?}
 
         // POI and arbitrary SavedData files have no safe generic in-memory capture API in
         // 1.18.2.  Refuse semantic materialization when they exist instead of carrying an old
         // parent file into a newer epoch. Every dimension keeps its own poi/ and data/.
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
+            /*Path dimensionRoot =
+                    net.minecraft.world.level.dimension.DimensionType.getStorageFolder(
+                            world.dimension(), root);
+            *///?} else if (>=26.1 && <=26.3) {
             Path dimensionRoot =
                     net.minecraft.world.level.dimension.DimensionType.getStorageFolder(
                             world.dimension(), root);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*Path dimensionRoot =
-                                net.minecraft.world.level.dimension.DimensionType.getStorageFolder(
-                                        world.dimension(), root);
-*///?}
 
             if (hasRegularFiles(dimensionRoot.resolve("poi"))
                     || hasRegularFiles(dimensionRoot.resolve("data"))) return true;
@@ -545,38 +536,33 @@ public final class LogicalDeltaEngine {
         Map<String, List<Entity>> grouped = new LinkedHashMap<>();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Map<String, ServerLevel> owners = new HashMap<>();
+        *///?} else if (>=26.1 && <=26.3) {
         Map<String, ServerLevel> owners = new HashMap<>();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Map<String, ServerLevel> owners = new HashMap<>();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            String dimension = world.dimension().location().toString();
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^String dimension = world.dimension().location().toString();
+            ^///?} else if 1.21.11 {
+            /^String dimension = world.dimension().identifier().toString();
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            String dimension = world.dimension().identifier().toString();
             //?}
-            //? if 1.21.11 {
-            /*String dimension = world.dimension().identifier().toString();
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*String dimension = world.dimension().identifier().toString();
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*for (Entity entity : world.getAllEntities())
+            *///?} else if (>=26.1 && <=26.3) {
             for (Entity entity : world.getAllEntities())
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*for (Entity entity : world.getAllEntities())
-*///?}
             {
                 // Mirror PersistentEntitySectionManager#trySave: players, passengers (saved inside
                 // their
@@ -584,19 +570,17 @@ public final class LogicalDeltaEngine {
                 // an entity region.
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*if (entity == null || entity.isRemoved() || !entity.shouldBeSaved())
+                    *///?} else if (>=26.1 && <=26.3) {
                 if (entity == null || entity.isRemoved() || !entity.shouldBeSaved())
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*if (entity == null || entity.isRemoved() || !entity.shouldBeSaved())
-*///?}
                     continue;
 
                 //? if (>=1.18 && <=1.21.11) {
-                String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().toLong());
+                /*String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().toLong());
+                *///?} else if (>=26.1 && <=26.3) {
+                String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().pack());
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().pack());
-*///?}
 
                 grouped.computeIfAbsent(key, ignored -> new ArrayList<>()).add(entity);
                 owners.putIfAbsent(key, world);
@@ -607,11 +591,10 @@ public final class LogicalDeltaEngine {
         for (WorldChunkRef ref : accessibleChunks(server)) {
 
             //? if (>=1.18 && <=1.21.11) {
-            String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().toLong());
+            /*String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().toLong());
+            *///?} else if (>=26.1 && <=26.3) {
+            String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().pack());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().pack());
-*///?}
 
             grouped.putIfAbsent(key, List.of());
             owners.putIfAbsent(key, ref.world());
@@ -628,18 +611,16 @@ public final class LogicalDeltaEngine {
             long packed = Long.parseLong(entry.getKey().substring(separator + 1));
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world = owners.get(entry.getKey());
+            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = owners.get(entry.getKey());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ServerLevel world = owners.get(entry.getKey());
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*if (world == null || !world.areEntitiesLoaded(packed))
+            *///?} else if (>=26.1 && <=26.3) {
             if (world == null || !world.areEntitiesLoaded(packed))
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (world == null || !world.areEntitiesLoaded(packed))
-*///?}
             {
                 // The entity section has not been read from disk yet (FRESH/PENDING). Vanilla
                 // refuses to write such a section, and so must we: an empty list here would erase
@@ -651,61 +632,52 @@ public final class LogicalDeltaEngine {
             }
 
             //? if (>=1.18 && <=1.21.11) {
+            /*CompoundTag root = new CompoundTag();
+            *///?} else if (>=26.1 && <=26.3) {
             CompoundTag root = new CompoundTag();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*CompoundTag root = new CompoundTag();
-*///?}
 
             //? if (>=1.18 && <=1.19.3) {
-            root.putInt("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
-            //?}
-            //? if (>=1.19.4 && <=1.21.5) {
+            /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
+            *///?} else if (>=1.19.4 && <=1.21.5) {
             /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-*///?}
-            //? if (>=1.21.6 && <=1.21.11) {
+*///?} else if (>=1.21.6 && <=1.21.11) {
             /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().dataVersion().version());
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().dataVersion().version());
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+            root.putInt("DataVersion", SharedConstants.getCurrentVersion().dataVersion().version());
+            //?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ListTag entities = new ListTag();
+            *///?} else if (>=26.1 && <=26.3) {
             ListTag entities = new ListTag();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ListTag entities = new ListTag();
-*///?}
 
             List<Entity> saved = new ArrayList<>();
 
             //? if (>=1.18 && <=1.21.11) {
+            /*List<CompoundTag> savedNbt = new ArrayList<>();
+            *///?} else if (>=26.1 && <=26.3) {
             List<CompoundTag> savedNbt = new ArrayList<>();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*List<CompoundTag> savedNbt = new ArrayList<>();
-*///?}
 
             for (Entity entity : entry.getValue()) {
                 // save writes the "id" key; saveWithoutId alone produces an entity that Minecraft
                 // silently discards on load.
 
                 //? if (>=1.18 && <=1.21.5) {
-                CompoundTag nbt = new CompoundTag();
+                /*CompoundTag nbt = new CompoundTag();
+                *///?} else if (>=1.21.6 && <=1.21.11) {
+                /*CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
+*///?} else if (>=26.1 && <=26.3) {
+                CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
                 //?}
-                //? if (>=1.21.6 && <=1.21.11) {
-                /*CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
-*///?}
 
                 //? if (>=1.18 && <=1.21.5) {
-                if (!entity.save(nbt))
+                /*if (!entity.save(nbt))
+                    *///?} else if (>=1.21.6 && <=26.3) {
+                if (nbt == null)
                     //?}
-                    //? if (>=1.21.6 && <=26.3) {
-                    /*if (nbt == null)
-*///?}
                     continue;
                 entities.add(nbt);
                 saved.add(entity);
@@ -714,18 +686,16 @@ public final class LogicalDeltaEngine {
             root.put("Entities", entities);
 
             //? if (>=1.18 && <=1.21.11) {
-            ChunkPos pos = new ChunkPos(packed);
+            /*ChunkPos pos = new ChunkPos(packed);
+            *///?} else if (>=26.1 && <=26.3) {
+            ChunkPos pos = ChunkPos.unpack(packed);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ChunkPos pos = ChunkPos.unpack(packed);
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            root.putIntArray("Position", new int[] {pos.x, pos.z});
+            /*root.putIntArray("Position", new int[] {pos.x, pos.z});
+            *///?} else if (>=26.1 && <=26.3) {
+            root.putIntArray("Position", new int[] {pos.x(), pos.z()});
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*root.putIntArray("Position", new int[] {pos.x(), pos.z()});
-*///?}
 
             String encoded = NbtCodec.encode(root);
             String hash = Hashing.sha256(Base64.getDecoder().decode(encoded));
@@ -741,21 +711,19 @@ public final class LogicalDeltaEngine {
                 snapshot.dimension = dimension;
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*snapshot.uuid = entity.getStringUUID();
+                *///?} else if (>=26.1 && <=26.3) {
                 snapshot.uuid = entity.getStringUUID();
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*snapshot.uuid = entity.getStringUUID();
-*///?}
 
                 snapshot.entityType = String.valueOf(entity.getType());
                 snapshot.networkId = entity.getId();
 
                 //? if (>=1.18 && <=1.21.11) {
-                snapshot.packedChunkPosition = entity.chunkPosition().toLong();
+                /*snapshot.packedChunkPosition = entity.chunkPosition().toLong();
+                *///?} else if (>=26.1 && <=26.3) {
+                snapshot.packedChunkPosition = entity.chunkPosition().pack();
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*snapshot.packedChunkPosition = entity.chunkPosition().pack();
-*///?}
 
                 snapshot.captureEpoch = epoch;
                 String encodedEntity = NbtCodec.encode(savedNbt.get(index));
@@ -777,11 +745,10 @@ public final class LogicalDeltaEngine {
             throws IOException {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*if (!(server.getWorldData() instanceof PrimaryLevelData properties))
+        *///?} else if (>=26.1 && <=26.3) {
         if (!(server.getWorldData() instanceof PrimaryLevelData properties))
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*if (!(server.getWorldData() instanceof PrimaryLevelData properties))
-*///?}
         {
             throw new IOException("save_properties_not_level_properties");
         }
@@ -790,8 +757,8 @@ public final class LogicalDeltaEngine {
         // boss bars and the dragon fight would be restored from the last full save instead.
 
         //? if (>=1.18 && <=1.21.8) {
-        ServerLevel overworld = server.overworld();
-        //?}
+        /*ServerLevel overworld = server.overworld();
+        *///?}
 
         // 26.1 moved boss events, dragon fight and clocks to SavedData; those are covered by
         // PORTABLE_GENERATION's sealed file cut. The logical engine already rejects incomplete
@@ -799,18 +766,16 @@ public final class LogicalDeltaEngine {
         // Player data remains selective and must not be embedded or rolled back here.
 
         //? if (>=26.1 && <=26.3) {
-        /*var profile = server.getSingleplayerProfile();
-*///?}
-
-        //? if (>=1.18 && <=1.21.8) {
-        if (overworld != null) {
+        var profile = server.getSingleplayerProfile();
+        //?} else if (>=1.18 && <=1.21.8) {
+        /*if (overworld != null) {
             properties.overworldData().setWorldBorder(overworld.getWorldBorder().createSettings());
         }
-        //?}
+        *///?}
 
         //? if (>=1.18 && <=1.20.4) {
-        properties.setCustomBossEvents(server.getCustomBossEvents().save());
-        //?}
+        /*properties.setCustomBossEvents(server.getCustomBossEvents().save());
+        *///?}
 
         // In 1.21.9 borders are per-world SavedData, not level.dat's legacy migration field.
         // The portable generation includes their state files. Do not repopulate the legacy field.
@@ -822,49 +787,45 @@ public final class LogicalDeltaEngine {
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerLevel world : server.getAllLevels()) {
+        /*for (ServerLevel world : server.getAllLevels()) {
             //? if (>=1.18 && <=1.19.4) {
-            if (world.dragonFight() != null) {
-                //?}
-                //? if (>=1.20 && <=1.21.11) {
-                /*if (world.getDragonFight() != null) {
-            *///?}
+            /^if (world.dragonFight() != null) {
+                ^///?} else if (>=1.20 && <=1.21.11) {
+                /^if (world.getDragonFight() != null) {
+            ^///?}
 
-                //?}
-                //? if (>=1.18 && <=1.19.4) {
-                properties.setEndDragonFightData(world.dragonFight().saveData());
-                //?}
-                //? if (>=1.20 && <=1.21.11) {
-                /*properties.setEndDragonFightData(world.getDragonFight().saveData());
+                *///?}
+        //? if (>=1.18 && <=1.19.4) {
+        /*properties.setEndDragonFightData(world.dragonFight().saveData());
+                *///?} else if (>=1.20 && <=1.21.11) {
+        /*properties.setEndDragonFightData(world.getDragonFight().saveData());
 *///?}
-                //? if (>=1.18 && <=1.21.11) {
+        //? if (>=1.18 && <=1.21.11) {
 
-            }
+        /*}
         }
-        //?}
+        *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        CompoundTag player = server.getPlayerList().getSingleplayerData();
-        //?}
+        /*CompoundTag player = server.getPlayerList().getSingleplayerData();
+        *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        CompoundTag data =
+        /*CompoundTag data =
                 properties.createTag(
                         server.registryAccess(), player == null ? null : player.copy());
+        *///?} else if (>=26.1 && <=26.3) {
+        CompoundTag data = properties.createTag(profile == null ? null : profile.id());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag data = properties.createTag(profile == null ? null : profile.id());
-*///?}
 
         // LevelStorageSource.Session#backupLevelDataFile nests everything under "Data". A bare
         // compound is unreadable to LevelStorageSource and falls back to level.dat_old or defaults.
 
         //? if (>=1.18 && <=1.21.11) {
+        /*CompoundTag root = new CompoundTag();
+        *///?} else if (>=26.1 && <=26.3) {
         CompoundTag root = new CompoundTag();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*CompoundTag root = new CompoundTag();
-*///?}
 
         root.put("Data", data);
         String encoded = NbtCodec.encode(root);
@@ -875,22 +836,19 @@ public final class LogicalDeltaEngine {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static String encodeChunk(ServerLevel world, LevelChunk chunk) throws IOException
+                *///?} else if (>=26.1 && <=26.3) {
     private static String encodeChunk(ServerLevel world, LevelChunk chunk) throws IOException
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static String encodeChunk(ServerLevel world, LevelChunk chunk) throws IOException
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.1) {
-        return NbtCodec.encode(ChunkSerializer.write(world, chunk));
+        /*return NbtCodec.encode(ChunkSerializer.write(world, chunk));
+        *///?} else if (>=1.21.2 && <=1.21.11) {
+        /*return NbtCodec.encode(SerializableChunkData.copyOf(world, chunk).write());
+*///?} else if (>=26.1 && <=26.3) {
+        return NbtCodec.encode(SerializableChunkData.copyOf(world, chunk).write());
         //?}
-        //? if (>=1.21.2 && <=1.21.11) {
-        /*return NbtCodec.encode(SerializableChunkData.copyOf(world, chunk).write());
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*return NbtCodec.encode(SerializableChunkData.copyOf(world, chunk).write());
-*///?}
 
     }
 
@@ -898,50 +856,44 @@ public final class LogicalDeltaEngine {
         List<WorldChunkRef> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            String dimension = world.dimension().location().toString();
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^String dimension = world.dimension().location().toString();
+            ^///?} else if 1.21.11 {
+            /^String dimension = world.dimension().identifier().toString();
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            String dimension = world.dimension().identifier().toString();
             //?}
-            //? if 1.21.11 {
-            /*String dimension = world.dimension().identifier().toString();
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*String dimension = world.dimension().identifier().toString();
-*///?}
 
             //? if (>=1.18 && <=1.20.6) {
+            /*var storage =
+                    (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
+                            world.getChunkSource().chunkMap;
+            *///?} else if (>=1.21 && <=1.21.11) {
+            /*var storage =
+                                (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
+                                        world.getChunkSource().chunkMap;
+*///?} else if (>=26.1 && <=26.3) {
             var storage =
                     (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
                             world.getChunkSource().chunkMap;
             //?}
-            //? if (>=1.21 && <=1.21.11) {
-            /*var storage =
-                                (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                                        world.getChunkSource().chunkMap;
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*var storage =
-                                (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                                        world.getChunkSource().chunkMap;
-*///?}
 
             for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;
 
                 //? if (>=1.18 && <=1.21.11) {
+                /*var future = holder.getFullChunkFuture();
+                *///?} else if (>=26.1 && <=26.3) {
                 var future = holder.getFullChunkFuture();
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*var future = holder.getFullChunkFuture();
-*///?}
 
                 if (future == null || !future.isDone() || future.isCompletedExceptionally())
                     continue;
@@ -949,35 +901,32 @@ public final class LogicalDeltaEngine {
                     var ready = future.getNow(null);
 
                     //? if (>=1.18 && <=1.20.4) {
-                    LevelChunk chunk = ready == null ? null : ready.left().orElse(null);
+                    /*LevelChunk chunk = ready == null ? null : ready.left().orElse(null);
+                    *///?} else if (>=1.20.5 && <=1.21.11) {
+                    /*LevelChunk chunk = ready == null ? null : ready.orElse(null);
+*///?} else if (>=26.1 && <=26.3) {
+                    LevelChunk chunk = ready == null ? null : ready.orElse(null);
                     //?}
-                    //? if (>=1.20.5 && <=1.21.11) {
-                    /*LevelChunk chunk = ready == null ? null : ready.orElse(null);
-*///?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*LevelChunk chunk = ready == null ? null : ready.orElse(null);
-*///?}
 
                     if (chunk != null) {
 
                         //? if (>=1.18 && <=1.21.11) {
-                        result.add(
+                        /*result.add(
                                 new WorldChunkRef(
                                         world,
                                         dimension,
                                         chunk,
                                         ChunkMutationTracker.key(
                                                 dimension, chunk.getPos().toLong())));
+                        *///?} else if (>=26.1 && <=26.3) {
+                        result.add(
+                                new WorldChunkRef(
+                                        world,
+                                        dimension,
+                                        chunk,
+                                        ChunkMutationTracker.key(
+                                                dimension, chunk.getPos().pack())));
                         //?}
-                        //? if (>=26.1 && <=26.3) {
-                        /*result.add(
-                                                        new WorldChunkRef(
-                                                                world,
-                                                                dimension,
-                                                                chunk,
-                                                                ChunkMutationTracker.key(
-                                                                        dimension, chunk.getPos().pack())));
-*///?}
 
                     }
                 } catch (RuntimeException ignored) {
@@ -994,38 +943,33 @@ public final class LogicalDeltaEngine {
     private static void registerSchedulers(MinecraftServer server) {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (ServerLevel world : server.getAllLevels())
+        *///?} else if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (ServerLevel world : server.getAllLevels())
-*///?}
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.21.10) {
-            String dimension = world.dimension().location().toString();
+            /*//? if (>=1.18 && <=1.21.10) {
+            /^String dimension = world.dimension().location().toString();
+            ^///?} else if 1.21.11 {
+            /^String dimension = world.dimension().identifier().toString();
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            String dimension = world.dimension().identifier().toString();
             //?}
-            //? if 1.21.11 {
-            /*String dimension = world.dimension().identifier().toString();
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*String dimension = world.dimension().identifier().toString();
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ChunkMutationTracker.registerScheduler(world.getFluidTicks(), dimension);
+            *///?} else if (>=26.1 && <=26.3) {
             ChunkMutationTracker.registerScheduler(world.getFluidTicks(), dimension);
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*ChunkMutationTracker.registerScheduler(world.getFluidTicks(), dimension);
-*///?}
 
         }
     }
@@ -1040,19 +984,17 @@ public final class LogicalDeltaEngine {
     private record WorldChunkRef(
 
             //? if (>=1.18 && <=1.21.11) {
+            /*ServerLevel world
+                    *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*ServerLevel world
-*///?}
                     ,
             String dimension,
             //? if (>=1.18 && <=1.21.11) {
+            /*LevelChunk chunk
+                    *///?} else if (>=26.1 && <=26.3) {
             LevelChunk chunk
                     //?}
-                    //? if (>=26.1 && <=26.3) {
-                    /*LevelChunk chunk
-*///?}
                     ,
             String key) {}
 }

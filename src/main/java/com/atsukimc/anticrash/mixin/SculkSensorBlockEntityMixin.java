@@ -1,5 +1,5 @@
 //? if (>=1.18 && <=1.18.2) {
-package com.atsukimc.anticrash.mixin;
+/*package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
@@ -19,12 +19,12 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.util.Optional;
 
-/**
+/^*
  * A sculk sensor that has heard a vibration waits {@code delay} ticks before it activates. In
  * 1.18.2 Vanilla saves only "last_vibration_frequency"; the listener's pending event, distance and
  * delay are not saved (that came in 1.19), so a restart silently drops the signal. There is no
  * Vanilla value for these three fields, hence no second authority.
- */
+ ^/
 @Mixin(SculkSensorBlockEntity.class)
 public abstract class SculkSensorBlockEntityMixin {
     @Shadow @Final private VibrationListener listener;
@@ -60,4 +60,4 @@ public abstract class SculkSensorBlockEntityMixin {
         accessor.anticrash$setDelay(Math.max(0, state.getInt("Delay")));
     }
 }
-//?}
+*///?}

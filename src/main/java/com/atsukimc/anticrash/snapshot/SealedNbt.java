@@ -1,11 +1,11 @@
 package com.atsukimc.anticrash.snapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.CompoundTag;
+//?}
 
 import java.util.Collection;
 import java.util.Collections;
@@ -20,24 +20,22 @@ import java.util.Set;
 public final class SealedNbt {
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static final Set<CompoundTag> SEALED =
+            Collections.newSetFromMap(new IdentityHashMap<>());
+    *///?} else if (>=26.1 && <=26.3) {
     private static final Set<CompoundTag> SEALED =
             Collections.newSetFromMap(new IdentityHashMap<>());
     //?}
-    //? if (>=26.1 && <=26.3) {
-    /*private static final Set<CompoundTag> SEALED =
-                Collections.newSetFromMap(new IdentityHashMap<>());
-*///?}
 
     private static volatile boolean any;
 
     private SealedNbt() {}
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static boolean isSealed(CompoundTag nbt)
+                *///?} else if (>=26.1 && <=26.3) {
     public static boolean isSealed(CompoundTag nbt)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static boolean isSealed(CompoundTag nbt)
-*///?}
             {
         if (!any || nbt == null) return false;
         synchronized (SEALED) {

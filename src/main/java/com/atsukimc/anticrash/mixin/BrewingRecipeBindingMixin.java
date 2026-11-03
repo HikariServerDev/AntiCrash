@@ -1,5 +1,5 @@
 //? if 26.3 {
-/*package com.atsukimc.anticrash.mixin;
+package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/^* 26.3 data-driven brewing: preserve the semantic recipe preference, not manager objects. ^/
+/** 26.3 data-driven brewing: preserve the semantic recipe preference, not manager objects. */
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class BrewingRecipeBindingMixin {
     @Shadow @Final private net.minecraft.world.item.crafting.RecipeManager.CachedCheck quickCheck;
@@ -49,4 +49,4 @@ public abstract class BrewingRecipeBindingMixin {
                                         net.minecraft.core.registries.Registries.RECIPE, id));
     }
 }
-*///?}
+//?}

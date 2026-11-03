@@ -203,35 +203,33 @@ class MixinTargetAuditTest {
                     targets.add(target.toString().replace('.', '/'));
                 for (String target : targets)
                 //? if (>=1.18 && <=1.20.1) {
-                {
+                /*{
 
-                    //?}
-                    //? if (>=1.20.2 && <=1.21.8) {
-                    /*{
+                    *///?} else if (>=1.20.2 && <=1.21.8) {
+                /*{
                                         // Optional external Carpet is absent in this game-only offline classpath.
                                         // Mandatory Minecraft targets remain required; this is not Carpet runtime
                                         // coverage.
-*///?}
-                    //? if (>=1.21.9 && <=26.3) {
-                    /*{
-                                        // Optional external adapters are absent in the game-only offline classpath.
-                                        // Only @Pseudo Carpet targets may be absent; mandatory Minecraft targets
-                                        // remain required. This is not Carpet runtime coverage.
-*///?}
+*///?} else if (>=1.21.9 && <=26.3) {
+                {
+                    // Optional external adapters are absent in the game-only offline classpath.
+                    // Only @Pseudo Carpet targets may be absent; mandatory Minecraft targets
+                    // remain required. This is not Carpet runtime coverage.
+                    //?}
                     //? if (>=1.20.2 && <=26.3) {
-                    /*boolean pseudo =
-                                                annotations(mixin.visibleAnnotations, mixin.invisibleAnnotations)
-                                                        .stream()
-                                                        .anyMatch(a ->
-                                                                a.desc.equals("Lorg/spongepowered/asm/mixin/Pseudo;"));
-*///?}
+                    boolean pseudo =
+                            annotations(mixin.visibleAnnotations, mixin.invisibleAnnotations)
+                                    .stream()
+                                    .anyMatch(a ->
+                                            a.desc.equals("Lorg/spongepowered/asm/mixin/Pseudo;"));
+                    //?}
 
                     //? if (>=1.20.2 && <=26.3) {
-                    /*if (pseudo
-                                                && target.startsWith("carpet/")
-                                                && getClass().getClassLoader().getResource(target + ".class") == null)
-                                            continue;
-*///?}
+                    if (pseudo
+                            && target.startsWith("carpet/")
+                            && getClass().getClassLoader().getResource(target + ".class") == null)
+                        continue;
+                    //?}
 
                     read(target);
                     audited++;
@@ -269,13 +267,12 @@ class MixinTargetAuditTest {
                                     for (MethodNode selected : selectedMethods(target, name))
 
                                         //? if (>=1.18 && <=1.21.11) {
-                                        invokeOccursInTarget(
+                                        /*invokeOccursInTarget(
                                                 selected, value(a, "at"), problems, context);
+                                *///?} else if (>=26.1 && <=26.3) {
+                                        invokeOccursInTarget(
+                                                selected, value(a, "forIndex"), problems, context);
                                 //?}
-                                //? if (>=26.1 && <=26.3) {
-                                /*invokeOccursInTarget(
-                                                                                selected, value(a, "forIndex"), problems, context);
-*///?}
 
                                 if (selector instanceof String name && !method(target, name)) {
                                     problems.add(context + " method missing: " + name);
@@ -294,11 +291,10 @@ class MixinTargetAuditTest {
                             }
 
                             //? if (>=1.18 && <=1.21.11) {
-                            injectionPoints(value(a, "at"), problems, context);
+                            /*injectionPoints(value(a, "at"), problems, context);
+                            *///?} else if (>=26.1 && <=26.3) {
+                            injectionPoints(value(a, "forIndex"), problems, context);
                             //?}
-                            //? if (>=26.1 && <=26.3) {
-                            /*injectionPoints(value(a, "forIndex"), problems, context);
-*///?}
 
                         }
                     }

@@ -1,5 +1,5 @@
 //? if (>=26.2 && <=26.3) {
-/*package com.atsukimc.anticrash.mixin;
+package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.SulfurRuntimeFrame;
@@ -40,4 +40,4 @@ public abstract class PotentSulfurRuntimeMixin {
         eruptionTick = frame.eruptionTick();
     }
 }
-*///?}
+//?}

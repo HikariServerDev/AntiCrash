@@ -22,8 +22,8 @@ public final class FakePlayerSnapshot {
      */
 
     //? if (>=1.21.2 && <=26.3) {
-    /*public Integer playerInput;
-*///?}
+    public Integer playerInput;
+    //?}
 
     public InventorySnapshot inventory;
 
@@ -58,16 +58,16 @@ public final class FakePlayerSnapshot {
     public Integer lastAttackedTicks;
 
     //? if (>=1.21.11 && <=26.3) {
-    /*public String motionFrameNbt;
-*///?}
+    public String motionFrameNbt;
+    //?}
 
     //? if (>=26.1 && <=26.3) {
-    /*public String fluidTrackersNbt;
-*///?}
+    public String fluidTrackersNbt;
+    //?}
 
     //? if (>=1.21.11 && <=26.3) {
-    /*public Long lastKineticAttackTime;
-*///?}
+    public Long lastKineticAttackTime;
+    //?}
 
     /**
      * Item id and remaining ticks of every running item cooldown (ender pearl, shield, chorus
@@ -84,7 +84,7 @@ public final class FakePlayerSnapshot {
     public String canonical() {
 
         //? if (>=1.18 && <=1.21.1) {
-        return String.join(
+        /*return String.join(
                         "|",
                         value(uuid),
                         value(name),
@@ -114,8 +114,7 @@ public final class FakePlayerSnapshot {
                         value(currentBlock),
                         value(vehicleUuid))
                 + runtimeCanonical();
-        //?}
-        //? if (>=1.21.2 && <=1.21.10) {
+        *///?} else if (>=1.21.2 && <=1.21.10) {
         /*return String.join(
                                 "|",
                                 value(uuid),
@@ -147,8 +146,7 @@ public final class FakePlayerSnapshot {
                                 value(vehicleUuid))
                         + runtimeCanonical()
                         + (playerInput == null ? "" : "|input=" + playerInput);
-*///?}
-        //? if 1.21.11 {
+*///?} else if 1.21.11 {
         /*return String.join(
                                 "|",
                                 value(uuid),
@@ -182,43 +180,42 @@ public final class FakePlayerSnapshot {
                         + (playerInput == null ? "" : "|input=" + playerInput)
                         + (motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt)
                         + (lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*return String.join(
-                                "|",
-                                value(uuid),
-                                value(name),
-                                value(dimension),
-                                Double.toString(x),
-                                Double.toString(y),
-                                Double.toString(z),
-                                Float.toString(yaw),
-                                Float.toString(pitch),
-                                value(gamemode),
-                                Boolean.toString(flying),
-                                Boolean.toString(sneaking),
-                                Boolean.toString(sprinting),
-                                Float.toString(forward),
-                                Float.toString(strafing),
-                                inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
-                                Float.toString(health),
-                                Integer.toString(hunger),
-                                Float.toString(saturation),
-                                Float.toString(exhaustion),
-                                effectsNbt == null ? "null" : effectsNbt.toString(),
-                                actionPackState == null
-                                        ? "null"
-                                        : withoutNullMembers(actionPackState).toString(),
-                                String.valueOf(itemUseCooldown),
-                                String.valueOf(blockBreakingProgress),
-                                value(currentBlock),
-                                value(vehicleUuid))
-                        + runtimeCanonical()
-                        + (playerInput == null ? "" : "|input=" + playerInput)
-                        + (motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt)
-                        + (fluidTrackersNbt == null ? "" : "|fluid=" + fluidTrackersNbt)
-                        + (lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime);
-*///?}
+*///?} else if (>=26.1 && <=26.3) {
+        return String.join(
+                        "|",
+                        value(uuid),
+                        value(name),
+                        value(dimension),
+                        Double.toString(x),
+                        Double.toString(y),
+                        Double.toString(z),
+                        Float.toString(yaw),
+                        Float.toString(pitch),
+                        value(gamemode),
+                        Boolean.toString(flying),
+                        Boolean.toString(sneaking),
+                        Boolean.toString(sprinting),
+                        Float.toString(forward),
+                        Float.toString(strafing),
+                        inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
+                        Float.toString(health),
+                        Integer.toString(hunger),
+                        Float.toString(saturation),
+                        Float.toString(exhaustion),
+                        effectsNbt == null ? "null" : effectsNbt.toString(),
+                        actionPackState == null
+                                ? "null"
+                                : withoutNullMembers(actionPackState).toString(),
+                        String.valueOf(itemUseCooldown),
+                        String.valueOf(blockBreakingProgress),
+                        value(currentBlock),
+                        value(vehicleUuid))
+                + runtimeCanonical()
+                + (playerInput == null ? "" : "|input=" + playerInput)
+                + (motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt)
+                + (fluidTrackersNbt == null ? "" : "|fluid=" + fluidTrackersNbt)
+                + (lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime);
+        //?}
 
     }
 

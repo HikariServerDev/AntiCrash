@@ -1,59 +1,58 @@
 //? if (>=1.21.2 && <=26.3) {
-/*package com.atsukimc.anticrash.runtime;
+package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.RecipeMatchGetterAccessorMixin;
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.level.block.state.BlockState;
-^///?}
+/*import net.minecraft.world.level.block.state.BlockState;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.core.BlockPos;
-^///?}
+import net.minecraft.core.BlockPos;
+//?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.level.block.entity.BlockEntity;
-^///?}
+/*import net.minecraft.world.level.block.entity.BlockEntity;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.Level;
-^///?}
+import net.minecraft.world.level.Level;
+//?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.level.block.entity.BlockEntityTicker;
-^///?}
+/*import net.minecraft.world.level.block.entity.BlockEntityTicker;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.block.entity.BlockEntity;
-^///?}
+import net.minecraft.world.level.block.entity.BlockEntity;
+//?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.core.BlockPos;
-^///?}
+/*import net.minecraft.core.BlockPos;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.block.entity.BlockEntityTicker;
-^///?}
+import net.minecraft.world.level.block.entity.BlockEntityTicker;
+//?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.level.Level;
-^///?}
+/*import net.minecraft.world.level.Level;
+*///?}
 //? if (>=26.1 && <=26.3) {
-/^import net.minecraft.world.level.block.state.BlockState;
-^///?}
+import net.minecraft.world.level.block.state.BlockState;
 
+//?}
 
-/^* A native ticker delegate plus its semantic recipe cache; never serialized as a Java object. ^/
+/** A native ticker delegate plus its semantic recipe cache; never serialized as a Java object. */
 public record RecipeBoundTicker<T extends BlockEntity>(
         BlockEntityTicker<T> delegate, RecipeMatchGetterAccessorMixin getter)
         implements BlockEntityTicker<T> {
 
-//? if (>=1.21.2 && <=1.21.11) {
-/^@Override
+    //? if (>=1.21.2 && <=1.21.11) {
+    /*@Override
     public void tick(Level world, BlockPos pos, BlockState state, T entity)
-^///?}
-//? if (>=26.1 && <=26.3) {
-/^@Override
+*///?} else if (>=26.1 && <=26.3) {
+    @Override
     public void tick(Level world, BlockPos pos, BlockState state, T entity)
-^///?}
-{
+                //?}
+            {
         delegate.tick(world, pos, state, entity);
     }
 }
-*///?}
+//?}

@@ -3,39 +3,39 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.level.ServerLevel;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.core.BlockPos;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.ChunkPos;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.BlockPos;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.server.level.ServerLevel;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerLevel;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.core.BlockPos;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.ChunkPos;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.ChunkPos;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
+*///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+//?}
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -58,28 +58,25 @@ public final class MovingPistonTickSnapshot {
     public Float lastProgress;
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static List<MovingPistonTickSnapshot> capture(
+            ServerLevel world, Set<Long> protectedChunks)
+                *///?} else if (>=26.1 && <=26.3) {
     public static List<MovingPistonTickSnapshot> capture(
             ServerLevel world, Set<Long> protectedChunks)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static List<MovingPistonTickSnapshot> capture(
-                            ServerLevel world, Set<Long> protectedChunks)
-*///?}
             {
         List<MovingPistonTickSnapshot> result = new ArrayList<>();
         if (protectedChunks == null || protectedChunks.isEmpty()) return result;
 
         //? if (>=1.18 && <=1.21.11) {
-        //? if (>=1.18 && <=1.21.10) {
-        String dimension = world.dimension().location().toString();
+        /*//? if (>=1.18 && <=1.21.10) {
+        /^String dimension = world.dimension().location().toString();
+        ^///?} else if 1.21.11 {
+        /^String dimension = world.dimension().identifier().toString();
+        ^///?}
+        *///?} else if (>=26.1 && <=26.3) {
+        String dimension = world.dimension().identifier().toString();
         //?}
-        //? if 1.21.11 {
-        /*String dimension = world.dimension().identifier().toString();
-        *///?}
-        //?}
-        //? if (>=26.1 && <=26.3) {
-        /*String dimension = world.dimension().identifier().toString();
-*///?}
 
         Set<BlockPos> seen = new HashSet<>();
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;
@@ -103,6 +100,14 @@ public final class MovingPistonTickSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void captureTickers(
+            List<MovingPistonTickSnapshot> result,
+            Set<BlockPos> seen,
+            ServerLevel world,
+            String dimension,
+            Set<Long> protectedChunks,
+            List<TickingBlockEntity> tickers)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void captureTickers(
             List<MovingPistonTickSnapshot> result,
             Set<BlockPos> seen,
@@ -111,39 +116,28 @@ public final class MovingPistonTickSnapshot {
             Set<Long> protectedChunks,
             List<TickingBlockEntity> tickers)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void captureTickers(
-                            List<MovingPistonTickSnapshot> result,
-                            Set<BlockPos> seen,
-                            ServerLevel world,
-                            String dimension,
-                            Set<Long> protectedChunks,
-                            List<TickingBlockEntity> tickers)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (TickingBlockEntity ticker : tickers)
+        *///?} else if (>=26.1 && <=26.3) {
         for (TickingBlockEntity ticker : tickers)
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (TickingBlockEntity ticker : tickers)
-*///?}
         {
             if (BlockEntityTickerSnapshot.removed(ticker)) continue;
             BlockPos position = ticker.getPos();
 
             //? if (>=1.18 && <=1.21.11) {
-            if (!protectedChunks.contains(new ChunkPos(position).toLong())
+            /*if (!protectedChunks.contains(new ChunkPos(position).toLong())
+                    || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
+                            instanceof PistonMovingBlockEntity)
+                    || !seen.add(position))
+            *///?} else if (>=26.1 && <=26.3) {
+            if (!protectedChunks.contains(ChunkPos.containing(position).pack())
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                             instanceof PistonMovingBlockEntity)
                     || !seen.add(position))
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (!protectedChunks.contains(ChunkPos.containing(position).pack())
-                                || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                                        instanceof PistonMovingBlockEntity)
-                                || !seen.add(position))
-*///?}
             {
                 continue;
             }
@@ -154,13 +148,12 @@ public final class MovingPistonTickSnapshot {
             snapshot.z = position.getZ();
 
             //? if (>=1.18 && <=1.21.11) {
+            /*if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
+                    instanceof PistonMovingBlockEntity piston)
+            *///?} else if (>=26.1 && <=26.3) {
             if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                     instanceof PistonMovingBlockEntity piston)
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                                instanceof PistonMovingBlockEntity piston)
-*///?}
             {
                 com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin accessor =
                         (com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin) piston;

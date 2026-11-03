@@ -1,53 +1,53 @@
 package com.atsukimc.anticrash.player;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.CompoundTag;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.Tag;
-//?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.nbt.EndTag;
+/*import net.minecraft.nbt.Tag;
 *///?}
-
-//? if (>=1.18.1 && <=1.21.11) {
+//? if (>=26.1 && <=26.3) {
 import net.minecraft.nbt.EndTag;
 //?}
-//? if (>=26.1 && <=26.3) {
-/*import net.minecraft.nbt.NbtAccounter;
+
+//? if (>=1.18.1 && <=1.21.11) {
+/*import net.minecraft.nbt.EndTag;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.NbtAccounter;
+//?}
 
 //? if 1.18 || (>=1.20.4 && <=26.3) {
-/*import net.minecraft.nbt.NbtIo;
-*///?}
-
-//? if (>=1.18.1 && <=1.20.3) {
 import net.minecraft.nbt.NbtIo;
 //?}
+
+//? if (>=1.18.1 && <=1.20.3) {
+/*import net.minecraft.nbt.NbtIo;
+*///?}
 //? if 1.18 {
 /*import net.minecraft.nbt.EndTag;
 *///?}
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.nbt.Tag;
-*///?}
+import net.minecraft.nbt.Tag;
+//?}
 
 //? if (>=1.18 && <=1.20.3) {
-import net.minecraft.nbt.NbtAccounter;
-//?}
+/*import net.minecraft.nbt.NbtAccounter;
+*///?}
 //? if (>=1.20.4 && <=1.21.11) {
 /*import net.minecraft.nbt.NbtAccounter;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.TagTypes;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.TagTypes;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.nbt.TagTypes;
+//?}
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -63,26 +63,23 @@ public final class NbtCodec {
     private NbtCodec() {}
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static String encode(Tag element) throws IOException
+                *///?} else if (>=26.1 && <=26.3) {
     public static String encode(Tag element) throws IOException
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static String encode(Tag element) throws IOException
-*///?}
             {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (DataOutputStream output = new DataOutputStream(bytes)) {
 
             //? if (>=1.18 && <=1.21.11) {
-            //? if (>=1.18 && <=1.20.2) {
-            NbtIo.writeUnnamedTag(element, output);
+            /*//? if (>=1.18 && <=1.20.2) {
+            /^NbtIo.writeUnnamedTag(element, output);
+            ^///?} else if (>=1.20.3 && <=1.21.11) {
+            /^NbtIo.writeUnnamedTagWithFallback(element, output);
+            ^///?}
+            *///?} else if (>=26.1 && <=26.3) {
+            NbtIo.writeUnnamedTagWithFallback(element, output);
             //?}
-            //? if (>=1.20.3 && <=1.21.11) {
-            /*NbtIo.writeUnnamedTagWithFallback(element, output);
-            *///?}
-            //?}
-            //? if (>=26.1 && <=26.3) {
-            /*NbtIo.writeUnnamedTagWithFallback(element, output);
-*///?}
 
         }
         if (bytes.size() > MAX_NBT_BYTES) throw new IOException("NBT snapshot exceeds 16 MiB");
@@ -90,11 +87,10 @@ public final class NbtCodec {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static Tag decode(String encoded) throws IOException
+                *///?} else if (>=26.1 && <=26.3) {
     public static Tag decode(String encoded) throws IOException
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static Tag decode(String encoded) throws IOException
-*///?}
             {
         if (encoded == null || encoded.isBlank()) return null;
         if (encoded.length() > MAX_ENCODED_CHARS)
@@ -110,52 +106,44 @@ public final class NbtCodec {
             int type = input.readUnsignedByte();
 
             //? if (>=1.18.1 && <=1.21.11) {
+            /*if (type == Tag.TAG_END)
+            *///?} else if 1.18 {
+            /*if (type == Tag.TAG_END)
+*///?} else if (>=26.1 && <=26.3) {
             if (type == Tag.TAG_END)
             //?}
-            //? if 1.18 {
-            /*if (type == Tag.TAG_END)
-*///?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (type == Tag.TAG_END)
-*///?}
             {
                 if (input.available() != 0)
                     throw new IOException("Encoded NBT contains trailing bytes");
 
                 //? if (>=1.18.1 && <=1.21.11) {
+                /*return EndTag.INSTANCE;
+                *///?} else if 1.18 {
+                /*return EndTag.INSTANCE;
+*///?} else if (>=26.1 && <=26.3) {
                 return EndTag.INSTANCE;
                 //?}
-                //? if 1.18 {
-                /*return EndTag.INSTANCE;
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*return EndTag.INSTANCE;
-*///?}
 
             }
             input.readUTF(); // root name; encode() writes the empty name used by Vanilla NbtIo
 
             //? if (>=1.18 && <=1.21.11) {
+            /*final Tag element;
+            *///?} else if (>=26.1 && <=26.3) {
             final Tag element;
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*final Tag element;
-*///?}
 
             try {
 
                 //? if (>=1.18 && <=1.20.1) {
-                element = TagTypes.getType(type).load(input, 0, new NbtAccounter(MAX_NBT_BYTES));
+                /*element = TagTypes.getType(type).load(input, 0, new NbtAccounter(MAX_NBT_BYTES));
+                *///?} else if (>=1.20.2 && <=1.20.3) {
+                /*element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
+*///?} else if (>=1.20.4 && <=1.21.11) {
+                /*element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
+*///?} else if (>=26.1 && <=26.3) {
+                element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
                 //?}
-                //? if (>=1.20.2 && <=1.20.3) {
-                /*element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
-*///?}
-                //? if (>=1.20.4 && <=1.21.11) {
-                /*element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
-*///?}
-                //? if (>=26.1 && <=26.3) {
-                /*element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
-*///?}
 
             } catch (RuntimeException exception) {
                 throw new IOException("NBT exceeds its allocation or structural limit", exception);
@@ -167,27 +155,24 @@ public final class NbtCodec {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static CompoundTag decodeCompound(String encoded) throws IOException
+                *///?} else if (>=26.1 && <=26.3) {
     public static CompoundTag decodeCompound(String encoded) throws IOException
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static CompoundTag decodeCompound(String encoded) throws IOException
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.11) {
+        /*Tag element = decode(encoded);
+        *///?} else if (>=26.1 && <=26.3) {
         Tag element = decode(encoded);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*Tag element = decode(encoded);
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        if (!(element instanceof CompoundTag compound))
+        /*if (!(element instanceof CompoundTag compound))
 
+            *///?} else if (>=26.1 && <=26.3) {
+        if (!(element instanceof CompoundTag compound))
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*if (!(element instanceof CompoundTag compound))
-*///?}
             throw new IOException("Encoded NBT is not a compound");
         return compound;
     }

@@ -1,18 +1,18 @@
 package com.atsukimc.anticrash.command;
 
 //? if (>=1.18 && <=1.21.11) {
-import static net.minecraft.commands.Commands.argument;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import static net.minecraft.commands.Commands.argument;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import static net.minecraft.commands.Commands.argument;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import static net.minecraft.commands.Commands.literal;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import static net.minecraft.commands.Commands.literal;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import static net.minecraft.commands.Commands.literal;
+//?}
 
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
@@ -25,18 +25,18 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.commands.CommandSourceStack;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.commands.CommandSourceStack;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.commands.CommandSourceStack;
+//?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.network.chat.Component;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.network.chat.Component;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.network.chat.Component;
+//?}
 
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -52,13 +52,12 @@ public final class AntiCrashCommand {
     private AntiCrashCommand() {}
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static void register(
+            CommandDispatcher<CommandSourceStack> dispatcher, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     public static void register(
             CommandDispatcher<CommandSourceStack> dispatcher, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static void register(
-                            CommandDispatcher<CommandSourceStack> dispatcher, AntiCrashController controller)
-*///?}
             {
         registerAnswer(dispatcher, controller, "y", true);
         registerAnswer(dispatcher, controller, "Y", true);
@@ -471,19 +470,18 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void registerAnswer(
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            AntiCrashController controller,
+            String name,
+            boolean restore)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void registerAnswer(
             CommandDispatcher<CommandSourceStack> dispatcher,
             AntiCrashController controller,
             String name,
             boolean restore)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void registerAnswer(
-                            CommandDispatcher<CommandSourceStack> dispatcher,
-                            AntiCrashController controller,
-                            String name,
-                            boolean restore)
-*///?}
             {
         dispatcher.register(
                 literal(name)
@@ -493,30 +491,27 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static boolean permitted(CommandSourceStack source, int permissionLevel)
+                *///?} else if (>=26.1 && <=26.3) {
     private static boolean permitted(CommandSourceStack source, int permissionLevel)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static boolean permitted(CommandSourceStack source, int permissionLevel)
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.10) {
-        return source.hasPermission(permissionLevel);
+        /*return source.hasPermission(permissionLevel);
+        *///?} else if (>=1.21.11 && <=26.3) {
+        return VersionPermissions.hasLevel(source, permissionLevel);
         //?}
-        //? if (>=1.21.11 && <=26.3) {
-        /*return VersionPermissions.hasLevel(source, permissionLevel);
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static boolean hasAnyPermission(
+            CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static boolean hasAnyPermission(
             CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static boolean hasAnyPermission(
-                            CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         var commands = controller.config().commands;
         return permitted(source, commands.help)
@@ -533,21 +528,19 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int overview(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int overview(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int overview(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         return help(source, controller);
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int help(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int help(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int help(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         feedback(source, message(controller, "command.help.header"), false);
         if (permitted(source, controller.config().commands.start))
@@ -572,11 +565,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int status(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int status(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int status(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         AntiCrashController.StatusSnapshot status = controller.statusSnapshot();
         feedback(
@@ -645,11 +637,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int checkpoint(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int checkpoint(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int checkpoint(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.requestCheckpoint()) {
             feedback(source, message(controller, "command.checkpoint.requested"), true);
@@ -660,11 +651,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int checkpointBase(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int checkpointBase(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int checkpointBase(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.requestBaseCheckpoint()) {
             feedback(source, message(controller, "command.checkpoint.base_requested"), true);
@@ -675,12 +665,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int checkpointCompact(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int checkpointCompact(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int checkpointCompact(
-                            CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.requestCheckpointCompaction()) {
             feedback(source, message(controller, "command.checkpoint.compaction_requested"), true);
@@ -691,11 +679,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int freeze(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int freeze(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int freeze(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.freeze()) {
             feedback(source, message(controller, "command.freeze", controller.state()), true);
@@ -706,13 +693,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int restore(
+            CommandSourceStack source, AntiCrashController controller, String id)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int restore(
             CommandSourceStack source, AntiCrashController controller, String id)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int restore(
-                            CommandSourceStack source, AntiCrashController controller, String id)
-*///?}
             {
         if (controller.scheduleCheckpointRestore(id)) {
             feedback(source, message(controller, "command.restore.scheduled", id), true);
@@ -723,13 +709,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int start(
+            CommandSourceStack source, AntiCrashController controller, boolean force)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int start(
             CommandSourceStack source, AntiCrashController controller, boolean force)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int start(
-                            CommandSourceStack source, AntiCrashController controller, boolean force)
-*///?}
             {
         // Ask for the reason before the attempt: a successful request changes the state that the
         // explanation is derived from.
@@ -750,11 +735,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int abort(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int abort(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int abort(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.abortRecovery()) {
             feedback(source, message(controller, "command.abort.scheduled"), true);
@@ -765,11 +749,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int continueRecovery(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int continueRecovery(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int continueRecovery(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         if (controller.continueRecovery()) {
             feedback(source, message(controller, "command.continue.success"), true);
@@ -780,13 +763,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int answer(
+            CommandSourceStack source, AntiCrashController controller, boolean restore)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int answer(
             CommandSourceStack source, AntiCrashController controller, boolean restore)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int answer(
-                            CommandSourceStack source, AntiCrashController controller, boolean restore)
-*///?}
             {
         String checkpointId = controller.selectedCheckpointId();
         if (controller.answerRecovery(restore)) {
@@ -803,11 +785,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int reload(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int reload(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int reload(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             controller.reloadConfig();
@@ -820,11 +801,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int list(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int list(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int list(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             List<Path> checkpoints = controller.availableCheckpoints();
@@ -845,13 +825,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int inspect(
+            CommandSourceStack source, AntiCrashController controller, String id)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int inspect(
             CommandSourceStack source, AntiCrashController controller, String id)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int inspect(
-                            CommandSourceStack source, AntiCrashController controller, String id)
-*///?}
             {
         try {
             CheckpointManifest manifest = controller.manifest(id);
@@ -879,11 +858,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int journalStatus(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int journalStatus(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int journalStatus(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             feedback(
@@ -905,11 +883,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int journalList(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int journalList(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int journalList(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             feedback(
@@ -929,11 +906,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int fakePlayers(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int fakePlayers(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int fakePlayers(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         List<FakePlayerSnapshot> players = controller.currentFakePlayers();
         feedback(
@@ -947,13 +923,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int restoreFakePlayers(
+            CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int restoreFakePlayers(
             CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int restoreFakePlayers(
-                            CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             CarpetIntegration.RestoreSummary summary = controller.restoreFakePlayersNow();
@@ -979,13 +954,12 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int fakePlayerInfo(
+            CommandSourceStack source, AntiCrashController controller, String name)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int fakePlayerInfo(
             CommandSourceStack source, AntiCrashController controller, String name)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int fakePlayerInfo(
-                            CommandSourceStack source, AntiCrashController controller, String name)
-*///?}
             {
         FakePlayerSnapshot found =
                 controller.currentFakePlayers().stream()
@@ -1013,11 +987,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int debugDump(CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int debugDump(CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int debugDump(CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         try {
             controller.debugDump();
@@ -1030,65 +1003,60 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int recoveryVerify(
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int recoveryVerify(
             CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int recoveryVerify(
-                            CommandSourceStack source, AntiCrashController controller, boolean verbose)
-*///?}
             {
         feedback(source, controller.renderEquivalence(verbose), false);
         return 1;
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int debugEquivalence(
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int debugEquivalence(
             CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int debugEquivalence(
-                            CommandSourceStack source, AntiCrashController controller, boolean verbose)
-*///?}
             {
         feedback(source, controller.renderEquivalence(verbose), false);
         return 1;
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int checkpointPerformance(
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int checkpointPerformance(
             CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int checkpointPerformance(
-                            CommandSourceStack source, AntiCrashController controller, boolean verbose)
-*///?}
             {
         feedback(source, controller.checkpointPerformanceReport(verbose), false);
         return 1;
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int debugMirror(
+            CommandSourceStack source, AntiCrashController controller, boolean audit)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int debugMirror(
             CommandSourceStack source, AntiCrashController controller, boolean audit)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int debugMirror(
-                            CommandSourceStack source, AntiCrashController controller, boolean audit)
-*///?}
             {
         feedback(source, controller.checkpointMirrorReport(audit), false);
         return 1;
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static int resetCheckpointPerformance(
+            CommandSourceStack source, AntiCrashController controller)
+                *///?} else if (>=26.1 && <=26.3) {
     private static int resetCheckpointPerformance(
             CommandSourceStack source, AntiCrashController controller)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static int resetCheckpointPerformance(
-                            CommandSourceStack source, AntiCrashController controller)
-*///?}
             {
         controller.resetCheckpointPerformance();
         feedback(source, message(controller, "command.debug.performance_reset"), true);
@@ -1180,11 +1148,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void feedback(CommandSourceStack source, String message, boolean broadcast)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void feedback(CommandSourceStack source, String message, boolean broadcast)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void feedback(CommandSourceStack source, String message, boolean broadcast)
-*///?}
             {
         AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
         if (controller != null && fromConsole(source)) {
@@ -1198,23 +1165,20 @@ public final class AntiCrashCommand {
         }
 
         //? if (>=1.18 && <=1.19.4) {
-        source.sendSuccess(text(message), broadcast);
+        /*source.sendSuccess(text(message), broadcast);
+        *///?} else if (>=1.20 && <=1.21.11) {
+        /*source.sendSuccess(() -> text(message), broadcast);
+*///?} else if (>=26.1 && <=26.3) {
+        source.sendSuccess(() -> text(message), broadcast);
         //?}
-        //? if (>=1.20 && <=1.21.11) {
-        /*source.sendSuccess(() -> text(message), broadcast);
-*///?}
-        //? if (>=26.1 && <=26.3) {
-        /*source.sendSuccess(() -> text(message), broadcast);
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static void error(CommandSourceStack source, String message)
+                *///?} else if (>=26.1 && <=26.3) {
     private static void error(CommandSourceStack source, String message)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static void error(CommandSourceStack source, String message)
-*///?}
             {
         AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
         if (controller != null && fromConsole(source)) {
@@ -1223,20 +1187,18 @@ public final class AntiCrashCommand {
         }
 
         //? if (>=1.18 && <=1.21.11) {
+        /*source.sendFailure(text(message));
+        *///?} else if (>=26.1 && <=26.3) {
         source.sendFailure(text(message));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*source.sendFailure(text(message));
-*///?}
 
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static boolean fromConsole(CommandSourceStack source)
+                *///?} else if (>=26.1 && <=26.3) {
     private static boolean fromConsole(CommandSourceStack source)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static boolean fromConsole(CommandSourceStack source)
-*///?}
             {
         com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin accessor =
                 (com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin) source;
@@ -1245,11 +1207,10 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static Component text(String message)
+                *///?} else if (>=26.1 && <=26.3) {
     private static Component text(String message)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*private static Component text(String message)
-*///?}
             {
         AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
         return com.atsukimc.anticrash.logging.ChatStyle.text(

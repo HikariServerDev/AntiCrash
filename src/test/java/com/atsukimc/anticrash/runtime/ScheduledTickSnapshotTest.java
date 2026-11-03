@@ -14,8 +14,8 @@ class ScheduledTickSnapshotTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         RuntimeCapsule.WorldRuntime world = new RuntimeCapsule.WorldRuntime();
         world.dimension = "minecraft:overworld";

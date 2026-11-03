@@ -291,8 +291,8 @@ class RecoveryPayloadValidatorTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         // This fixture exercises the pre-v6 compatibility validator. New STRICT fixtures are
         // built separately with the exact v6 domain and fingerprint fields.
@@ -313,8 +313,8 @@ class RecoveryPayloadValidatorTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         capsule.formatVersion = 6;
         capsule.fidelity = "STRICT";

@@ -20,11 +20,12 @@ val requested = providers.gradleProperty("mcVersion").orNull
 require(requested == null || requested in targets) { "Unsupported Minecraft version: $requested" }
 val active = Regex("stonecutter active \"([0-9.]+)\"")
     .find(file("stonecutter.gradle.kts").readText())!!.groupValues[1]
-val nodes = if (requested == null) targets else listOf("1.18.2", active, requested).distinct()
+val vcs = targets.last()
+val nodes = if (requested == null) targets else listOf(vcs, active, requested).distinct()
 stonecutter {
     create(rootProject) {
         versions(*nodes.toTypedArray())
-        vcsVersion = "1.18.2"
+        vcsVersion = vcs
     }
 }
 rootProject.name = "AntiCrash"

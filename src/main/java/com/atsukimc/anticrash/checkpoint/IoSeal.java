@@ -6,23 +6,23 @@ import com.atsukimc.anticrash.mixin.StorageIoWorkerResultAccessorMixin;
 import com.atsukimc.anticrash.snapshot.PendingRegionWrite;
 
 //? if (>=26.1 && <=26.3) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-
-//? if (>=1.18 && <=1.21.1) {
-import com.mojang.datafixers.util.Either;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
 import net.minecraft.world.level.ChunkPos;
 //?}
 
+//? if (>=1.18 && <=1.21.1) {
+/*import com.mojang.datafixers.util.Either;
+*///?}
+
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.chunk.storage.IOWorker;
-//?}
-//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.world.level.ChunkPos;
+*///?}
+
+//? if (>=1.18 && <=1.21.11) {
 /*import net.minecraft.world.level.chunk.storage.IOWorker;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.chunk.storage.IOWorker;
+//?}
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -70,11 +70,10 @@ final class IoSeal implements AutoCloseable {
      */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException
+                *///?} else if (>=26.1 && <=26.3) {
     static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException
-*///?}
             {
         IoSeal seal = new IoSeal();
         List<CompletableFuture<List<PendingRegionWrite>>> captured =
@@ -84,11 +83,10 @@ final class IoSeal implements AutoCloseable {
         long started = System.nanoTime();
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (IOWorker worker : workers)
+        *///?} else if (>=26.1 && <=26.3) {
         for (IOWorker worker : workers)
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (IOWorker worker : workers)
-*///?}
         {
             StorageIoWorkerAccessorMixin accessor = (StorageIoWorkerAccessorMixin) worker;
             Path directory =
@@ -118,21 +116,19 @@ final class IoSeal implements AutoCloseable {
                     pending.completeExceptionally(failure);
 
                     //? if (>=1.18 && <=1.21.1) {
-                    return Either.left(null);
+                    /*return Either.left(null);
+                    *///?} else if (>=1.21.2 && <=26.3) {
+                    return null;
                     //?}
-                    //? if (>=1.21.2 && <=26.3) {
-                    /*return null;
-*///?}
 
                 }
                 seal.hold();
 
                 //? if (>=1.18 && <=1.21.1) {
-                return Either.left(null);
+                /*return Either.left(null);
+                *///?} else if (>=1.21.2 && <=26.3) {
+                return null;
                 //?}
-                //? if (>=1.21.2 && <=26.3) {
-                /*return null;
-*///?}
 
             });
         }

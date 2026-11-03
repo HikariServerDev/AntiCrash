@@ -10,95 +10,66 @@ public final class CheckpointManifest {
     public String antiCrashVersion = com.atsukimc.anticrash.AntiCrashMod.VERSION;
 
     //? if 1.18.2 {
-    public static final String CURRENT_MINECRAFT_VERSION = "1.18.2";
-    //?}
-    //? if 1.18 {
+    /*public static final String CURRENT_MINECRAFT_VERSION = "1.18.2";
+    *///?} else if 1.18 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.18";
-*///?}
-    //? if 1.18.1 {
+*///?} else if 1.18.1 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.18.1";
-*///?}
-    //? if 1.19 {
+*///?} else if 1.19 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.19";
-*///?}
-    //? if 1.19.1 {
+*///?} else if 1.19.1 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.1";
-*///?}
-    //? if 1.19.2 {
+*///?} else if 1.19.2 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.2";
-*///?}
-    //? if 1.19.3 {
+*///?} else if 1.19.3 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.3";
-*///?}
-    //? if 1.19.4 {
+*///?} else if 1.19.4 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.4";
-*///?}
-    //? if 1.20 {
+*///?} else if 1.20 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20";
-*///?}
-    //? if 1.20.1 {
+*///?} else if 1.20.1 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.1";
-*///?}
-    //? if 1.20.2 {
+*///?} else if 1.20.2 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.2";
-*///?}
-    //? if 1.20.3 {
+*///?} else if 1.20.3 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.3";
-*///?}
-    //? if 1.20.4 {
+*///?} else if 1.20.4 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.4";
-*///?}
-    //? if 1.20.5 {
+*///?} else if 1.20.5 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.5";
-*///?}
-    //? if 1.20.6 {
+*///?} else if 1.20.6 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.6";
-*///?}
-    //? if 1.21 {
+*///?} else if 1.21 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21";
-*///?}
-    //? if 1.21.1 {
+*///?} else if 1.21.1 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.1";
-*///?}
-    //? if 1.21.2 {
+*///?} else if 1.21.2 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.2";
-*///?}
-    //? if 1.21.3 {
+*///?} else if 1.21.3 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.3";
-*///?}
-    //? if 1.21.4 {
+*///?} else if 1.21.4 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.4";
-*///?}
-    //? if 1.21.5 {
+*///?} else if 1.21.5 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.5";
-*///?}
-    //? if 1.21.6 {
+*///?} else if 1.21.6 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.6";
-*///?}
-    //? if 1.21.7 {
+*///?} else if 1.21.7 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.7";
-*///?}
-    //? if 1.21.8 {
+*///?} else if 1.21.8 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.8";
-*///?}
-    //? if 1.21.9 {
+*///?} else if 1.21.9 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.9";
-*///?}
-    //? if 1.21.10 {
+*///?} else if 1.21.10 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.10";
-*///?}
-    //? if 1.21.11 {
+*///?} else if 1.21.11 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.11";
-*///?}
-    //? if 26.1 {
+*///?} else if 26.1 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "26.1";
-*///?}
-    //? if 26.2 {
+*///?} else if 26.2 {
     /*public static final String CURRENT_MINECRAFT_VERSION = "26.2";
-*///?}
-    //? if 26.3 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "26.3";
-*///?}
+*///?} else if 26.3 {
+    public static final String CURRENT_MINECRAFT_VERSION = "26.3";
+    //?}
 
     public String minecraftVersion = CURRENT_MINECRAFT_VERSION;
     public String fabricLoaderVersion;

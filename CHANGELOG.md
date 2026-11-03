@@ -1,8 +1,11 @@
 # Changelog
 
-## Unreleased
+## 1.0.4 — build and source maintenance
 
-- Develop 1.18–1.21.11 against the official Mojang mappings instead of Yarn, nothing can see in the game
+- Use the latest supported Minecraft version as the Stonecutter VCS baseline.
+- Consolidate mutually exclusive version conditions and verify their expanded Java tokens across all 30 targets.
+- Run formatting, source ownership checks, and script regression tests through Gradle and CI.
+- Integrate the Mojang mappings update from PR #5 while retaining version-specific runtime code and Mixin contracts.
 
 ## 1.0.3 — source/build structure
 

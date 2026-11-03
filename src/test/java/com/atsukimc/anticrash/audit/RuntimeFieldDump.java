@@ -1,22 +1,22 @@
 package com.atsukimc.anticrash.audit;
 
 //? if (>=1.18 && <=1.19.2) {
-import java.lang.reflect.Field;
-//?}
-//? if (>=1.19.3 && <=26.3) {
-/*import org.objectweb.asm.ClassReader;
+/*import java.lang.reflect.Field;
 *///?}
+//? if (>=1.19.3 && <=26.3) {
+import org.objectweb.asm.ClassReader;
+//?}
 
 //? if (>=1.18 && <=1.19.2) {
-import java.lang.reflect.Modifier;
-//?}
-//? if (>=1.19.3 && <=26.3) {
-/*import org.objectweb.asm.Opcodes;
+/*import java.lang.reflect.Modifier;
 *///?}
+//? if (>=1.19.3 && <=26.3) {
+import org.objectweb.asm.Opcodes;
+//?}
 
 //? if (>=1.19.3 && <=26.3) {
-/*import org.objectweb.asm.tree.ClassNode;
-*///?}
+import org.objectweb.asm.tree.ClassNode;
+//?}
 
 import java.net.URI;
 import java.nio.file.FileSystem;
@@ -54,61 +54,53 @@ final class RuntimeFieldDump {
                         // Read bytecode rather than silently skipping classes on a VerifyError.
 
                         //? if (>=1.19.3 && <=26.3) {
-                        /*ClassNode type = new ClassNode();
-*///?}
-
-                        //? if (>=1.18 && <=1.19.2) {
-                        Class<?> type;
-                        //?}
+                        ClassNode type = new ClassNode();
+                        //?} else if (>=1.18 && <=1.19.2) {
+                        /*Class<?> type;
+                        *///?}
                         //? if (>=1.19.3 && <=26.3) {
-                        /*new ClassReader(Files.readAllBytes(path))
-                                                        .accept(
-                                                                type,
-                                                                ClassReader.SKIP_CODE
-                                                                        | ClassReader.SKIP_DEBUG
-                                                                        | ClassReader.SKIP_FRAMES);
-*///?}
-
-                        //? if (>=1.18 && <=1.19.2) {
-                        try {
+                        new ClassReader(Files.readAllBytes(path))
+                                .accept(
+                                        type,
+                                        ClassReader.SKIP_CODE
+                                                | ClassReader.SKIP_DEBUG
+                                                | ClassReader.SKIP_FRAMES);
+                        //?} else if (>=1.18 && <=1.19.2) {
+                        /*try {
                             type = Class.forName(name, false, base.getClassLoader());
                         } catch (Throwable unloadable) {
                             continue;
                         }
-                        //?}
+                        *///?}
 
                         //? if (>=1.18 && <=1.19.2) {
-                        if (!base.isAssignableFrom(type))
+                        /*if (!base.isAssignableFrom(type))
+                            *///?} else if (>=1.19.3 && <=26.3) {
+                        if (!inherits(type, base.getName().replace('.', '/')))
                             //?}
-                            //? if (>=1.19.3 && <=26.3) {
-                            /*if (!inherits(type, base.getName().replace('.', '/')))
-*///?}
                             continue;
                         List<String> fields = new ArrayList<>();
 
                         //? if (>=1.18 && <=1.19.2) {
-                        for (Field field : type.getDeclaredFields())
+                        /*for (Field field : type.getDeclaredFields())
+                        *///?} else if (>=1.19.3 && <=26.3) {
+                        for (var field : type.fields)
                         //?}
-                        //? if (>=1.19.3 && <=26.3) {
-                        /*for (var field : type.fields)
-*///?}
                         {
 
                             //? if (>=1.18 && <=1.19.2) {
-                            if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic())
+                            /*if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic())
 
+                                *///?} else if (>=1.19.3 && <=26.3) {
+                            if ((field.access & (Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC)) != 0)
                                 //?}
-                                //? if (>=1.19.3 && <=26.3) {
-                                /*if ((field.access & (Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC)) != 0)
-*///?}
                                 continue;
 
                             //? if (>=1.18 && <=1.19.2) {
-                            fields.add(field.getName());
+                            /*fields.add(field.getName());
+                            *///?} else if (>=1.19.3 && <=26.3) {
+                            fields.add(field.name);
                             //?}
-                            //? if (>=1.19.3 && <=26.3) {
-                            /*fields.add(field.name);
-*///?}
 
                         }
                         result.put(name, fields);
@@ -120,40 +112,40 @@ final class RuntimeFieldDump {
     }
 
     //? if (>=1.19.3 && <=26.3) {
-    /*private static boolean inherits(ClassNode type, String base) throws Exception {
-            if (type.name.equals(base)) return true;
-*///?}
+    private static boolean inherits(ClassNode type, String base) throws Exception {
+        if (type.name.equals(base)) return true;
+        //?}
 
-    //? if (>=1.19.3 && <=26.3) {
-    /*if (type.superName == null || type.superName.equals("java/lang/Object")) return false;
-*///?}
+        //? if (>=1.19.3 && <=26.3) {
+        if (type.superName == null || type.superName.equals("java/lang/Object")) return false;
+        //?}
 
-    //? if (>=1.19.3 && <=26.3) {
-    /*try (var input =
-                    RuntimeFieldDump.class
-                            .getClassLoader()
-                            .getResourceAsStream(type.superName + ".class")) {
-                if (input == null)
-                    throw new IllegalStateException("Missing superclass: " + type.superName);
-*///?}
+        //? if (>=1.19.3 && <=26.3) {
+        try (var input =
+                RuntimeFieldDump.class
+                        .getClassLoader()
+                        .getResourceAsStream(type.superName + ".class")) {
+            if (input == null)
+                throw new IllegalStateException("Missing superclass: " + type.superName);
+            //?}
 
-    //? if (>=1.19.3 && <=26.3) {
-    /*ClassNode parent = new ClassNode();
-*///?}
+            //? if (>=1.19.3 && <=26.3) {
+            ClassNode parent = new ClassNode();
+            //?}
 
-    //? if (>=1.19.3 && <=26.3) {
-    /*new ClassReader(input)
-                        .accept(
-                                parent,
-                                ClassReader.SKIP_CODE
-                                        | ClassReader.SKIP_DEBUG
-                                        | ClassReader.SKIP_FRAMES);
-*///?}
+            //? if (>=1.19.3 && <=26.3) {
+            new ClassReader(input)
+                    .accept(
+                            parent,
+                            ClassReader.SKIP_CODE
+                                    | ClassReader.SKIP_DEBUG
+                                    | ClassReader.SKIP_FRAMES);
+            //?}
 
-    //? if (>=1.19.3 && <=26.3) {
-    /*return inherits(parent, base);
-            }
+            //? if (>=1.19.3 && <=26.3) {
+            return inherits(parent, base);
         }
-*///?}
+    }
+    //?}
 
 }

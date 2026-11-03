@@ -3,11 +3,11 @@ package com.atsukimc.anticrash.checkpoint;
 import com.atsukimc.anticrash.mixin.StorageIoWorkerAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.chunk.storage.IOWorker;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.IOWorker;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.chunk.storage.IOWorker;
+//?}
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,12 +29,12 @@ public final class WriteHold {
     private static volatile long heldUntil;
 
     //? if (>=1.18 && <=1.21.11) {
+    /*private static final Set<IOWorker> DEFERRED = ConcurrentHashMap.newKeySet();
+
+    *///?} else if (>=26.1 && <=26.3) {
     private static final Set<IOWorker> DEFERRED = ConcurrentHashMap.newKeySet();
 
     //?}
-    //? if (>=26.1 && <=26.3) {
-    /*private static final Set<IOWorker> DEFERRED = ConcurrentHashMap.newKeySet();
-*///?}
 
     private WriteHold() {}
 
@@ -46,11 +46,10 @@ public final class WriteHold {
     /** Called by a worker about to write one queued result; true means skip it for now. */
 
     //? if (>=1.18 && <=1.21.11) {
+    /*public static boolean defer(IOWorker worker)
+                *///?} else if (>=26.1 && <=26.3) {
     public static boolean defer(IOWorker worker)
                 //?}
-                //? if (>=26.1 && <=26.3) {
-                /*public static boolean defer(IOWorker worker)
-*///?}
             {
         if (!held()) return false;
         DEFERRED.add(worker);
@@ -71,11 +70,10 @@ public final class WriteHold {
         heldUntil = 0L;
 
         //? if (>=1.18 && <=1.21.11) {
+        /*for (IOWorker worker : DEFERRED)
+        *///?} else if (>=26.1 && <=26.3) {
         for (IOWorker worker : DEFERRED)
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*for (IOWorker worker : DEFERRED)
-*///?}
         {
             DEFERRED.remove(worker);
             ((StorageIoWorkerAccessorMixin) worker).anticrash$writeRemainingResults();

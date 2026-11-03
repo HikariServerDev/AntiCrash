@@ -11,11 +11,11 @@ import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.level.ChunkPos;
-//?}
-//? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
+//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.level.ChunkPos;
+//?}
 
 import org.junit.jupiter.api.Test;
 
@@ -28,32 +28,29 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long loadedOnly = new ChunkPos(1, 2).toLong();
+        /*long loadedOnly = new ChunkPos(1, 2).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long loadedOnly = new ChunkPos(1, 2).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long loadedOnly = new ChunkPos(1, 2).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long entity = new ChunkPos(3, 4).toLong();
+        /*long entity = new ChunkPos(3, 4).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long entity = new ChunkPos(3, 4).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long entity = new ChunkPos(3, 4).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long forced = new ChunkPos(5, 6).toLong();
+        /*long forced = new ChunkPos(5, 6).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long forced = new ChunkPos(5, 6).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long forced = new ChunkPos(5, 6).pack();
-*///?}
 
         chunks.loadedChunks.addAll(List.of(loadedOnly, entity, forced));
         chunks.entityTickingChunks.add(entity);
@@ -76,39 +73,35 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long loadedOnly = new ChunkPos(1, 2).toLong();
+        /*long loadedOnly = new ChunkPos(1, 2).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long loadedOnly = new ChunkPos(1, 2).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long loadedOnly = new ChunkPos(1, 2).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long entity = new ChunkPos(3, 4).toLong();
+        /*long entity = new ChunkPos(3, 4).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long entity = new ChunkPos(3, 4).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long entity = new ChunkPos(3, 4).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long forced = new ChunkPos(5, 6).toLong();
+        /*long forced = new ChunkPos(5, 6).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long forced = new ChunkPos(5, 6).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long forced = new ChunkPos(5, 6).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long anchor = new ChunkPos(7, 8).toLong();
+        /*long anchor = new ChunkPos(7, 8).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long anchor = new ChunkPos(7, 8).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long anchor = new ChunkPos(7, 8).pack();
-*///?}
 
         chunks.loadedChunks.addAll(List.of(loadedOnly, entity, forced));
         chunks.entityTickingChunks.add(entity);
@@ -145,18 +138,17 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long transientChunk = new ChunkPos(-328, 123).toLong();
+        /*long transientChunk = new ChunkPos(-328, 123).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long transientChunk = new ChunkPos(-328, 123).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long transientChunk = new ChunkPos(-328, 123).pack();
-*///?}
 
         chunks.loadedChunks.add(transientChunk);
         chunks.entityTickingChunks.add(transientChunk);
@@ -183,32 +175,29 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long entityTicking = new ChunkPos(1, 1).toLong();
+        /*long entityTicking = new ChunkPos(1, 1).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long entityTicking = new ChunkPos(1, 1).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long entityTicking = new ChunkPos(1, 1).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long blockTicking = new ChunkPos(2, 2).toLong();
+        /*long blockTicking = new ChunkPos(2, 2).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long blockTicking = new ChunkPos(2, 2).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long blockTicking = new ChunkPos(2, 2).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long fullOnly = new ChunkPos(3, 3).toLong();
+        /*long fullOnly = new ChunkPos(3, 3).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long fullOnly = new ChunkPos(3, 3).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long fullOnly = new ChunkPos(3, 3).pack();
-*///?}
 
         chunks.loadedChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
         chunks.fullChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
@@ -222,18 +211,16 @@ class ChunkRecoveryPlanTest {
             tick.type = "minecraft:repeater";
 
             //? if (>=1.18 && <=1.21.11) {
-            tick.x = new ChunkPos(packed).getMinBlockX();
+            /*tick.x = new ChunkPos(packed).getMinBlockX();
+            *///?} else if (>=26.1 && <=26.3) {
+            tick.x = ChunkPos.unpack(packed).getMinBlockX();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*tick.x = ChunkPos.unpack(packed).getMinBlockX();
-*///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            tick.z = new ChunkPos(packed).getMinBlockZ();
+            /*tick.z = new ChunkPos(packed).getMinBlockZ();
+            *///?} else if (>=26.1 && <=26.3) {
+            tick.z = ChunkPos.unpack(packed).getMinBlockZ();
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*tick.z = ChunkPos.unpack(packed).getMinBlockZ();
-*///?}
 
             capsule.scheduledTicks.add(tick);
         }
@@ -256,32 +243,29 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long entityTicking = new ChunkPos(1, 1).toLong();
+        /*long entityTicking = new ChunkPos(1, 1).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long entityTicking = new ChunkPos(1, 1).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long entityTicking = new ChunkPos(1, 1).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long blockTicking = new ChunkPos(2, 2).toLong();
+        /*long blockTicking = new ChunkPos(2, 2).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long blockTicking = new ChunkPos(2, 2).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long blockTicking = new ChunkPos(2, 2).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long fullOnly = new ChunkPos(3, 3).toLong();
+        /*long fullOnly = new ChunkPos(3, 3).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long fullOnly = new ChunkPos(3, 3).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long fullOnly = new ChunkPos(3, 3).pack();
-*///?}
 
         chunks.loadedChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
         chunks.fullChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
@@ -313,8 +297,8 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         capsule.formatVersion = 1;
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
@@ -322,11 +306,10 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        chunks.transientStateChunks.add(new ChunkPos(10, 10).toLong());
+        /*chunks.transientStateChunks.add(new ChunkPos(10, 10).toLong());
+        *///?} else if (>=26.1 && <=26.3) {
+        chunks.transientStateChunks.add(new ChunkPos(10, 10).pack());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*chunks.transientStateChunks.add(new ChunkPos(10, 10).pack());
-*///?}
 
         capsule.chunks.add(chunks);
 
@@ -342,18 +325,17 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long dormant = new ChunkPos(20, 20).toLong();
+        /*long dormant = new ChunkPos(20, 20).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long dormant = new ChunkPos(20, 20).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long dormant = new ChunkPos(20, 20).pack();
-*///?}
 
         chunks.loadedChunks.add(dormant);
         chunks.transientStateChunks.add(dormant);
@@ -372,23 +354,22 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        chunks.forcedChunks.add(new ChunkPos(1, 1).toLong());
+        /*chunks.forcedChunks.add(new ChunkPos(1, 1).toLong());
+        *///?} else if (>=26.1 && <=26.3) {
+        chunks.forcedChunks.add(new ChunkPos(1, 1).pack());
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*chunks.forcedChunks.add(new ChunkPos(1, 1).pack());
-*///?}
 
         capsule.chunks.add(chunks);
 
         //? if (>=1.18 && <=1.21.11) {
-        assertThrows(
+        /*assertThrows(
                 IllegalArgumentException.class,
                 () ->
                         ChunkRecoveryPlan.select(
@@ -399,19 +380,18 @@ class ChunkRecoveryPlanTest {
                                                 "minecraft:overworld",
                                                 new ChunkPos(2, 2).toLong())),
                                 1));
+        *///?} else if (>=26.1 && <=26.3) {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        ChunkRecoveryPlan.select(
+                                capsule,
+                                ChunkRecoveryPlan.PreloadMode.CRITICAL,
+                                Set.of(
+                                        new ChunkRecoveryPlan.Anchor(
+                                                "minecraft:overworld", new ChunkPos(2, 2).pack())),
+                                1));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertThrows(
-                        IllegalArgumentException.class,
-                        () ->
-                                ChunkRecoveryPlan.select(
-                                        capsule,
-                                        ChunkRecoveryPlan.PreloadMode.CRITICAL,
-                                        Set.of(
-                                                new ChunkRecoveryPlan.Anchor(
-                                                        "minecraft:overworld", new ChunkPos(2, 2).pack())),
-                                        1));
-*///?}
 
         assertEquals(
                 ChunkRecoveryPlan.PreloadMode.CRITICAL,
@@ -419,60 +399,55 @@ class ChunkRecoveryPlanTest {
     }
 
     //? if (>=1.18 && <=1.21.4) {
-    @Test
+    /*@Test
     void convertsVanillaTicketLevelsToServerChunkManagerRadii()
+                *///?} else if (>=1.21.5 && <=26.3) {
+    @Test
+    void passesVanillaTicketLevelsDirectlyIn1215()
                 //?}
-                //? if (>=1.21.5 && <=26.3) {
-                /*@Test
-                    void passesVanillaTicketLevelsDirectlyIn1215()
-*///?}
             {
 
         //? if (>=1.18 && <=1.21.4) {
-        assertEquals(
-                0, ChunkRecoveryPlan.ticketRadiusForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
-        //?}
-        //? if (>=1.21.5 && <=26.3) {
         /*assertEquals(
-                        33, ChunkRecoveryPlan.ticketArgumentForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
-*///?}
+                0, ChunkRecoveryPlan.ticketRadiusForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertEquals(
+                33, ChunkRecoveryPlan.ticketArgumentForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
+        //?}
 
         //? if (>=1.18 && <=1.21.4) {
-        assertEquals(
+        /*assertEquals(
                 2,
                 ChunkRecoveryPlan.ticketRadiusForLevel(
                         ChunkRecoveryPlan.ENTITY_TICKING_TICKET_LEVEL));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertEquals(
+                31,
+                ChunkRecoveryPlan.ticketArgumentForLevel(
+                        ChunkRecoveryPlan.ENTITY_TICKING_TICKET_LEVEL));
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*assertEquals(
-                        31,
-                        ChunkRecoveryPlan.ticketArgumentForLevel(
-                                ChunkRecoveryPlan.ENTITY_TICKING_TICKET_LEVEL));
-*///?}
 
         //? if (>=1.18 && <=1.21.4) {
-        assertThrows(
-                IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketRadiusForLevel(-1));
-        //?}
-        //? if (>=1.21.5 && <=26.3) {
         /*assertThrows(
-                        IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketArgumentForLevel(-1));
-*///?}
+                IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketRadiusForLevel(-1));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertThrows(
+                IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketArgumentForLevel(-1));
+        //?}
 
         //? if (>=1.18 && <=1.21.4) {
-        assertThrows(
+        /*assertThrows(
                 IllegalArgumentException.class,
                 () ->
                         ChunkRecoveryPlan.ticketRadiusForLevel(
                                 ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertThrows(
+                IllegalArgumentException.class,
+                () ->
+                        ChunkRecoveryPlan.ticketArgumentForLevel(
+                                ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*assertThrows(
-                        IllegalArgumentException.class,
-                        () ->
-                                ChunkRecoveryPlan.ticketArgumentForLevel(
-                                        ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
-*///?}
 
     }
 
@@ -481,8 +456,8 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ScheduledTickSnapshot scheduled = new ScheduledTickSnapshot();
         scheduled.dimension = "minecraft:overworld";
@@ -507,38 +482,36 @@ class ChunkRecoveryPlanTest {
         assertEquals(2, selection.entries().size());
 
         //? if (>=1.18 && <=1.21.11) {
-        assertTrue(
+        /*assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
                                 entry.packedPosition() == new ChunkPos(2, 3).toLong()
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
+        *///?} else if (>=26.1 && <=26.3) {
+        assertTrue(
+                selection.entries().stream()
+                        .anyMatch(entry ->
+                                entry.packedPosition() == new ChunkPos(2, 3).pack()
+                                        && entry.ticketLevel()
+                                                == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertTrue(
-                        selection.entries().stream()
-                                .anyMatch(entry ->
-                                        entry.packedPosition() == new ChunkPos(2, 3).pack()
-                                                && entry.ticketLevel()
-                                                        == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        assertTrue(
+        /*assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
                                 entry.packedPosition() == new ChunkPos(-2, -1).toLong()
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
+        *///?} else if (>=26.1 && <=26.3) {
+        assertTrue(
+                selection.entries().stream()
+                        .anyMatch(entry ->
+                                entry.packedPosition() == new ChunkPos(-2, -1).pack()
+                                        && entry.ticketLevel()
+                                                == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*assertTrue(
-                        selection.entries().stream()
-                                .anyMatch(entry ->
-                                        entry.packedPosition() == new ChunkPos(-2, -1).pack()
-                                                && entry.ticketLevel()
-                                                        == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
-*///?}
 
     }
 
@@ -547,44 +520,41 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
         for (int index = 0; index < 2_489; index++) {
 
             //? if (>=1.18 && <=1.21.11) {
-            chunks.loadedChunks.add(new ChunkPos(index, 0).toLong());
+            /*chunks.loadedChunks.add(new ChunkPos(index, 0).toLong());
+            *///?} else if (>=26.1 && <=26.3) {
+            chunks.loadedChunks.add(new ChunkPos(index, 0).pack());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*chunks.loadedChunks.add(new ChunkPos(index, 0).pack());
-*///?}
 
         }
         for (int index = 0; index < 821; index++) {
 
             //? if (>=1.18 && <=1.21.11) {
-            chunks.entityTickingChunks.add(new ChunkPos(index, 100).toLong());
+            /*chunks.entityTickingChunks.add(new ChunkPos(index, 100).toLong());
+            *///?} else if (>=26.1 && <=26.3) {
+            chunks.entityTickingChunks.add(new ChunkPos(index, 100).pack());
             //?}
-            //? if (>=26.1 && <=26.3) {
-            /*chunks.entityTickingChunks.add(new ChunkPos(index, 100).pack());
-*///?}
 
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        long forced = new ChunkPos(0, 200).toLong();
+        /*long forced = new ChunkPos(0, 200).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long forced = new ChunkPos(0, 200).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long forced = new ChunkPos(0, 200).pack();
-*///?}
 
         chunks.forcedChunks.add(forced);
         capsule.chunks.add(chunks);
 
         //? if (>=1.18 && <=1.21.11) {
-        ChunkRecoveryPlan.Selection selection =
+        /*ChunkRecoveryPlan.Selection selection =
                 ChunkRecoveryPlan.select(
                         capsule,
                         ChunkRecoveryPlan.PreloadMode.CRITICAL,
@@ -594,37 +564,35 @@ class ChunkRecoveryPlanTest {
                                 new ChunkRecoveryPlan.Anchor(
                                         "minecraft:overworld", new ChunkPos(1, 201).toLong())),
                         256);
+        *///?} else if (>=26.1 && <=26.3) {
+        ChunkRecoveryPlan.Selection selection =
+                ChunkRecoveryPlan.select(
+                        capsule,
+                        ChunkRecoveryPlan.PreloadMode.CRITICAL,
+                        Set.of(
+                                new ChunkRecoveryPlan.Anchor(
+                                        "minecraft:overworld", new ChunkPos(0, 201).pack()),
+                                new ChunkRecoveryPlan.Anchor(
+                                        "minecraft:overworld", new ChunkPos(1, 201).pack())),
+                        256);
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*ChunkRecoveryPlan.Selection selection =
-                        ChunkRecoveryPlan.select(
-                                capsule,
-                                ChunkRecoveryPlan.PreloadMode.CRITICAL,
-                                Set.of(
-                                        new ChunkRecoveryPlan.Anchor(
-                                                "minecraft:overworld", new ChunkPos(0, 201).pack()),
-                                        new ChunkRecoveryPlan.Anchor(
-                                                "minecraft:overworld", new ChunkPos(1, 201).pack())),
-                                256);
-*///?}
 
         assertEquals(3, selection.entries().size());
         assertEquals(2_489, selection.deferredLoaded());
         assertEquals(821, selection.deferredEntityTicking());
 
         //? if (>=1.18 && <=1.21.4) {
-        assertTrue(
+        /*assertTrue(
                 selection.entries().stream()
                         .allMatch(entry ->
                                 ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel()) <= 2));
+        *///?} else if (>=1.21.5 && <=26.3) {
+        assertTrue(
+                selection.entries().stream()
+                        .allMatch(entry ->
+                                ChunkRecoveryPlan.ticketArgumentForLevel(entry.ticketLevel())
+                                        >= 31));
         //?}
-        //? if (>=1.21.5 && <=26.3) {
-        /*assertTrue(
-                        selection.entries().stream()
-                                .allMatch(entry ->
-                                        ChunkRecoveryPlan.ticketArgumentForLevel(entry.ticketLevel())
-                                                >= 31));
-*///?}
 
     }
 
@@ -633,33 +601,30 @@ class ChunkRecoveryPlanTest {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
         //? if (>=26.1 && <=26.3) {
-        /*capsule.clockStates = new java.util.ArrayList<>();
-*///?}
+        capsule.clockStates = new java.util.ArrayList<>();
+        //?}
 
         capsule.formatVersion = 6;
         ChunkStateSnapshot chunks = new ChunkStateSnapshot();
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        long entity = new ChunkPos(-330, 122).toLong();
+        /*long entity = new ChunkPos(-330, 122).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long entity = new ChunkPos(-330, 122).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long entity = new ChunkPos(-330, 122).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long full = new ChunkPos(-330, 123).toLong();
+        /*long full = new ChunkPos(-330, 123).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long full = new ChunkPos(-330, 123).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long full = new ChunkPos(-330, 123).pack();
-*///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        long forced = new ChunkPos(-330, 124).toLong();
+        /*long forced = new ChunkPos(-330, 124).toLong();
+        *///?} else if (>=26.1 && <=26.3) {
+        long forced = new ChunkPos(-330, 124).pack();
         //?}
-        //? if (>=26.1 && <=26.3) {
-        /*long forced = new ChunkPos(-330, 124).pack();
-*///?}
 
         chunks.loadedChunks.addAll(List.of(entity, full));
         chunks.fullChunks.addAll(List.of(entity, full));
