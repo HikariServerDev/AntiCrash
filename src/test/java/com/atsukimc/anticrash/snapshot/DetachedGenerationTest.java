@@ -40,6 +40,7 @@ class DetachedGenerationTest {
         SnapshotResult second =
                 DetachedGeneration.capture(live, child, index(first), Map.of(), null)
                         .materialize(parent, index(first), child, false, "PORTABLE_GENERATION");
+        awaitFilesystemClockTick(temp);
         Files.delete(parent.resolve("level.dat"));
         Path corrupt = child.resolve("level.dat");
         FileTime mtime = Files.getLastModifiedTime(corrupt);
@@ -69,6 +70,22 @@ class DetachedGenerationTest {
         Files.writeString(live.resolve("region/r.1.0.mca"), "region-b-1");
         Files.writeString(live.resolve("data/raids.dat"), "raids-1");
         Files.writeString(live.resolve("playerdata/player.dat"), "never-captured");
+    }
+
+    /**
+     * Inode timestamps follow the kernel's coarse clock, which advances only every few
+     * milliseconds on some kernels. A rewrite right after the capture would then keep the
+     * recorded ctime and pass the metadata fast path.
+     */
+    private static void awaitFilesystemClockTick(Path directory) throws Exception {
+        Path scratch = directory.resolve("clock-tick");
+        Files.writeString(scratch, "0");
+        long first = FileFacts.read(scratch).changeTime();
+        if (first == 0L) return; // no ctime on this filesystem; content is always authenticated
+        for (int attempt = 1; FileFacts.read(scratch).changeTime() == first; attempt++) {
+            Thread.sleep(1L);
+            Files.writeString(scratch, Integer.toString(attempt));
+        }
     }
 
     private static Map<String, SnapshotFile> index(SnapshotResult result) {
