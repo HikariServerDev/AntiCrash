@@ -10,6 +10,8 @@ import subprocess
 import tempfile
 import urllib.request
 
+from build_model import java_home
+
 FORMATTER = "2.0.0"
 SHA256 = "c78feb48c549fa7114b7ea11db3b456808f7b371ffe84e6643a44dd2f9588639"
 URL = f"https://github.com/google/google-java-format/releases/download/v{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
@@ -98,7 +100,8 @@ def main():
             downloaded.replace(jar)
     if hashlib.sha256(jar.read_bytes()).hexdigest() != SHA256:
         raise ValueError("Cached formatter checksum mismatch")
-    java = Path(os.environ["JAVA_HOME"]) / "bin/java" if os.environ.get("JAVA_HOME") else "java"
+    home = java_home(root)
+    java = home / "bin/java" if home else "java"
     # Formatting a Stonecutter directive as "// ?" silently disables it. Work on
     # temporary files, then restore this exact token before comparing/writing.
     sources = java_sources(root)

@@ -1,5 +1,6 @@
 """Read the same target/dependency matrix used by Stonecutter; no generated Java lives here."""
 from dataclasses import dataclass
+import os
 from pathlib import Path
 import re
 import tomllib
@@ -65,6 +66,14 @@ def load_targets(root):
     if not targets:
         raise ValueError('The build matrix is empty')
     return targets
+
+
+def java_home(root):
+    """The JDK the scripts launch: a pinned .toolchains/jdk-25* first, then JAVA_HOME, else PATH."""
+    bundled = sorted((root / '.toolchains').glob('jdk-25*'))
+    if bundled:
+        return bundled[-1]
+    return Path(os.environ['JAVA_HOME']) if os.environ.get('JAVA_HOME') else None
 
 
 def mod_version(root):

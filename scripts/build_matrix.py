@@ -9,7 +9,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 
-from build_model import load_targets, mod_version
+from build_model import java_home, load_targets, mod_version
 from verify_artifacts import verify
 
 
@@ -46,10 +46,9 @@ def main():
     output.mkdir(parents=True, exist_ok=True)
     environment = os.environ.copy()
     environment['JAVA_TOOL_OPTIONS'] = (environment.get('JAVA_TOOL_OPTIONS', '') + ' -XX:ActiveProcessorCount=2').strip()
-    if not environment.get('JAVA_HOME'):
-        bundled = sorted((root / '.toolchains').glob('jdk-25*'))
-        if bundled:
-            environment['JAVA_HOME'] = str(bundled[-1])
+    home = java_home(root)
+    if home:
+        environment['JAVA_HOME'] = str(home)
     # Artifact inspection launches Java too, using the same bounded environment.
     os.environ.update({key: environment[key] for key in ['JAVA_HOME', 'JAVA_TOOL_OPTIONS'] if key in environment})
     summary = dict(mod_version=mod_version(root), targets=[], supervisor=None)
