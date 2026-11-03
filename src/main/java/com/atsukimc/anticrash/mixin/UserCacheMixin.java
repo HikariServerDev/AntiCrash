@@ -62,13 +62,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /** Exact 1.21.11 mapped cache API; ordinary authentication/cache lookups are unchanged. */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(net.minecraft.util.UserCache.class)
+//? if (>=1.18 && <=1.21.8) {
+@Mixin(net.minecraft.server.players.GameProfileCache.class)
+//?}
+//? if (>=1.21.9 && <=1.21.11) {
+/*@Mixin(net.minecraft.server.players.CachedUserNameToIdResolver.class)
+*///?}
 public abstract class UserCacheMixin {
 
     //?}
     //? if (>=1.18 && <=1.21.8) {
     @Inject(
-            method = "findByName(Ljava/lang/String;)Ljava/util/Optional;",
+            method = "get(Ljava/lang/String;)Ljava/util/Optional;",
             at = @At("HEAD"),
             cancellable = true)
     private void anticrash$checkpointFakePlayerProfile(
@@ -77,12 +82,12 @@ public abstract class UserCacheMixin {
                 //?}
                 //? if (>=1.21.9 && <=1.21.11) {
                 /*@Inject(
-                            method = "findByName(Ljava/lang/String;)Ljava/util/Optional;",
+                            method = "get(Ljava/lang/String;)Ljava/util/Optional;",
                             at = @At("HEAD"),
                             cancellable = true)
                     private void anticrash$checkpointFakePlayerProfile(
                             String name,
-                            CallbackInfoReturnable<java.util.Optional<net.minecraft.server.PlayerConfigEntry>>
+                            CallbackInfoReturnable<java.util.Optional<net.minecraft.server.players.NameAndId>>
                                     callback)
 *///?}
 
@@ -114,7 +119,7 @@ public abstract class UserCacheMixin {
 *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*callback.setReturnValue(
-                            java.util.Optional.of(new net.minecraft.server.PlayerConfigEntry(profile)));
+                            java.util.Optional.of(new net.minecraft.server.players.NameAndId(profile)));
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*callback.setReturnValue(

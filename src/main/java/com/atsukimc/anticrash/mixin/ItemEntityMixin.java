@@ -4,35 +4,35 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.world.entity.player.Player;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.item.ItemEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.player.Player;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.item.ItemStack;
@@ -69,7 +69,10 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
     //? if (>=1.18 && <=1.21.11) {
     @com.llamalad7.mixinextras.injector.ModifyExpressionValue(
             method = "tick",
-            at = @At(value = "INVOKE", target = "Lnet/minecraft/entity/ItemEntity;getId()I"))
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/world/entity/item/ItemEntity;getId()I"))
     private int anticrash$stableMovePhase(int networkId)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -88,8 +91,8 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
     @Unique private ItemStack anticrash$pickupBefore = ItemStack.EMPTY;
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "onPlayerCollision", at = @At("HEAD"), cancellable = true)
-    private void anticrash$beforePickup(PlayerEntity player, CallbackInfo info)
+    @Inject(method = "playerTouch", at = @At("HEAD"), cancellable = true)
+    private void anticrash$beforePickup(Player player, CallbackInfo info)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "playerTouch", at = @At("HEAD"), cancellable = true)
@@ -110,8 +113,8 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        if (player instanceof ServerPlayerEntity)
-            anticrash$pickupBefore = ((ItemEntity) (Object) this).getStack().copy();
+        if (player instanceof ServerPlayer)
+            anticrash$pickupBefore = ((ItemEntity) (Object) this).getItem().copy();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*if (player instanceof ServerPlayer)
@@ -121,8 +124,8 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "onPlayerCollision", at = @At("RETURN"))
-    private void anticrash$afterPickup(PlayerEntity player, CallbackInfo info)
+    @Inject(method = "playerTouch", at = @At("RETURN"))
+    private void anticrash$afterPickup(Player player, CallbackInfo info)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "playerTouch", at = @At("RETURN"))
@@ -133,7 +136,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         anticrash$pickupBefore = ItemStack.EMPTY;
 
         //? if (>=1.18 && <=1.21.11) {
-        if (!(player instanceof ServerPlayerEntity serverPlayer) || before.isEmpty())
+        if (!(player instanceof ServerPlayer serverPlayer) || before.isEmpty())
             //?}
             //? if (>=26.1 && <=26.3) {
             /*if (!(player instanceof ServerPlayer serverPlayer) || before.isEmpty())
@@ -142,7 +145,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         ItemEntity item = (ItemEntity) (Object) this;
 
         //? if (>=1.18 && <=1.21.11) {
-        int remaining = item.isRemoved() ? 0 : item.getStack().getCount();
+        int remaining = item.isRemoved() ? 0 : item.getItem().getCount();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*int remaining = item.isRemoved() ? 0 : item.getItem().getCount();
@@ -161,7 +164,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                     serverPlayer,
                     "world",
                     "player",
-                    new BlockPos(item.getPos()),
+                    new BlockPos(item.position()),
                     pickedStack);
         //?}
         //? if (>=1.19.4 && <=1.21.8) {
@@ -170,7 +173,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                             serverPlayer,
                             "world",
                             "player",
-                            BlockPos.ofFloored(item.getPos()),
+                            BlockPos.containing(item.position()),
                             pickedStack);
 *///?}
         //? if (>=1.21.9 && <=1.21.11) {
@@ -179,7 +182,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                             serverPlayer,
                             "world",
                             "player",
-                            BlockPos.ofFloored(item.getEntityPos()),
+                            BlockPos.containing(item.position()),
                             pickedStack);
 *///?}
         //? if (>=26.1 && <=26.3) {

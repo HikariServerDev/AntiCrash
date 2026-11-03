@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.RedstoneTorchBlock;
+import net.minecraft.world.level.block.RedstoneTorchBlock;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.BlockGetter;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.BlockView;
+import net.minecraft.world.level.BlockGetter;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.RedstoneTorchBlock;
@@ -25,8 +25,8 @@ import java.util.Map;
 public interface RedstoneTorchBlockAccessorMixin {
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("BURNOUT_MAP")
-    static Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> anticrash$getBurnoutMap()
+    @Accessor("RECENT_TOGGLES")
+    static Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> anticrash$getBurnoutMap()
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Accessor("RECENT_TOGGLES")

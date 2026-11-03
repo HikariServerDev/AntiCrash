@@ -2,7 +2,7 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.entity.player.HungerManager;
+/^import net.minecraft.world.food.FoodData;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.food.FoodData;
@@ -14,9 +14,9 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 /^* 1.21.2 removed the public exhaustion accessors, not the persisted exhaustion field. ^/
 //? if (>=1.21.2 && <=1.21.11) {
-/^@Mixin(HungerManager.class)
+/^@Mixin(FoodData.class)
 public interface HungerManagerAccessorMixin {
-    @Accessor("exhaustion")
+    @Accessor("exhaustionLevel")
     float anticrash$getExhaustion();
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -29,7 +29,7 @@ public interface HungerManagerAccessorMixin {
 
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^@Accessor("exhaustion")
+/^@Accessor("exhaustionLevel")
     void anticrash$setExhaustion(float value);
 ^///?}
 //? if (>=26.1 && <=26.3) {

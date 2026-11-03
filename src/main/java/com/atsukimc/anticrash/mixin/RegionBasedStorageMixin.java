@@ -3,21 +3,21 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.snapshot.LiveFileTracker;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.RegionBasedStorage;
+import net.minecraft.world.level.chunk.storage.RegionFileStorage;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.RegionFileStorage;
@@ -34,9 +34,9 @@ import java.nio.file.Path;
 
 /** Records every region file a chunk, entity or POI write touches; see {@link LiveFileTracker}. */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(RegionBasedStorage.class)
+@Mixin(RegionFileStorage.class)
 public abstract class RegionBasedStorageMixin {
-    @Shadow @Final private Path directory;
+    @Shadow @Final private Path folder;
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -47,7 +47,7 @@ public abstract class RegionBasedStorageMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Inject(method = "write", at = @At("HEAD"))
-    private void anticrash$recordWrite(ChunkPos pos, NbtCompound nbt, CallbackInfo callbackInfo)
+    private void anticrash$recordWrite(ChunkPos pos, CompoundTag nbt, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "write", at = @At("HEAD"))
@@ -56,7 +56,7 @@ public abstract class RegionBasedStorageMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        LiveFileTracker.global().recordRegionWrite(directory, pos);
+        LiveFileTracker.global().recordRegionWrite(folder, pos);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LiveFileTracker.global().recordRegionWrite(folder, pos);

@@ -11,21 +11,21 @@ import it.unimi.dsi.fastutil.longs.LongSet;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.level.ChunkHolder;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ChunkMap;
 *///?}
 
 //? if (>=1.18 && <=1.20.6) {
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.server.level.ChunkMap;
 //?}
 //? if (>=1.21 && <=1.21.11) {
-/*import net.minecraft.server.world.ServerChunkLoadingManager;
+/*import net.minecraft.server.level.ChunkMap;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.level.chunk.ChunkAccess;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.ChunkAccess;
@@ -36,19 +36,19 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 //? if (>=1.18 && <=1.20.6) {
-@Mixin(ThreadedAnvilChunkStorage.class)
+@Mixin(ChunkMap.class)
 public interface ThreadedAnvilChunkStorageAccessorMixin {
-    @Accessor("loadedChunks")
+    @Accessor("entitiesInLevel")
     LongSet anticrash$getLoadedChunks();
 
     //?}
 
     //? if (>=1.21 && <=1.21.11) {
-    /*@Mixin(ServerChunkLoadingManager.class)
+    /*@Mixin(ChunkMap.class)
     public interface ThreadedAnvilChunkStorageAccessorMixin {
 *///?}
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("currentChunkHolders")
+    @Accessor("updatingChunkMap")
     Long2ObjectLinkedOpenHashMap<ChunkHolder> anticrash$getCurrentChunkHolders();
 
     //?}
@@ -65,7 +65,7 @@ public interface ThreadedAnvilChunkStorageAccessorMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("chunksToUnload")
+    @Accessor("pendingUnloads")
     Long2ObjectLinkedOpenHashMap<ChunkHolder> anticrash$getChunksToUnload();
 
     //?}
@@ -81,7 +81,7 @@ public interface ThreadedAnvilChunkStorageAccessorMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Invoker("save")
-    boolean anticrash$saveChunk(Chunk chunk);
+    boolean anticrash$saveChunk(ChunkAccess chunk);
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Invoker("save")

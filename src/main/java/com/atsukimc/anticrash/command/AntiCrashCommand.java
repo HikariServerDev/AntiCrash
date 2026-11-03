@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.command;
 
 //? if (>=1.18 && <=1.21.11) {
-import static net.minecraft.server.command.CommandManager.argument;
+import static net.minecraft.commands.Commands.argument;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import static net.minecraft.commands.Commands.argument;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import static net.minecraft.server.command.CommandManager.literal;
+import static net.minecraft.commands.Commands.literal;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import static net.minecraft.commands.Commands.literal;
@@ -25,14 +25,14 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.commands.CommandSourceStack;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.network.chat.Component;
@@ -53,7 +53,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     public static void register(
-            CommandDispatcher<ServerCommandSource> dispatcher, AntiCrashController controller)
+            CommandDispatcher<CommandSourceStack> dispatcher, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static void register(
@@ -472,7 +472,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static void registerAnswer(
-            CommandDispatcher<ServerCommandSource> dispatcher,
+            CommandDispatcher<CommandSourceStack> dispatcher,
             AntiCrashController controller,
             String name,
             boolean restore)
@@ -493,7 +493,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static boolean permitted(ServerCommandSource source, int permissionLevel)
+    private static boolean permitted(CommandSourceStack source, int permissionLevel)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean permitted(CommandSourceStack source, int permissionLevel)
@@ -501,7 +501,7 @@ public final class AntiCrashCommand {
             {
 
         //? if (>=1.18 && <=1.21.10) {
-        return source.hasPermissionLevel(permissionLevel);
+        return source.hasPermission(permissionLevel);
         //?}
         //? if (>=1.21.11 && <=26.3) {
         /*return VersionPermissions.hasLevel(source, permissionLevel);
@@ -511,7 +511,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static boolean hasAnyPermission(
-            ServerCommandSource source, AntiCrashController controller)
+            CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean hasAnyPermission(
@@ -533,7 +533,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int overview(ServerCommandSource source, AntiCrashController controller)
+    private static int overview(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int overview(CommandSourceStack source, AntiCrashController controller)
@@ -543,7 +543,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int help(ServerCommandSource source, AntiCrashController controller)
+    private static int help(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int help(CommandSourceStack source, AntiCrashController controller)
@@ -572,7 +572,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int status(ServerCommandSource source, AntiCrashController controller)
+    private static int status(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int status(CommandSourceStack source, AntiCrashController controller)
@@ -645,7 +645,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int checkpoint(ServerCommandSource source, AntiCrashController controller)
+    private static int checkpoint(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int checkpoint(CommandSourceStack source, AntiCrashController controller)
@@ -660,7 +660,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int checkpointBase(ServerCommandSource source, AntiCrashController controller)
+    private static int checkpointBase(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int checkpointBase(CommandSourceStack source, AntiCrashController controller)
@@ -675,8 +675,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int checkpointCompact(
-            ServerCommandSource source, AntiCrashController controller)
+    private static int checkpointCompact(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int checkpointCompact(
@@ -692,7 +691,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int freeze(ServerCommandSource source, AntiCrashController controller)
+    private static int freeze(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int freeze(CommandSourceStack source, AntiCrashController controller)
@@ -708,7 +707,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int restore(
-            ServerCommandSource source, AntiCrashController controller, String id)
+            CommandSourceStack source, AntiCrashController controller, String id)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int restore(
@@ -725,7 +724,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int start(
-            ServerCommandSource source, AntiCrashController controller, boolean force)
+            CommandSourceStack source, AntiCrashController controller, boolean force)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int start(
@@ -751,7 +750,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int abort(ServerCommandSource source, AntiCrashController controller)
+    private static int abort(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int abort(CommandSourceStack source, AntiCrashController controller)
@@ -766,7 +765,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int continueRecovery(ServerCommandSource source, AntiCrashController controller)
+    private static int continueRecovery(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int continueRecovery(CommandSourceStack source, AntiCrashController controller)
@@ -782,7 +781,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int answer(
-            ServerCommandSource source, AntiCrashController controller, boolean restore)
+            CommandSourceStack source, AntiCrashController controller, boolean restore)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int answer(
@@ -804,7 +803,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int reload(ServerCommandSource source, AntiCrashController controller)
+    private static int reload(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int reload(CommandSourceStack source, AntiCrashController controller)
@@ -821,7 +820,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int list(ServerCommandSource source, AntiCrashController controller)
+    private static int list(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int list(CommandSourceStack source, AntiCrashController controller)
@@ -847,7 +846,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int inspect(
-            ServerCommandSource source, AntiCrashController controller, String id)
+            CommandSourceStack source, AntiCrashController controller, String id)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int inspect(
@@ -880,7 +879,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int journalStatus(ServerCommandSource source, AntiCrashController controller)
+    private static int journalStatus(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int journalStatus(CommandSourceStack source, AntiCrashController controller)
@@ -906,7 +905,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int journalList(ServerCommandSource source, AntiCrashController controller)
+    private static int journalList(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int journalList(CommandSourceStack source, AntiCrashController controller)
@@ -930,7 +929,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int fakePlayers(ServerCommandSource source, AntiCrashController controller)
+    private static int fakePlayers(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int fakePlayers(CommandSourceStack source, AntiCrashController controller)
@@ -949,7 +948,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int restoreFakePlayers(
-            ServerCommandSource source, AntiCrashController controller)
+            CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int restoreFakePlayers(
@@ -981,7 +980,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int fakePlayerInfo(
-            ServerCommandSource source, AntiCrashController controller, String name)
+            CommandSourceStack source, AntiCrashController controller, String name)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int fakePlayerInfo(
@@ -1014,7 +1013,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static int debugDump(ServerCommandSource source, AntiCrashController controller)
+    private static int debugDump(CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int debugDump(CommandSourceStack source, AntiCrashController controller)
@@ -1032,7 +1031,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int recoveryVerify(
-            ServerCommandSource source, AntiCrashController controller, boolean verbose)
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int recoveryVerify(
@@ -1045,7 +1044,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int debugEquivalence(
-            ServerCommandSource source, AntiCrashController controller, boolean verbose)
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int debugEquivalence(
@@ -1058,7 +1057,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int checkpointPerformance(
-            ServerCommandSource source, AntiCrashController controller, boolean verbose)
+            CommandSourceStack source, AntiCrashController controller, boolean verbose)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int checkpointPerformance(
@@ -1071,7 +1070,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int debugMirror(
-            ServerCommandSource source, AntiCrashController controller, boolean audit)
+            CommandSourceStack source, AntiCrashController controller, boolean audit)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int debugMirror(
@@ -1084,7 +1083,7 @@ public final class AntiCrashCommand {
 
     //? if (>=1.18 && <=1.21.11) {
     private static int resetCheckpointPerformance(
-            ServerCommandSource source, AntiCrashController controller)
+            CommandSourceStack source, AntiCrashController controller)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static int resetCheckpointPerformance(
@@ -1181,7 +1180,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static void feedback(ServerCommandSource source, String message, boolean broadcast)
+    private static void feedback(CommandSourceStack source, String message, boolean broadcast)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static void feedback(CommandSourceStack source, String message, boolean broadcast)
@@ -1199,10 +1198,10 @@ public final class AntiCrashCommand {
         }
 
         //? if (>=1.18 && <=1.19.4) {
-        source.sendFeedback(text(message), broadcast);
+        source.sendSuccess(text(message), broadcast);
         //?}
         //? if (>=1.20 && <=1.21.11) {
-        /*source.sendFeedback(() -> text(message), broadcast);
+        /*source.sendSuccess(() -> text(message), broadcast);
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*source.sendSuccess(() -> text(message), broadcast);
@@ -1211,7 +1210,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static void error(ServerCommandSource source, String message)
+    private static void error(CommandSourceStack source, String message)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static void error(CommandSourceStack source, String message)
@@ -1224,7 +1223,7 @@ public final class AntiCrashCommand {
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        source.sendError(text(message));
+        source.sendFailure(text(message));
         //?}
         //? if (>=26.1 && <=26.3) {
         /*source.sendFailure(text(message));
@@ -1233,7 +1232,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static boolean fromConsole(ServerCommandSource source)
+    private static boolean fromConsole(CommandSourceStack source)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean fromConsole(CommandSourceStack source)
@@ -1246,7 +1245,7 @@ public final class AntiCrashCommand {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static Text text(String message)
+    private static Component text(String message)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static Component text(String message)

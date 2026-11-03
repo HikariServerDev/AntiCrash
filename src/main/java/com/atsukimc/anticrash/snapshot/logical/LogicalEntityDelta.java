@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
-/** One immutable Entity#writeNbt payload captured on the server thread. */
+/** One immutable Entity#saveWithoutId payload captured on the server thread. */
 public final class LogicalEntityDelta {
     public String dimension;
     public String uuid;

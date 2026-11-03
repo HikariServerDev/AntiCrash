@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.ComparatorBlockEntity;
+import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
@@ -29,7 +29,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class ComparatorBlockEntityMixin {
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow private int outputSignal;
+    @Shadow private int output;
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -41,16 +41,16 @@ public abstract class ComparatorBlockEntityMixin {
         BlockEntity self = (BlockEntity) (Object) this;
 
         //? if (>=1.18 && <=1.21.8) {
-        if (signal != outputSignal
-                && self.hasWorld()
-                && self.getWorld() != null
-                && !self.getWorld().isClient)
+        if (signal != output
+                && self.hasLevel()
+                && self.getLevel() != null
+                && !self.getLevel().isClientSide)
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
-        /*if (signal != outputSignal
-                        && self.hasWorld()
-                        && self.getWorld() != null
-                        && !self.getWorld().isClient())
+        /*if (signal != output
+                        && self.hasLevel()
+                        && self.getLevel() != null
+                        && !self.getLevel().isClientSide())
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*if (signal != output
@@ -61,7 +61,7 @@ public abstract class ComparatorBlockEntityMixin {
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            self.getWorld().markDirty(self.getPos());
+            self.getLevel().blockEntityChanged(self.getBlockPos());
             //?}
             //? if (>=26.1 && <=26.3) {
             /*self.getLevel().blockEntityChanged(self.getBlockPos());

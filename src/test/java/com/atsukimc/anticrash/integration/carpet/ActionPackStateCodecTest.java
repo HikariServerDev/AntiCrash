@@ -10,7 +10,7 @@ import com.atsukimc.anticrash.util.AtomicFiles;
 import com.google.gson.JsonObject;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;

@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.PistonBlockEntity;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
@@ -11,7 +11,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(PistonBlockEntity.class)
+@Mixin(PistonMovingBlockEntity.class)
 public interface PistonBlockEntityAccessorMixin {
 
     //?}
@@ -23,7 +23,7 @@ public interface PistonBlockEntityAccessorMixin {
     float anticrash$getProgress();
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("lastProgress")
+    @Accessor("progressO")
     float anticrash$getLastProgress();
     //?}
     //? if (>=26.1 && <=26.3) {

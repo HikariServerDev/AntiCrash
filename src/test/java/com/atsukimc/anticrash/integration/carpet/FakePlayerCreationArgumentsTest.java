@@ -21,9 +21,9 @@ class FakePlayerCreationArgumentsTest {
                         "arguments",
                         Class[].class,
                         net.minecraft.server.MinecraftServer.class,
-                        net.minecraft.server.world.ServerWorld.class,
+                        net.minecraft.server.level.ServerLevel.class,
                         FakePlayerSnapshot.class,
-                        net.minecraft.world.GameMode.class);
+                        net.minecraft.world.level.GameType.class);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*var method =
@@ -46,7 +46,7 @@ class FakePlayerCreationArgumentsTest {
                                 new Class<?>[] {
                                     String.class,
                                     net.minecraft.server.MinecraftServer.class,
-                                    net.minecraft.util.math.Vec3d.class,
+                                    net.minecraft.world.phys.Vec3.class,
                                     double.class,
                                     double.class,
                                     dimensionKeyType(),
@@ -66,7 +66,7 @@ class FakePlayerCreationArgumentsTest {
                                         new Class<?>[] {
                                             String.class,
                                             net.minecraft.server.MinecraftServer.class,
-                                            net.minecraft.util.math.Vec3d.class,
+                                            net.minecraft.world.phys.Vec3.class,
                                             double.class,
                                             double.class,
                                             dimensionKeyType(),
@@ -103,7 +103,7 @@ class FakePlayerCreationArgumentsTest {
         assertNotNull(args);
 
         //? if (>=1.18 && <=1.21.11) {
-        assertEquals(new net.minecraft.util.math.Vec3d(120, 90, -450), args[2]);
+        assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
@@ -122,9 +122,7 @@ class FakePlayerCreationArgumentsTest {
     private static Class<?> dimensionKeyType() throws Exception {
 
         //? if (>=1.18 && <=1.21.11) {
-        return net.minecraft.server.world.ServerWorld.class
-                .getMethod("getRegistryKey")
-                .getReturnType();
+        return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
@@ -135,7 +133,7 @@ class FakePlayerCreationArgumentsTest {
     private static Class<?> modeType() {
 
         //? if (>=1.18 && <=1.21.11) {
-        return net.minecraft.world.GameMode.class;
+        return net.minecraft.world.level.GameType.class;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*return net.minecraft.world.level.GameType.class;

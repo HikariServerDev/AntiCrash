@@ -1,25 +1,25 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.state.BlockState;
@@ -39,18 +39,18 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class AbstractFurnaceBlockEntityMixin {
 
     //? if (>=1.18 && <=1.21.1) {
-    @Inject(method = "tick", at = @At("HEAD"))
+    @Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markProgressDirty(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
             AbstractFurnaceBlockEntity furnace,
             CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.21.2 && <=1.21.11) {
-                /*@Inject(method = "tick", at = @At("HEAD"))
+                /*@Inject(method = "serverTick", at = @At("HEAD"))
                     private static void anticrash$markProgressDirty(
-                            net.minecraft.server.world.ServerWorld world,
+                            net.minecraft.server.level.ServerLevel world,
                             BlockPos pos,
                             BlockState state,
                             AbstractFurnaceBlockEntity furnace,
@@ -71,7 +71,7 @@ public abstract class AbstractFurnaceBlockEntityMixin {
         if (timer.anticrash$getBurnTime() > 0 || timer.anticrash$getCookTime() > 0)
 
             //? if (>=1.18 && <=1.21.11) {
-            world.markDirty(pos);
+            world.blockEntityChanged(pos);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*world.blockEntityChanged(pos);

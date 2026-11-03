@@ -5,7 +5,7 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.PersistentEntitySectionManager;
@@ -15,9 +15,9 @@ import org.spongepowered.asm.mixin.Mixin;
 
 /** Entities saved because their section is being unloaded keep Vanilla's data only. */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerEntityManager.class)
+@Mixin(PersistentEntitySectionManager.class)
 public abstract class ServerEntityManagerUnloadMixin {
-    @WrapMethod(method = "unload(J)Z")
+    @WrapMethod(method = "processChunkUnload(J)Z")
     private boolean anticrash$scopeUnload(long chunkPos, Operation<Boolean> original)
                 //?}
                 //? if (>=26.1 && <=26.3) {

@@ -4,21 +4,21 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerInteractionManager;
+import net.minecraft.server.level.ServerPlayerGameMode;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayerGameMode;
@@ -32,9 +32,9 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerPlayerInteractionManager.class)
+@Mixin(ServerPlayerGameMode.class)
 public abstract class ServerPlayerInteractionManagerMixin {
-    @Shadow @Final protected ServerPlayerEntity player;
+    @Shadow @Final protected ServerPlayer player;
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -44,7 +44,7 @@ public abstract class ServerPlayerInteractionManagerMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "tryBreakBlock", at = @At("RETURN"))
+    @Inject(method = "destroyBlock", at = @At("RETURN"))
     private void anticrash$recordSuccessfulBreak(
             BlockPos position, CallbackInfoReturnable<Boolean> info)
                 //?}
@@ -60,7 +60,7 @@ public abstract class ServerPlayerInteractionManagerMixin {
 
             //? if (>=1.18 && <=1.21.11) {
             controller.recordTransaction(
-                    "BLOCK_BREAK", player, "world", "player", position, player.getMainHandStack());
+                    "BLOCK_BREAK", player, "world", "player", position, player.getMainHandItem());
         //?}
         //? if (>=26.1 && <=26.3) {
         /*controller.recordTransaction(

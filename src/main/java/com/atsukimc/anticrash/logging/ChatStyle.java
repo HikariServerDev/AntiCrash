@@ -1,25 +1,25 @@
 package com.atsukimc.anticrash.logging;
 
 //? if (>=1.18 && <=1.18.2) {
-import net.minecraft.text.LiteralText;
+import net.minecraft.network.chat.TextComponent;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.ChatFormatting;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.text.MutableText;
+import net.minecraft.network.chat.MutableComponent;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.network.chat.Component;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
 
 //?}
 //? if (>=26.1 && <=26.3) {
@@ -36,7 +36,7 @@ public final class ChatStyle {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    public static Text text(String message, Formatting base, boolean coloured)
+    public static Component text(String message, ChatFormatting base, boolean coloured)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static Component text(String message, ChatFormatting base, boolean coloured)
@@ -44,10 +44,10 @@ public final class ChatStyle {
             {
         if (message == null)
             //? if (>=1.18 && <=1.18.2) {
-            return new LiteralText("");
+            return new TextComponent("");
         //?}
         //? if (>=1.19 && <=1.21.11) {
-        /*return Text.literal("");
+        /*return Component.literal("");
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*return Component.literal("");
@@ -56,17 +56,17 @@ public final class ChatStyle {
         if (!coloured) {
 
             //? if (>=1.18 && <=1.18.2) {
-            MutableText plain = new LiteralText(message);
+            MutableComponent plain = new TextComponent(message);
             //?}
             //? if (>=1.19 && <=1.21.11) {
-            /*MutableText plain = Text.literal(message);
+            /*MutableComponent plain = Component.literal(message);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*MutableComponent plain = Component.literal(message);
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            return base == null ? plain : plain.formatted(base);
+            return base == null ? plain : plain.withStyle(base);
             //?}
             //? if (>=26.1 && <=26.3) {
             /*return base == null ? plain : plain.withStyle(base);
@@ -75,10 +75,10 @@ public final class ChatStyle {
         }
 
         //? if (>=1.18 && <=1.18.2) {
-        MutableText result = new LiteralText("");
+        MutableComponent result = new TextComponent("");
         //?}
         //? if (>=1.19 && <=1.21.11) {
-        /*MutableText result = Text.literal("");
+        /*MutableComponent result = Component.literal("");
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*MutableComponent result = Component.literal("");
@@ -86,7 +86,7 @@ public final class ChatStyle {
 
         if (base != null)
             //? if (>=1.18 && <=1.21.11) {
-            result.formatted(base);
+            result.withStyle(base);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*result.withStyle(base);
@@ -98,10 +98,10 @@ public final class ChatStyle {
             for (MessageStyle.Span span : MessageStyle.spans(lines[index])) {
 
                 //? if (>=1.18 && <=1.18.2) {
-                MutableText part = new LiteralText(span.text());
+                MutableComponent part = new TextComponent(span.text());
                 //?}
                 //? if (>=1.19 && <=1.21.11) {
-                /*MutableText part = Text.literal(span.text());
+                /*MutableComponent part = Component.literal(span.text());
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*MutableComponent part = Component.literal(span.text());
@@ -110,7 +110,7 @@ public final class ChatStyle {
                 switch (span.kind()) {
                     case HEADER ->
                             //? if (>=1.18 && <=1.21.11) {
-                            part.formatted(Formatting.BOLD);
+                            part.withStyle(ChatFormatting.BOLD);
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*part.withStyle(ChatFormatting.BOLD);

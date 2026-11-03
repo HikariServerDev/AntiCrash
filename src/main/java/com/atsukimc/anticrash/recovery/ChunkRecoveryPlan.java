@@ -34,8 +34,8 @@ public final class ChunkRecoveryPlan {
     public static final int ENTITY_TICKING_TICKET_LEVEL = 31;
 
     /**
-     * Converts the level used by ChunkHolder/ChunkTicketManager to the radius expected by
-     * ServerChunkManager.addTicket in Minecraft 1.18.2. The public ServerChunkManager method
+     * Converts the level used by ChunkHolder/DistanceManager to the radius expected by
+     * ServerChunkCache.addTicket in Minecraft 1.18.2. The public ServerChunkCache method
      * accepts a radius and internally calculates {@code 33 - radius}; passing a level directly
      * would therefore turn FULL=33 into level 0 and load a huge area.
      */
@@ -44,7 +44,7 @@ public final class ChunkRecoveryPlan {
     public static int ticketRadiusForLevel(int ticketLevel)
                 //?}
 
-                /** Minecraft 1.21.5 ServerChunkManager.addTicket accepts the level directly, not radius. */
+                /** Minecraft 1.21.5 ServerChunkCache.addTicket accepts the level directly, not radius. */
 
                 //? if (>=1.21.5 && <=26.3) {
                 /*public static int ticketArgumentForLevel(int ticketLevel)
@@ -127,7 +127,7 @@ public final class ChunkRecoveryPlan {
                 scheduledTickChunks.add(
                         new Key(
                                 tick.dimension,
-                                new net.minecraft.util.math.ChunkPos(tick.x >> 4, tick.z >> 4)
+                                new net.minecraft.world.level.ChunkPos(tick.x >> 4, tick.z >> 4)
                                         .toLong()));
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -150,7 +150,7 @@ public final class ChunkRecoveryPlan {
                 movingPistonChunks.add(
                         new Key(
                                 piston.dimension,
-                                new net.minecraft.util.math.ChunkPos(piston.x >> 4, piston.z >> 4)
+                                new net.minecraft.world.level.ChunkPos(piston.x >> 4, piston.z >> 4)
                                         .toLong()));
                 //?}
                 //? if (>=26.1 && <=26.3) {

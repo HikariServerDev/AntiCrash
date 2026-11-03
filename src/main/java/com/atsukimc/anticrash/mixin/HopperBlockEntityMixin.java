@@ -1,28 +1,28 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.HopperBlockEntity;
+import net.minecraft.world.level.block.entity.HopperBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.Level;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.HopperBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.state.BlockState;
@@ -43,9 +43,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class HopperBlockEntityMixin {
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "serverTick", at = @At("HEAD"))
+    @Inject(method = "pushItemsTick", at = @At("HEAD"))
     private static void anticrash$markCooldownDirty(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
             HopperBlockEntity hopper,
@@ -64,7 +64,7 @@ public abstract class HopperBlockEntityMixin {
         if (((HopperBlockEntityTimerAccessor) hopper).anticrash$getTransferCooldown() > 0)
 
             //? if (>=1.18 && <=1.21.11) {
-            world.markDirty(pos);
+            world.blockEntityChanged(pos);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*world.blockEntityChanged(pos);

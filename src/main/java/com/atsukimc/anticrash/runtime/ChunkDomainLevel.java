@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
-/** Stable checkpoint names, independent of Yarn's renamed chunk-readiness enum constants. */
+/** Stable checkpoint names, independent of Minecraft's renamed chunk-readiness enum constants. */
 public final class ChunkDomainLevel {
     private ChunkDomainLevel() {}
 

@@ -4,7 +4,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if (>=1.20.5 && <=1.21.11) {
-/^import net.minecraft.nbt.NbtCompound;
+/^import net.minecraft.nbt.CompoundTag;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.nbt.CompoundTag;
@@ -20,7 +20,7 @@ class InventoryComponentEnvelopeTest {
         var snapshot = new InventorySnapshot();
         for (int i = 0; i < 36; i++)
 //? if (>=1.20.5 && <=1.21.11) {
-/^snapshot.main.add(NbtCodec.encode(new NbtCompound()));
+/^snapshot.main.add(NbtCodec.encode(new CompoundTag()));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^snapshot.main.add(NbtCodec.encode(new CompoundTag()));
@@ -34,7 +34,7 @@ class InventoryComponentEnvelopeTest {
         var snapshot = empty();
 
 //? if (>=1.20.5 && <=1.21.11) {
-/^NbtCompound item = new NbtCompound();
+/^CompoundTag item = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag item = new CompoundTag();
@@ -44,7 +44,7 @@ class InventoryComponentEnvelopeTest {
         item.putInt("count", 1);
 
 //? if (>=1.20.5 && <=1.21.11) {
-/^NbtCompound components = new NbtCompound();
+/^CompoundTag components = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag components = new CompoundTag();
@@ -52,7 +52,7 @@ class InventoryComponentEnvelopeTest {
 
 
 //? if (>=1.20.5 && <=1.21.11) {
-/^NbtCompound custom = new NbtCompound();
+/^CompoundTag custom = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag custom = new CompoundTag();
@@ -73,7 +73,7 @@ class InventoryComponentEnvelopeTest {
         var snapshot = empty();
 
 //? if (>=1.20.5 && <=1.21.11) {
-/^NbtCompound item = new NbtCompound();
+/^CompoundTag item = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag item = new CompoundTag();

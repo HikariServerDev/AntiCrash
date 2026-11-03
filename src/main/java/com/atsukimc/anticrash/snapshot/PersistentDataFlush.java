@@ -6,7 +6,7 @@ package com.atsukimc.anticrash.snapshot;
 
 import net.minecraft.server.MinecraftServer;
 
-/** These versions complete PersistentState writes synchronously in the Vanilla save. */
+/** These versions complete SavedData writes synchronously in the Vanilla save. */
 
 //? if (>=1.21.2 && <=26.3) {
 /*import java.util.ArrayList;
@@ -33,9 +33,9 @@ public final class PersistentDataFlush {
 *///?}
 
     //? if (>=1.21.2 && <=1.21.11) {
-    /*for (var world : server.getWorlds())
+    /*for (var world : server.getAllLevels())
                 writes.add(
-                        ((PersistentDataStorageAccessorMixin) world.getPersistentStateManager())
+                        ((PersistentDataStorageAccessorMixin) world.getDataStorage())
                                 .anticrash$getPendingWrite());
 *///?}
     //? if (>=26.1 && <=26.3) {

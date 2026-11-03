@@ -6,14 +6,14 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.NbtCodec;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.registry.Registries;
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
@@ -21,18 +21,18 @@ import net.minecraft.item.ItemStack;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.item.ItemStack;
@@ -95,7 +95,7 @@ public final class ConsistencyManager implements AutoCloseable {
     //? if (>=1.18 && <=1.21.11) {
     public void record(
             String type,
-            ServerPlayerEntity player,
+            ServerPlayer player,
             String source,
             String destination,
             BlockPos pos,
@@ -122,7 +122,7 @@ public final class ConsistencyManager implements AutoCloseable {
         transaction.fallbackCheckpointId = transactionFallbackCheckpointId;
 
         //? if (>=1.18 && <=1.21.11) {
-        transaction.serverTick = server == null ? 0 : server.getTicks();
+        transaction.serverTick = server == null ? 0 : server.getTickCount();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*transaction.serverTick = server == null ? 0 : server.getTickCount();
@@ -131,7 +131,7 @@ public final class ConsistencyManager implements AutoCloseable {
         transaction.wallClockEpochMs = System.currentTimeMillis();
 
         //? if (>=1.18 && <=1.21.11) {
-        transaction.playerUuid = player == null ? null : player.getUuidAsString();
+        transaction.playerUuid = player == null ? null : player.getStringUUID();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*transaction.playerUuid = player == null ? null : player.getStringUUID();
@@ -143,13 +143,23 @@ public final class ConsistencyManager implements AutoCloseable {
 
         //? if (>=1.18 && <=1.21.8) {
         transaction.dimension =
-                player == null ? null : player.getWorld().getRegistryKey().getValue().toString();
+                //? if (>=1.18 && <=1.19.4) {
+                player == null ? null : player.getLevel().dimension().location().toString();
+        //?}
+        //? if (>=1.20 && <=1.21.8) {
+        /*player == null ? null : player.level().dimension().location().toString();
+                *///?}
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*transaction.dimension =
                         player == null
                                 ? null
-                                : player.getEntityWorld().getRegistryKey().getValue().toString();
+                                //? if (>=1.21.9 && <=1.21.10) {
+                                /^: player.level().dimension().location().toString();
+                                ^///?}
+                                //? if 1.21.11 {
+                                /^: player.level().dimension().identifier().toString();
+                                ^///?}
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*transaction.dimension =
@@ -164,10 +174,10 @@ public final class ConsistencyManager implements AutoCloseable {
         if (stack != null) {
 
             //? if (>=1.18 && <=1.19.2) {
-            transaction.itemStackId = Registry.ITEM.getId(stack.getItem()).toString();
+            transaction.itemStackId = Registry.ITEM.getKey(stack.getItem()).toString();
             //?}
             //? if (>=1.19.3 && <=1.21.11) {
-            /*transaction.itemStackId = Registries.ITEM.getId(stack.getItem()).toString();
+            /*transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
@@ -177,24 +187,23 @@ public final class ConsistencyManager implements AutoCloseable {
             try {
 
                 //? if (>=1.18 && <=1.20.4) {
-                transaction.nbt =
-                        NbtCodec.encode(stack.writeNbt(new net.minecraft.nbt.NbtCompound()));
+                transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
                 //?}
                 //? if (>=1.20.5 && <=1.21.1) {
                 /*transaction.nbt =
                                         NbtCodec.encode(
-                                                stack.encodeAllowEmpty(
+                                                stack.saveOptional(
                                                         player != null
-                                                                ? player.getRegistryManager()
-                                                                : server.getRegistryManager()));
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
 *///?}
                 //? if (>=1.21.2 && <=1.21.4) {
                 /*transaction.nbt =
                                         NbtCodec.encode(
-                                                stack.toNbtAllowEmpty(
+                                                stack.saveOptional(
                                                         player != null
-                                                                ? player.getRegistryManager()
-                                                                : server.getRegistryManager()));
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
 *///?}
                 //? if (>=1.21.5 && <=1.21.11) {
                 /*transaction.nbt =
@@ -202,8 +211,8 @@ public final class ConsistencyManager implements AutoCloseable {
                                                 com.atsukimc.anticrash.runtime.VersionNbt.item(
                                                         stack,
                                                         player != null
-                                                                ? player.getRegistryManager()
-                                                                : server.getRegistryManager()));
+                                                                ? player.registryAccess()
+                                                                : server.registryAccess()));
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*transaction.nbt =

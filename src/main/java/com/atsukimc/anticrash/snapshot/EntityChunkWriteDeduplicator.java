@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -39,7 +39,7 @@ public final class EntityChunkWriteDeduplicator {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    public byte[] digestIfChanged(long chunk, NbtCompound nbt)
+    public byte[] digestIfChanged(long chunk, CompoundTag nbt)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public byte[] digestIfChanged(long chunk, CompoundTag nbt)
@@ -65,7 +65,7 @@ public final class EntityChunkWriteDeduplicator {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static byte[] digest(NbtCompound nbt)
+    private static byte[] digest(CompoundTag nbt)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static byte[] digest(CompoundTag nbt)
@@ -78,7 +78,15 @@ public final class EntityChunkWriteDeduplicator {
                             new DigestOutputStream(OutputStream.nullOutputStream(), sha))) {
 
                 //? if (>=1.18 && <=1.21.11) {
+                //? if (>=1.18 && <=1.20.1) {
                 NbtIo.write(nbt, out);
+                //?}
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(nbt, out);
+                *///?}
+                //? if (>=1.20.3 && <=1.21.11) {
+                /*NbtIo.writeUnnamedTagWithFallback(nbt, out);
+                *///?}
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*NbtIo.writeUnnamedTagWithFallback(nbt, out);

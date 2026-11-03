@@ -4,7 +4,7 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerLoginNetworkHandler;
+import net.minecraft.server.network.ServerLoginPacketListenerImpl;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.network.ServerLoginPacketListenerImpl;
@@ -28,11 +28,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * frozen, so the retry happens every tick of the freeze.
  *
  * <p>Only AntiCrash's own refusal is retried. Ban, whitelist, capacity and every other Vanilla
- * reason comes from {@code PlayerManager.checkCanJoin}, which a held login never reaches; once the
+ * reason comes from {@code PlayerList.checkCanJoin}, which a held login never reaches; once the
  * hold ends, or whenever AntiCrash is not refusing at all, Vanilla decides exactly as before.
  */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerLoginNetworkHandler.class)
+@Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginNetworkHandlerMixin {
 
     //?}

@@ -15,12 +15,11 @@ class CanonicalSourceTest(unittest.TestCase):
         self.write('gradle.properties', 'mod_version=1.0.2\n')
         self.write('stonecutter.properties.toml', '''mod.java = "17"
 mod.compile_java = "21"
-mod.namespace = "yarn"
+mod.obfuscated = "true"
 mod.offline_access = "false"
 mod.qualification = "true"
 ["1.18.2"]
 deps.fabric_loader = "0.17.3"
-deps.yarn = "1.18.2+build.4"
 deps.fabric_api = "0.77.0+1.18.2"
 resources.mixin_profile = "classic"
 resources.refmap = "AntiCrash-refmap.json"
@@ -43,7 +42,7 @@ audit.block_entities = "block-entities.tsv"
     def test_inherited_dependencies_and_target_contract_are_loaded(self):
         target = validate(self.root)['1.18.2']
         self.assertEqual(17, target.java)
-        self.assertEqual('yarn', target.namespace)
+        self.assertTrue(target.obfuscated)
         self.assertFalse(target.offline_access)
 
     def test_missing_profile_is_rejected(self):
@@ -64,10 +63,10 @@ audit.block_entities = "block-entities.tsv"
         with self.assertRaisesRegex(ValueError, 'unsafe build input'):
             validate(self.root)
 
-    def test_unknown_namespace_is_rejected(self):
+    def test_unsupported_compiler_is_rejected(self):
         path = self.root / 'stonecutter.properties.toml'
-        path.write_text(path.read_text().replace('"yarn"', '"guess"'))
-        with self.assertRaisesRegex(ValueError, 'namespace contract'):
+        path.write_text(path.read_text().replace('mod.compile_java = "21"', 'mod.compile_java = "16"'))
+        with self.assertRaisesRegex(ValueError, 'compiler contract'):
             validate(self.root)
 
     def test_invalid_flag_is_rejected(self):

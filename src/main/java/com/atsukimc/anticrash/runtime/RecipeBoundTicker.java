@@ -4,35 +4,35 @@
 import com.atsukimc.anticrash.mixin.RecipeMatchGetterAccessorMixin;
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.BlockState;
+/^import net.minecraft.world.level.block.state.BlockState;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.BlockPos;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.entity.BlockEntity;
+/^import net.minecraft.world.level.block.entity.BlockEntity;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.entity.BlockEntityTicker;
+/^import net.minecraft.world.level.block.entity.BlockEntityTicker;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.BlockEntity;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.util.math.BlockPos;
+/^import net.minecraft.core.BlockPos;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.BlockEntityTicker;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.World;
+/^import net.minecraft.world.level.Level;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.state.BlockState;
@@ -46,7 +46,7 @@ public record RecipeBoundTicker<T extends BlockEntity>(
 
 //? if (>=1.21.2 && <=1.21.11) {
 /^@Override
-    public void tick(World world, BlockPos pos, BlockState state, T entity)
+    public void tick(Level world, BlockPos pos, BlockState state, T entity)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Override

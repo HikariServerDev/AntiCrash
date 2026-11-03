@@ -2,23 +2,23 @@
 /*package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.entity.Entity;
+/^import net.minecraft.world.entity.Entity;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.entity.player.PlayerAbilities;
+/^import net.minecraft.world.entity.player.Abilities;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.inventory.Inventory;
+/^import net.minecraft.world.Container;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.inventory.StackWithSlot;
+/^import net.minecraft.world.ItemStackWithSlot;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.item.ItemStack;
+/^import net.minecraft.world.item.ItemStack;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.HolderLookup;
@@ -26,21 +26,21 @@
 
 import net.minecraft.nbt.*;
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.registry.RegistryWrapper;
+/^import net.minecraft.core.HolderLookup;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.util.ProblemReporter;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.storage.NbtWriteView;
+/^import net.minecraft.world.level.storage.TagValueOutput;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.Container;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.util.ErrorReporter;
+/^import net.minecraft.util.ProblemReporter;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.ItemStackWithSlot;
@@ -71,8 +71,8 @@ public final class VersionStorage {
 
     public record ThrowingReporter(String path
 //? if (>=1.21.6 && <=1.21.11) {
-/^) implements ErrorReporter {
-        public ErrorReporter makeChild(ErrorReporter.Context context)
+/^) implements ProblemReporter {
+        public ProblemReporter forChild(ProblemReporter.PathElement context)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^) implements ProblemReporter {
@@ -81,7 +81,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^return new ThrowingReporter(path + "/" + context.getName());
+/^return new ThrowingReporter(path + "/" + context.get());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return new ThrowingReporter(path + "/" + context.get());
@@ -91,7 +91,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public void report(ErrorReporter.Error error)
+/^public void report(ProblemReporter.Problem error)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public void report(ProblemReporter.Problem error)
@@ -100,7 +100,7 @@ public final class VersionStorage {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^throw new IllegalStateException(
-                    "AntiCrash serialization failed at " + path + ": " + error.getMessage());
+                    "AntiCrash serialization failed at " + path + ": " + error.description());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^throw new IllegalStateException(
@@ -112,7 +112,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static NbtWriteView writer(RegistryWrapper.WrapperLookup registries)
+/^public static TagValueOutput writer(HolderLookup.Provider registries)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static TagValueOutput writer(HolderLookup.Provider registries)
@@ -120,7 +120,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^return NbtWriteView.create(new ThrowingReporter("snapshot"), registries);
+/^return TagValueOutput.createWithContext(new ThrowingReporter("snapshot"), registries);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return TagValueOutput.createWithContext(new ThrowingReporter("snapshot"), registries);
@@ -130,7 +130,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static NbtCompound entity(Entity entity)
+/^public static CompoundTag entity(Entity entity)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static CompoundTag entity(Entity entity)
@@ -138,7 +138,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var view = writer(entity.getRegistryManager());
+/^var view = writer(entity.registryAccess());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var view = writer(entity.registryAccess());
@@ -146,7 +146,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^return entity.saveData(view) ? view.getNbt() : null;
+/^return entity.save(view) ? view.buildResult() : null;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return entity.save(view) ? view.buildResult() : null;
@@ -156,7 +156,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static NbtCompound abilities(PlayerAbilities abilities)
+/^public static CompoundTag abilities(Abilities abilities)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static CompoundTag abilities(Abilities abilities)
@@ -164,7 +164,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var nbt = new NbtCompound();
+/^var nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var nbt = new CompoundTag();
@@ -172,7 +172,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^nbt.put("abilities", PlayerAbilities.Packed.CODEC, abilities.pack());
+/^nbt.store("abilities", Abilities.Packed.CODEC, abilities.pack());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^nbt.store("abilities", Abilities.Packed.CODEC, abilities.pack());
@@ -183,7 +183,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static PlayerAbilities.Packed abilities(NbtCompound nbt)
+/^public static Abilities.Packed abilities(CompoundTag nbt)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static Abilities.Packed abilities(CompoundTag nbt)
@@ -191,7 +191,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^return nbt.get("abilities", PlayerAbilities.Packed.CODEC)
+/^return nbt.read("abilities", Abilities.Packed.CODEC)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid player abilities"));
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -203,7 +203,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static NbtList inventory(Inventory inventory, RegistryWrapper.WrapperLookup registries)
+/^public static ListTag inventory(Container inventory, HolderLookup.Provider registries)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static ListTag inventory(Container inventory, HolderLookup.Provider registries)
@@ -211,7 +211,7 @@ public final class VersionStorage {
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var list = new NbtList();
+/^var list = new ListTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var list = new ListTag();
@@ -219,7 +219,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var ops = registries.getOps(NbtOps.INSTANCE);
+/^var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var ops = registries.createSerializationContext(NbtOps.INSTANCE);
@@ -227,7 +227,7 @@ public final class VersionStorage {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^for (int slot = 0; slot < inventory.size();
+/^for (int slot = 0; slot < inventory.getContainerSize();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^for (int slot = 0; slot < inventory.getContainerSize();
@@ -235,7 +235,7 @@ public final class VersionStorage {
 slot++) {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var stack = inventory.getStack(slot);
+/^var stack = inventory.getItem(slot);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var stack = inventory.getItem(slot);
@@ -245,8 +245,8 @@ slot++) {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^list.add(
-                        StackWithSlot.CODEC
-                                .encodeStart(ops, new StackWithSlot(slot, stack))
+                        ItemStackWithSlot.CODEC
+                                .encodeStart(ops, new ItemStackWithSlot(slot, stack))
                                 .getOrThrow());
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -263,7 +263,7 @@ slot++) {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^public static List<ItemStack> inventory(
-            NbtList encoded, int size, RegistryWrapper.WrapperLookup registries)
+            ListTag encoded, int size, HolderLookup.Provider registries)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static List<ItemStack> inventory(
@@ -275,7 +275,7 @@ slot++) {
         Set<Integer> slots = new HashSet<>();
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var ops = registries.getOps(NbtOps.INSTANCE);
+/^var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var ops = registries.createSerializationContext(NbtOps.INSTANCE);
@@ -284,7 +284,7 @@ slot++) {
         for (var element : encoded) {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var entry = StackWithSlot.CODEC.parse(ops, element).getOrThrow();
+/^var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
@@ -292,7 +292,7 @@ slot++) {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^if (!entry.isValidSlot(size) || !slots.add(entry.slot()))
+/^if (!entry.isValidInContainer(size) || !slots.add(entry.slot()))
 
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -307,7 +307,7 @@ throw new IllegalArgumentException("Invalid/duplicate inventory slot");
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^public static void applyInventory(Inventory inventory, List<ItemStack> stacks)
+/^public static void applyInventory(Container inventory, List<ItemStack> stacks)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static void applyInventory(Container inventory, List<ItemStack> stacks)
@@ -315,7 +315,7 @@ throw new IllegalArgumentException("Invalid/duplicate inventory slot");
 {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^if (inventory.size() != stacks.size())
+/^if (inventory.getContainerSize() != stacks.size())
 
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -325,7 +325,7 @@ throw new IllegalArgumentException("Invalid/duplicate inventory slot");
 throw new IllegalArgumentException("Inventory shape changed");
         for (int i = 0; i < stacks.size(); i++)
 //? if (>=1.21.6 && <=1.21.11) {
-/^inventory.setStack(i, stacks.get(i));
+/^inventory.setItem(i, stacks.get(i));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^inventory.setItem(i, stacks.get(i));
@@ -333,7 +333,7 @@ throw new IllegalArgumentException("Inventory shape changed");
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^inventory.markDirty();
+/^inventory.setChanged();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^inventory.setChanged();

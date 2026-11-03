@@ -13,7 +13,7 @@ public enum AntiCrashState {
     /** Background finalization failed; the previous checkpoint remains authoritative. */
     CHECKPOINT_FINALIZE_FAILED,
     CHECKPOINT_COMMITTING,
-    /** Filesystem-only startup states; no ServerWorld exists in these states. */
+    /** Filesystem-only startup states; no ServerLevel exists in these states. */
     PREBOOT_INSPECT,
     PREBOOT_DECISION,
     PREBOOT_PRESERVE_RAW,

@@ -2,7 +2,7 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.21 && <=1.21.11) {
-/^import net.minecraft.entity.TntEntity;
+/^import net.minecraft.world.entity.item.PrimedTnt;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.entity.item.PrimedTnt;
@@ -13,9 +13,9 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 //? if (>=1.21 && <=1.21.11) {
-/^@Mixin(TntEntity.class)
+/^@Mixin(PrimedTnt.class)
 public interface TntRuntimeAccessorMixin {
-    @Accessor("teleported")
+    @Accessor("usedPortal")
     boolean anticrash$teleported();
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -28,7 +28,7 @@ public interface TntRuntimeAccessorMixin {
 
 
 //? if (>=1.21 && <=1.21.11) {
-/^@Accessor("teleported")
+/^@Accessor("usedPortal")
     void anticrash$setTeleported(boolean value);
 ^///?}
 //? if (>=26.1 && <=26.3) {

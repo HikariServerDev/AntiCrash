@@ -7,32 +7,37 @@ import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkTicket;
+import net.minecraft.server.level.Ticket;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkTicketManager;
+//? if (>=1.18 && <=1.21.4) {
+import net.minecraft.server.level.DistanceManager;
+//?}
+//? if (>=1.21.5 && <=1.21.11) {
+/*import net.minecraft.world.level.TicketStorage;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.Ticket;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.4) {
-import net.minecraft.util.collection.SortedArraySet;
+import net.minecraft.util.SortedArraySet;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.TicketStorage;
@@ -55,7 +60,7 @@ public final class TicketLedgerSnapshot {
     public final List<Entry> entries = new ArrayList<>();
 
     //? if (>=1.18 && <=1.21.11) {
-    public static List<Entry> capture(Iterable<ServerWorld> worlds)
+    public static List<Entry> capture(Iterable<ServerLevel> worlds)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static List<Entry> capture(Iterable<ServerLevel> worlds)
@@ -64,7 +69,7 @@ public final class TicketLedgerSnapshot {
         List<Entry> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : worlds)
+        for (ServerLevel world : worlds)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : worlds)
@@ -72,17 +77,16 @@ public final class TicketLedgerSnapshot {
         {
 
             //? if (>=1.18 && <=1.20.6) {
-            ChunkTicketManager manager =
-                    world.getChunkManager().threadedAnvilChunkStorage.getTicketManager();
+            DistanceManager manager = world.getChunkSource().chunkMap.getDistanceManager();
             //?}
             //? if (>=1.21 && <=1.21.4) {
-            /*ChunkTicketManager manager =
-                                world.getChunkManager().chunkLoadingManager.getTicketManager();
+            /*DistanceManager manager =
+                                world.getChunkSource().chunkMap.getDistanceManager();
 *///?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*ChunkTicketManager manager =
+            /*TicketStorage manager =
                                 ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
-                                                world.getChunkManager())
+                                                world.getChunkSource())
                                         .anticrash$getTicketManager();
 *///?}
             //? if (>=26.1 && <=26.3) {
@@ -95,11 +99,11 @@ public final class TicketLedgerSnapshot {
             ChunkTicketManagerAccessorMixin accessor = (ChunkTicketManagerAccessorMixin) manager;
 
             //? if (>=1.18 && <=1.21.4) {
-            Long2ObjectOpenHashMap<SortedArraySet<ChunkTicket<?>>> tickets =
+            Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets =
                     accessor.anticrash$getTicketsByPosition();
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*Long2ObjectOpenHashMap<List<ChunkTicket>> tickets =
+            /*Long2ObjectOpenHashMap<List<Ticket>> tickets =
                                 accessor.anticrash$getTicketsByPosition();
 *///?}
             //? if (>=26.1 && <=26.3) {
@@ -108,11 +112,11 @@ public final class TicketLedgerSnapshot {
 *///?}
 
             //? if (>=1.18 && <=1.21.4) {
-            for (Long2ObjectMap.Entry<SortedArraySet<ChunkTicket<?>>> positionEntry :
+            for (Long2ObjectMap.Entry<SortedArraySet<Ticket<?>>> positionEntry :
                     tickets.long2ObjectEntrySet())
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*for (Long2ObjectMap.Entry<List<ChunkTicket>> positionEntry :
+            /*for (Long2ObjectMap.Entry<List<Ticket>> positionEntry :
                                 tickets.long2ObjectEntrySet())
 *///?}
             //? if (>=26.1 && <=26.3) {
@@ -128,10 +132,10 @@ public final class TicketLedgerSnapshot {
 *///?}
 
                 //? if (>=1.18 && <=1.21.4) {
-                for (ChunkTicket<?> ticket : positionEntry.getValue())
+                for (Ticket<?> ticket : positionEntry.getValue())
                 //?}
                 //? if (>=1.21.5 && <=1.21.11) {
-                /*for (ChunkTicket ticket : positionEntry.getValue())
+                /*for (Ticket ticket : positionEntry.getValue())
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*for (Ticket ticket : positionEntry.getValue())
@@ -151,7 +155,7 @@ public final class TicketLedgerSnapshot {
 
                     //? if (>=1.21.5 && <=1.21.11) {
                     /*var typeId =
-                                                net.minecraft.registry.Registries.TICKET_TYPE.getId(ticket.getType());
+                                                net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE.getKey(ticket.getType());
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*var typeId =
@@ -177,7 +181,12 @@ public final class TicketLedgerSnapshot {
                     Entry entry = new Entry();
 
                     //? if (>=1.18 && <=1.21.11) {
-                    entry.dimension = world.getRegistryKey().getValue().toString();
+                    //? if (>=1.18 && <=1.21.10) {
+                    entry.dimension = world.dimension().location().toString();
+                    //?}
+                    //? if 1.21.11 {
+                    /*entry.dimension = world.dimension().identifier().toString();
+                    *///?}
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*entry.dimension = world.dimension().identifier().toString();
@@ -200,7 +209,7 @@ public final class TicketLedgerSnapshot {
                     entry.type = type;
 
                     //? if (>=1.18 && <=1.21.11) {
-                    entry.level = ticket.getLevel();
+                    entry.level = ticket.getTicketLevel();
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*entry.level = ticket.getTicketLevel();
@@ -224,10 +233,10 @@ public final class TicketLedgerSnapshot {
                     //?}
 
                     //? if (>=1.18 && <=1.21.4) {
-                    entry.expiryTicks = ticket.getType().getExpiryTicks();
+                    entry.expiryTicks = ticket.getType().timeout();
                     //?}
                     //? if (>=1.21.5 && <=1.21.11) {
-                    /*entry.expiryTicks = ticket.getType().expiryTicks();
+                    /*entry.expiryTicks = ticket.getType().timeout();
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*entry.expiryTicks = ticket.getType().timeout();

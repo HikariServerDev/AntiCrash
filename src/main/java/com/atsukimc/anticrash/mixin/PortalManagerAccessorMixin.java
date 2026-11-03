@@ -2,14 +2,14 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.21 && <=1.21.11) {
-/^import net.minecraft.block.Portal;
+/^import net.minecraft.world.level.block.Portal;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.entity.PortalProcessor;
 ^///?}
 
 //? if (>=1.21 && <=1.21.11) {
-/^import net.minecraft.world.dimension.PortalManager;
+/^import net.minecraft.world.entity.PortalProcessor;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.Portal;
@@ -20,7 +20,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 //? if (>=1.21 && <=1.21.11) {
-/^@Mixin(PortalManager.class)
+/^@Mixin(PortalProcessor.class)
 public interface PortalManagerAccessorMixin {
 
 ^///?}
@@ -34,7 +34,7 @@ public interface PortalManagerAccessorMixin {
 
 
 //? if (>=1.21 && <=1.21.11) {
-/^@Accessor("ticksInPortal")
+/^@Accessor("portalTime")
     void anticrash$setTicksInPortal(int ticks);
 ^///?}
 //? if (>=26.1 && <=26.3) {

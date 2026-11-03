@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
@@ -42,8 +42,8 @@ public interface BrewingStandBlockEntityTimerAccessor {
     int anticrash$getBrewTime();
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("itemBrewing")
-    net.minecraft.item.Item anticrash$getItemBrewing();
+    @Accessor("ingredient")
+    net.minecraft.world.item.Item anticrash$getItemBrewing();
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Accessor("ingredient")

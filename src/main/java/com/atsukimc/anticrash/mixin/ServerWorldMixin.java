@@ -7,14 +7,14 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.PersistentEntitySectionManager;
@@ -28,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import java.util.function.BooleanSupplier;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerWorld.class)
+@Mixin(ServerLevel.class)
 public abstract class ServerWorldMixin {
 
     //?}
@@ -55,9 +55,10 @@ public abstract class ServerWorldMixin {
             at =
                     @At(
                             value = "INVOKE",
-                            target = "Lnet/minecraft/server/world/ServerEntityManager;save()V"))
+                            target =
+                                    "Lnet/minecraft/world/level/entity/PersistentEntitySectionManager;autoSave()V"))
     private void anticrash$entitiesAlreadyFlushedAtCut(
-            ServerEntityManager<?> manager, Operation<Void> original)
+            PersistentEntitySectionManager<?> manager, Operation<Void> original)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@WrapOperation(

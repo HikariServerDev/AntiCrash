@@ -8,7 +8,7 @@ import java.util.Objects;
  * Immutable hand-off from the pre-world disk phase to the post-world runtime phase.
  *
  * <p>The plan deliberately contains no Minecraft object. It can therefore be produced before {@code
- * MinecraftServer.loadWorld()} and remains safe to inspect while the server is still constructing
+ * MinecraftServer.loadLevel()} and remains safe to inspect while the server is still constructing
  * its level storage. A checkpoint is only marked verified after the full integrity pass and the
  * staged restore have completed.
  */

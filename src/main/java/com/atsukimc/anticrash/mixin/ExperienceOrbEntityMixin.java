@@ -4,7 +4,7 @@ import com.atsukimc.anticrash.runtime.ItemPhaseHolder;
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.world.entity.ExperienceOrb;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.ExperienceOrb;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ExperienceOrbEntity.class)
+@Mixin(ExperienceOrb.class)
 public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
     /**
      * Two orbs merge only when the difference of their network ids is a multiple of 40. The ids are
@@ -43,7 +43,7 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
         //? if (>=1.18 && <=1.21.11) {
         return anticrash$idPhase >= 0
                 ? anticrash$idPhase
-                : Math.floorMod(((ExperienceOrbEntity) (Object) this).getId(), 40);
+                : Math.floorMod(((ExperienceOrb) (Object) this).getId(), 40);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*return anticrash$idPhase >= 0
@@ -60,11 +60,11 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
 
     //? if (>=1.18 && <=1.21.11) {
     @ModifyExpressionValue(
-            method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;)Z",
+            method = "canMerge(Lnet/minecraft/world/entity/ExperienceOrb;)Z",
             at =
                     @At(
                             value = "INVOKE",
-                            target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
+                            target = "Lnet/minecraft/world/entity/ExperienceOrb;getId()I"))
     private int anticrash$stableSeed(int networkId)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -82,13 +82,13 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
 
     //? if (>=1.18 && <=1.21.11) {
     @ModifyExpressionValue(
-            method = "isMergeable(Lnet/minecraft/entity/ExperienceOrbEntity;II)Z",
+            method = "canMerge(Lnet/minecraft/world/entity/ExperienceOrb;II)Z",
             at =
                     @At(
                             value = "INVOKE",
-                            target = "Lnet/minecraft/entity/ExperienceOrbEntity;getId()I"))
+                            target = "Lnet/minecraft/world/entity/ExperienceOrb;getId()I"))
     private static int anticrash$stableCandidate(
-            int networkId, ExperienceOrbEntity orb, int seed, int amount)
+            int networkId, ExperienceOrb orb, int seed, int amount)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@ModifyExpressionValue(

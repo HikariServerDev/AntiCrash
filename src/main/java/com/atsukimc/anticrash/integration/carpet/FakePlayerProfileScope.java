@@ -9,8 +9,8 @@ import java.util.UUID;
  * Supplies the checkpoint identity to Carpet's name-only creation API.
  *
  * <p>Carpet 1.4.69 createFake calls server.getUserCache().findByName(name), then passes that
- * profile to the FakePlayer constructor and PlayerManager.onPlayerConnect. Looking up today's cache
- * can select a different (online/offline) UUID from the checkpoint. The UserCache mixin consults
+ * profile to the FakePlayer constructor and PlayerList.onPlayerConnect. Looking up today's cache
+ * can select a different (online/offline) UUID from the checkpoint. The GameProfileCache mixin consults
  * this scope only for this cache, this name, and this thread. No cache maps or global
  * authentication settings are changed; Vanilla handles registration of the created player.
  */
@@ -112,7 +112,7 @@ public final class FakePlayerProfileScope implements AutoCloseable {
         return future.whenCompleteAsync(action, executor);
     }
 
-    /** Null leaves the normal UserCache lookup completely unchanged. */
+    /** Null leaves the normal GameProfileCache lookup completely unchanged. */
     public static GameProfile lookup(Object userCache, String name) {
         FakePlayerProfileScope scope = ACTIVE.get();
         return scope != null && scope.userCache == userCache && scope.name.equalsIgnoreCase(name)

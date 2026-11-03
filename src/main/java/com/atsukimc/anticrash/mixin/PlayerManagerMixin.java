@@ -13,29 +13,29 @@ import com.mojang.authlib.GameProfile;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.network.ClientConnection;
+import net.minecraft.network.Connection;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.network.chat.Component;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.PlayerManager;
+import net.minecraft.server.players.PlayerList;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 //?}
 
 //? if (>=1.18 && <=1.18.2) {
-import net.minecraft.text.LiteralText;
+import net.minecraft.network.chat.TextComponent;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.text.Text;
+import net.minecraft.network.chat.Component;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.players.PlayerList;
@@ -50,21 +50,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 import java.net.SocketAddress;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(PlayerManager.class)
+@Mixin(PlayerList.class)
 public abstract class PlayerManagerMixin {
 
     //?}
     //? if (>=1.18 && <=1.21.8) {
-    @Inject(method = "checkCanJoin", at = @At("RETURN"), cancellable = true)
+    @Inject(method = "canPlayerLogin", at = @At("RETURN"), cancellable = true)
     private void anticrash$loginGate(
-            SocketAddress address, GameProfile profile, CallbackInfoReturnable<Text> callbackInfo)
+            SocketAddress address,
+            GameProfile profile,
+            CallbackInfoReturnable<Component> callbackInfo)
                 //?}
                 //? if (>=1.21.9 && <=1.21.11) {
-                /*@Inject(method = "checkCanJoin", at = @At("RETURN"), cancellable = true)
+                /*@Inject(method = "canPlayerLogin", at = @At("RETURN"), cancellable = true)
                     private void anticrash$loginGate(
                             SocketAddress address,
-                            net.minecraft.server.PlayerConfigEntry profile,
-                            CallbackInfoReturnable<Text> callbackInfo)
+                            net.minecraft.server.players.NameAndId profile,
+                            CallbackInfoReturnable<Component> callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Mixin(PlayerList.class)
@@ -77,7 +79,7 @@ public abstract class PlayerManagerMixin {
 *///?}
             {
         // Preserve Vanilla ban, whitelist, IP-ban and capacity messages.  Returning a reason from
-        // checkCanJoin lets ServerLoginNetworkHandler perform its normal one-shot disconnect;
+        // checkCanJoin lets ServerLoginPacketListenerImpl perform its normal one-shot disconnect;
         // cancelling onPlayerConnect after player creation caused handleDisconnection() twice.
         if (callbackInfo.getReturnValue() != null) return;
         AntiCrashController controller = AntiCrashMod.controller();
@@ -86,13 +88,13 @@ public abstract class PlayerManagerMixin {
 
             //? if (>=1.18 && <=1.18.2) {
             callbackInfo.setReturnValue(
-                    new LiteralText(
+                    new TextComponent(
                             MessageCatalog.text(
                                     controller.config().language, "recovery.login_blocked")));
             //?}
             //? if (>=1.19 && <=1.21.11) {
             /*callbackInfo.setReturnValue(
-                                Text.literal(
+                                Component.literal(
                                         MessageCatalog.text(
                                                 controller.config().language, "recovery.login_blocked")));
 *///?}
@@ -107,16 +109,16 @@ public abstract class PlayerManagerMixin {
     }
 
     //? if (>=1.18 && <=1.20.1) {
-    @Inject(method = "onPlayerConnect", at = @At("RETURN"))
+    @Inject(method = "placeNewPlayer", at = @At("RETURN"))
     private void anticrash$playerConnected(
-            ClientConnection connection, ServerPlayerEntity player, CallbackInfo callbackInfo)
+            Connection connection, ServerPlayer player, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.20.2 && <=1.21.11) {
-                /*@Inject(method = "onPlayerConnect", at = @At("RETURN"))
+                /*@Inject(method = "placeNewPlayer", at = @At("RETURN"))
                     private void anticrash$playerConnected(
-                            ClientConnection connection,
-                            ServerPlayerEntity player,
-                            net.minecraft.server.network.ConnectedClientData clientData,
+                            Connection connection,
+                            ServerPlayer player,
+                            net.minecraft.server.network.CommonListenerCookie clientData,
                             CallbackInfo callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {

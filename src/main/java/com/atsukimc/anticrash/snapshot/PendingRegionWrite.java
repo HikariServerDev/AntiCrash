@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.snapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
@@ -26,7 +26,7 @@ public record PendingRegionWrite(
         Path directory,
         ChunkPos pos,
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound nbt
+        CompoundTag nbt
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag nbt

@@ -2,28 +2,28 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^import net.minecraft.block.BlockState;
+/^import net.minecraft.world.level.block.state.BlockState;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.BlockPos;
 ^///?}
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^import net.minecraft.block.entity.CrafterBlockEntity;
+/^import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^import net.minecraft.util.math.BlockPos;
+/^import net.minecraft.core.BlockPos;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 ^///?}
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^import net.minecraft.world.World;
+/^import net.minecraft.world.level.Level;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.state.BlockState;
@@ -41,9 +41,9 @@ public abstract class CrafterMutationMixin {
     // Vanilla persists the countdown but tickCrafting does not mark intermediate ticks dirty.
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^@Inject(method = "tickCrafting", at = @At("HEAD"))
+/^@Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$dirty(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
             CrafterBlockEntity crafter,
@@ -61,17 +61,17 @@ public abstract class CrafterMutationMixin {
 {
 
 //? if (>=1.20.3 && <=1.21.8) {
-/^if (!world.isClient
+/^if (!world.isClientSide
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
 
 ^///?}
 //? if (>=1.21.9 && <=1.21.11) {
-/^if (!world.isClient()
+/^if (!world.isClientSide()
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
 
 ^///?}
 //? if (>=1.20.3 && <=1.21.11) {
-/^world.markDirty(pos);
+/^world.blockEntityChanged(pos);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^if (!world.isClientSide()

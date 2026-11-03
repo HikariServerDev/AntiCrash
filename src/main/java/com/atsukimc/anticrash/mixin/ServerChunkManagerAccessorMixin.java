@@ -5,22 +5,27 @@ import com.mojang.datafixers.util.Either;
 //?}
 
 //? if (>=1.18 && <=1.20.4) {
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.level.ChunkHolder;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerChunkCache;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.level.ServerChunkCache;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.ChunkStatus;
+//? if (>=1.18 && <=1.20.4) {
+import net.minecraft.world.level.chunk.ChunkStatus;
+//?}
+//? if (>=1.20.5 && <=1.21.11) {
+/*import net.minecraft.world.level.chunk.status.ChunkStatus;
+*///?}
 //?}
 
 //? if (>=1.18 && <=1.20.4) {
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -41,19 +46,19 @@ import java.util.concurrent.CompletableFuture;
  * changes the ticket manager's internal state.
  */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerChunkManager.class)
+@Mixin(ServerChunkCache.class)
 public interface ServerChunkManagerAccessorMixin {
 
     //?}
     //? if (>=1.18 && <=1.20.4) {
-    @Invoker("getChunkFuture")
-    CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> anticrash$getChunkFuture(
+    @Invoker("getChunkFutureMainThread")
+    CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> anticrash$getChunkFuture(
             int chunkX, int chunkZ, ChunkStatus status, boolean addTicket);
 
     //?}
     //? if (>=1.21.5 && <=1.21.11) {
-    /*@org.spongepowered.asm.mixin.gen.Accessor("ticketManager")
-        net.minecraft.server.world.ChunkTicketManager anticrash$getTicketManager();
+    /*@org.spongepowered.asm.mixin.gen.Accessor("ticketStorage")
+        net.minecraft.world.level.TicketStorage anticrash$getTicketManager();
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Mixin(ServerChunkCache.class)
@@ -63,8 +68,8 @@ public interface ServerChunkManagerAccessorMixin {
 *///?}
 
     //? if (>=1.20.5 && <=1.21.11) {
-    /*@Invoker("getChunkFuture")
-        CompletableFuture<net.minecraft.server.world.OptionalChunk<net.minecraft.world.chunk.Chunk>>
+    /*@Invoker("getChunkFutureMainThread")
+        CompletableFuture<net.minecraft.server.level.ChunkResult<net.minecraft.world.level.chunk.ChunkAccess>>
                 anticrash$getChunkFuture(int chunkX, int chunkZ, ChunkStatus status, boolean addTicket);
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -76,11 +81,11 @@ public interface ServerChunkManagerAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.1) {
-    @org.spongepowered.asm.mixin.gen.Accessor("lastMobSpawningTime")
+    @org.spongepowered.asm.mixin.gen.Accessor("lastInhabitedUpdate")
     void anticrash$setLastMobSpawningTime(long time);
     //?}
     //? if (>=1.21.2 && <=1.21.11) {
-    /*@org.spongepowered.asm.mixin.gen.Accessor("lastTickTime")
+    /*@org.spongepowered.asm.mixin.gen.Accessor("lastInhabitedUpdate")
         void anticrash$setLastMobSpawningTime(long time);
 *///?}
     //? if (>=26.1 && <=26.2) {

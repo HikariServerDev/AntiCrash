@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Develop 1.18–1.21.11 against the official Mojang mappings instead of Yarn, nothing can see in the game
+
 ## 1.0.3 — source/build structure
 
 - Consolidate Minecraft implementation and unit tests into one Stonecutter-managed `src` tree.

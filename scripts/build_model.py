@@ -10,9 +10,8 @@ class Target:
     minecraft: str
     java: int
     compiler: int
-    namespace: str
+    obfuscated: bool
     loader: str
-    yarn: str
     fabric_api: str
     offline_access: bool
     qualification: bool
@@ -46,15 +45,15 @@ def load_targets(root):
             raise ValueError(f'Invalid Minecraft target: {version}')
         merged = {key: dict(defaults[key], **overrides.get(key, {})) for key in defaults}
         mod, deps, resources, audit = (merged[key] for key in defaults)
-        target = Target(version, int(mod['java']), int(mod['compile_java']), mod['namespace'],
-                        deps['fabric_loader'], deps['yarn'], deps['fabric_api'],
+        target = Target(version, int(mod['java']), int(mod['compile_java']), _flag(mod['obfuscated']),
+                        deps['fabric_loader'], deps['fabric_api'],
                         _flag(mod['offline_access']), _flag(mod['qualification']),
                         resources['mixin_profile'], resources['refmap'],
                         audit['entities'], audit['block_entities'])
-        if target.namespace not in ['yarn', 'mojang'] or target.java not in [17, 21, 25] or target.compiler < target.java:
-            raise ValueError(f'Unsupported compiler/namespace contract: {version}')
-        if target.namespace == 'yarn' and (not target.yarn or (_flag(mod.get('legacy_mixin_ap', 'true')) and not target.refmap)):
-            raise ValueError(f'Named Minecraft needs pinned Yarn and refmap: {version}')
+        if target.java not in [17, 21, 25] or target.compiler < target.java:
+            raise ValueError(f'Unsupported compiler contract: {version}')
+        if target.obfuscated and _flag(mod.get('legacy_mixin_ap', 'true')) and not target.refmap:
+            raise ValueError(f'Obfuscated Minecraft with the legacy Mixin AP needs a refmap: {version}')
         if not re.fullmatch(r'[A-Za-z0-9._-]+', target.mixin_profile):
             raise ValueError(f'Unsafe Mixin profile: {target.mixin_profile}')
         resource_path(root, f'gradle/mixins/{target.mixin_profile}.json')

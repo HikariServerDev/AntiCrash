@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
@@ -16,7 +16,7 @@ import java.util.regex.Pattern;
 /**
  * Region-format files Minecraft has written since the last checkpoint cut.
  *
- * <p>Every chunk, entity and POI write in 1.18.2 goes through {@code RegionBasedStorage#write} on a
+ * <p>Every chunk, entity and POI write in 1.18.2 goes through {@code RegionFileStorage#write} on a
  * storage IO thread, which records the region file and the chunk's external {@code .mcc} file here.
  * A checkpoint that knows this set does not have to stat and compare ten thousand region files
  * while the world is frozen: a file that was not written since the parent's cut still has the
@@ -38,7 +38,7 @@ public final class LiveFileTracker {
         return GLOBAL;
     }
 
-    /** Called by RegionBasedStorage#write, usually on a storage IO thread. */
+    /** Called by RegionFileStorage#write, usually on a storage IO thread. */
     public void recordRegionWrite(Path directory, ChunkPos position) {
         if (directory == null || position == null) return;
         lock.readLock().lock();
@@ -115,7 +115,7 @@ public final class LiveFileTracker {
     }
 
     /**
-     * True for a file whose every write goes through RegionBasedStorage: a region or external chunk
+     * True for a file whose every write goes through RegionFileStorage: a region or external chunk
      * file directly inside a {@code region}, {@code entities} or {@code poi} directory.
      */
     public static boolean isRegionStorageFile(String relative) {

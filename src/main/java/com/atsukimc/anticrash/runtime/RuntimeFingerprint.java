@@ -6,7 +6,7 @@ import com.atsukimc.anticrash.util.Hashing;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.network.ServerPlayerEntity;
+import net.minecraft.server.level.ServerPlayer;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerPlayer;
@@ -308,7 +308,7 @@ public final class RuntimeFingerprint {
             }
             lines.add(player.canonical());
         }
-        // PlayerManager order is not the FakePlayer ActionPack's execution order. Sort identities
+        // PlayerList order is not the FakePlayer ActionPack's execution order. Sort identities
         // so a harmless login/list-order change is not reported as a machine-state mismatch.
         lines.sort(String::compareTo);
         return lines;
@@ -330,7 +330,7 @@ public final class RuntimeFingerprint {
         if (server == null) return lines;
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList())
+        for (ServerPlayer player : server.getPlayerList().getPlayers())
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerPlayer player : server.getPlayerList().getPlayers())
@@ -342,19 +342,29 @@ public final class RuntimeFingerprint {
 
             //? if (>=1.18 && <=1.21.8) {
             lines.add(
-                    player.getUuidAsString()
+                    player.getStringUUID()
                             + "|"
                             + player.getGameProfile().getName()
                             + "|"
-                            + player.getWorld().getRegistryKey().getValue());
+                            //? if (>=1.18 && <=1.19.4) {
+                            + player.getLevel().dimension().location());
+            //?}
+            //? if (>=1.20 && <=1.21.8) {
+            /*+ player.level().dimension().location());
+                            *///?}
             //?}
             //? if (>=1.21.9 && <=1.21.11) {
             /*lines.add(
-                                player.getUuidAsString()
+                                player.getStringUUID()
                                         + "|"
                                         + player.getGameProfile().name()
                                         + "|"
-                                        + player.getEntityWorld().getRegistryKey().getValue());
+                                        //? if (>=1.21.9 && <=1.21.10) {
+                                        /^+ player.level().dimension().location());
+                                        ^///?}
+                                        //? if 1.21.11 {
+                                        /^+ player.level().dimension().identifier());
+                                        ^///?}
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*lines.add(

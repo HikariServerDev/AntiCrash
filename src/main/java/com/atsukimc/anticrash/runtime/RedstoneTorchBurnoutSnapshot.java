@@ -4,28 +4,28 @@ import com.atsukimc.anticrash.mixin.RedstoneTorchBlockAccessorMixin;
 import com.atsukimc.anticrash.mixin.RedstoneTorchBurnoutEntryAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.RedstoneTorchBlock;
+import net.minecraft.world.level.block.RedstoneTorchBlock;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.BlockGetter;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.BlockView;
+import net.minecraft.world.level.BlockGetter;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.RedstoneTorchBlock;
@@ -42,7 +42,7 @@ public final class RedstoneTorchBurnoutSnapshot {
     public final List<Entry> entries = new ArrayList<>();
 
     //? if (>=1.18 && <=1.21.11) {
-    public static RedstoneTorchBurnoutSnapshot capture(ServerWorld world)
+    public static RedstoneTorchBurnoutSnapshot capture(ServerLevel world)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static RedstoneTorchBurnoutSnapshot capture(ServerLevel world)
@@ -51,14 +51,19 @@ public final class RedstoneTorchBurnoutSnapshot {
         RedstoneTorchBurnoutSnapshot snapshot = new RedstoneTorchBurnoutSnapshot();
 
         //? if (>=1.18 && <=1.21.11) {
-        snapshot.dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        snapshot.dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*snapshot.dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*snapshot.dimension = world.dimension().identifier().toString();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> map =
+        Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> map =
                 RedstoneTorchBlockAccessorMixin.anticrash$getBurnoutMap();
         //?}
         //? if (>=26.1 && <=26.3) {
@@ -67,7 +72,7 @@ public final class RedstoneTorchBurnoutSnapshot {
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        List<RedstoneTorchBlock.BurnoutEntry> live = map.get(world);
+        List<RedstoneTorchBlock.Toggle> live = map.get(world);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*List<RedstoneTorchBlock.Toggle> live = map.get(world);
@@ -76,7 +81,7 @@ public final class RedstoneTorchBurnoutSnapshot {
         if (live != null) {
 
             //? if (>=1.18 && <=1.21.11) {
-            for (RedstoneTorchBlock.BurnoutEntry entry : live)
+            for (RedstoneTorchBlock.Toggle entry : live)
             //?}
             //? if (>=26.1 && <=26.3) {
             /*for (RedstoneTorchBlock.Toggle entry : live)
@@ -98,7 +103,7 @@ public final class RedstoneTorchBurnoutSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    public void restore(ServerWorld world)
+    public void restore(ServerLevel world)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public void restore(ServerLevel world)
@@ -106,7 +111,7 @@ public final class RedstoneTorchBurnoutSnapshot {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        Map<BlockView, List<RedstoneTorchBlock.BurnoutEntry>> map =
+        Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> map =
                 RedstoneTorchBlockAccessorMixin.anticrash$getBurnoutMap();
         //?}
         //? if (>=26.1 && <=26.3) {
@@ -120,7 +125,7 @@ public final class RedstoneTorchBurnoutSnapshot {
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        List<RedstoneTorchBlock.BurnoutEntry> restored = new ArrayList<>(entries.size());
+        List<RedstoneTorchBlock.Toggle> restored = new ArrayList<>(entries.size());
         //?}
         //? if (>=26.1 && <=26.3) {
         /*List<RedstoneTorchBlock.Toggle> restored = new ArrayList<>(entries.size());
@@ -130,7 +135,7 @@ public final class RedstoneTorchBurnoutSnapshot {
 
             //? if (>=1.18 && <=1.21.11) {
             restored.add(
-                    new RedstoneTorchBlock.BurnoutEntry(
+                    new RedstoneTorchBlock.Toggle(
                             new BlockPos(entry.x, entry.y, entry.z), entry.time));
             //?}
             //? if (>=26.1 && <=26.3) {
@@ -140,7 +145,7 @@ public final class RedstoneTorchBurnoutSnapshot {
 *///?}
 
         }
-        // Only the new ServerWorld key is written; old World instances are never retained.
+        // Only the new ServerLevel key is written; old World instances are never retained.
         map.put(world, restored);
     }
 

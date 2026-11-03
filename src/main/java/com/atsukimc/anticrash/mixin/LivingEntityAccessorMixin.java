@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.LivingEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.item.ItemStack;
+import net.minecraft.world.item.ItemStack;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.item.ItemStack;
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface LivingEntityAccessorMixin {
 
     //? if 1.21.11 {
-    /*@Accessor("lastKineticAttackTime")
+    /*@Accessor("lastKineticHitFeedbackTime")
         long anticrash$lastKineticAttackTime();
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -30,7 +30,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if 1.21.11 {
-    /*@Accessor("lastKineticAttackTime")
+    /*@Accessor("lastKineticHitFeedbackTime")
         void anticrash$setLastKineticAttackTime(long value);
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -39,7 +39,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("lastDamageTaken")
+    @Accessor("lastHurt")
     float anticrash$getLastDamageTaken();
 
     //?}
@@ -49,7 +49,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("lastDamageTaken")
+    @Accessor("lastHurt")
     void anticrash$setLastDamageTaken(float value);
 
     //?}
@@ -59,12 +59,12 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.10) {
-    @Accessor("lastAttackedTicks")
+    @Accessor("attackStrengthTicker")
     int anticrash$getLastAttackedTicks();
 
     //?}
     //? if 1.21.11 {
-    /*@Accessor("ticksSinceLastAttack")
+    /*@Accessor("attackStrengthTicker")
         int anticrash$getLastAttackedTicks();
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -73,12 +73,12 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.10) {
-    @Accessor("lastAttackedTicks")
+    @Accessor("attackStrengthTicker")
     void anticrash$setLastAttackedTicks(int ticks);
 
     //?}
     //? if 1.21.11 {
-    /*@Accessor("ticksSinceLastAttack")
+    /*@Accessor("attackStrengthTicker")
         void anticrash$setLastAttackedTicks(int ticks);
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -87,7 +87,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("itemUseTimeLeft")
+    @Accessor("useItemRemaining")
     int anticrash$getItemUseTimeLeft();
 
     //?}
@@ -97,7 +97,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("itemUseTimeLeft")
+    @Accessor("useItemRemaining")
     void anticrash$setItemUseTimeLeft(int ticks);
 
     //?}
@@ -107,7 +107,7 @@ public interface LivingEntityAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("activeItemStack")
+    @Accessor("useItem")
     ItemStack anticrash$getActiveItemStack();
     //?}
     //? if (>=26.1 && <=26.3) {

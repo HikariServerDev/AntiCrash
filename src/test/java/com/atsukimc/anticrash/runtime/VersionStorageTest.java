@@ -4,7 +4,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.entity.player.PlayerAbilities;
+/^import net.minecraft.world.entity.player.Abilities;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.HolderLookup;
@@ -12,14 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import net.minecraft.nbt.*;
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.registry.RegistryWrapper;
+/^import net.minecraft.core.HolderLookup;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.entity.player.Abilities;
 ^///?}
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^import net.minecraft.storage.*;
+/^import net.minecraft.world.level.storage.*;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.storage.*;
@@ -41,8 +41,8 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^private final RegistryWrapper.WrapperLookup registries =
-            RegistryWrapper.WrapperLookup.of(java.util.stream.Stream.empty());
+/^private final HolderLookup.Provider registries =
+            HolderLookup.Provider.create(java.util.stream.Stream.empty());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^private final HolderLookup.Provider registries =
@@ -59,8 +59,8 @@ class VersionStorageTest {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^var read =
-                NbtReadView.create(
-                        new VersionStorage.ThrowingReporter("test"), registries, view.getNbt());
+                TagValueInput.create(
+                        new VersionStorage.ThrowingReporter("test"), registries, view.buildResult());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var read =
@@ -80,7 +80,7 @@ class VersionStorageTest {
     void malformedViewDataCannotBeIgnored() {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var nbt = new NbtCompound();
+/^var nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var nbt = new CompoundTag();
@@ -89,7 +89,7 @@ class VersionStorageTest {
         nbt.putString(RuntimeExtensionNbt.KEY, "invalid");
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var read = NbtReadView.create(new VersionStorage.ThrowingReporter("test"), registries, nbt);
+/^var read = TagValueInput.create(new VersionStorage.ThrowingReporter("test"), registries, nbt);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var read =
@@ -108,7 +108,7 @@ class VersionStorageTest {
                         s -> com.mojang.serialization.DataResult.error(() -> "reject"));
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^assertThrows(IllegalStateException.class, () -> view.put("invalid", rejecting, "bad"));
+/^assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
@@ -120,7 +120,7 @@ class VersionStorageTest {
     void abilitiesPreserveFlyingAndSpeedsWithoutAWorld() {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var abilities = new PlayerAbilities();
+/^var abilities = new Abilities();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var abilities = new Abilities();
@@ -129,7 +129,7 @@ class VersionStorageTest {
         abilities.flying = true;
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^abilities.allowFlying = true;
+/^abilities.mayfly = true;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^abilities.mayfly = true;
@@ -137,7 +137,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^abilities.setFlySpeed(0.3f);
+/^abilities.setFlyingSpeed(0.3f);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^abilities.setFlyingSpeed(0.3f);
@@ -145,7 +145,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^abilities.setWalkSpeed(0.17f);
+/^abilities.setWalkingSpeed(0.17f);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^abilities.setWalkingSpeed(0.17f);
@@ -153,7 +153,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var restored = new PlayerAbilities();
+/^var restored = new Abilities();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var restored = new Abilities();
@@ -161,7 +161,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^restored.unpack(VersionStorage.abilities(VersionStorage.abilities(abilities)));
+/^restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
@@ -170,7 +170,7 @@ class VersionStorageTest {
         assertTrue(restored.flying);
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^assertTrue(restored.allowFlying);
+/^assertTrue(restored.mayfly);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertTrue(restored.mayfly);
@@ -178,7 +178,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^assertEquals(0.3f, restored.getFlySpeed());
+/^assertEquals(0.3f, restored.getFlyingSpeed());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertEquals(0.3f, restored.getFlyingSpeed());
@@ -186,7 +186,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^assertEquals(0.17f, restored.getWalkSpeed());
+/^assertEquals(0.17f, restored.getWalkingSpeed());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertEquals(0.17f, restored.getWalkingSpeed());
@@ -195,7 +195,7 @@ class VersionStorageTest {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^assertThrows(
-                IllegalArgumentException.class, () -> VersionStorage.abilities(new NbtCompound()));
+                IllegalArgumentException.class, () -> VersionStorage.abilities(new CompoundTag()));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertThrows(
@@ -208,7 +208,7 @@ class VersionStorageTest {
     void invalidInventoryDoesNotPartiallyApply() {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var inventory = new net.minecraft.inventory.SimpleInventory(27);
+/^var inventory = new net.minecraft.world.SimpleContainer(27);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var inventory = new net.minecraft.world.SimpleContainer(27);
@@ -216,7 +216,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var nbt = new NbtList();
+/^var nbt = new ListTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var nbt = new ListTag();
@@ -224,7 +224,7 @@ class VersionStorageTest {
 
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^nbt.add(NbtString.of("invalid"));
+/^nbt.add(StringTag.valueOf("invalid"));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^nbt.add(StringTag.valueOf("invalid"));
@@ -238,7 +238,7 @@ class VersionStorageTest {
     void emptyEnderChestRoundTripsItsFixedSlotShape() {
 
 //? if (>=1.21.6 && <=1.21.11) {
-/^var inventory = new net.minecraft.inventory.SimpleInventory(27);
+/^var inventory = new net.minecraft.world.SimpleContainer(27);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var inventory = new net.minecraft.world.SimpleContainer(27);

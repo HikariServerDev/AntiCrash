@@ -2,7 +2,7 @@
 /*package com.atsukimc.anticrash.integration.carpet;
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.util.PlayerInput;
+/^import net.minecraft.world.entity.player.Input;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.entity.player.Input;
@@ -17,7 +17,7 @@ public final class PlayerInputCodec {
 
 //? if (>=1.21.6 && <=1.21.11) {
 /^public static boolean allowedDuringFreeze(
-            PlayerInput current, PlayerInput next, boolean movement, boolean sneak)
+            Input current, Input next, boolean movement, boolean sneak)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static boolean allowedDuringFreeze(
@@ -37,7 +37,7 @@ public final class PlayerInputCodec {
 
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^public static int capture(PlayerInput input)
+/^public static int capture(Input input)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static int capture(Input input)
@@ -50,7 +50,7 @@ public final class PlayerInputCodec {
                 | (input.left() ? 4 : 0)
                 | (input.right() ? 8 : 0)
                 | (input.jump() ? 16 : 0)
-                | (input.sneak() ? 32 : 0)
+                | (input.shift() ? 32 : 0)
                 | (input.sprint() ? 64 : 0);
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -67,7 +67,7 @@ public final class PlayerInputCodec {
 
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^public static PlayerInput restore(Integer flags)
+/^public static Input restore(Integer flags)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static Input restore(Integer flags)
@@ -77,7 +77,7 @@ public final class PlayerInputCodec {
             throw new IllegalArgumentException("Missing or invalid 1.21.2 PlayerInput state");
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^return new PlayerInput(
+/^return new Input(
                 (flags & 1) != 0,
                 (flags & 2) != 0,
                 (flags & 4) != 0,

@@ -5,7 +5,7 @@ import com.atsukimc.anticrash.AntiCrashMod;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.function.CommandFunctionManager;
+import net.minecraft.server.ServerFunctionManager;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.ServerFunctionManager;
@@ -22,7 +22,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class MinecraftServerMixin {
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "loadWorld", at = @At("HEAD"))
+    @Inject(method = "loadLevel", at = @At("HEAD"))
     private void anticrash$worldLoadBeginning(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -35,7 +35,7 @@ public abstract class MinecraftServerMixin {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "loadWorld", at = @At("RETURN"))
+    @Inject(method = "loadLevel", at = @At("RETURN"))
     private void anticrash$worldLoaded(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -48,7 +48,7 @@ public abstract class MinecraftServerMixin {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "tick", at = @At("RETURN"))
+    @Inject(method = "tickServer", at = @At("RETURN"))
     private void anticrash$tickEnd(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -77,7 +77,7 @@ public abstract class MinecraftServerMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "runOneTask", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)
     private void anticrash$holdTasksDuringCheckpoint(CallbackInfoReturnable<Boolean> callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -91,13 +91,12 @@ public abstract class MinecraftServerMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Redirect(
-            method = "tickWorlds",
+            method = "tickChildren",
             at =
                     @At(
                             value = "INVOKE",
-                            target =
-                                    "Lnet/minecraft/server/function/CommandFunctionManager;tick()V"))
-    private void anticrash$skipFunctionsDuringRecovery(CommandFunctionManager manager)
+                            target = "Lnet/minecraft/server/ServerFunctionManager;tick()V"))
+    private void anticrash$skipFunctionsDuringRecovery(ServerFunctionManager manager)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Redirect(
@@ -136,7 +135,7 @@ public abstract class MinecraftServerMixin {
     // Minecraft's own stop transition proceed.
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "stop", at = @At("HEAD"))
+    @Inject(method = "halt", at = @At("HEAD"))
     private void anticrash$stopRequested(boolean wait, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -149,7 +148,7 @@ public abstract class MinecraftServerMixin {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "shutdown", at = @At("HEAD"))
+    @Inject(method = "stopServer", at = @At("HEAD"))
     private void anticrash$shutdownBeginning(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -162,7 +161,7 @@ public abstract class MinecraftServerMixin {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "shutdown", at = @At("RETURN"))
+    @Inject(method = "stopServer", at = @At("RETURN"))
     private void anticrash$shutdownCompleted(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
