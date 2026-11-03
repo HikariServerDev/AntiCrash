@@ -1,32 +1,37 @@
 package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.registry.Registries;
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.resources.Identifier;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.Identifier;
+//? if (>=1.18 && <=1.21.10) {
+import net.minecraft.resources.ResourceLocation;
+//?}
+//? if 1.21.11 {
+/*import net.minecraft.resources.Identifier;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
@@ -36,9 +41,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Safe, observational representation of the ServerWorld EntityList iteration order.
+ * Safe, observational representation of the ServerLevel EntityTickList iteration order.
  *
- * <p>EntityList is actively used by ServerWorld#tick. Its internal map is not replaced during
+ * <p>EntityTickList is actively used by ServerLevel#tick. Its internal map is not replaced during
  * recovery: Minecraft's own add/remove invariants remain authoritative. This snapshot is used to
  * detect an order change and stop STRICT recovery rather than silently reshuffling live entities.
  */
@@ -53,7 +58,7 @@ public final class EntityRuntimeSnapshot {
     public int order;
 
     /**
-     * EntityList can retain a removed entry until the owning tick removes it. Keep its count/order.
+     * EntityTickList can retain a removed entry until the owning tick removes it. Keep its count/order.
      */
     public boolean removed;
 
@@ -81,7 +86,7 @@ public final class EntityRuntimeSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    public static List<EntityRuntimeSnapshot> capture(ServerWorld world)
+    public static List<EntityRuntimeSnapshot> capture(ServerLevel world)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static List<EntityRuntimeSnapshot> capture(ServerLevel world)
@@ -90,7 +95,12 @@ public final class EntityRuntimeSnapshot {
         List<EntityRuntimeSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
-        String dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        String dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*String dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*String dimension = world.dimension().identifier().toString();
@@ -104,18 +114,21 @@ public final class EntityRuntimeSnapshot {
                     snapshot.dimension = dimension;
 
                     //? if (>=1.18 && <=1.21.11) {
-                    snapshot.uuid = entity.getUuidAsString();
+                    snapshot.uuid = entity.getStringUUID();
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*snapshot.uuid = entity.getStringUUID();
 *///?}
 
                     //? if (>=1.18 && <=1.19.2) {
-                    Identifier id = Registry.ENTITY_TYPE.getId(entity.getType());
+                    ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
                     //?}
-                    //? if (>=1.19.3 && <=1.21.11) {
-                    /*Identifier id = Registries.ENTITY_TYPE.getId(entity.getType());
-*///?}
+                    //? if (>=1.19.3 && <=1.21.10) {
+                    /*ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                    *///?}
+                    //? if 1.21.11 {
+                    /*Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                    *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
 *///?}
@@ -124,7 +137,7 @@ public final class EntityRuntimeSnapshot {
                     snapshot.networkEntityId = entity.getId();
 
                     //? if (>=1.18 && <=1.21.11) {
-                    ChunkPos chunk = entity.getChunkPos();
+                    ChunkPos chunk = entity.chunkPosition();
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*ChunkPos chunk = entity.chunkPosition();

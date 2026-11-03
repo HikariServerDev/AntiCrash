@@ -201,7 +201,7 @@ public final class RuntimeCapsule {
         public boolean randomStateSupported;
 
         /**
-         * v7. ServerWorld#idleTimeout: a dimension with no player and no forced chunk stops ticking
+         * v7. ServerLevel#idleTimeout: a dimension with no player and no forced chunk stops ticking
          * entities and block entities after 300 ticks; Vanilla restarts the count at 0. Null in
          * older capsules.
          */

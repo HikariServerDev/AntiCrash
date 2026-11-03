@@ -2,14 +2,14 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.18.2) {
-import net.minecraft.world.event.GameEvent;
+import net.minecraft.world.level.gameevent.GameEvent;
 //?}
 
 //? if (>=1.18 && <=1.18.2) {
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 //?}
 //? if (>=1.19 && <=1.19.2) {
-/*import net.minecraft.world.event.listener.VibrationListener;
+/*import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 *///?}
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -21,9 +21,9 @@ import java.util.Optional;
 //?}
 
 //? if (>=1.18 && <=1.18.2) {
-@Mixin(SculkSensorListener.class)
+@Mixin(VibrationListener.class)
 public interface SculkSensorListenerAccessorMixin {
-    @Accessor("event")
+    @Accessor("receivingEvent")
     Optional<GameEvent> anticrash$getEvent();
 
     //?}
@@ -32,37 +32,37 @@ public interface SculkSensorListenerAccessorMixin {
     //? if (>=1.19 && <=1.19.2) {
     /*@Mixin(VibrationListener.class)
     public interface SculkSensorListenerAccessorMixin {
-        @Accessor("vibration")
-        VibrationListener.Vibration anticrash$getVibration();
+        @Accessor("receivingEvent")
+        VibrationListener.ReceivingEvent anticrash$getVibration();
 *///?}
 
     //? if (>=1.18 && <=1.18.2) {
-    @Accessor("event")
+    @Accessor("receivingEvent")
     void anticrash$setEvent(Optional<GameEvent> event);
 
     //?}
 
     //? if (>=1.18 && <=1.18.2) {
-    @Accessor("distance")
+    @Accessor("receivingDistance")
     int anticrash$getDistance();
 
     //?}
 
     //? if (>=1.18 && <=1.18.2) {
-    @Accessor("distance")
+    @Accessor("receivingDistance")
     void anticrash$setDistance(int distance);
 
     //?}
     //? if (>=1.19 && <=1.19.2) {
-    /*@Accessor("distance")
+    /*@Accessor("receivingDistance")
         float anticrash$getDistance();
 *///?}
 
-    @Accessor("delay")
+    @Accessor("travelTimeInTicks")
     int anticrash$getDelay();
 
     //? if (>=1.18 && <=1.18.2) {
-    @Accessor("delay")
+    @Accessor("travelTimeInTicks")
     void anticrash$setDelay(int delay);
     //?}
 

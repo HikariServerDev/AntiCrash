@@ -4,11 +4,11 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^import net.minecraft.entity.effect.*;
+/^import net.minecraft.world.effect.*;
 ^///?}
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^import net.minecraft.item.ItemStack;
+/^import net.minecraft.world.item.ItemStack;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.HolderLookup;
@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import net.minecraft.nbt.*;
 //? if (>=1.21.5 && <=1.21.11) {
-/^import net.minecraft.registry.RegistryWrapper;
+/^import net.minecraft.core.HolderLookup;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.effect.*;
@@ -42,7 +42,7 @@ class VersionNbtTest {
     void sparseFalseFlagsMayBeAbsentButCannotHaveAnInvalidType() {
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^var nbt = new NbtCompound();
+/^var nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var nbt = new CompoundTag();
@@ -62,7 +62,7 @@ class VersionNbtTest {
     void wrongTypeIsNotAnEmptyRecoveryList() {
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^NbtCompound nbt = new NbtCompound();
+/^CompoundTag nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag nbt = new CompoundTag();
@@ -78,7 +78,7 @@ class VersionNbtTest {
     void heterogeneousListsCannotDiscardInvalidPassengers() {
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^NbtList list = new NbtList();
+/^ListTag list = new ListTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^ListTag list = new ListTag();
@@ -86,7 +86,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^list.add(new NbtCompound());
+/^list.add(new CompoundTag());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^list.add(new CompoundTag());
@@ -94,7 +94,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^list.add(NbtString.of("bad"));
+/^list.add(StringTag.valueOf("bad"));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^list.add(StringTag.valueOf("bad"));
@@ -102,7 +102,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^NbtCompound nbt = new NbtCompound();
+/^CompoundTag nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag nbt = new CompoundTag();
@@ -116,7 +116,7 @@ class VersionNbtTest {
     void numericContainsStillRecognizesAllNumericTypes() {
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^NbtCompound nbt = new NbtCompound();
+/^CompoundTag nbt = new CompoundTag();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag nbt = new CompoundTag();
@@ -131,7 +131,7 @@ class VersionNbtTest {
     void statusEffectCodecPreservesTimingAndFlags() {
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^var effect = new StatusEffectInstance(StatusEffects.SPEED, 37, 2, true, false, false);
+/^var effect = new MobEffectInstance(MobEffects.SPEED, 37, 2, true, false, false);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var effect = new MobEffectInstance(MobEffects.SPEED, 37, 2, true, false, false);
@@ -139,7 +139,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^var restored = VersionNbt.effect((NbtCompound) VersionNbt.effect(effect));
+/^var restored = VersionNbt.effect((CompoundTag) VersionNbt.effect(effect));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var restored = VersionNbt.effect((CompoundTag) VersionNbt.effect(effect));
@@ -147,7 +147,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^assertEquals(effect.getEffectType(), restored.getEffectType());
+/^assertEquals(effect.getEffect(), restored.getEffect());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertEquals(effect.getEffect(), restored.getEffect());
@@ -158,7 +158,7 @@ class VersionNbtTest {
         assertTrue(restored.isAmbient());
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^assertFalse(restored.shouldShowParticles());
+/^assertFalse(restored.isVisible());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(restored.isVisible());
@@ -166,7 +166,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^assertFalse(restored.shouldShowIcon());
+/^assertFalse(restored.showIcon());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(restored.showIcon());
@@ -174,7 +174,7 @@ class VersionNbtTest {
 
 
 //? if (>=1.21.5 && <=1.21.11) {
-/^assertThrows(RuntimeException.class, () -> VersionNbt.effect(new NbtCompound()));
+/^assertThrows(RuntimeException.class, () -> VersionNbt.effect(new CompoundTag()));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertThrows(RuntimeException.class, () -> VersionNbt.effect(new CompoundTag()));
@@ -187,10 +187,10 @@ class VersionNbtTest {
 
 //? if (>=1.21.5 && <=1.21.11) {
 /^assertTrue(
-                ((NbtCompound)
+                ((CompoundTag)
                                 VersionNbt.item(
                                         ItemStack.EMPTY,
-                                        RegistryWrapper.WrapperLookup.of(
+                                        HolderLookup.Provider.create(
                                                 java.util.stream.Stream.empty())))
                         .isEmpty());
 ^///?}

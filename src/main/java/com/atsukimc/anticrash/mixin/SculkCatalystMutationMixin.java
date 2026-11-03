@@ -2,36 +2,36 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.19 && <=1.21.11) {
-/^import net.minecraft.block.BlockState;
+/^import net.minecraft.world.level.block.state.BlockState;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.BlockPos;
 ^///?}
 
 //? if (>=1.19 && <=1.21.11) {
-/^import net.minecraft.block.entity.SculkCatalystBlockEntity;
+/^import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.server.world.ServerWorld;
+/^import net.minecraft.server.level.ServerLevel;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
 ^///?}
 
 //? if (>=1.19 && <=1.21.11) {
-/^import net.minecraft.util.math.BlockPos;
+/^import net.minecraft.core.BlockPos;
 ^///?}
 
 //? if (>=1.19 && <=1.21.11) {
-/^import net.minecraft.world.World;
+/^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.world.event.GameEvent;
+/^import net.minecraft.world.level.gameevent.GameEvent;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.state.BlockState;
@@ -52,9 +52,9 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class SculkCatalystMutationMixin {
 
 //? if (>=1.19 && <=1.21.11) {
-/^@Inject(method = "tick", at = @At("HEAD"))
+/^@Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markCursorTick(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
             SculkCatalystBlockEntity catalyst,
@@ -72,13 +72,13 @@ public abstract class SculkCatalystMutationMixin {
 {
 
 //? if (>=1.19 && <=1.21.8) {
-/^if (!world.isClient)
+/^if (!world.isClientSide)
 ^///?}
 //? if (>=1.21.9 && <=1.21.11) {
-/^if (!world.isClient())
+/^if (!world.isClientSide())
 ^///?}
 //? if (>=1.19 && <=1.21.11) {
-/^world.markDirty(pos);
+/^world.blockEntityChanged(pos);
 ^///?}
     //? if (>=1.19 && <=1.21.8) {
 
@@ -88,23 +88,23 @@ public abstract class SculkCatalystMutationMixin {
 
 
 //? if (>=1.19 && <=1.19.2) {
-/^@Inject(method = "listen", at = @At("RETURN"))
+/^@Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$markNewCursor(
-            ServerWorld world, GameEvent.Message message, CallbackInfoReturnable<Boolean> ci)
+            ServerLevel world, GameEvent.Message message, CallbackInfoReturnable<Boolean> ci)
 ^///?}
 //? if (>=1.19.3 && <=1.19.4) {
-/^@Inject(method = "listen", at = @At("RETURN"))
+/^@Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$markNewCursor(
-            ServerWorld world,
+            ServerLevel world,
             GameEvent event,
-            GameEvent.Emitter emitter,
-            net.minecraft.util.math.Vec3d origin,
+            GameEvent.Context emitter,
+            net.minecraft.world.phys.Vec3 origin,
             CallbackInfoReturnable<Boolean> ci)
 ^///?}
 //? if (>=1.19 && <=1.19.4) {
 /^{
         if (ci.getReturnValueZ())
-            world.markDirty(((SculkCatalystBlockEntity) (Object) this).getPos());
+            world.blockEntityChanged(((SculkCatalystBlockEntity) (Object) this).getBlockPos());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^if (!world.isClientSide()) world.blockEntityChanged(pos);

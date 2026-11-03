@@ -3,46 +3,51 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.Block;
+import net.minecraft.world.level.block.Block;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.registry.Registries;
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.BlockEvent;
+import net.minecraft.world.level.BlockEventData;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.resources.Identifier;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.Identifier;
+//? if (>=1.18 && <=1.21.10) {
+import net.minecraft.resources.ResourceLocation;
+//?}
+//? if 1.21.11 {
+/*import net.minecraft.resources.Identifier;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.BlockEventData;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.Block;
@@ -58,7 +63,7 @@ public final class BlockEventSnapshot {
     public final List<Entry> entries = new ArrayList<>();
 
     //? if (>=1.18 && <=1.21.11) {
-    public static BlockEventSnapshot capture(Iterable<ServerWorld> worlds)
+    public static BlockEventSnapshot capture(Iterable<ServerLevel> worlds)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static BlockEventSnapshot capture(Iterable<ServerLevel> worlds)
@@ -67,7 +72,7 @@ public final class BlockEventSnapshot {
         BlockEventSnapshot snapshot = new BlockEventSnapshot();
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : worlds)
+        for (ServerLevel world : worlds)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : worlds)
@@ -76,7 +81,7 @@ public final class BlockEventSnapshot {
             ServerWorldAccessorMixin accessor = (ServerWorldAccessorMixin) world;
 
             //? if (>=1.18 && <=1.21.11) {
-            for (BlockEvent event : accessor.anticrash$getSyncedBlockEventQueue())
+            for (BlockEventData event : accessor.anticrash$getSyncedBlockEventQueue())
             //?}
             //? if (>=26.1 && <=26.3) {
             /*for (BlockEventData event : accessor.anticrash$getSyncedBlockEventQueue())
@@ -86,7 +91,7 @@ public final class BlockEventSnapshot {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            for (BlockEvent event : accessor.anticrash$getBlockEventQueue())
+            for (BlockEventData event : accessor.anticrash$getBlockEventQueue())
             //?}
             //? if (>=26.1 && <=26.3) {
             /*for (BlockEventData event : accessor.anticrash$getBlockEventQueue())
@@ -99,7 +104,7 @@ public final class BlockEventSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    public RestoreResult restore(Iterable<ServerWorld> worlds)
+    public RestoreResult restore(Iterable<ServerLevel> worlds)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public RestoreResult restore(Iterable<ServerLevel> worlds)
@@ -112,15 +117,20 @@ public final class BlockEventSnapshot {
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        Map<String, ServerWorld> byDimension = new LinkedHashMap<>();
+        Map<String, ServerLevel> byDimension = new LinkedHashMap<>();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*Map<String, ServerLevel> byDimension = new LinkedHashMap<>();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : worlds)
-            byDimension.put(world.getRegistryKey().getValue().toString(), world);
+        for (ServerLevel world : worlds)
+            //? if (>=1.18 && <=1.21.10) {
+            byDimension.put(world.dimension().location().toString(), world);
+        //?}
+        //? if 1.21.11 {
+        /*byDimension.put(world.dimension().identifier().toString(), world);
+            *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : worlds)
@@ -135,7 +145,7 @@ public final class BlockEventSnapshot {
                     throw new IllegalArgumentException("invalid block event queue");
 
                 //? if (>=1.18 && <=1.21.11) {
-                ServerWorld world = byDimension.get(entry.dimension);
+                ServerLevel world = byDimension.get(entry.dimension);
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*ServerLevel world = byDimension.get(entry.dimension);
@@ -145,21 +155,24 @@ public final class BlockEventSnapshot {
                     throw new IllegalArgumentException("unknown block event dimension");
 
                 //? if (>=1.18 && <=1.20.6) {
-                Identifier blockId = new Identifier(entry.block);
+                ResourceLocation blockId = new ResourceLocation(entry.block);
                 //?}
-                //? if (>=1.21 && <=1.21.11) {
-                /*Identifier blockId = Identifier.of(entry.block);
-*///?}
+                //? if (>=1.21 && <=1.21.10) {
+                /*ResourceLocation blockId = ResourceLocation.parse(entry.block);
+                *///?}
+                //? if 1.21.11 {
+                /*Identifier blockId = Identifier.parse(entry.block);
+                *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*Identifier blockId = Identifier.parse(entry.block);
 *///?}
 
                 //? if (>=1.18 && <=1.19.2) {
-                if (!Registry.BLOCK.containsId(blockId))
+                if (!Registry.BLOCK.containsKey(blockId))
 
                     //?}
                     //? if (>=1.19.3 && <=1.21.11) {
-                    /*if (!Registries.BLOCK.containsId(blockId))
+                    /*if (!BuiltInRegistries.BLOCK.containsKey(blockId))
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (!BuiltInRegistries.BLOCK.containsKey(blockId))
@@ -169,16 +182,19 @@ public final class BlockEventSnapshot {
                 //? if (>=1.18 && <=1.19.2) {
                 Block block = Registry.BLOCK.get(blockId);
                 //?}
-                //? if (>=1.19.3 && <=1.21.11) {
-                /*Block block = Registries.BLOCK.get(blockId);
-*///?}
+                //? if (>=1.19.3 && <=1.21.1) {
+                /*Block block = BuiltInRegistries.BLOCK.get(blockId);
+                *///?}
+                //? if (>=1.21.2 && <=1.21.11) {
+                /*Block block = BuiltInRegistries.BLOCK.getValue(blockId);
+                *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*Block block = BuiltInRegistries.BLOCK.getValue(blockId);
 *///?}
 
                 //? if (>=1.18 && <=1.21.11) {
-                BlockEvent event =
-                        new BlockEvent(
+                BlockEventData event =
+                        new BlockEventData(
                                 new BlockPos(entry.x, entry.y, entry.z),
                                 block,
                                 entry.type,
@@ -203,7 +219,7 @@ public final class BlockEventSnapshot {
         if (result.failed > 0) return result;
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : byDimension.values())
+        for (ServerLevel world : byDimension.values())
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : byDimension.values())
@@ -225,7 +241,7 @@ public final class BlockEventSnapshot {
 
     private record PreparedEntry(
             //? if (>=1.18 && <=1.21.11) {
-            ServerWorld world
+            ServerLevel world
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*ServerLevel world
@@ -233,7 +249,7 @@ public final class BlockEventSnapshot {
                     ,
             String queue,
             //? if (>=1.18 && <=1.21.11) {
-            BlockEvent event
+            BlockEventData event
             //?}
             //? if (>=26.1 && <=26.3) {
             /*BlockEventData event
@@ -248,7 +264,7 @@ public final class BlockEventSnapshot {
         public int type, data;
 
         //? if (>=1.18 && <=1.21.11) {
-        static Entry of(ServerWorld world, BlockEvent event, String queue)
+        static Entry of(ServerLevel world, BlockEventData event, String queue)
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*static Entry of(ServerLevel world, BlockEventData event, String queue)
@@ -258,7 +274,12 @@ public final class BlockEventSnapshot {
             entry.queue = queue;
 
             //? if (>=1.18 && <=1.21.11) {
-            entry.dimension = world.getRegistryKey().getValue().toString();
+            //? if (>=1.18 && <=1.21.10) {
+            entry.dimension = world.dimension().location().toString();
+            //?}
+            //? if 1.21.11 {
+            /*entry.dimension = world.dimension().identifier().toString();
+            *///?}
             //?}
             //? if (>=26.1 && <=26.3) {
             /*entry.dimension = world.dimension().identifier().toString();
@@ -269,24 +290,24 @@ public final class BlockEventSnapshot {
             entry.z = event.pos().getZ();
 
             //? if (>=1.18 && <=1.19.2) {
-            entry.block = Registry.BLOCK.getId(event.block()).toString();
+            entry.block = Registry.BLOCK.getKey(event.block()).toString();
             //?}
             //? if (>=1.19.3 && <=1.21.11) {
-            /*entry.block = Registries.BLOCK.getId(event.block()).toString();
+            /*entry.block = BuiltInRegistries.BLOCK.getKey(event.block()).toString();
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*entry.block = BuiltInRegistries.BLOCK.getKey(event.block()).toString();
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            entry.type = event.type();
+            entry.type = event.paramA();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*entry.type = event.paramA();
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            entry.data = event.data();
+            entry.data = event.paramB();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*entry.data = event.paramB();

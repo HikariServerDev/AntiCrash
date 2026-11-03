@@ -3,46 +3,46 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.ExperienceOrbEntity;
+import net.minecraft.world.entity.ExperienceOrb;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.ItemEntity;
+import net.minecraft.world.entity.item.ItemEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.LivingEntity;
+import net.minecraft.world.entity.LivingEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.ExperienceOrb;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.LivingEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.4) {
-import net.minecraft.nbt.NbtHelper;
+import net.minecraft.nbt.NbtUtils;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.item.ItemEntity;
@@ -68,93 +68,93 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class EntityRuntimeStateMixin {
 
     //? if 1.18 {
-    /*@Shadow public boolean inanimate;
+    /*@Shadow public boolean blocksBuilding;
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow public net.minecraft.world.entity.PortalProcessor portalProcess;
 *///?}
 
     //? if (>=1.18 && <=1.20.6) {
-    @Shadow protected boolean inNetherPortal;
+    @Shadow protected boolean isInsidePortal;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow protected int boardingCooldown;
 *///?}
 
     //? if (>=1.18 && <=1.20.6) {
-    @Shadow protected int netherPortalTime;
+    @Shadow protected int portalTime;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow protected boolean firstTick;
 *///?}
 
     //? if (>=1.18 && <=1.20.6) {
-    @Shadow protected BlockPos lastNetherPortalPosition;
+    @Shadow protected BlockPos portalEntrancePos;
     //?}
     //? if (>=1.21 && <=1.21.11) {
-    /*@Shadow public net.minecraft.world.dimension.PortalManager portalManager;
+    /*@Shadow public net.minecraft.world.entity.PortalProcessor portalProcess;
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow protected boolean wasTouchingWater;
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow protected int ridingCooldown;
+    @Shadow protected int boardingCooldown;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow public int invulnerableTime;
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow protected boolean firstUpdate;
+    @Shadow protected boolean firstTick;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow public int tickCount;
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow protected boolean touchingWater;
+    @Shadow protected boolean wasTouchingWater;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow public java.util.Optional<BlockPos> mainSupportingBlockPos;
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow public int timeUntilRegen;
+    @Shadow public int invulnerableTime;
     //?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow private boolean onGroundNoBlocks;
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Shadow public int age;
+    @Shadow public int tickCount;
 
     //?}
 
     //? if (>=1.20 && <=1.21.11) {
-    /*@Shadow public java.util.Optional<BlockPos> supportingBlockPos;
+    /*@Shadow public java.util.Optional<BlockPos> mainSupportingBlockPos;
 *///?}
 
     //? if (>=1.20 && <=1.21.11) {
-    /*@Shadow private boolean forceUpdateSupportingBlockPos;
+    /*@Shadow private boolean onGroundNoBlocks;
 *///?}
 
     //? if (>=1.20 && <=1.21.11) {
-    /*@Shadow public boolean groundCollision;
+    /*@Shadow public boolean verticalCollisionBelow;
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Shadow public boolean verticalCollisionBelow;
 *///?}
 
     //? if (>=1.18 && <=1.21.5) {
-    @Inject(method = "writeNbt", at = @At("RETURN"))
+    @Inject(method = "saveWithoutId", at = @At("RETURN"))
     private void anticrash$saveRuntimeState(
-            NbtCompound nbt, CallbackInfoReturnable<NbtCompound> callbackInfo)
+            CompoundTag nbt, CallbackInfoReturnable<CompoundTag> callbackInfo)
                 //?}
                 //? if (>=1.21.6 && <=1.21.11) {
-                /*@Inject(method = "writeData", at = @At("RETURN"))
+                /*@Inject(method = "saveWithoutId", at = @At("RETURN"))
                     private void anticrash$saveRuntimeState(
-                            net.minecraft.storage.WriteView nbt, CallbackInfo callbackInfo)
+                            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "saveWithoutId", at = @At("RETURN"))
@@ -177,10 +177,10 @@ public abstract class EntityRuntimeStateMixin {
                     //?}
                     //? if 1.18 {
                     /*{
-                                        // 1.18 EntityView reads this for collision queries. Falling-block construction
+                                        // 1.18 EntityGetter reads this for collision queries. Falling-block construction
                                         // paths do not all set the same default; preserve both true and false at the
                                         // cut.
-                                        extension.putBoolean("Inanimate", inanimate);
+                                        extension.putBoolean("Inanimate", blocksBuilding);
 *///?}
                     //? if (>=1.20 && <=26.3) {
                     /*{
@@ -209,32 +209,32 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
                     //? if (>=1.20 && <=1.21.11) {
-                    /*extension.putBoolean("GroundCollision", groundCollision);
+                    /*extension.putBoolean("GroundCollision", verticalCollisionBelow);
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*extension.putBoolean("GroundCollision", verticalCollisionBelow);
 *///?}
 
                     //? if (>=1.20 && <=1.21.11) {
-                    /*extension.putBoolean("ForceSupportUpdate", forceUpdateSupportingBlockPos);
+                    /*extension.putBoolean("ForceSupportUpdate", onGroundNoBlocks);
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*extension.putBoolean("ForceSupportUpdate", onGroundNoBlocks);
 *///?}
 
                     //? if (>=1.20 && <=1.21.11) {
-                    /*if (supportingBlockPos.isPresent())
+                    /*if (mainSupportingBlockPos.isPresent())
 *///?}
                     //? if (>=1.20 && <=1.21.4) {
                     /*extension.put(
                                                     "SupportingBlock",
-                                                    NbtHelper.fromBlockPos(supportingBlockPos.get()));
+                                                    NbtUtils.writeBlockPos(mainSupportingBlockPos.get()));
 *///?}
                     //? if (>=1.21.5 && <=1.21.11) {
-                    /*extension.put(
+                    /*extension.store(
                                                     "SupportingBlock",
-                                                    net.minecraft.util.math.BlockPos.CODEC,
-                                                    supportingBlockPos.get());
+                                                    net.minecraft.core.BlockPos.CODEC,
+                                                    mainSupportingBlockPos.get());
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (mainSupportingBlockPos.isPresent())
@@ -250,21 +250,21 @@ public abstract class EntityRuntimeStateMixin {
                     // late.
 
                     //? if (>=1.18 && <=1.20.6) {
-                    if (inNetherPortal || netherPortalTime > 0) {
-                        NbtCompound portal = new NbtCompound();
+                    if (isInsidePortal || portalTime > 0) {
+                        CompoundTag portal = new CompoundTag();
                         //?}
 
                         //? if (>=1.18 && <=1.20.6) {
-                        portal.putBoolean("In", inNetherPortal);
+                        portal.putBoolean("In", isInsidePortal);
                         //?}
 
                         //? if (>=1.18 && <=1.20.6) {
-                        portal.putInt("Time", netherPortalTime);
+                        portal.putInt("Time", portalTime);
                         //?}
 
                         //? if (>=1.18 && <=1.20.6) {
-                        if (lastNetherPortalPosition != null)
-                            portal.put("Pos", NbtHelper.fromBlockPos(lastNetherPortalPosition));
+                        if (portalEntrancePos != null)
+                            portal.put("Pos", NbtUtils.writeBlockPos(portalEntrancePos));
                         //?}
 
                         //? if (>=1.18 && <=1.20.6) {
@@ -272,10 +272,10 @@ public abstract class EntityRuntimeStateMixin {
                     }
                     //?}
                     //? if (>=1.21 && <=1.21.11) {
-                    /*if (portalManager != null)
+                    /*if (portalProcess != null)
                                             extension.put(
                                                     "Portal",
-                                                    com.atsukimc.anticrash.runtime.PortalRuntime.write(portalManager));
+                                                    com.atsukimc.anticrash.runtime.PortalRuntime.write(portalProcess));
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (portalProcess != null)
@@ -288,7 +288,7 @@ public abstract class EntityRuntimeStateMixin {
                     // another.
 
                     //? if (>=1.18 && <=1.21.11) {
-                    if (ridingCooldown > 0) extension.putInt("RidingCooldown", ridingCooldown);
+                    if (boardingCooldown > 0) extension.putInt("RidingCooldown", boardingCooldown);
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (boardingCooldown > 0) extension.putInt("RidingCooldown", boardingCooldown);
@@ -300,7 +300,7 @@ public abstract class EntityRuntimeStateMixin {
                     // again.
 
                     //? if (>=1.18 && <=1.21.11) {
-                    if (!firstUpdate)
+                    if (!firstTick)
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (!firstTick)
@@ -309,7 +309,7 @@ public abstract class EntityRuntimeStateMixin {
                         extension.putBoolean("Ticked", true);
 
                         //? if (>=1.18 && <=1.21.11) {
-                        if (touchingWater)
+                        if (wasTouchingWater)
                             //?}
                             //? if (>=26.1 && <=26.3) {
                             /*if (wasTouchingWater)
@@ -320,7 +320,7 @@ public abstract class EntityRuntimeStateMixin {
                     // in it.
 
                     //? if (>=1.18 && <=1.21.11) {
-                    if (timeUntilRegen > 0)
+                    if (invulnerableTime > 0)
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (invulnerableTime > 0)
@@ -328,7 +328,7 @@ public abstract class EntityRuntimeStateMixin {
                     {
 
                         //? if (>=1.18 && <=1.21.11) {
-                        extension.putInt("Regen", timeUntilRegen);
+                        extension.putInt("Regen", invulnerableTime);
                         //?}
                         //? if (>=26.1 && <=26.3) {
                         /*extension.putInt("Regen", invulnerableTime);
@@ -352,8 +352,8 @@ public abstract class EntityRuntimeStateMixin {
                     // chunk at every checkpoint.
 
                     //? if (>=1.18 && <=1.21.11) {
-                    if (self instanceof ItemEntity || self instanceof ExperienceOrbEntity)
-                        extension.putInt("Age", age);
+                    if (self instanceof ItemEntity || self instanceof ExperienceOrb)
+                        extension.putInt("Age", tickCount);
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (self instanceof ItemEntity || self instanceof ExperienceOrb)
@@ -364,7 +364,7 @@ public abstract class EntityRuntimeStateMixin {
                         extension.putInt("IdPhase", item.anticrash$idPhase());
 
                     //? if (>=1.21 && <=1.21.11) {
-                    /*if (self instanceof net.minecraft.entity.TntEntity)
+                    /*if (self instanceof net.minecraft.world.entity.item.PrimedTnt)
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (self instanceof net.minecraft.world.entity.item.PrimedTnt)
@@ -376,8 +376,8 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
                     //? if (>=1.21 && <=1.21.11) {
-                    /*if (self instanceof net.minecraft.entity.FallingBlockEntity falling)
-                                            extension.putBoolean("ShouldDupe", falling.shouldDupe);
+                    /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling)
+                                            extension.putBoolean("ShouldDupe", falling.forceTickAfterTeleportToDuplicate);
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling)
@@ -386,7 +386,7 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
                     //? if (>=1.21.9 && <=1.21.11) {
-                    /*if (self instanceof net.minecraft.entity.projectile.ProjectileEntity)
+                    /*if (self instanceof net.minecraft.world.entity.projectile.Projectile)
 *///?}
                     //? if (>=26.1 && <=26.3) {
                     /*if (self instanceof net.minecraft.world.entity.projectile.Projectile)
@@ -402,13 +402,13 @@ public abstract class EntityRuntimeStateMixin {
     }
 
     //? if (>=1.18 && <=1.21.5) {
-    @Inject(method = "readNbt", at = @At("TAIL"))
-    private void anticrash$loadRuntimeState(NbtCompound nbt, CallbackInfo callbackInfo)
+    @Inject(method = "load", at = @At("TAIL"))
+    private void anticrash$loadRuntimeState(CompoundTag nbt, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.21.6 && <=1.21.11) {
-                /*@Inject(method = "readData", at = @At("TAIL"))
+                /*@Inject(method = "load", at = @At("TAIL"))
                     private void anticrash$loadRuntimeState(
-                            net.minecraft.storage.ReadView nbt, CallbackInfo callbackInfo)
+                            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "load", at = @At("TAIL"))
@@ -418,7 +418,7 @@ public abstract class EntityRuntimeStateMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+        CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
@@ -427,7 +427,7 @@ public abstract class EntityRuntimeStateMixin {
         if (extension == null) return;
 
         //? if 1.18 {
-        /*if (extension.contains("Inanimate")) inanimate = extension.getBoolean("Inanimate");
+        /*if (extension.contains("Inanimate")) blocksBuilding = extension.getBoolean("Inanimate");
 *///?}
         //? if (>=1.20 && <=26.3) {
         /*Object self = this;
@@ -447,7 +447,7 @@ public abstract class EntityRuntimeStateMixin {
         Object self = this;
         //?}
         //? if (>=1.21 && <=1.21.4) {
-        /*if (self instanceof net.minecraft.entity.TntEntity
+        /*if (self instanceof net.minecraft.world.entity.item.PrimedTnt
                         && extension.contains("TeleportedTnt", 1))
                     ((TntRuntimeAccessorMixin) self)
                             .anticrash$setTeleported(extension.getBoolean("TeleportedTnt"));
@@ -467,7 +467,7 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
         //? if (>=1.21.9 && <=1.21.11) {
-        /*if (self instanceof net.minecraft.entity.projectile.ProjectileEntity)
+        /*if (self instanceof net.minecraft.world.entity.projectile.Projectile)
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*if (self instanceof net.minecraft.world.entity.projectile.Projectile)
@@ -479,7 +479,7 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
         //? if (>=1.21.5 && <=1.21.11) {
-        /*if (self instanceof net.minecraft.entity.TntEntity
+        /*if (self instanceof net.minecraft.world.entity.item.PrimedTnt
                         && com.atsukimc.anticrash.runtime.VersionNbt.contains(
                                 extension, "TeleportedTnt", 1))
 *///?}
@@ -494,14 +494,14 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
         //? if (>=1.21 && <=1.21.4) {
-        /*if (self instanceof net.minecraft.entity.FallingBlockEntity falling
+        /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
                         && extension.contains("ShouldDupe", 1))
-                    falling.shouldDupe = extension.getBoolean("ShouldDupe");
+                    falling.forceTickAfterTeleportToDuplicate = extension.getBoolean("ShouldDupe");
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*if (self instanceof net.minecraft.entity.FallingBlockEntity falling
+        /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
                         && com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ShouldDupe", 1))
-                    falling.shouldDupe = extension.getBoolean("ShouldDupe").orElseThrow();
+                    falling.forceTickAfterTeleportToDuplicate = extension.getBoolean("ShouldDupe").orElseThrow();
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
@@ -521,10 +521,10 @@ public abstract class EntityRuntimeStateMixin {
         /*{
 *///?}
         //? if (>=1.20 && <=1.21.4) {
-        /*forceUpdateSupportingBlockPos = extension.getBoolean("ForceSupportUpdate");
+        /*onGroundNoBlocks = extension.getBoolean("ForceSupportUpdate");
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*forceUpdateSupportingBlockPos =
+        /*onGroundNoBlocks =
                             extension.getBoolean("ForceSupportUpdate").orElseThrow();
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -532,28 +532,28 @@ public abstract class EntityRuntimeStateMixin {
 *///?}
 
         //? if (>=1.20 && <=1.21.4) {
-        /*groundCollision = extension.getBoolean("GroundCollision");
+        /*verticalCollisionBelow = extension.getBoolean("GroundCollision");
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*groundCollision = extension.getBoolean("GroundCollision").orElseThrow();
+        /*verticalCollisionBelow = extension.getBoolean("GroundCollision").orElseThrow();
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*verticalCollisionBelow = extension.getBoolean("GroundCollision").orElseThrow();
 *///?}
 
         //? if (>=1.20 && <=1.20.4) {
-        /*supportingBlockPos =
+        /*mainSupportingBlockPos =
                             extension.contains("SupportingBlock", 10)
                                     ? java.util.Optional.of(
-                                            NbtHelper.toBlockPos(extension.getCompound("SupportingBlock")))
+                                            NbtUtils.readBlockPos(extension.getCompound("SupportingBlock")))
                                     : java.util.Optional.empty();
 *///?}
         //? if (>=1.20.5 && <=1.21.4) {
-        /*supportingBlockPos = NbtHelper.toBlockPos(extension, "SupportingBlock");
+        /*mainSupportingBlockPos = NbtUtils.readBlockPos(extension, "SupportingBlock");
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*supportingBlockPos =
-                            extension.get("SupportingBlock", net.minecraft.util.math.BlockPos.CODEC);
+        /*mainSupportingBlockPos =
+                            extension.read("SupportingBlock", net.minecraft.core.BlockPos.CODEC);
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*mainSupportingBlockPos =
@@ -573,32 +573,32 @@ public abstract class EntityRuntimeStateMixin {
         {
 
             //? if (>=1.18 && <=1.20.6) {
-            NbtCompound portal = extension.getCompound("Portal");
+            CompoundTag portal = extension.getCompound("Portal");
             //?}
 
             //? if (>=1.18 && <=1.20.6) {
-            inNetherPortal = portal.getBoolean("In");
+            isInsidePortal = portal.getBoolean("In");
             //?}
 
             //? if (>=1.18 && <=1.20.6) {
-            netherPortalTime = Math.max(0, portal.getInt("Time"));
+            portalTime = Math.max(0, portal.getInt("Time"));
             //?}
 
             //? if (>=1.18 && <=1.20.4) {
             if (portal.contains("Pos", 10))
-                lastNetherPortalPosition = NbtHelper.toBlockPos(portal.getCompound("Pos"));
+                portalEntrancePos = NbtUtils.readBlockPos(portal.getCompound("Pos"));
             //?}
             //? if (>=1.20.5 && <=1.20.6) {
-            /*lastNetherPortalPosition =
-                                NbtHelper.toBlockPos(portal, "Pos").orElse(lastNetherPortalPosition);
+            /*portalEntrancePos =
+                                NbtUtils.readBlockPos(portal, "Pos").orElse(portalEntrancePos);
 *///?}
             //? if (>=1.21 && <=1.21.4) {
-            /*portalManager =
+            /*portalProcess =
                                 com.atsukimc.anticrash.runtime.PortalRuntime.read(
                                         extension.getCompound("Portal"));
 *///?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*portalManager =
+            /*portalProcess =
                                 com.atsukimc.anticrash.runtime.PortalRuntime.read(
                                         extension.getCompoundOrEmpty("Portal"));
 *///?}
@@ -612,13 +612,13 @@ public abstract class EntityRuntimeStateMixin {
 
         //? if (>=1.18 && <=1.21.4) {
         if (extension.contains("RidingCooldown", 99))
-            ridingCooldown = Math.max(0, extension.getInt("RidingCooldown"));
+            boardingCooldown = Math.max(0, extension.getInt("RidingCooldown"));
         //?}
         //? if (>=1.21.5 && <=26.3) {
         /*if (com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RidingCooldown", 99))
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*ridingCooldown = Math.max(0, extension.getInt("RidingCooldown").orElseThrow());
+        /*boardingCooldown = Math.max(0, extension.getInt("RidingCooldown").orElseThrow());
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*boardingCooldown = Math.max(0, extension.getInt("RidingCooldown").orElseThrow());
@@ -633,17 +633,17 @@ public abstract class EntityRuntimeStateMixin {
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            firstUpdate = false;
+            firstTick = false;
             //?}
             //? if (>=26.1 && <=26.3) {
             /*firstTick = false;
 *///?}
 
             //? if (>=1.18 && <=1.21.4) {
-            touchingWater = extension.getBoolean("Water");
+            wasTouchingWater = extension.getBoolean("Water");
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*touchingWater =
+            /*wasTouchingWater =
                                 com.atsukimc.anticrash.runtime.VersionNbt.sparseFlag(extension, "Water");
 *///?}
             //? if (>=26.1 && <=26.3) {
@@ -662,10 +662,10 @@ public abstract class EntityRuntimeStateMixin {
         {
 
             //? if (>=1.18 && <=1.21.4) {
-            timeUntilRegen = Math.max(0, extension.getInt("Regen"));
+            invulnerableTime = Math.max(0, extension.getInt("Regen"));
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*timeUntilRegen = Math.max(0, extension.getInt("Regen").orElseThrow());
+            /*invulnerableTime = Math.max(0, extension.getInt("Regen").orElseThrow());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*invulnerableTime = Math.max(0, extension.getInt("Regen").orElseThrow());
@@ -695,11 +695,11 @@ public abstract class EntityRuntimeStateMixin {
         }
 
         //? if (>=1.18 && <=1.21.4) {
-        if ((self instanceof ItemEntity || self instanceof ExperienceOrbEntity)
+        if ((self instanceof ItemEntity || self instanceof ExperienceOrb)
                 && extension.contains("Age", 99))
         //?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*if ((self instanceof ItemEntity || self instanceof ExperienceOrbEntity)
+        /*if ((self instanceof ItemEntity || self instanceof ExperienceOrb)
                         && com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "Age", 99))
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -709,10 +709,10 @@ public abstract class EntityRuntimeStateMixin {
         {
 
             //? if (>=1.18 && <=1.21.4) {
-            age = Math.max(0, extension.getInt("Age"));
+            tickCount = Math.max(0, extension.getInt("Age"));
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*age = Math.max(0, extension.getInt("Age").orElseThrow());
+            /*tickCount = Math.max(0, extension.getInt("Age").orElseThrow());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*tickCount = Math.max(0, extension.getInt("Age").orElseThrow());

@@ -1,14 +1,14 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.Level;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.TickingBlockEntity;
@@ -20,10 +20,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.List;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(World.class)
+@Mixin(Level.class)
 public interface WorldAccessorMixin {
     @Accessor("blockEntityTickers")
-    List<BlockEntityTickInvoker> anticrash$getBlockEntityTickers();
+    List<TickingBlockEntity> anticrash$getBlockEntityTickers();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -35,7 +35,7 @@ public interface WorldAccessorMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Accessor("pendingBlockEntityTickers")
-    List<BlockEntityTickInvoker> anticrash$getPendingBlockEntityTickers();
+    List<TickingBlockEntity> anticrash$getPendingBlockEntityTickers();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -46,7 +46,7 @@ public interface WorldAccessorMixin {
     /** Next global sub-tick sequence value. Calling World#getTickOrder would increment it. */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("tickOrder")
+    @Accessor("subTickCount")
     long anticrash$getNextTickOrder();
 
     //?}
@@ -56,7 +56,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("tickOrder")
+    @Accessor("subTickCount")
     void anticrash$setNextTickOrder(long nextTickOrder);
 
     //?}
@@ -68,7 +68,7 @@ public interface WorldAccessorMixin {
     /** Mapped Minecraft 1.18.2 field; unlike java.util.Random internals this is safe to expose. */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("lcgBlockSeed")
+    @Accessor("randValue")
     int anticrash$getLcgBlockSeed();
 
     //?}
@@ -78,7 +78,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("lcgBlockSeed")
+    @Accessor("randValue")
     void anticrash$setLcgBlockSeed(int seed);
 
     //?}
@@ -88,7 +88,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("rainGradient")
+    @Accessor("rainLevel")
     float anticrash$getRainGradient();
 
     //?}
@@ -98,7 +98,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("rainGradient")
+    @Accessor("rainLevel")
     void anticrash$setRainGradientValue(float value);
 
     //?}
@@ -108,12 +108,12 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.4) {
-    @Accessor("rainGradientPrev")
+    @Accessor("oRainLevel")
     void anticrash$setRainGradientPrev(float value);
 
     //?}
     //? if (>=1.21.5 && <=1.21.11) {
-    /*@Accessor("lastRainGradient")
+    /*@Accessor("oRainLevel")
         void anticrash$setRainGradientPrev(float value);
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -122,7 +122,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("thunderGradient")
+    @Accessor("thunderLevel")
     float anticrash$getThunderGradient();
 
     //?}
@@ -132,7 +132,7 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("thunderGradient")
+    @Accessor("thunderLevel")
     void anticrash$setThunderGradientValue(float value);
 
     //?}
@@ -142,11 +142,11 @@ public interface WorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.4) {
-    @Accessor("thunderGradientPrev")
+    @Accessor("oThunderLevel")
     void anticrash$setThunderGradientPrev(float value);
     //?}
     //? if (>=1.21.5 && <=1.21.11) {
-    /*@Accessor("lastThunderGradient")
+    /*@Accessor("oThunderLevel")
         void anticrash$setThunderGradientPrev(float value);
 *///?}
     //? if (>=26.1 && <=26.3) {

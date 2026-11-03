@@ -19,26 +19,26 @@ import com.google.gson.Gson;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.block.BlockState;
-import net.minecraft.block.entity.BlockEntity;
-import net.minecraft.block.entity.EndGatewayBlockEntity;
-import net.minecraft.block.entity.PistonBlockEntity;
-import net.minecraft.entity.Entity;
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.nbt.CompoundTag;
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.registry.Registries;
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.server.world.ServerWorld;
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.core.BlockPos;
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //?}
 
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -89,7 +89,12 @@ public final class RuntimeStateProbe implements ModInitializer {
     private long lastTime = Long.MIN_VALUE;
     private String lastDump = "";
     private boolean audited;
-    private static final net.minecraft.util.Identifier ECHO_CHANNEL =
+    //? if (>=1.18 && <=1.21.10) {
+    private static final net.minecraft.resources.ResourceLocation ECHO_CHANNEL =
+            //?}
+            //? if 1.21.11 {
+            /*private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
+    *///?}
             identifier("anticrash_probe", "echo");
     private final java.util.concurrent.atomic.AtomicInteger echoReceived =
             new java.util.concurrent.atomic.AtomicInteger();
@@ -97,33 +102,55 @@ public final class RuntimeStateProbe implements ModInitializer {
     private int payloadWait;
     private String payloadFrozenResult;
 
-    private static net.minecraft.util.Identifier identifier(String namespace, String path) {
+    //? if (>=1.18 && <=1.21.10) {
+    private static net.minecraft.resources.ResourceLocation identifier(
+            String namespace, String path) {
+        //?}
+        //? if 1.21.11 {
+        /*private static net.minecraft.resources.Identifier identifier(String namespace, String path) {
+    *///?}
         //? if <=1.20.6 {
-        return new net.minecraft.util.Identifier(namespace, path);
-        //?} else {
-        /*return net.minecraft.util.Identifier.of(namespace, path);
+        return new net.minecraft.resources.ResourceLocation(namespace, path);
+        //?}
+        //? if (>=1.21 && <=1.21.10) {
+        /*return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(namespace, path);
+*///?}
+        //? if 1.21.11 {
+        /*return net.minecraft.resources.Identifier.fromNamespaceAndPath(namespace, path);
 *///?}
     }
 
     // Use the actual wire decoder once payload packets become typed records.
     // This preserves channel data and lets installed mods decode their own payloads.
     //? if <=1.20.1 {
-    private static net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket payload(
+    private static net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket payload(
             //?} else {
-            /*private static net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket payload(
+            /*private static net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket payload(
 *///?}
-            net.minecraft.util.Identifier channel, net.minecraft.network.PacketByteBuf data) {
+            //? if (>=1.18 && <=1.21.10) {
+            net.minecraft.resources.ResourceLocation channel,
+            net.minecraft.network.FriendlyByteBuf data) {
+        //?}
+        //? if 1.21.11 {
+        /*net.minecraft.resources.Identifier channel, net.minecraft.network.FriendlyByteBuf data) {
+            *///?}
         //? if <=1.20.1 {
-        return new net.minecraft.network.packet.c2s.play.CustomPayloadC2SPacket(channel, data);
+        return new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(
+                channel, data);
         //?} else {
-        /*var wire = new net.minecraft.network.PacketByteBuf(io.netty.buffer.Unpooled.buffer());
+        /*var wire = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
         try {
-            wire.writeIdentifier(channel);
+            //? if (>=1.20.2 && <=1.21.10) {
+            /^wire.writeResourceLocation(channel);
+            ^///?}
+            //? if 1.21.11 {
+            /^wire.writeIdentifier(channel);
+            ^///?}
             wire.writeBytes(data, data.readerIndex(), data.readableBytes());
             //? if <=1.20.4 {
-            return new net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket(wire);
+            return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(wire);
             //?} else {
-            /^return net.minecraft.network.packet.c2s.common.CustomPayloadC2SPacket.CODEC.decode(wire);
+            /^return net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket.STREAM_CODEC.decode(wire);
             ^///?}
         } finally {
             wire.release();
@@ -132,25 +159,25 @@ public final class RuntimeStateProbe implements ModInitializer {
 *///?}
     }
 
-    private static NbtCompound blockEntityNbt(BlockEntity entity, ServerWorld world) {
+    private static CompoundTag blockEntityNbt(BlockEntity entity, ServerLevel world) {
         //? if <=1.20.4 {
-        return entity.createNbtWithId();
+        return entity.saveWithId();
         //?} else if <=1.21.5 {
-        /*return entity.createNbtWithId(world.getRegistryManager());
+        /*return entity.saveWithId(world.registryAccess());
 *///?} else {
-        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(world.getRegistryManager());
-        entity.writeDataWithId(view);
-        return view.getNbt();
+        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(world.registryAccess());
+        entity.saveWithId(view);
+        return view.buildResult();
 *///?}
     }
 
-    private static NbtCompound entityNbt(Entity entity) {
+    private static CompoundTag entityNbt(Entity entity) {
         //? if <=1.21.5 {
-        return entity.writeNbt(new NbtCompound());
+        return entity.saveWithoutId(new CompoundTag());
         //?} else {
-        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(entity.getRegistryManager());
-        entity.writeData(view);
-        return view.getNbt();
+        /*var view = com.atsukimc.anticrash.runtime.VersionStorage.writer(entity.registryAccess());
+        entity.saveWithoutId(view);
+        return view.buildResult();
 *///?}
     }
 
@@ -193,7 +220,7 @@ public final class RuntimeStateProbe implements ModInitializer {
         }
     }
 
-    private static boolean canSend(net.minecraft.server.network.ServerPlayerEntity player) {
+    private static boolean canSend(net.minecraft.server.level.ServerPlayer player) {
         try {
             for (java.lang.reflect.Method method :
                     Class.forName("net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking")
@@ -217,26 +244,24 @@ public final class RuntimeStateProbe implements ModInitializer {
      */
     private void payloadTest(MinecraftServer server) throws Exception {
         AntiCrashController controller = AntiCrashMod.controller();
-        if (controller == null || server.getPlayerManager().getPlayerList().isEmpty()) return;
-        net.minecraft.server.network.ServerPlayerEntity player =
-                server.getPlayerManager().getPlayerList().get(0);
+        if (controller == null || server.getPlayerList().getPlayers().isEmpty()) return;
+        net.minecraft.server.level.ServerPlayer player = server.getPlayerList().getPlayers().get(0);
         Class<?> carpet = Class.forName("carpet.network.ServerNetworkHandler");
         java.lang.reflect.Method valid =
                 carpet.getMethod(
-                        "isValidCarpetPlayer",
-                        net.minecraft.server.network.ServerPlayerEntity.class);
+                        "isValidCarpetPlayer", net.minecraft.server.level.ServerPlayer.class);
         if (payloadPhase == 0) {
             if (!controller.isRecoveryFrozen()
                     || !controller.statusSnapshot().state().equals("READY_TO_START")) return;
-            net.minecraft.network.PacketByteBuf register =
-                    new net.minecraft.network.PacketByteBuf(io.netty.buffer.Unpooled.buffer());
+            net.minecraft.network.FriendlyByteBuf register =
+                    new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
             register.writeBytes(
                     ECHO_CHANNEL.toString().getBytes(java.nio.charset.StandardCharsets.US_ASCII));
             Class<?> client = Class.forName("carpet.network.CarpetClient");
-            net.minecraft.network.PacketByteBuf hello =
-                    new net.minecraft.network.PacketByteBuf(io.netty.buffer.Unpooled.buffer());
+            net.minecraft.network.FriendlyByteBuf hello =
+                    new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
             hello.writeVarInt(client.getField("HELLO").getInt(null));
-            hello.writeString(
+            hello.writeUtf(
                     String.valueOf(
                             Class.forName("carpet.CarpetSettings")
                                     .getField("carpetVersion")
@@ -246,17 +271,22 @@ public final class RuntimeStateProbe implements ModInitializer {
                     List.of(
                             payload(identifier("minecraft", "register"), register),
                             payload(
-                                    (net.minecraft.util.Identifier)
+                                    //? if (>=1.18 && <=1.21.10) {
+                                    (net.minecraft.resources.ResourceLocation)
+                                            //?}
+                                            //? if 1.21.11 {
+                                            /*(net.minecraft.resources.Identifier)
+                                    *///?}
                                             client.getField("CARPET_CHANNEL").get(null),
                                     hello),
                             payload(
                                     ECHO_CHANNEL,
-                                    new net.minecraft.network.PacketByteBuf(
+                                    new net.minecraft.network.FriendlyByteBuf(
                                             io.netty.buffer.Unpooled.buffer())),
                             // No Fabric receiver: exercises a mod's own packet-handler hook.
                             payload(
                                     identifier("anticrash_probe", "own_hook"),
-                                    new net.minecraft.network.PacketByteBuf(
+                                    new net.minecraft.network.FriendlyByteBuf(
                                             io.netty.buffer.Unpooled.buffer())));
 
             // As a real client's packets arrive: on a network thread, not on the server thread.
@@ -265,7 +295,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                             () -> {
                                 for (var packet : packets) {
                                     try {
-                                        player.networkHandler.onCustomPayload(packet);
+                                        player.connection.handleCustomPayload(packet);
                                     } catch (RuntimeException offThread) {
                                         /* rescheduled to the server thread */
                                     }
@@ -357,7 +387,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                             java.nio.file.StandardCopyOption.REPLACE_EXISTING);
                 }
             }
-            long time = server.getOverworld().getTime();
+            long time = server.overworld().getGameTime();
             if (steps == null) load(time);
             if (!audited && Files.exists(directory.resolve("audit"))) {
                 audited = true;
@@ -382,7 +412,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                         dump.contains("[block-events] []") && !dump.contains("[piston-order]");
                 if (quiet || ++quietWait > 200) {
                     stopWhenQuiet = false;
-                    server.stop(false);
+                    server.halt(false);
                     return;
                 }
             }
@@ -432,7 +462,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                             "player IncidentBot spawn at 8.5 6 8.5 facing 0 0 in"
                                     + " minecraft:overworld in creative",
                             "player IncidentBot use interval 4")) run(server, command);
-            incidentNextTick = server.getTicks() + 300;
+            incidentNextTick = server.getTickCount() + 300;
         }
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null) return;
@@ -444,17 +474,17 @@ public final class RuntimeStateProbe implements ModInitializer {
             Files.writeString(
                     directory.resolve("incident-progress.txt"),
                     incidentCommitted + " " + incidentLastId);
-            incidentNextTick = server.getTicks() + 100;
+            incidentNextTick = server.getTickCount() + 100;
             if (incidentCommitted >= incidentTarget) {
-                server.stop(false);
+                server.halt(false);
                 return;
             }
         }
-        if (server.getTicks() % 20 == 0) {
+        if (server.getTickCount() % 20 == 0) {
             Runtime jvm = Runtime.getRuntime();
             Files.writeString(
                     directory.resolve("memory.csv"),
-                    server.getTicks()
+                    server.getTickCount()
                             + ","
                             + (jvm.totalMemory() - jvm.freeMemory())
                             + ","
@@ -463,27 +493,29 @@ public final class RuntimeStateProbe implements ModInitializer {
                     java.nio.file.StandardOpenOption.CREATE,
                     java.nio.file.StandardOpenOption.APPEND);
         }
-        if (server.getTicks() < incidentNextTick || !status.state().equals("RUNNING")) return;
+        if (server.getTickCount() < incidentNextTick || !status.state().equals("RUNNING")) return;
         for (int n = 0; n < 110; n++) {
-            // 1.18.2 PistonExtensionBlock#createBlockEntity returns null: /setblock cannot
+            // 1.18.2 MovingPistonBlock#createBlockEntity returns null: /setblock cannot
             // synthesize moving-piston BEs. Use its verified public semantic constructor instead.
             BlockPos pos = new BlockPos(n * 2, 8, 16);
             BlockState state =
-                    net.minecraft.block.Blocks.MOVING_PISTON
-                            .getDefaultState()
-                            .with(
-                                    net.minecraft.block.PistonExtensionBlock.FACING,
-                                    net.minecraft.util.math.Direction.EAST);
-            server.getOverworld()
-                    .setBlockState(pos, net.minecraft.block.Blocks.AIR.getDefaultState(), 2);
-            server.getOverworld().setBlockState(pos, state, 2);
-            server.getOverworld()
-                    .addBlockEntity(
-                            new PistonBlockEntity(
+                    net.minecraft.world.level.block.Blocks.MOVING_PISTON
+                            .defaultBlockState()
+                            .setValue(
+                                    net.minecraft.world.level.block.piston.MovingPistonBlock.FACING,
+                                    net.minecraft.core.Direction.EAST);
+            server.overworld()
+                    .setBlock(
+                            pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+            server.overworld().setBlock(pos, state, 2);
+            server.overworld()
+                    .setBlockEntity(
+                            new PistonMovingBlockEntity(
                                     pos,
                                     state,
-                                    net.minecraft.block.Blocks.STONE.getDefaultState(),
-                                    net.minecraft.util.math.Direction.EAST,
+                                    net.minecraft.world.level.block.Blocks.STONE
+                                            .defaultBlockState(),
+                                    net.minecraft.core.Direction.EAST,
                                     true,
                                     false));
         }
@@ -498,7 +530,7 @@ public final class RuntimeStateProbe implements ModInitializer {
         run(server, "scoreboard players add fixture incident 1");
         if (incidentCommitted == 0) controller.requestBaseCheckpoint();
         else controller.requestCheckpoint();
-        incidentNextTick = server.getTicks() + 600;
+        incidentNextTick = server.getTickCount() + 600;
     }
 
     private void load(long time) throws IOException {
@@ -562,16 +594,17 @@ public final class RuntimeStateProbe implements ModInitializer {
             // next tick (Vanilla does not save them) and break the flying machines for every later
             // run; after a crash the next start recovers the last checkpoint with them intact.
             case "@halt" -> Runtime.getRuntime().halt(1);
-            case "@stop" -> server.stop(false);
+            case "@stop" -> server.halt(false);
             case "@stop-quiet" -> stopWhenQuiet = true;
             // Minecraft 1.19.1 renamed the command-source entry point; the
             // ParseResults overload named execute is not equivalent.
             //? if <=1.19 {
-            default -> server.getCommandManager().execute(server.getCommandSource(), command);
+            default ->
+                    server.getCommands().performCommand(server.createCommandSourceStack(), command);
                 //?} else if <=1.21.9 {
-                /*default -> server.getCommandManager().executeWithPrefix(server.getCommandSource(), command);
+                /*default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
 *///?} else {
-                /*default -> server.getCommandManager().parseAndExecute(server.getCommandSource(), command);
+                /*default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
 *///?}
         }
     }
@@ -579,13 +612,18 @@ public final class RuntimeStateProbe implements ModInitializer {
     private String dump(MinecraftServer server, long time) {
         StringBuilder out = new StringBuilder(1 << 14);
         out.append("time ").append(time).append('\n');
-        Map<String, ServerWorld> worlds = new TreeMap<>();
-        for (ServerWorld world : server.getWorlds())
-            worlds.put(world.getRegistryKey().getValue().toString(), world);
-        for (Map.Entry<String, ServerWorld> entry : worlds.entrySet())
+        Map<String, ServerLevel> worlds = new TreeMap<>();
+        for (ServerLevel world : server.getAllLevels())
+            //? if (>=1.18 && <=1.21.10) {
+            worlds.put(world.dimension().location().toString(), world);
+        //?}
+        //? if 1.21.11 {
+        /*worlds.put(world.dimension().identifier().toString(), world);
+            *///?}
+        for (Map.Entry<String, ServerLevel> entry : worlds.entrySet())
             world(out, entry.getKey(), entry.getValue());
         capsule(out, server);
-        for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             out.append("[player] ")
                     //? if <=1.21.8 {
                     .append(player.getGameProfile().getName())
@@ -602,33 +640,33 @@ public final class RuntimeStateProbe implements ModInitializer {
                     .append(" using=")
                     .append(player.isUsingItem())
                     .append(" useLeft=")
-                    .append(player.getItemUseTimeLeft())
+                    .append(player.getUseItemRemainingTicks())
                     .append(" lastAttack=")
                     .append(((LivingEntityAccessorMixin) player).anticrash$getLastAttackedTicks())
                     .append(" cooldown=")
                     .append(
-                            player.getItemCooldownManager()
+                            player.getCooldowns()
                                     //? if <=1.21.1 {
-                                    .isCoolingDown(player.getMainHandStack().getItem())
+                                    .isOnCooldown(player.getMainHandItem().getItem())
                             //?} else {
-                            /*.isCoolingDown(player.getMainHandStack())
+                            /*.isOnCooldown(player.getMainHandItem())
 *///?}
                             )
                     .append(" health=")
                     .append(player.getHealth())
                     .append(" screen=")
-                    .append(player.currentScreenHandler != player.playerScreenHandler)
+                    .append(player.containerMenu != player.inventoryMenu)
                     .append('\n');
         }
         return out.toString();
     }
 
-    private void world(StringBuilder out, String dimension, ServerWorld world) {
+    private void world(StringBuilder out, String dimension, ServerLevel world) {
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;
         out.append("[world] ")
                 .append(dimension)
                 .append(" timeOfDay=")
-                .append(world.getTimeOfDay())
+                .append(world.getDayTime())
                 .append(" idle=")
                 .append(((ServerWorldAccessorMixin) world).anticrash$getIdleTimeout())
                 .append(" rain=")
@@ -642,10 +680,10 @@ public final class RuntimeStateProbe implements ModInitializer {
         java.util.Set<Long> chunks = new java.util.TreeSet<>();
         for (Box box : boxes) {
             if (!box.dimension.equals(dimension) || !box.blocks) continue;
-            BlockPos.Mutable pos = new BlockPos.Mutable();
+            BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
             for (int cx = box.x1 >> 4; cx <= box.x2 >> 4; cx++) {
                 for (int cz = box.z1 >> 4; cz <= box.z2 >> 4; cz++) {
-                    WorldChunk chunk = world.getChunkManager().getWorldChunk(cx, cz);
+                    LevelChunk chunk = world.getChunkSource().getChunkNow(cx, cz);
                     if (chunk == null) {
                         out.append("[unloaded] ")
                                 .append(dimension)
@@ -656,7 +694,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                                 .append('\n');
                         continue;
                     }
-                    if (chunks.add(net.minecraft.util.math.ChunkPos.toLong(cx, cz))) {
+                    if (chunks.add(net.minecraft.world.level.ChunkPos.asLong(cx, cz))) {
                         out.append("[inhabited] ")
                                 .append(dimension)
                                 .append(' ')
@@ -710,15 +748,14 @@ public final class RuntimeStateProbe implements ModInitializer {
                                 .append(p.getZ())
                                 .append(' ')
                                 .append(blockEntityNbt(value, world));
-                        if (value instanceof PistonBlockEntity piston) {
+                        if (value instanceof PistonMovingBlockEntity piston) {
                             line.append(" progress=")
                                     .append(piston.getProgress(1.0f))
                                     .append(" lastProgress=")
                                     .append(piston.getProgress(0.0f));
                         }
-                        if (value instanceof EndGatewayBlockEntity gateway) {
-                            line.append(" cooldown=")
-                                    .append(gateway.needsCooldownBeforeTeleporting());
+                        if (value instanceof TheEndGatewayBlockEntity gateway) {
+                            line.append(" cooldown=").append(gateway.isCoolingDown());
                         }
                         blockEntities.add(line.toString());
                     }
@@ -734,11 +771,11 @@ public final class RuntimeStateProbe implements ModInitializer {
                     .append('\n');
 
         // Tick order is state: these two lists are written in iteration order, not sorted.
-        for (List<BlockEntityTickInvoker> list :
+        for (List<TickingBlockEntity> list :
                 List.of(
                         accessor.anticrash$getBlockEntityTickers(),
                         accessor.anticrash$getPendingBlockEntityTickers())) {
-            for (BlockEntityTickInvoker ticker : list) {
+            for (TickingBlockEntity ticker : list) {
                 if (BlockEntityTickerSnapshot.removed(ticker)
                         || !inBoxes(dimension, ticker.getPos())) continue;
                 BlockPos p = ticker.getPos();
@@ -751,7 +788,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                         .append(',')
                         .append(p.getZ())
                         .append(' ')
-                        .append(ticker.getName())
+                        .append(ticker.getType())
                         .append('\n');
             }
         }
@@ -760,13 +797,13 @@ public final class RuntimeStateProbe implements ModInitializer {
         ((ServerWorldAccessorMixin) world)
                 .anticrash$getEntityList()
                 .forEach(entity -> {
-                    if (entity instanceof ServerPlayerEntity || !inBoxes(dimension, entity)) return;
+                    if (entity instanceof ServerPlayer || !inBoxes(dimension, entity)) return;
 
                     //? if (>=1.18 && <=1.19.2) {
-                    String id = Registry.ENTITY_TYPE.getId(entity.getType()).toString();
+                    String id = Registry.ENTITY_TYPE.getKey(entity.getType()).toString();
                     //?}
                     //? if (>=1.19.3 && <=1.21.11) {
-                    /*String id = Registries.ENTITY_TYPE.getId(entity.getType()).toString();
+                    /*String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
 *///?}
 
                     String where =
@@ -783,13 +820,14 @@ public final class RuntimeStateProbe implements ModInitializer {
                             .append(' ')
                             .append(where)
                             .append('\n');
-                    NbtCompound nbt = entityNbt(entity);
+                    CompoundTag nbt = entityNbt(entity);
                     nbt.remove("UUID");
-                    entities.add(id + ' ' + where + " regen=" + entity.timeUntilRegen + ' ' + nbt);
+                    entities.add(
+                            id + ' ' + where + " regen=" + entity.invulnerableTime + ' ' + nbt);
                     // Entity#age is restored only for items and experience orbs (see the audit);
                     // kept on
                     // its own line so that known difference cannot hide any other.
-                    ages.add(id + ' ' + where + " age=" + entity.age);
+                    ages.add(id + ' ' + where + " age=" + entity.tickCount);
                 });
         java.util.Collections.sort(entities);
         for (String line : entities)

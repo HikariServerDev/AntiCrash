@@ -11,21 +11,21 @@ import com.mojang.datafixers.util.Either;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.level.ChunkHolder;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ChunkHolder;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkTicketType;
+import net.minecraft.server.level.TicketType;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.TicketType;
@@ -39,15 +39,20 @@ import net.minecraft.util.Unit;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.ChunkStatus;
+//? if (>=1.18 && <=1.20.4) {
+import net.minecraft.world.level.chunk.ChunkStatus;
+//?}
+//? if (>=1.20.5 && <=1.21.11) {
+/*import net.minecraft.world.level.chunk.status.ChunkStatus;
+*///?}
 //?}
 
 //? if (>=1.18 && <=1.20.4) {
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.status.ChunkStatus;
@@ -72,15 +77,15 @@ import java.util.concurrent.CompletableFuture;
  */
 //? if (>=1.18 && <=1.21.4) {
 public final class ChunkRecoveryManager {
-    private static final ChunkTicketType<Unit> RECOVERY_TICKET =
-            ChunkTicketType.create("anticrash_recovery", (left, right) -> 0);
+    private static final TicketType<Unit> RECOVERY_TICKET =
+            TicketType.create("anticrash_recovery", (left, right) -> 0);
     //?}
     //? if (>=1.21.5 && <=1.21.8) {
     /*public final class ChunkRecoveryManager {
         // An ephemeral, non-persisted type. Long.MAX_VALUE avoids record equality with START;
         // only public ticket APIs are used, and every abort/completion explicitly releases it.
-        public static final ChunkTicketType RECOVERY_TICKET =
-                new ChunkTicketType(Long.MAX_VALUE, false, ChunkTicketType.Use.LOADING_AND_SIMULATION);
+        public static final TicketType RECOVERY_TICKET =
+                new TicketType(Long.MAX_VALUE, false, TicketType.TicketUse.LOADING_AND_SIMULATION);
 *///?}
     //? if (>=1.21.9 && <=26.3) {
     /*public final class ChunkRecoveryManager {
@@ -88,9 +93,9 @@ public final class ChunkRecoveryManager {
         // only public ticket APIs are used, and every abort/completion explicitly releases it.
 *///?}
     //? if (>=1.21.9 && <=1.21.11) {
-    /*public static final ChunkTicketType RECOVERY_TICKET =
-                new ChunkTicketType(
-                        Long.MAX_VALUE, ChunkTicketType.FOR_LOADING | ChunkTicketType.FOR_SIMULATION);
+    /*public static final TicketType RECOVERY_TICKET =
+                new TicketType(
+                        Long.MAX_VALUE, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*public static final TicketType RECOVERY_TICKET =
@@ -115,7 +120,7 @@ public final class ChunkRecoveryManager {
     private final Map<PendingChunk, InFlight> inFlight = new LinkedHashMap<>();
 
     //? if (>=1.18 && <=1.21.11) {
-    private final Set<ServerWorld> recoveryWorlds = new LinkedHashSet<>();
+    private final Set<ServerLevel> recoveryWorlds = new LinkedHashSet<>();
     //?}
     //? if (>=26.1 && <=26.3) {
     /*private final Set<ServerLevel> recoveryWorlds = new LinkedHashSet<>();
@@ -142,7 +147,7 @@ public final class ChunkRecoveryManager {
 
     /**
      * Creates the recovery queue. Chunk loading itself is deliberately spread across server ticks:
-     * loading every retained chunk synchronously during loadWorld can exhaust a small JVM heap
+     * loading every retained chunk synchronously during loadLevel can exhaust a small JVM heap
      * before Minecraft has a chance to release startup allocations.
      */
     public void begin(
@@ -211,14 +216,14 @@ public final class ChunkRecoveryManager {
         deferredEntityTicking = selection.deferredEntityTicking();
 
         //? if (>=1.18 && <=1.21.11) {
-        Map<String, ServerWorld> worlds = new HashMap<>();
+        Map<String, ServerLevel> worlds = new HashMap<>();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*Map<String, ServerLevel> worlds = new HashMap<>();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : server.getWorlds())
+        for (ServerLevel world : server.getAllLevels())
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : server.getAllLevels())
@@ -226,7 +231,12 @@ public final class ChunkRecoveryManager {
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            worlds.put(world.getRegistryKey().getValue().toString(), world);
+            //? if (>=1.18 && <=1.21.10) {
+            worlds.put(world.dimension().location().toString(), world);
+            //?}
+            //? if 1.21.11 {
+            /*worlds.put(world.dimension().identifier().toString(), world);
+            *///?}
             //?}
             //? if (>=26.1 && <=26.3) {
             /*worlds.put(world.dimension().identifier().toString(), world);
@@ -236,7 +246,7 @@ public final class ChunkRecoveryManager {
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
 
             //? if (>=1.18 && <=1.21.11) {
-            ServerWorld world = worlds.get(entry.dimension());
+            ServerLevel world = worlds.get(entry.dimension());
             //?}
             //? if (>=26.1 && <=26.3) {
             /*ServerLevel world = worlds.get(entry.dimension());
@@ -415,7 +425,7 @@ public final class ChunkRecoveryManager {
     private void request(PendingChunk pendingChunk) {
 
         //? if (>=1.18 && <=1.21.11) {
-        ServerWorld world = pendingChunk.world;
+        ServerLevel world = pendingChunk.world;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ServerLevel world = pendingChunk.world;
@@ -434,7 +444,7 @@ public final class ChunkRecoveryManager {
         try
         //? if (>=1.18 && <=1.21.4) {
         {
-            // ServerChunkManager.addTicket accepts a radius, not the resulting Vanilla ticket
+            // ServerChunkCache.addTicket accepts a radius, not the resulting Vanilla ticket
             // level. Track the converted radius before touching Minecraft so an OOM in
             // addTicket/getChunk still leaves abort() with an entry it can remove.
             int ticketRadius = ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel());
@@ -449,17 +459,23 @@ public final class ChunkRecoveryManager {
             tickets.add(ticket);
 
             //? if (>=1.18 && <=1.21.4) {
-            world.getChunkManager().addTicket(RECOVERY_TICKET, pos, ticketRadius, Unit.INSTANCE);
+            world.getChunkSource()
+                    .addRegionTicket(RECOVERY_TICKET, pos, ticketRadius, Unit.INSTANCE);
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*world.getChunkManager().addTicket(RECOVERY_TICKET, pos, ticketRadius);
+            /*world.getChunkSource().addTicketWithRadius(RECOVERY_TICKET, pos, ticketRadius);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*world.getChunkSource().addTicketWithRadius(RECOVERY_TICKET, pos, ticketRadius);
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
+            //? if (>=1.18 && <=1.21.4) {
             if (entry.forced() && !world.getForcedChunks().contains(pos.toLong()))
+            //?}
+            //? if (>=1.21.5 && <=1.21.11) {
+            /*if (entry.forced() && !world.getForceLoadedChunks().contains(pos.toLong()))
+            *///?}
             //?}
             //? if (>=26.1 && <=26.3) {
             /*if (entry.forced() && !world.getForceLoadedChunks().contains(pos.pack()))
@@ -483,26 +499,26 @@ public final class ChunkRecoveryManager {
             // returns immediately and is observed by a later poll pass.
 
             //? if (>=1.18.2 && <=1.21.11) {
-            world.getChunkManager().tick(() -> true, false);
+            world.getChunkSource().tick(() -> true, false);
             //?}
             //? if (>=1.18 && <=1.18.1) {
-            /*VersionChunkLifecycle.advance(world.getChunkManager());
+            /*VersionChunkLifecycle.advance(world.getChunkSource());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*world.getChunkSource().tick(() -> true, false);
 *///?}
 
             //? if (>=1.18 && <=1.20.4) {
-            CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> future =
-                    ((ServerChunkManagerAccessorMixin) (Object) world.getChunkManager())
+            CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> future =
+                    ((ServerChunkManagerAccessorMixin) (Object) world.getChunkSource())
                             .anticrash$getChunkFuture(pos.x, pos.z, ChunkStatus.FULL, false);
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
             /*CompletableFuture<
-                                        net.minecraft.server.world.OptionalChunk<
-                                                net.minecraft.world.chunk.Chunk>>
+                                        net.minecraft.server.level.ChunkResult<
+                                                net.minecraft.world.level.chunk.ChunkAccess>>
                                 future =
-                                        ((ServerChunkManagerAccessorMixin) (Object) world.getChunkManager())
+                                        ((ServerChunkManagerAccessorMixin) (Object) world.getChunkSource())
                                                 .anticrash$getChunkFuture(
                                                         pos.x, pos.z, ChunkStatus.FULL, false);
 *///?}
@@ -535,7 +551,7 @@ public final class ChunkRecoveryManager {
     }
 
     /**
-     * The normal ServerWorld tick is deliberately cancelled while recovery is frozen. Advance only
+     * The normal ServerLevel tick is deliberately cancelled while recovery is frozen. Advance only
      * Vanilla's chunk ticket/storage lifecycle, with chunk simulation disabled, so level-31
      * recovery tickets can actually reach entity-ticking readiness before the first restored
      * block/entity tick.
@@ -543,7 +559,7 @@ public final class ChunkRecoveryManager {
     private void advanceChunkLifecycle() {
 
         //? if (>=1.18 && <=1.21.11) {
-        for (ServerWorld world : recoveryWorlds)
+        for (ServerLevel world : recoveryWorlds)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (ServerLevel world : recoveryWorlds)
@@ -551,17 +567,17 @@ public final class ChunkRecoveryManager {
         {
 
             //? if (>=1.18.2 && <=1.21.11) {
-            world.getChunkManager().tick(() -> true, false);
+            world.getChunkSource().tick(() -> true, false);
             //?}
             //? if (>=1.18 && <=1.18.1) {
-            /*VersionChunkLifecycle.advance(world.getChunkManager());
+            /*VersionChunkLifecycle.advance(world.getChunkSource());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*world.getChunkSource().tick(() -> true, false);
 *///?}
 
             // Entity sections are read asynchronously and only attached by the entity manager's
-            // own tick, which normally runs at the end of ServerWorld#tick. Without this pump the
+            // own tick, which normally runs at the end of ServerLevel#tick. Without this pump the
             // restored entities would join one tick after the restored blocks.
             ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
                     .anticrash$getEntityManager()
@@ -583,10 +599,10 @@ public final class ChunkRecoveryManager {
             }
 
             //? if (>=1.18 && <=1.20.4) {
-            Either<WorldChunk, ChunkHolder.Unloaded> result;
+            Either<LevelChunk, ChunkHolder.ChunkLoadingFailure> result;
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*net.minecraft.server.world.OptionalChunk<net.minecraft.world.chunk.Chunk> result;
+            /*net.minecraft.server.level.ChunkResult<net.minecraft.world.level.chunk.ChunkAccess> result;
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*net.minecraft.server.level.ChunkResult<net.minecraft.world.level.chunk.ChunkAccess>
@@ -605,7 +621,7 @@ public final class ChunkRecoveryManager {
             if (result == null || result.left().isEmpty())
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*if (result == null || !result.isPresent())
+            /*if (result == null || !result.isSuccess())
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*if (result == null || !result.isSuccess())
@@ -638,7 +654,7 @@ public final class ChunkRecoveryManager {
         // chunk as prepared only once its entity section is loaded as well.
 
         //? if (>=1.18 && <=1.21.11) {
-        if (!ticket.world.isChunkLoaded(ticket.pos.toLong()))
+        if (!ticket.world.areEntitiesLoaded(ticket.pos.toLong()))
             //?}
             //? if (>=26.1 && <=26.3) {
             /*if (!ticket.world.areEntitiesLoaded(ticket.pos.pack()))
@@ -647,15 +663,14 @@ public final class ChunkRecoveryManager {
 
         //? if (>=1.18 && <=1.20.6) {
         ChunkHolder holder =
-                ((ThreadedAnvilChunkStorageAccessorMixin)
-                                ticket.world.getChunkManager().threadedAnvilChunkStorage)
+                ((ThreadedAnvilChunkStorageAccessorMixin) ticket.world.getChunkSource().chunkMap)
                         .anticrash$getCurrentChunkHolders()
                         .get(ticket.pos.toLong());
         //?}
         //? if (>=1.21 && <=1.21.11) {
         /*ChunkHolder holder =
                         ((ThreadedAnvilChunkStorageAccessorMixin)
-                                        ticket.world.getChunkManager().chunkLoadingManager)
+                                        ticket.world.getChunkSource().chunkMap)
                                 .anticrash$getCurrentChunkHolders()
                                 .get(ticket.pos.toLong());
 *///?}
@@ -670,10 +685,10 @@ public final class ChunkRecoveryManager {
         if (ticket.ticketLevel == ChunkRecoveryPlan.FULL_TICKET_LEVEL) {
 
             //? if (>=1.18 && <=1.20.6) {
-            return completed(holder.getValidFutureFor(ChunkStatus.FULL));
+            return completed(holder.getFutureIfPresent(ChunkStatus.FULL));
             //?}
             //? if (>=1.21 && <=1.21.11) {
-            /*return completed(holder.getAccessibleFuture());
+            /*return completed(holder.getFullChunkFuture());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*return completed(holder.getFullChunkFuture());
@@ -683,17 +698,17 @@ public final class ChunkRecoveryManager {
         if (ticket.ticketLevel == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL) {
 
             //? if (>=1.18 && <=1.19.4) {
-            return (holder.getLevelType() == ChunkHolder.LevelType.TICKING
-                            || holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING)
-                    && completed(holder.getTickingFuture())
-                    && ticket.world.getChunkManager().isTickingFutureReady(ticket.pos.toLong());
+            return (holder.getFullStatus() == ChunkHolder.FullChunkStatus.TICKING
+                            || holder.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING)
+                    && completed(holder.getTickingChunkFuture())
+                    && ticket.world.getChunkSource().isPositionTicking(ticket.pos.toLong());
             //?}
             //? if (>=1.20 && <=1.21.11) {
-            /*return (holder.getLevelType() == net.minecraft.server.world.ChunkLevelType.BLOCK_TICKING
-                                        || holder.getLevelType()
-                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING)
-                                && completed(holder.getTickingFuture())
-                                && ticket.world.getChunkManager().isTickingFutureReady(ticket.pos.toLong());
+            /*return (holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
+                                        || holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING)
+                                && completed(holder.getTickingChunkFuture())
+                                && ticket.world.getChunkSource().isPositionTicking(ticket.pos.toLong());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*return (holder.getFullStatus()
@@ -707,19 +722,19 @@ public final class ChunkRecoveryManager {
         }
 
         //? if (>=1.18 && <=1.19.4) {
-        return holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING
-                && completed(holder.getEntityTickingFuture());
+        return holder.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING
+                && completed(holder.getEntityTickingChunkFuture());
         //?}
         //? if (>=1.20 && <=1.21.4) {
-        /*return holder.getLevelType() == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
-                        && completed(holder.getEntityTickingFuture());
+        /*return holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                        && completed(holder.getEntityTickingChunkFuture());
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*return holder.getLevelType() == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
-                        && completed(holder.getEntityTickingFuture())
-                        && ticket.world.shouldTickEntityAt(
-                                new net.minecraft.util.math.BlockPos(
-                                        ticket.pos.getStartX(), 0, ticket.pos.getStartZ()));
+        /*return holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                        && completed(holder.getEntityTickingChunkFuture())
+                        && ticket.world.isPositionEntityTicking(
+                                new net.minecraft.core.BlockPos(
+                                        ticket.pos.getMinBlockX(), 0, ticket.pos.getMinBlockZ()));
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*return holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
@@ -736,7 +751,7 @@ public final class ChunkRecoveryManager {
                 //?}
                 //? if (>=1.20.5 && <=1.21.11) {
                 /*private static boolean completed(
-                            CompletableFuture<? extends net.minecraft.server.world.OptionalChunk<?>> future)
+                            CompletableFuture<? extends net.minecraft.server.level.ChunkResult<?>> future)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean completed(
@@ -750,7 +765,7 @@ public final class ChunkRecoveryManager {
             Either<?, ?> result = future.getNow(null);
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*net.minecraft.server.world.OptionalChunk<?> result = future.getNow(null);
+            /*net.minecraft.server.level.ChunkResult<?> result = future.getNow(null);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*net.minecraft.server.level.ChunkResult<?> result = future.getNow(null);
@@ -760,7 +775,7 @@ public final class ChunkRecoveryManager {
             return result != null && result.left().isPresent();
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*return result != null && result.isPresent();
+            /*return result != null && result.isSuccess();
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*return result != null && result.isSuccess();
@@ -880,11 +895,11 @@ public final class ChunkRecoveryManager {
 
             //? if (>=1.18 && <=1.21.4) {
             ticket.world
-                    .getChunkManager()
-                    .removeTicket(RECOVERY_TICKET, ticket.pos, ticket.radius, Unit.INSTANCE);
+                    .getChunkSource()
+                    .removeRegionTicket(RECOVERY_TICKET, ticket.pos, ticket.radius, Unit.INSTANCE);
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*ticket.world.getChunkManager().removeTicket(RECOVERY_TICKET, ticket.pos, ticket.radius);
+            /*ticket.world.getChunkSource().removeTicketWithRadius(RECOVERY_TICKET, ticket.pos, ticket.radius);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*ticket.world
@@ -914,7 +929,7 @@ public final class ChunkRecoveryManager {
 
     private record PendingChunk(
             //? if (>=1.18 && <=1.21.11) {
-            ServerWorld world
+            ServerLevel world
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*ServerLevel world
@@ -925,7 +940,7 @@ public final class ChunkRecoveryManager {
     private static final class Ticket {
 
         //? if (>=1.18 && <=1.21.11) {
-        private final ServerWorld world;
+        private final ServerLevel world;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*private final ServerLevel world;
@@ -940,7 +955,7 @@ public final class ChunkRecoveryManager {
         private boolean released;
 
         //? if (>=1.18 && <=1.21.11) {
-        private Ticket(ServerWorld world, ChunkPos pos, int radius, int ticketLevel)
+        private Ticket(ServerLevel world, ChunkPos pos, int radius, int ticketLevel)
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*private Ticket(ServerLevel world, ChunkPos pos, int radius, int ticketLevel)
@@ -957,15 +972,15 @@ public final class ChunkRecoveryManager {
             Ticket ticket
                     //? if (>=1.18 && <=1.20.4) {
                     ,
-            CompletableFuture<Either<WorldChunk, ChunkHolder.Unloaded>> future
+            CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> future
             //?}
             //? if (>=1.20.5 && <=26.3) {
             /*,
 *///?}
             //? if (>=1.20.5 && <=1.21.11) {
             /*CompletableFuture<
-                                        net.minecraft.server.world.OptionalChunk<
-                                                net.minecraft.world.chunk.Chunk>>
+                                        net.minecraft.server.level.ChunkResult<
+                                                net.minecraft.world.level.chunk.ChunkAccess>>
                                 future
 *///?}
             //? if (>=26.1 && <=26.3) {

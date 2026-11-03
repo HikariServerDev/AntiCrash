@@ -11,7 +11,7 @@ import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
@@ -222,14 +222,14 @@ class ChunkRecoveryPlanTest {
             tick.type = "minecraft:repeater";
 
             //? if (>=1.18 && <=1.21.11) {
-            tick.x = new ChunkPos(packed).getStartX();
+            tick.x = new ChunkPos(packed).getMinBlockX();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*tick.x = ChunkPos.unpack(packed).getMinBlockX();
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            tick.z = new ChunkPos(packed).getStartZ();
+            tick.z = new ChunkPos(packed).getMinBlockZ();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*tick.z = ChunkPos.unpack(packed).getMinBlockZ();

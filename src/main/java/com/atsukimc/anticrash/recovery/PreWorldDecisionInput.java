@@ -8,7 +8,7 @@ import java.util.Locale;
 /**
  * Reads the one-shot pre-world Y/N decision without creating a competing BufferedReader.
  *
- * <p>The dedicated server starts its own {@code BufferedReader} in {@code setupServer()}, after
+ * <p>The dedicated server starts its own {@code BufferedReader} in {@code initServer()}, after
  * Fabric entrypoints have run. This reader is therefore used only before that point. It checks
  * {@link InputStream#available()} before every byte and has no blocking thread left behind after
  * the answer or timeout. The production overload intentionally reads raw bytes rather than wrapping

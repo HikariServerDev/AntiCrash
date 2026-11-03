@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
@@ -34,17 +34,27 @@ public final class EntityLifecycleTracker {
         //? if (>=1.18 && <=1.21.8) {
         GLOBAL.record(
                 "ENTITY_REMOVED",
-                entity.getWorld().getRegistryKey().getValue().toString(),
-                entity.getChunkPos().toLong(),
-                entity.getUuidAsString(),
+                //? if (>=1.18 && <=1.19.4) {
+                entity.getLevel().dimension().location().toString(),
+                //?}
+                //? if (>=1.20 && <=1.21.8) {
+                /*entity.level().dimension().location().toString(),
+                *///?}
+                entity.chunkPosition().toLong(),
+                entity.getStringUUID(),
                 reason);
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
                         "ENTITY_REMOVED",
-                        entity.getEntityWorld().getRegistryKey().getValue().toString(),
-                        entity.getChunkPos().toLong(),
-                        entity.getUuidAsString(),
+                        //? if (>=1.21.9 && <=1.21.10) {
+                        /^entity.level().dimension().location().toString(),
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^entity.level().dimension().identifier().toString(),
+                        ^///?}
+                        entity.chunkPosition().toLong(),
+                        entity.getStringUUID(),
                         reason);
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -64,17 +74,27 @@ public final class EntityLifecycleTracker {
         //? if (>=1.18 && <=1.21.8) {
         GLOBAL.record(
                 "ENTITY_MOVED_FROM",
-                entity.getWorld().getRegistryKey().getValue().toString(),
+                //? if (>=1.18 && <=1.19.4) {
+                entity.getLevel().dimension().location().toString(),
+                //?}
+                //? if (>=1.20 && <=1.21.8) {
+                /*entity.level().dimension().location().toString(),
+                *///?}
                 oldChunk,
-                entity.getUuidAsString(),
+                entity.getStringUUID(),
                 Long.toString(newChunk));
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
                         "ENTITY_MOVED_FROM",
-                        entity.getEntityWorld().getRegistryKey().getValue().toString(),
+                        //? if (>=1.21.9 && <=1.21.10) {
+                        /^entity.level().dimension().location().toString(),
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^entity.level().dimension().identifier().toString(),
+                        ^///?}
                         oldChunk,
-                        entity.getUuidAsString(),
+                        entity.getStringUUID(),
                         Long.toString(newChunk));
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -89,7 +109,7 @@ public final class EntityLifecycleTracker {
     }
 
     /**
-     * A ServerEntityManager unload is not a despawn: the entity may still be persisted to an entity
+     * A PersistentEntitySectionManager unload is not a despawn: the entity may still be persisted to an entity
      * region even though it is no longer present in {@code iterateEntities()}. Without a final
      * immutable entity-region capture, inheriting the parent would be ambiguous, so the logical
      * path treats this boundary as a safe fallback condition.
@@ -100,17 +120,27 @@ public final class EntityLifecycleTracker {
         //? if (>=1.18 && <=1.21.8) {
         GLOBAL.record(
                 "ENTITY_UNLOADED",
-                entity.getWorld().getRegistryKey().getValue().toString(),
-                entity.getChunkPos().toLong(),
-                entity.getUuidAsString(),
+                //? if (>=1.18 && <=1.19.4) {
+                entity.getLevel().dimension().location().toString(),
+                //?}
+                //? if (>=1.20 && <=1.21.8) {
+                /*entity.level().dimension().location().toString(),
+                *///?}
+                entity.chunkPosition().toLong(),
+                entity.getStringUUID(),
                 "server_entity_manager_unload");
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
                         "ENTITY_UNLOADED",
-                        entity.getEntityWorld().getRegistryKey().getValue().toString(),
-                        entity.getChunkPos().toLong(),
-                        entity.getUuidAsString(),
+                        //? if (>=1.21.9 && <=1.21.10) {
+                        /^entity.level().dimension().location().toString(),
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^entity.level().dimension().identifier().toString(),
+                        ^///?}
+                        entity.chunkPosition().toLong(),
+                        entity.getStringUUID(),
                         "server_entity_manager_unload");
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -134,16 +164,26 @@ public final class EntityLifecycleTracker {
         //? if (>=1.18 && <=1.21.8) {
         return LogicalTracking.enabled()
                 && entity != null
-                && entity.getWorld() != null
-                && !entity.getWorld().isClient
-                && entity.getType().isSaveable();
+                //? if (>=1.18 && <=1.19.4) {
+                && entity.getLevel() != null
+                //?}
+                //? if (>=1.20 && <=1.21.8) {
+                /*&& entity.level() != null
+                *///?}
+                //? if (>=1.18 && <=1.19.4) {
+                && !entity.getLevel().isClientSide
+                //?}
+                //? if (>=1.20 && <=1.21.8) {
+                /*&& !entity.level().isClientSide
+                *///?}
+                && entity.getType().canSerialize();
         //?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*return LogicalTracking.enabled()
                         && entity != null
-                        && entity.getEntityWorld() != null
-                        && !entity.getEntityWorld().isClient()
-                        && entity.getType().isSaveable();
+                        && entity.level() != null
+                        && !entity.level().isClientSide()
+                        && entity.getType().canSerialize();
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*return LogicalTracking.enabled()

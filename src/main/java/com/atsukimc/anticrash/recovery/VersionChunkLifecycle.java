@@ -1,7 +1,7 @@
 //? if (>=1.18 && <=1.18.1) {
 /*package com.atsukimc.anticrash.recovery;
 
-import net.minecraft.server.world.ServerChunkManager;
+import net.minecraft.server.level.ServerChunkCache;
 
 /^*
  * 1.18.1 mapped bytecode: tick(BooleanSupplier) purges tickets, calls tick():boolean,
@@ -18,7 +18,7 @@ public final class VersionChunkLifecycle {
         return Boolean.TRUE.equals(DISABLED.get());
     }
 
-    public static void advance(ServerChunkManager manager) {
+    public static void advance(ServerChunkCache manager) {
         withoutSimulation(() -> manager.tick(() -> true));
     }
 

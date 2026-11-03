@@ -3,12 +3,12 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
-import net.minecraft.block.entity.SculkSensorBlockEntity;
-import net.minecraft.nbt.NbtCompound;
-import net.minecraft.util.Identifier;
-import net.minecraft.util.registry.Registry;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.core.Registry;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -27,10 +27,10 @@ import java.util.Optional;
  */
 @Mixin(SculkSensorBlockEntity.class)
 public abstract class SculkSensorBlockEntityMixin {
-    @Shadow @Final private SculkSensorListener listener;
+    @Shadow @Final private VibrationListener listener;
 
-    @Inject(method = "writeNbt", at = @At("TAIL"))
-    private void anticrash$savePendingVibration(NbtCompound nbt, CallbackInfo callbackInfo) {
+    @Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void anticrash$savePendingVibration(CompoundTag nbt, CallbackInfo callbackInfo) {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         SculkSensorListenerAccessorMixin accessor = (SculkSensorListenerAccessorMixin) listener;
         Optional<GameEvent> event = accessor.anticrash$getEvent();
@@ -39,21 +39,21 @@ public abstract class SculkSensorBlockEntityMixin {
                 extension -> {
                     extension.remove("Vibration");
                     if (event == null || event.isEmpty()) return;
-                    NbtCompound state = new NbtCompound();
-                    state.putString("Event", Registry.GAME_EVENT.getId(event.get()).toString());
+                    CompoundTag state = new CompoundTag();
+                    state.putString("Event", Registry.GAME_EVENT.getKey(event.get()).toString());
                     state.putInt("Distance", accessor.anticrash$getDistance());
                     state.putInt("Delay", accessor.anticrash$getDelay());
                     extension.put("Vibration", state);
                 });
     }
 
-    @Inject(method = "readNbt", at = @At("TAIL"))
-    private void anticrash$loadPendingVibration(NbtCompound nbt, CallbackInfo callbackInfo) {
-        NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+    @Inject(method = "load", at = @At("TAIL"))
+    private void anticrash$loadPendingVibration(CompoundTag nbt, CallbackInfo callbackInfo) {
+        CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         if (extension == null || !extension.contains("Vibration", 10)) return;
-        NbtCompound state = extension.getCompound("Vibration");
-        Identifier id = Identifier.tryParse(state.getString("Event"));
-        if (id == null || !Registry.GAME_EVENT.containsId(id)) return;
+        CompoundTag state = extension.getCompound("Vibration");
+        ResourceLocation id = ResourceLocation.tryParse(state.getString("Event"));
+        if (id == null || !Registry.GAME_EVENT.containsKey(id)) return;
         SculkSensorListenerAccessorMixin accessor = (SculkSensorListenerAccessorMixin) listener;
         accessor.anticrash$setEvent(Optional.of(Registry.GAME_EVENT.get(id)));
         accessor.anticrash$setDistance(Math.max(0, state.getInt("Distance")));

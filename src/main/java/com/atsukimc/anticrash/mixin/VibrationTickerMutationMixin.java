@@ -2,21 +2,21 @@
 /*package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.20 && <=1.21.11) {
-/^import net.minecraft.util.math.BlockPos;
+/^import net.minecraft.core.BlockPos;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.BlockPos;
 ^///?}
 
 //? if (>=1.20 && <=1.21.11) {
-/^import net.minecraft.world.World;
+/^import net.minecraft.world.level.Level;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.20 && <=1.21.11) {
-/^import net.minecraft.world.event.Vibrations;
+/^import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -30,13 +30,13 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 /^* 1.20 separates ListenerData/Ticker/Callback; countdown and pending selector must be dirty. ^/
 //? if (>=1.20 && <=1.21.11) {
-/^@Mixin(Vibrations.Ticker.class)
+/^@Mixin(VibrationSystem.Ticker.class)
 public interface VibrationTickerMutationMixin {
     @Inject(method = "tick", at = @At("HEAD"))
     private static void anticrash$dirtyVibrationTick(
-            World world,
-            Vibrations.ListenerData data,
-            Vibrations.Callback callback,
+            Level world,
+            VibrationSystem.Data data,
+            VibrationSystem.User callback,
             CallbackInfo ci)
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -52,17 +52,17 @@ public interface VibrationTickerMutationMixin {
 {
 
 //? if (>=1.20 && <=1.21.8) {
-/^if (!world.isClient)
+/^if (!world.isClientSide)
 
 ^///?}
 //? if (>=1.21.9 && <=1.21.11) {
-/^if (!world.isClient())
+/^if (!world.isClientSide())
 
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
 /^callback.getPositionSource()
-                    .getPos(world)
-                    .ifPresent(pos -> world.markDirty(BlockPos.ofFloored(pos)));
+                    .getPosition(world)
+                    .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^if (!world.isClientSide())

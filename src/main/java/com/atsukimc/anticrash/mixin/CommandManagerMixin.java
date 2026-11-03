@@ -8,14 +8,14 @@ import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.mojang.brigadier.CommandDispatcher;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.command.CommandManager;
+import net.minecraft.commands.Commands;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.commands.CommandSourceStack;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.command.ServerCommandSource;
+import net.minecraft.commands.CommandSourceStack;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.commands.Commands;
@@ -31,7 +31,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(CommandManager.class)
+@Mixin(Commands.class)
 public abstract class CommandManagerMixin {
 
     //?}
@@ -45,8 +45,8 @@ public abstract class CommandManagerMixin {
         if (controller != null) {
 
             //? if (>=1.18 && <=1.21.11) {
-            CommandDispatcher<ServerCommandSource> dispatcher =
-                    ((CommandManager) (Object) this).getDispatcher();
+            CommandDispatcher<CommandSourceStack> dispatcher =
+                    ((Commands) (Object) this).getDispatcher();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*CommandDispatcher<CommandSourceStack> dispatcher =
@@ -58,23 +58,23 @@ public abstract class CommandManagerMixin {
     }
 
     //? if (>=1.18 && <=1.19) {
-    @Inject(method = "execute", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
     private void anticrash$blockCommandsDuringCheckpoint(
-            ServerCommandSource source,
+            CommandSourceStack source,
             String command,
             CallbackInfoReturnable<Integer> callbackInfo)
                 //?}
                 //? if (>=1.19.1 && <=1.20.2) {
-                /*@Inject(method = "execute", at = @At("HEAD"), cancellable = true)
+                /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
                     private void anticrash$blockCommandsDuringCheckpoint(
-                            com.mojang.brigadier.ParseResults<ServerCommandSource> parse,
+                            com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
                             String command,
                             CallbackInfoReturnable<Integer> callbackInfo)
 *///?}
                 //? if (>=1.20.3 && <=1.21.11) {
-                /*@Inject(method = "execute", at = @At("HEAD"), cancellable = true)
+                /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
                     private void anticrash$blockCommandsDuringCheckpoint(
-                            com.mojang.brigadier.ParseResults<ServerCommandSource> parse,
+                            com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
                             String command,
                             CallbackInfo callbackInfo)
 *///?}
@@ -88,7 +88,7 @@ public abstract class CommandManagerMixin {
             {
 
         //? if (>=1.19.1 && <=1.21.11) {
-        /*ServerCommandSource source = parse.getContext().getSource();
+        /*CommandSourceStack source = parse.getContext().getSource();
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*CommandSourceStack source = parse.getContext().getSource();
@@ -106,7 +106,7 @@ public abstract class CommandManagerMixin {
             if (!RecoveryCommandPolicy.allowedDuringCheckpoint(normalized)) {
 
                 //? if (>=1.18 && <=1.21.11) {
-                source.sendError(
+                source.sendFailure(
                         controller.chat(
                                 MessageCatalog.text(
                                         controller.config().language, "checkpoint.command_blocked"),
@@ -138,7 +138,7 @@ public abstract class CommandManagerMixin {
                 normalized, controller.config().recovery.lock.allowCommands)) {
 
             //? if (>=1.18 && <=1.21.11) {
-            source.sendError(
+            source.sendFailure(
                     controller.chat(
                             MessageCatalog.text(
                                     controller.config().language,

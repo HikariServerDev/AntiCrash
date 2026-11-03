@@ -23,7 +23,7 @@ class FakePlayerSnapshotRuntimeTest {
     /*snapshot.motionFrameNbt =
                     com.atsukimc.anticrash.player.NbtCodec.encode(
                             new com.atsukimc.anticrash.runtime.EntityMotionFrame(
-                                            new net.minecraft.util.math.Vec3d(1, 0, 0), null, true)
+                                            new net.minecraft.world.phys.Vec3(1, 0, 0), null, true)
                                     .write());
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -117,7 +117,7 @@ class FakePlayerSnapshotRuntimeTest {
 
     //? if 1.21.11 {
     /*try (var input =
-                    net.minecraft.entity.LivingEntity.class.getResourceAsStream("LivingEntity.class"))
+                    net.minecraft.world.entity.LivingEntity.class.getResourceAsStream("LivingEntity.class"))
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*try (var input =
@@ -142,7 +142,7 @@ class FakePlayerSnapshotRuntimeTest {
                                                     instanceof
                                                     org.objectweb.asm.tree.FieldInsnNode field)
                                             || field.getOpcode() != org.objectweb.asm.Opcodes.PUTFIELD
-                                            || !field.name.equals("lastKineticAttackTime"))
+                                            || !field.name.equals("lastKineticHitFeedbackTime"))
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*if (!(instruction

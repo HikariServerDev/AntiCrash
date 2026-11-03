@@ -8,9 +8,9 @@ import java.util.concurrent.CompletableFuture;
 
 /^* Observes the already scheduled IO chain; does not reschedule saves or replace any state. ^/
 //? if (>=1.21.2 && <=1.21.11) {
-/^@Mixin(net.minecraft.world.PersistentStateManager.class)
+/^@Mixin(net.minecraft.world.level.storage.DimensionDataStorage.class)
 public interface PersistentDataStorageAccessorMixin {
-    @Accessor("savingFuture")
+    @Accessor("pendingWriteFuture")
     CompletableFuture<?> anticrash$getPendingWrite();
 ^///?}
 //? if (>=26.1 && <=26.3) {

@@ -3,17 +3,17 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ChunkMap;
 *///?}
 
 //? if (>=1.18 && <=1.20.6) {
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.server.level.ChunkMap;
 //?}
 //? if (>=1.21 && <=1.21.11) {
-/*import net.minecraft.server.world.ServerChunkLoadingManager;
+/*import net.minecraft.server.level.ChunkMap;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
@@ -29,16 +29,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * it and falls back unless a future semantic entity-region capture is available.
  */
 //? if (>=1.18 && <=1.20.6) {
-@Mixin(ThreadedAnvilChunkStorage.class)
+@Mixin(ChunkMap.class)
 public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
 
     //?}
     //? if (>=1.21 && <=1.21.11) {
-    /*@Mixin(ServerChunkLoadingManager.class)
+    /*@Mixin(ChunkMap.class)
     public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
 *///?}
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "unloadEntity", at = @At("HEAD"))
+    @Inject(method = "removeEntity", at = @At("HEAD"))
     private void anticrash$entityUnload(Entity entity, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -60,9 +60,9 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "save(Lnet/minecraft/world/chunk/Chunk;)Z", at = @At("HEAD"))
+    @Inject(method = "save(Lnet/minecraft/world/level/chunk/ChunkAccess;)Z", at = @At("HEAD"))
     private void anticrash$rewriteExtensionOnUnload(
-            net.minecraft.world.chunk.Chunk chunk,
+            net.minecraft.world.level.chunk.ChunkAccess chunk,
             org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean>
                     callbackInfo)
                 //?}
@@ -76,7 +76,7 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        if (chunk instanceof net.minecraft.world.chunk.WorldChunk worldChunk
+        if (chunk instanceof net.minecraft.world.level.chunk.LevelChunk worldChunk
                 && !((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld()
                 && ((com.atsukimc.anticrash.runtime.ExtensionCarrier) worldChunk)
                         .anticrash$extensionOnDisk())
@@ -90,13 +90,13 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
         {
 
             //? if (>=1.18.2 && <=1.21.1) {
-            worldChunk.setNeedsSaving(true);
+            worldChunk.setUnsaved(true);
             //?}
             //? if (>=1.18 && <=1.18.1) {
-            /*worldChunk.setShouldSave(true);
+            /*worldChunk.setUnsaved(true);
 *///?}
             //? if (>=1.21.2 && <=1.21.11) {
-            /*worldChunk.markNeedsSaving();
+            /*worldChunk.markUnsaved();
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*worldChunk.markUnsaved();

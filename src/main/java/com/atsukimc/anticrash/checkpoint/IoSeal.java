@@ -14,11 +14,11 @@ import com.mojang.datafixers.util.Either;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.StorageIoWorker;
+import net.minecraft.world.level.chunk.storage.IOWorker;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.IOWorker;
@@ -70,7 +70,7 @@ final class IoSeal implements AutoCloseable {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    static IoSeal seal(List<StorageIoWorker> workers, long timeoutNanos) throws IOException
+    static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException
@@ -84,7 +84,7 @@ final class IoSeal implements AutoCloseable {
         long started = System.nanoTime();
 
         //? if (>=1.18 && <=1.21.11) {
-        for (StorageIoWorker worker : workers)
+        for (IOWorker worker : workers)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (IOWorker worker : workers)

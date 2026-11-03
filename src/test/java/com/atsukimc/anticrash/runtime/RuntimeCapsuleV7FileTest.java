@@ -31,7 +31,7 @@ class RuntimeCapsuleV7FileTest {
         inhabited.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        inhabited.chunks.add(net.minecraft.util.math.ChunkPos.toLong(-3, 7));
+        inhabited.chunks.add(net.minecraft.world.level.ChunkPos.asLong(-3, 7));
         //?}
         //? if (>=26.1 && <=26.3) {
         /*inhabited.chunks.add(net.minecraft.world.level.ChunkPos.pack(-3, 7));
@@ -57,7 +57,7 @@ class RuntimeCapsuleV7FileTest {
 
         //? if (>=1.18 && <=1.21.11) {
         assertEquals(
-                net.minecraft.util.math.ChunkPos.toLong(-3, 7),
+                net.minecraft.world.level.ChunkPos.asLong(-3, 7),
                 read.inhabitedTimes.get(0).chunks.get(0));
         //?}
         //? if (>=26.1 && <=26.3) {

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -15,7 +15,7 @@ import org.junit.jupiter.api.Test;
 class EntityChunkWriteDeduplicatorTest {
 
     //? if (>=1.18 && <=1.21.11) {
-    private static NbtCompound chunk(int health)
+    private static CompoundTag chunk(int health)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static CompoundTag chunk(int health)
@@ -23,7 +23,7 @@ class EntityChunkWriteDeduplicatorTest {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound nbt = new NbtCompound();
+        CompoundTag nbt = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag nbt = new CompoundTag();

@@ -1,7 +1,7 @@
 // One build definition for every node. Pins and API flags live in the TOML matrix.
 def target = project.ext.anticrashTarget
 def mc = target.minecraft
-def mojang = target.namespace == 'mojang'
+def obfuscated = target.obfuscated
 base { archivesName = 'AntiCrash' }
 tasks.withType(AbstractArchiveTask).configureEach { archiveVersion = "${project.version}+mc${mc}" }
 repositories {
@@ -10,13 +10,13 @@ repositories {
 }
 dependencies {
     minecraft "com.mojang:minecraft:${mc}"
-    if (!mojang) mappings "net.fabricmc:yarn:${target.yarn}:v2"
-    add(mojang ? 'implementation' : 'modImplementation', "net.fabricmc:fabric-loader:${target.loader}")
+    if (obfuscated) mappings loom.officialMojangMappings()
+    add(obfuscated ? 'modImplementation' : 'implementation', "net.fabricmc:fabric-loader:${target.loader}")
     if (target.compileApi.toBoolean()) compileOnly "net.fabricmc.fabric-api:fabric-api:${target.fabricApi}"
     testImplementation 'org.junit.jupiter:junit-jupiter:5.10.2'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.10.2'
 }
-if (!mojang) {
+if (obfuscated) {
     loom { mixin {
         useLegacyMixinAp = target.legacyMixinAp.toBoolean()
         if (target.legacyMixinAp.toBoolean()) defaultRefmapName = target.refmap
@@ -54,7 +54,7 @@ tasks.named('processTestResources') {
 if (target.offlineAccess.toBoolean()) {
     def gameJar = providers.provider {
         sourceSets.main.compileClasspath.files.find {
-            it.name.startsWith(mojang ? 'minecraft-merged-deobf-' : 'minecraft-merged-') && it.name.endsWith('.jar')
+            it.name.startsWith(obfuscated ? 'minecraft-merged-' : 'minecraft-merged-deobf-') && it.name.endsWith('.jar')
         }
     }
     def fixture = layout.buildDirectory.file('test-fixtures/minecraft-access.jar')
@@ -101,8 +101,8 @@ if (target.qualification.toBoolean()) {
 evaluationDependsOn(':supervisor')
 def supervisorJar = project(':supervisor').tasks.named('jarFor' + mc.replace('.', '_'))
 tasks.register('collectArtifacts', Copy) {
-    dependsOn tasks.named('check'), tasks.named(mojang ? 'jar' : 'remapJar'), supervisorJar, ':supervisor:test'
-    from(tasks.named(mojang ? 'jar' : 'remapJar').flatMap { it.archiveFile })
+    dependsOn tasks.named('check'), tasks.named(obfuscated ? 'remapJar' : 'jar'), supervisorJar, ':supervisor:test'
+    from(tasks.named(obfuscated ? 'remapJar' : 'jar').flatMap { it.archiveFile })
     from(supervisorJar.flatMap { it.archiveFile })
     into rootProject.file("dist/refactor/${project.version}")
 }

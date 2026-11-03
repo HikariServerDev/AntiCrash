@@ -3,35 +3,35 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.PistonBlockEntity;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.TickingBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
@@ -59,7 +59,7 @@ public final class MovingPistonTickSnapshot {
 
     //? if (>=1.18 && <=1.21.11) {
     public static List<MovingPistonTickSnapshot> capture(
-            ServerWorld world, Set<Long> protectedChunks)
+            ServerLevel world, Set<Long> protectedChunks)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static List<MovingPistonTickSnapshot> capture(
@@ -70,7 +70,12 @@ public final class MovingPistonTickSnapshot {
         if (protectedChunks == null || protectedChunks.isEmpty()) return result;
 
         //? if (>=1.18 && <=1.21.11) {
-        String dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        String dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*String dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*String dimension = world.dimension().identifier().toString();
@@ -101,10 +106,10 @@ public final class MovingPistonTickSnapshot {
     private static void captureTickers(
             List<MovingPistonTickSnapshot> result,
             Set<BlockPos> seen,
-            ServerWorld world,
+            ServerLevel world,
             String dimension,
             Set<Long> protectedChunks,
-            List<BlockEntityTickInvoker> tickers)
+            List<TickingBlockEntity> tickers)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static void captureTickers(
@@ -118,7 +123,7 @@ public final class MovingPistonTickSnapshot {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        for (BlockEntityTickInvoker ticker : tickers)
+        for (TickingBlockEntity ticker : tickers)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (TickingBlockEntity ticker : tickers)
@@ -130,7 +135,7 @@ public final class MovingPistonTickSnapshot {
             //? if (>=1.18 && <=1.21.11) {
             if (!protectedChunks.contains(new ChunkPos(position).toLong())
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                            instanceof PistonBlockEntity)
+                            instanceof PistonMovingBlockEntity)
                     || !seen.add(position))
             //?}
             //? if (>=26.1 && <=26.3) {
@@ -150,7 +155,7 @@ public final class MovingPistonTickSnapshot {
 
             //? if (>=1.18 && <=1.21.11) {
             if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                    instanceof PistonBlockEntity piston)
+                    instanceof PistonMovingBlockEntity piston)
             //?}
             //? if (>=26.1 && <=26.3) {
             /*if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)

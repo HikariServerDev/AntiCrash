@@ -13,18 +13,18 @@ import com.mojang.datafixers.util.Either;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.EntityPersistentStorage;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.ChunkDataAccess;
+import net.minecraft.world.level.entity.EntityPersistentStorage;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.EntityChunkDataAccess;
+import net.minecraft.world.level.chunk.storage.EntityStorage;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.PersistentEntitySectionManager;
@@ -34,7 +34,7 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerEntityManager.class)
+@Mixin(PersistentEntitySectionManager.class)
 public abstract class ServerEntityManagerMixin {
     /**
      * At a checkpoint cut the entity flush waits only for entity sections that are still loading,
@@ -43,13 +43,14 @@ public abstract class ServerEntityManagerMixin {
      * {@link CutSave}).
      */
     @WrapOperation(
-            method = "flush",
+            method = "saveAll",
             at =
                     @At(
                             value = "INVOKE",
-                            target = "Lnet/minecraft/world/storage/ChunkDataAccess;awaitAll(Z)V"))
+                            target =
+                                    "Lnet/minecraft/world/level/entity/EntityPersistentStorage;flush(Z)V"))
     private void anticrash$awaitLoadsOnlyAtCut(
-            ChunkDataAccess<?> access, boolean sync, Operation<Void> original)
+            EntityPersistentStorage<?> access, boolean sync, Operation<Void> original)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Mixin(PersistentEntitySectionManager.class)
@@ -73,7 +74,7 @@ public abstract class ServerEntityManagerMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        if (!CutSave.active() || !(access instanceof EntityChunkDataAccess entities))
+        if (!CutSave.active() || !(access instanceof EntityStorage entities))
         //?}
         //? if (>=26.1 && <=26.3) {
         /*if (!CutSave.active() || !(access instanceof EntityStorage entities))
@@ -107,7 +108,7 @@ public abstract class ServerEntityManagerMixin {
 *///?}
 
         //? if (>=1.18 && <=1.21.1) {
-        accessor.anticrash$getTaskExecutor().awaitAll();
+        accessor.anticrash$getTaskExecutor().runAll();
         //?}
         //? if (>=1.21.2 && <=26.3) {
         /*accessor.anticrash$getTaskExecutor().runAll();

@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -27,8 +27,8 @@ public final class RuntimeExtensionNbt {
      * The extension describes something that keeps running: it is written only when data is saved
      * while it stays loaded (a checkpoint, an autosave, the save at shutdown). When Vanilla unloads
      * a chunk or an entity section and loads it again later, losing this state is what Vanilla does
-     * in an uninterrupted game, and that must stay as it is. Entity#writeNbt and
-     * BlockEntity#writeNbt also feed dimension changes, /data, structure blocks and client packets;
+     * in an uninterrupted game, and that must stay as it is. Entity#saveWithoutId and
+     * BlockEntity#saveWithoutId also feed dimension changes, /data, structure blocks and client packets;
      * none of those get the extension either.
      */
     private static final class Scope {
@@ -38,7 +38,7 @@ public final class RuntimeExtensionNbt {
         boolean extensionWritten;
 
         //? if (>=1.21.6 && <=1.21.11) {
-        /*final java.util.IdentityHashMap<net.minecraft.storage.WriteView, NbtCompound>
+        /*final java.util.IdentityHashMap<net.minecraft.world.level.storage.ValueOutput, CompoundTag>
                         viewExtensions = new java.util.IdentityHashMap<>();
 *///?}
         //? if (>=26.1 && <=26.3) {
@@ -105,7 +105,7 @@ public final class RuntimeExtensionNbt {
     /** Adds the extension to {@code nbt} when {@code writer} stored anything in it. */
 
     //? if (>=1.18 && <=1.21.11) {
-    public static void write(NbtCompound nbt, Consumer<NbtCompound> writer)
+    public static void write(CompoundTag nbt, Consumer<CompoundTag> writer)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static void write(CompoundTag nbt, Consumer<CompoundTag> writer)
@@ -113,13 +113,13 @@ public final class RuntimeExtensionNbt {
             {
 
         //? if (>=1.18 && <=1.21.4) {
-        NbtCompound extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new NbtCompound();
+        CompoundTag extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new CompoundTag();
         //?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*NbtCompound extension =
+        /*CompoundTag extension =
                         com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
                                 ? nbt.getCompoundOrEmpty(KEY)
-                                : new NbtCompound();
+                                : new CompoundTag();
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag extension =
@@ -143,7 +143,7 @@ public final class RuntimeExtensionNbt {
     /** The extension, or null when absent or written by a newer format this build cannot read. */
 
     //? if (>=1.18 && <=1.21.11) {
-    public static NbtCompound read(NbtCompound nbt)
+    public static CompoundTag read(CompoundTag nbt)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static CompoundTag read(CompoundTag nbt)
@@ -159,10 +159,10 @@ public final class RuntimeExtensionNbt {
             return null;
 
         //? if (>=1.18 && <=1.21.4) {
-        NbtCompound extension = nbt.getCompound(KEY);
+        CompoundTag extension = nbt.getCompound(KEY);
         //?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*NbtCompound extension = nbt.getCompoundOrEmpty(KEY);
+        /*CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
@@ -181,7 +181,7 @@ public final class RuntimeExtensionNbt {
     /** 1.21.6 views preserve registry/error context; do not cast a mod-provided view to NBT. */
 
     //? if (>=1.21.6 && <=1.21.11) {
-    /*public static void write(net.minecraft.storage.WriteView view, Consumer<NbtCompound> writer)
+    /*public static void write(net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer)
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*public static void write(
@@ -192,14 +192,14 @@ public final class RuntimeExtensionNbt {
             Scope scope = SCOPE.get();
 *///?}
 
-    // WriteView.get creates/replaces the nested compound on every call. Preserve superclass
+    // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
     // and subclass extension contributions in one bounded save scope, then discard references.
 
     //? if (>=1.21.6 && <=1.21.11) {
-    /*NbtCompound encoded =
+    /*CompoundTag encoded =
                     scope.entitySave || scope.loadedChunkSave
-                            ? scope.viewExtensions.computeIfAbsent(view, ignored -> new NbtCompound())
-                            : new NbtCompound();
+                            ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
+                            : new CompoundTag();
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*CompoundTag encoded =
@@ -213,7 +213,7 @@ public final class RuntimeExtensionNbt {
 *///?}
 
     //? if (>=1.21.6 && <=1.21.11) {
-    /*NbtCompound extension = encoded.getCompound(KEY).orElse(null);
+    /*CompoundTag extension = encoded.getCompound(KEY).orElse(null);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*CompoundTag extension = encoded.getCompound(KEY).orElse(null);
@@ -223,7 +223,7 @@ public final class RuntimeExtensionNbt {
     /*if (extension == null) {
 *///?}
     //? if (>=1.21.6 && <=1.21.11) {
-    /*view.remove(KEY);
+    /*view.discard(KEY);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*view.discard(KEY);
@@ -235,7 +235,7 @@ public final class RuntimeExtensionNbt {
 *///?}
 
     //? if (>=1.21.6 && <=1.21.11) {
-    /*view.put(KEY, NbtCompound.CODEC, extension);
+    /*view.store(KEY, CompoundTag.CODEC, extension);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*view.store(KEY, CompoundTag.CODEC, extension);
@@ -246,7 +246,7 @@ public final class RuntimeExtensionNbt {
 *///?}
 
     //? if (>=1.21.6 && <=1.21.11) {
-    /*public static NbtCompound read(net.minecraft.storage.ReadView view)
+    /*public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*public static CompoundTag read(net.minecraft.world.level.storage.ValueInput view)
@@ -255,7 +255,7 @@ public final class RuntimeExtensionNbt {
     /*{
 *///?}
     //? if (>=1.21.6 && <=1.21.11) {
-    /*return view.read(KEY, NbtCompound.CODEC)
+    /*return view.read(KEY, CompoundTag.CODEC)
                     .map(extension ->
 *///?}
     //? if (>=26.1 && <=26.3) {

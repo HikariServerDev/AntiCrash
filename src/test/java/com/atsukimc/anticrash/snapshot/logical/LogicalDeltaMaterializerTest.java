@@ -9,7 +9,7 @@ import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -21,18 +21,18 @@ import net.minecraft.nbt.NbtCompound;
 
 import net.minecraft.nbt.NbtIo;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.ListTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.RegionFile;
+import net.minecraft.world.level.chunk.storage.RegionFile;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.RegionFile;
@@ -59,31 +59,31 @@ class LogicalDeltaMaterializerTest {
         UUID removed = UUID.fromString("00000000-0000-0000-0000-000000000001");
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound entities = new NbtCompound();
+        CompoundTag entities = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag entities = new CompoundTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ListTag list = new ListTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound entity = new NbtCompound();
+        CompoundTag entity = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag entity = new CompoundTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.4) {
-        entity.putUuid("UUID", removed);
+        entity.putUUID("UUID", removed);
         //?}
         //? if (>=1.21.5 && <=1.21.11) {
-        /*entity.put("UUID", net.minecraft.util.Uuids.INT_STREAM_CODEC, removed);
+        /*entity.store("UUID", net.minecraft.core.UUIDUtil.CODEC, removed);
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*entity.store("UUID", net.minecraft.core.UUIDUtil.CODEC, removed);
@@ -316,7 +316,7 @@ class LogicalDeltaMaterializerTest {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static NbtCompound entityChunk(UUID... uuids)
+    private static CompoundTag entityChunk(UUID... uuids)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static CompoundTag entityChunk(UUID... uuids)
@@ -324,14 +324,14 @@ class LogicalDeltaMaterializerTest {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound root = new NbtCompound();
+        CompoundTag root = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag root = new CompoundTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ListTag list = new ListTag();
@@ -340,7 +340,7 @@ class LogicalDeltaMaterializerTest {
         for (UUID uuid : uuids) {
 
             //? if (>=1.18 && <=1.21.11) {
-            NbtCompound entity = new NbtCompound();
+            CompoundTag entity = new CompoundTag();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*CompoundTag entity = new CompoundTag();
@@ -349,10 +349,10 @@ class LogicalDeltaMaterializerTest {
             entity.putString("id", "minecraft:armor_stand");
 
             //? if (>=1.18 && <=1.21.4) {
-            entity.putUuid("UUID", uuid);
+            entity.putUUID("UUID", uuid);
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*entity.put("UUID", net.minecraft.util.Uuids.INT_STREAM_CODEC, uuid);
+            /*entity.store("UUID", net.minecraft.core.UUIDUtil.CODEC, uuid);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*entity.store("UUID", net.minecraft.core.UUIDUtil.CODEC, uuid);
@@ -365,7 +365,7 @@ class LogicalDeltaMaterializerTest {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static NbtCompound marker(String value)
+    private static CompoundTag marker(String value)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static CompoundTag marker(String value)
@@ -373,7 +373,7 @@ class LogicalDeltaMaterializerTest {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound root = new NbtCompound();
+        CompoundTag root = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag root = new CompoundTag();
@@ -385,7 +385,7 @@ class LogicalDeltaMaterializerTest {
 
     //? if (>=1.18 && <=1.21.11) {
     private static void writeRegion(
-            Path world, String directoryName, ChunkPos pos, NbtCompound root) throws Exception
+            Path world, String directoryName, ChunkPos pos, CompoundTag root) throws Exception
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static void writeRegion(
@@ -416,7 +416,7 @@ class LogicalDeltaMaterializerTest {
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            try (DataOutputStream output = region.getChunkOutputStream(pos))
+            try (DataOutputStream output = region.getChunkDataOutputStream(pos))
             //?}
             //? if (>=26.1 && <=26.3) {
             /*try (DataOutputStream output = region.getChunkDataOutputStream(pos))
@@ -424,7 +424,15 @@ class LogicalDeltaMaterializerTest {
             {
 
                 //? if (>=1.18 && <=1.21.11) {
+                //? if (>=1.18 && <=1.20.1) {
                 NbtIo.write(root, output);
+                //?}
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(root, output);
+                *///?}
+                //? if (>=1.20.3 && <=1.21.11) {
+                /*NbtIo.writeUnnamedTagWithFallback(root, output);
+                *///?}
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*NbtIo.writeUnnamedTagWithFallback(root, output);
@@ -433,7 +441,7 @@ class LogicalDeltaMaterializerTest {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            region.sync();
+            region.flush();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*region.flush();
@@ -443,7 +451,7 @@ class LogicalDeltaMaterializerTest {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static NbtCompound readRegion(Path world, String directoryName, ChunkPos pos)
+    private static CompoundTag readRegion(Path world, String directoryName, ChunkPos pos)
             throws Exception
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -462,7 +470,7 @@ class LogicalDeltaMaterializerTest {
 
         //? if (>=1.18 && <=1.20.4) {
         try (RegionFile region = new RegionFile(file, directory, false);
-                var input = region.getChunkInputStream(pos))
+                var input = region.getChunkDataInputStream(pos))
         //?}
         //? if (>=1.20.5 && <=1.21.11) {
         /*try (RegionFile region =
@@ -471,7 +479,7 @@ class LogicalDeltaMaterializerTest {
                                         file,
                                         directory,
                                         false);
-                        var input = region.getChunkInputStream(pos))
+                        var input = region.getChunkDataInputStream(pos))
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*try (RegionFile region =
@@ -488,11 +496,11 @@ class LogicalDeltaMaterializerTest {
             return NbtIo.read(input);
             //?}
             //? if (>=1.20.2 && <=1.20.3) {
-            /*return NbtIo.readCompound(
-                                input, net.minecraft.nbt.NbtTagSizeTracker.of(16 * 1024 * 1024));
+            /*return NbtIo.read(
+                                input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
 *///?}
             //? if (>=1.20.4 && <=1.21.11) {
-            /*return NbtIo.readCompound(input, net.minecraft.nbt.NbtSizeTracker.of(16 * 1024 * 1024));
+            /*return NbtIo.read(input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*return NbtIo.read(input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));

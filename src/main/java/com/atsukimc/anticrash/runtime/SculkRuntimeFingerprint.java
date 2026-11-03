@@ -4,24 +4,24 @@
 import com.mojang.serialization.JsonOps;
 
 //? if (>=1.19 && <=1.21.11) {
-/^import net.minecraft.block.entity.*;
+/^import net.minecraft.world.level.block.entity.*;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.*;
 ^///?}
 
 //? if (>=1.19 && <=1.21.5) {
-/^import net.minecraft.nbt.NbtCompound;
+/^import net.minecraft.nbt.CompoundTag;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.BlockEntity;
 ^///?}
 
 //? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.world.event.listener.VibrationListener;
+/^import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
-/^import net.minecraft.world.event.Vibrations;
+/^import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
@@ -44,18 +44,18 @@ public final class SculkRuntimeFingerprint {
 
 
 //? if (>=1.19 && <=1.19.4) {
-/^if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getEventListener();
+/^if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getListener();
         else if (entity instanceof SculkShriekerBlockEntity shrieker)
-            listener = shrieker.getVibrationListener();
+            listener = shrieker.getListener();
         else
 ^///?}
 if (entity instanceof SculkCatalystBlockEntity catalyst) {
 
 //? if (>=1.19 && <=1.21.5) {
-/^NbtCompound cursors = new NbtCompound();
+/^CompoundTag cursors = new CompoundTag();
 ^///?}
 //? if (>=1.21.6 && <=1.21.11) {
-/^var view = VersionStorage.writer(entity.getWorld().getRegistryManager());
+/^var view = VersionStorage.writer(entity.getLevel().registryAccess());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^var view = VersionStorage.writer(entity.getLevel().registryAccess());
@@ -63,13 +63,13 @@ if (entity instanceof SculkCatalystBlockEntity catalyst) {
 
 
 //? if (>=1.19 && <=1.19.4) {
-/^catalyst.getSpreadManager().writeNbt(cursors);
+/^catalyst.getSculkSpreader().save(cursors);
 ^///?}
 //? if (>=1.20 && <=1.21.5) {
-/^catalyst.getEventListener().getSpreadManager().writeNbt(cursors);
+/^catalyst.getListener().getSculkSpreader().save(cursors);
 ^///?}
 //? if (>=1.21.6 && <=1.21.11) {
-/^catalyst.getEventListener().getSpreadManager().writeData(view);
+/^catalyst.getListener().getSculkSpreader().save(view);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^catalyst.getListener().getSculkSpreader().save(view);
@@ -80,7 +80,7 @@ if (entity instanceof SculkCatalystBlockEntity catalyst) {
 /^return "catalyst|" + cursors;
 ^///?}
 //? if (>=1.21.6 && <=1.21.11) {
-/^return "catalyst|" + view.getNbt();
+/^return "catalyst|" + view.buildResult();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return "catalyst|" + view.buildResult();
@@ -88,7 +88,7 @@ if (entity instanceof SculkCatalystBlockEntity catalyst) {
 
         } else
 //? if (>=1.20 && <=1.21.11) {
-/^if (!(entity instanceof Vibrations))
+/^if (!(entity instanceof VibrationSystem))
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^if (!(entity instanceof VibrationSystem))
@@ -97,7 +97,7 @@ return null;
 
 //? if (>=1.19 && <=1.19.4) {
 /^return "listener|"
-                + VibrationListener.createCodec((VibrationListener.Callback) entity)
+                + VibrationListener.codec((VibrationListener.VibrationListenerConfig) entity)
                         .encodeStart(JsonOps.INSTANCE, listener)
                         .result()
                         .orElseThrow(
@@ -105,9 +105,9 @@ return null;
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
 /^return "listener|"
-                + Vibrations.ListenerData.CODEC
+                + VibrationSystem.Data.CODEC
                         .encodeStart(
-                                JsonOps.INSTANCE, ((Vibrations) entity).getVibrationListenerData())
+                                JsonOps.INSTANCE, ((VibrationSystem) entity).getVibrationData())
                         .result()
                         .orElseThrow(
                                 () -> new IllegalStateException("Sculk listener capture failed"));

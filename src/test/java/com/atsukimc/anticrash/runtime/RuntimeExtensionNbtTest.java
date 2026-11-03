@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -28,7 +28,7 @@ class RuntimeExtensionNbtTest {
     void extensionIsOneVersionedCompoundBesideVanillaKeys() {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound nbt = new NbtCompound();
+        CompoundTag nbt = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag nbt = new CompoundTag();
@@ -45,7 +45,7 @@ class RuntimeExtensionNbtTest {
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+        CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
@@ -76,7 +76,7 @@ class RuntimeExtensionNbtTest {
     void nothingIsAddedWhenThereIsNothingToSave() {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound nbt = new NbtCompound();
+        CompoundTag nbt = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag nbt = new CompoundTag();
@@ -95,14 +95,14 @@ class RuntimeExtensionNbtTest {
     void aNewerFormatIsIgnoredInsteadOfGuessed() {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound nbt = new NbtCompound();
+        CompoundTag nbt = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag nbt = new CompoundTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound future = new NbtCompound();
+        CompoundTag future = new CompoundTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag future = new CompoundTag();
@@ -132,21 +132,21 @@ class RuntimeExtensionNbtTest {
     }
 
     /**
-     * Permanent regression test. Entity#copyFrom (a dimension change) is writeNbt on the old entity
-     * followed by readNbt on the new one. An earlier build wrote the pending portal state on every
-     * writeNbt, so the copy arrived "inside a portal" and went straight back. The extension may
+     * Permanent regression test. Entity#restoreFrom (a dimension change) is saveWithoutId on the old entity
+     * followed by load on the new one. An earlier build wrote the pending portal state on every
+     * saveAdditional, so the copy arrived "inside a portal" and went straight back. The extension may
      * only be written inside an entity chunk save of entities that stay loaded.
      */
 
     /**
-     * Permanent regression test. Entity#copyFrom (a dimension change) is writeData on the old
-     * entity followed by readNbt on the new one. An earlier build wrote the pending portal state on
+     * Permanent regression test. Entity#restoreFrom (a dimension change) is writeData on the old
+     * entity followed by load on the new one. An earlier build wrote the pending portal state on
      * every writeData, so the copy arrived "inside a portal" and went straight back. The extension
      * may only be written inside an entity chunk save of entities that stay loaded.
      */
     @Test
     void portalStateIsNeverWrittenDuringADimensionChangeCopy() {
-        // Entity#copyFrom, /data get, spawn eggs, structure blocks: no save scope at all.
+        // Entity#restoreFrom, /data get, spawn eggs, structure blocks: no save scope at all.
         assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
         // A chunk being serialised on this thread does not open the entity scope either.
         RuntimeExtensionNbt.loadedChunkSave(true);
@@ -169,7 +169,7 @@ class RuntimeExtensionNbtTest {
         assertTrue(RuntimeExtensionNbt.savingLoadedEntities());
     }
 
-    /** Every mixin that adds to a Vanilla writeNbt must be gated by one of the two save scopes. */
+    /** Every mixin that adds to a Vanilla saveAdditional must be gated by one of the two save scopes. */
 
     //? if (>=1.18 && <=1.21.5) {
     @Test
@@ -189,10 +189,10 @@ class RuntimeExtensionNbtTest {
         //? if <=1.21.5 {
         int injections =
                 com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                        java.util.Set.of("writeNbt"));
+                        java.util.Set.of("saveAdditional", "saveWithoutId"));
         //?} else if <=1.21.11 {
         /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                java.util.Set.of("writeData"));
+                java.util.Set.of("saveAdditional", "saveWithoutId"));
 *///?} else {
         /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
                 java.util.Set.of("saveAdditional", "addAdditionalSaveData", "saveWithoutId"));

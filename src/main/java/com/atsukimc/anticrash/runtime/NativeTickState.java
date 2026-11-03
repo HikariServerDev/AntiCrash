@@ -5,7 +5,7 @@ import com.atsukimc.anticrash.mixin.NativeTickManagerAccessor;
 
 import net.minecraft.server.MinecraftServer;
 //? if (>=1.20.3 && <=1.21.11) {
-/^import net.minecraft.server.ServerTickManager;
+/^import net.minecraft.server.ServerTickRateManager;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.server.ServerTickRateManager;
@@ -25,7 +25,7 @@ public final class NativeTickState {
     public static NativeTickState capture(MinecraftServer server) {
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^ServerTickManager manager = server.getTickManager();
+/^ServerTickRateManager manager = server.tickRateManager();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^ServerTickRateManager manager = server.tickRateManager();
@@ -34,7 +34,7 @@ public final class NativeTickState {
         NativeTickState state = new NativeTickState();
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^state.tickRate = manager.getTickRate();
+/^state.tickRate = manager.tickrate();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^state.tickRate = manager.tickrate();
@@ -42,7 +42,7 @@ public final class NativeTickState {
 
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^state.stepTicks = manager.getStepTicks();
+/^state.stepTicks = manager.frozenTicksToRun();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^state.stepTicks = manager.frozenTicksToRun();
@@ -51,7 +51,7 @@ public final class NativeTickState {
         state.frozen = manager.isFrozen();
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^state.shouldTick = manager.shouldTick();
+/^state.shouldTick = manager.runsNormally();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^state.shouldTick = manager.runsNormally();
@@ -71,7 +71,7 @@ public final class NativeTickState {
         validate();
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^ServerTickManager manager = server.getTickManager();
+/^ServerTickRateManager manager = server.tickRateManager();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^ServerTickRateManager manager = server.tickRateManager();
@@ -82,7 +82,7 @@ public final class NativeTickState {
         manager.setFrozen(frozen);
 
 //? if (>=1.20.3 && <=1.21.11) {
-/^manager.setStepTicks(stepTicks);
+/^manager.setFrozenTicksToRun(stepTicks);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^manager.setFrozenTicksToRun(stepTicks);

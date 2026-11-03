@@ -6,38 +6,38 @@ import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.ChunkAccess;
 *///?}
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.world.ChunkSerializer;
+import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 //?}
 //? if (>=1.21.2 && <=1.21.11) {
-/*import net.minecraft.world.chunk.Chunk;
+/*import net.minecraft.world.level.chunk.ChunkAccess;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.LevelChunk;
 *///?}
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.world.chunk.Chunk;
+import net.minecraft.world.level.chunk.ChunkAccess;
 //?}
 //? if (>=1.21.2 && <=1.21.11) {
-/*import net.minecraft.world.chunk.SerializedChunk;
+/*import net.minecraft.world.level.chunk.storage.SerializableChunkData;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.SerializableChunkData;
@@ -53,29 +53,29 @@ import org.spongepowered.asm.mixin.Mixin;
 public abstract class ChunkSerializerMixin {
     /**
      * A wrap rather than a HEAD/RETURN pair: the scope must end when serialisation throws, or the
-     * next unrelated writeNbt on this thread would be taken for a save of a loaded chunk.
+     * next unrelated saveAdditional on this thread would be taken for a save of a loaded chunk.
      */
-    @WrapMethod(method = "serialize")
-    private static NbtCompound anticrash$scopeChunkSave(
-            ServerWorld world, Chunk chunk, Operation<NbtCompound> original)
+    @WrapMethod(method = "write")
+    private static CompoundTag anticrash$scopeChunkSave(
+            ServerLevel world, ChunkAccess chunk, Operation<CompoundTag> original)
                 //?}
                 //? if (>=1.21.2 && <=1.21.11) {
-                /*@Mixin(SerializedChunk.class)
+                /*@Mixin(SerializableChunkData.class)
                 public abstract class ChunkSerializerMixin {
                     /^*
                      * A wrap rather than a HEAD/RETURN pair: the scope must end when serialisation throws, or the
-                     * next unrelated writeNbt on this thread would be taken for a save of a loaded chunk.
+                     * next unrelated saveAdditional on this thread would be taken for a save of a loaded chunk.
                      ^/
-                    @WrapMethod(method = "fromChunk")
-                    private static SerializedChunk anticrash$scopeChunkSave(
-                            ServerWorld world, Chunk chunk, Operation<SerializedChunk> original)
+                    @WrapMethod(method = "copyOf")
+                    private static SerializableChunkData anticrash$scopeChunkSave(
+                            ServerLevel world, ChunkAccess chunk, Operation<SerializableChunkData> original)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Mixin(SerializableChunkData.class)
                 public abstract class ChunkSerializerMixin {
                     /^*
                      * A wrap rather than a HEAD/RETURN pair: the scope must end when serialisation throws, or the
-                     * next unrelated writeNbt on this thread would be taken for a save of a loaded chunk.
+                     * next unrelated saveAdditional on this thread would be taken for a save of a loaded chunk.
                      ^/
                     @WrapMethod(method = "copyOf")
                     private static SerializableChunkData anticrash$scopeChunkSave(
@@ -84,7 +84,7 @@ public abstract class ChunkSerializerMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        WorldChunk worldChunk = chunk instanceof WorldChunk loaded ? loaded : null;
+        LevelChunk worldChunk = chunk instanceof LevelChunk loaded ? loaded : null;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LevelChunk worldChunk = chunk instanceof LevelChunk loaded ? loaded : null;
@@ -97,10 +97,10 @@ public abstract class ChunkSerializerMixin {
         try {
 
             //? if (>=1.18 && <=1.21.1) {
-            NbtCompound nbt = original.call(world, chunk);
+            CompoundTag nbt = original.call(world, chunk);
             //?}
             //? if (>=1.21.2 && <=1.21.11) {
-            /*SerializedChunk nbt = original.call(world, chunk);
+            /*SerializableChunkData nbt = original.call(world, chunk);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*SerializableChunkData nbt = original.call(world, chunk);

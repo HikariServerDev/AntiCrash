@@ -4,7 +4,7 @@
 import static org.junit.jupiter.api.Assertions.*;
 
 //? if 1.21.11 {
-/^import net.minecraft.command.permission.*;
+/^import net.minecraft.server.permissions.*;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.server.permissions.*;
@@ -35,8 +35,8 @@ class VersionPermissionsTest {
 /^assertEquals(
                         actor >= required,
                         VersionPermissions.hasLevel(
-                                LeveledPermissionPredicate.fromLevel(
-                                        PermissionLevel.fromLevel(actor)),
+                                LevelBasedPermissionSet.forLevel(
+                                        PermissionLevel.byId(actor)),
                                 required));
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -49,7 +49,7 @@ class VersionPermissionsTest {
 
 
 //? if 1.21.11 {
-/^assertTrue(VersionPermissions.hasLevel(PermissionPredicate.NONE, 0));
+/^assertTrue(VersionPermissions.hasLevel(PermissionSet.NO_PERMISSIONS, 0));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertTrue(VersionPermissions.hasLevel(PermissionSet.NO_PERMISSIONS, 0));
@@ -57,7 +57,7 @@ class VersionPermissionsTest {
 
 
 //? if 1.21.11 {
-/^assertFalse(VersionPermissions.hasLevel(PermissionPredicate.NONE, 1));
+/^assertFalse(VersionPermissions.hasLevel(PermissionSet.NO_PERMISSIONS, 1));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(VersionPermissions.hasLevel(PermissionSet.NO_PERMISSIONS, 1));
@@ -69,7 +69,7 @@ class VersionPermissionsTest {
     void invalidLevelsNeverClampToAnAllowedPermission() {
 
 //? if 1.21.11 {
-/^assertFalse(VersionPermissions.hasLevel(PermissionPredicate.ALL, -1));
+/^assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, -1));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, -1));
@@ -77,7 +77,7 @@ class VersionPermissionsTest {
 
 
 //? if 1.21.11 {
-/^assertFalse(VersionPermissions.hasLevel(PermissionPredicate.ALL, 5));
+/^assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, 5));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, 5));
@@ -85,7 +85,7 @@ class VersionPermissionsTest {
 
 
 //? if 1.21.11 {
-/^assertFalse(VersionPermissions.hasLevel((PermissionPredicate) null, 0));
+/^assertFalse(VersionPermissions.hasLevel((PermissionSet) null, 0));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^assertFalse(VersionPermissions.hasLevel((PermissionSet) null, 0));

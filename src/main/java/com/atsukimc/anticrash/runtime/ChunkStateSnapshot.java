@@ -11,33 +11,38 @@ import com.mojang.datafixers.util.Either;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ChunkHolder;
+import net.minecraft.server.level.ChunkHolder;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ChunkMap;
 *///?}
 
 //? if (>=1.21 && <=1.21.11) {
-/*import net.minecraft.server.world.ServerChunkLoadingManager;
+/*import net.minecraft.server.level.ChunkMap;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 
 //? if (>=1.18 && <=1.20.6) {
-import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+import net.minecraft.server.level.ChunkMap;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.20.6) {
-import net.minecraft.world.chunk.ChunkStatus;
+//? if (>=1.18 && <=1.20.4) {
+import net.minecraft.world.level.chunk.ChunkStatus;
+//?}
+//? if (>=1.20.5 && <=1.20.6) {
+/*import net.minecraft.world.level.chunk.status.ChunkStatus;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
@@ -73,7 +78,7 @@ public final class ChunkStateSnapshot {
     public final List<ChunkReadiness> domain = new ArrayList<>();
 
     //? if (>=1.18 && <=1.21.11) {
-    public static ChunkStateSnapshot capture(ServerWorld world, Set<Long> transientStateChunks)
+    public static ChunkStateSnapshot capture(ServerLevel world, Set<Long> transientStateChunks)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static ChunkStateSnapshot capture(ServerLevel world, Set<Long> transientStateChunks)
@@ -82,7 +87,12 @@ public final class ChunkStateSnapshot {
         ChunkStateSnapshot snapshot = new ChunkStateSnapshot();
 
         //? if (>=1.18 && <=1.21.11) {
-        snapshot.dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        snapshot.dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*snapshot.dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*snapshot.dimension = world.dimension().identifier().toString();
@@ -91,10 +101,10 @@ public final class ChunkStateSnapshot {
         Set<Long> loaded = new LinkedHashSet<>();
 
         //? if (>=1.18 && <=1.20.6) {
-        ThreadedAnvilChunkStorage storage = world.getChunkManager().threadedAnvilChunkStorage;
+        ChunkMap storage = world.getChunkSource().chunkMap;
         //?}
         //? if (>=1.21 && <=1.21.11) {
-        /*ServerChunkLoadingManager storage = world.getChunkManager().chunkLoadingManager;
+        /*ChunkMap storage = world.getChunkSource().chunkMap;
 *///?}
         //? if (>=26.1 && <=26.3) {
         /*ChunkMap storage = world.getChunkSource().chunkMap;
@@ -140,7 +150,12 @@ public final class ChunkStateSnapshot {
         Set<Long> forced = new LinkedHashSet<>();
 
         //? if (>=1.18 && <=1.21.11) {
+        //? if (>=1.18 && <=1.21.4) {
         for (Long position : world.getForcedChunks())
+        //?}
+        //? if (>=1.21.5 && <=1.21.11) {
+        /*for (Long position : world.getForceLoadedChunks())
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (Long position : world.getForceLoadedChunks())
@@ -160,10 +175,10 @@ public final class ChunkStateSnapshot {
 *///?}
 
             //? if (>=1.18 && <=1.20.6) {
-            boolean full = completed(holder.getValidFutureFor(ChunkStatus.FULL));
+            boolean full = completed(holder.getFutureIfPresent(ChunkStatus.FULL));
             //?}
             //? if (>=1.21 && <=1.21.11) {
-            /*boolean full = completed(holder.getAccessibleFuture());
+            /*boolean full = completed(holder.getFullChunkFuture());
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*boolean full = completed(holder.getFullChunkFuture());
@@ -171,14 +186,14 @@ public final class ChunkStateSnapshot {
 
             //? if (>=1.18 && <=1.19.4) {
             boolean block =
-                    holder.getLevelType() == ChunkHolder.LevelType.TICKING
-                            || holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING;
+                    holder.getFullStatus() == ChunkHolder.FullChunkStatus.TICKING
+                            || holder.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING;
             //?}
             //? if (>=1.20 && <=1.21.11) {
             /*boolean block =
-                                holder.getLevelType() == net.minecraft.server.world.ChunkLevelType.BLOCK_TICKING
-                                        || holder.getLevelType()
-                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING;
+                                holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
+                                        || holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING;
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*boolean block =
@@ -191,8 +206,8 @@ public final class ChunkStateSnapshot {
             //? if (>=1.18 && <=1.21.11) {
             block =
                     block
-                            && completed(holder.getTickingFuture())
-                            && world.getChunkManager().isTickingFutureReady(packed);
+                            && completed(holder.getTickingChunkFuture())
+                            && world.getChunkSource().isPositionTicking(packed);
             //?}
             //? if (>=26.1 && <=26.3) {
             /*block =
@@ -203,25 +218,25 @@ public final class ChunkStateSnapshot {
 
             //? if (>=1.18 && <=1.19.4) {
             boolean entity =
-                    holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING
-                            && completed(holder.getEntityTickingFuture());
+                    holder.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING
+                            && completed(holder.getEntityTickingChunkFuture());
             //?}
             //? if (>=1.20 && <=1.21.4) {
             /*boolean entity =
-                                holder.getLevelType()
-                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
-                                        && completed(holder.getEntityTickingFuture());
+                                holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                                        && completed(holder.getEntityTickingChunkFuture());
 *///?}
             //? if (>=1.21.5 && <=1.21.11) {
             /*boolean entity =
-                                holder.getLevelType()
-                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
-                                        && completed(holder.getEntityTickingFuture())
-                                        && world.shouldTickEntityAt(
-                                                new net.minecraft.util.math.BlockPos(
-                                                        holder.getPos().getStartX(),
+                                holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                                        && completed(holder.getEntityTickingChunkFuture())
+                                        && world.isPositionEntityTicking(
+                                                new net.minecraft.core.BlockPos(
+                                                        holder.getPos().getMinBlockX(),
                                                         0,
-                                                        holder.getPos().getStartZ()));
+                                                        holder.getPos().getMinBlockZ()));
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*boolean entity =
@@ -335,7 +350,7 @@ public final class ChunkStateSnapshot {
                 //?}
                 //? if (>=1.20.5 && <=1.21.11) {
                 /*private static boolean completed(
-                            CompletableFuture<? extends net.minecraft.server.world.OptionalChunk<?>> future)
+                            CompletableFuture<? extends net.minecraft.server.level.ChunkResult<?>> future)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean completed(
@@ -349,7 +364,7 @@ public final class ChunkStateSnapshot {
             Either<?, ?> result = future.getNow(null);
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*net.minecraft.server.world.OptionalChunk<?> result = future.getNow(null);
+            /*net.minecraft.server.level.ChunkResult<?> result = future.getNow(null);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*net.minecraft.server.level.ChunkResult<?> result = future.getNow(null);
@@ -359,7 +374,7 @@ public final class ChunkStateSnapshot {
             return result != null && result.left().isPresent();
             //?}
             //? if (>=1.20.5 && <=1.21.11) {
-            /*return result != null && result.isPresent();
+            /*return result != null && result.isSuccess();
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*return result != null && result.isSuccess();
@@ -419,14 +434,14 @@ public final class ChunkStateSnapshot {
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            result.level = holder.getLevel();
+            result.level = holder.getTicketLevel();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*result.level = holder.getTicketLevel();
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            result.completedLevel = holder.getCompletedLevel();
+            result.completedLevel = holder.getQueueLevel();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*result.completedLevel = holder.getQueueLevel();
@@ -434,9 +449,9 @@ public final class ChunkStateSnapshot {
 
             //? if (>=1.18 && <=1.21.11) {
             result.levelType =
-                    holder.getLevelType() == null
+                    holder.getFullStatus() == null
                             ? null
-                            : ChunkDomainLevel.canonical(holder.getLevelType().name());
+                            : ChunkDomainLevel.canonical(holder.getFullStatus().name());
             //?}
             //? if (>=26.1 && <=26.3) {
             /*result.levelType =

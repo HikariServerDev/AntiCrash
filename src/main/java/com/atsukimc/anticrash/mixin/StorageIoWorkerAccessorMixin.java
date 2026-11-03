@@ -5,21 +5,21 @@ import com.mojang.datafixers.util.Either;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.RegionBasedStorage;
+import net.minecraft.world.level.chunk.storage.RegionFileStorage;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.IOWorker;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.StorageIoWorker;
+import net.minecraft.world.level.chunk.storage.IOWorker;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.RegionFileStorage;
@@ -41,18 +41,18 @@ import java.util.function.Supplier;
  * com.atsukimc.anticrash.checkpoint.IoSeal}.
  */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(StorageIoWorker.class)
+@Mixin(IOWorker.class)
 public interface StorageIoWorkerAccessorMixin {
     /** Queued writes not yet on disk. Only the worker's own actor thread may touch this map. */
 
     //?}
     //? if (>=1.18 && <=1.21.1) {
-    @Accessor("results")
+    @Accessor("pendingWrites")
     Map<ChunkPos, Object> anticrash$getResults();
 
     //?}
     //? if (>=1.21.2 && <=1.21.11) {
-    /*@Accessor("results")
+    /*@Accessor("pendingWrites")
         java.util.SequencedMap<ChunkPos, Object> anticrash$getResults();
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -65,7 +65,7 @@ public interface StorageIoWorkerAccessorMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Accessor("storage")
-    RegionBasedStorage anticrash$getStorage();
+    RegionFileStorage anticrash$getStorage();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -78,7 +78,7 @@ public interface StorageIoWorkerAccessorMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Invoker("writeRemainingResults")
+    @Invoker("tellStorePending")
     void anticrash$writeRemainingResults();
 
     //?}
@@ -88,11 +88,11 @@ public interface StorageIoWorkerAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.1) {
-    @Invoker("run")
+    @Invoker("submitTask")
     <T> CompletableFuture<T> anticrash$run(Supplier<Either<T, Exception>> task);
     //?}
     //? if (>=1.21.2 && <=1.21.11) {
-    /*@Invoker("run")
+    /*@Invoker("submitTask")
         <T> CompletableFuture<T> anticrash$run(Supplier<T> task);
 *///?}
     //? if (>=26.1 && <=26.3) {

@@ -3,28 +3,28 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.state.BlockState;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.LevelChunk;
@@ -38,7 +38,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /** Auditable semantic mutation hooks; this is intentionally not a universal mutation journal. */
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(WorldChunk.class)
+@Mixin(LevelChunk.class)
 public abstract class WorldChunkMutationMixin {
 
     //?}
@@ -65,14 +65,14 @@ public abstract class WorldChunkMutationMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        WorldChunk chunk = (WorldChunk) (Object) this;
+        LevelChunk chunk = (LevelChunk) (Object) this;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LevelChunk chunk = (LevelChunk) (Object) this;
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        ChunkMutationTracker.record(chunk.getWorld(), chunk.getPos(), "setBlockState");
+        ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockState");
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockState");
@@ -84,14 +84,14 @@ public abstract class WorldChunkMutationMixin {
     private void anticrash$blockEntityMutation(BlockEntity blockEntity, CallbackInfo callbackInfo) {
 
         //? if (>=1.18 && <=1.21.11) {
-        WorldChunk chunk = (WorldChunk) (Object) this;
+        LevelChunk chunk = (LevelChunk) (Object) this;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LevelChunk chunk = (LevelChunk) (Object) this;
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        ChunkMutationTracker.record(chunk.getWorld(), chunk.getPos(), "setBlockEntity");
+        ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockEntity");
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockEntity");
@@ -103,14 +103,14 @@ public abstract class WorldChunkMutationMixin {
     private void anticrash$removeBlockEntityMutation(BlockPos pos, CallbackInfo callbackInfo) {
 
         //? if (>=1.18 && <=1.21.11) {
-        WorldChunk chunk = (WorldChunk) (Object) this;
+        LevelChunk chunk = (LevelChunk) (Object) this;
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LevelChunk chunk = (LevelChunk) (Object) this;
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        ChunkMutationTracker.record(chunk.getWorld(), chunk.getPos(), "removeBlockEntity");
+        ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "removeBlockEntity");
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "removeBlockEntity");

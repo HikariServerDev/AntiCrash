@@ -2,28 +2,28 @@
 /*package com.atsukimc.anticrash.command;
 
 //? if 1.21.11 {
-/^import net.minecraft.command.permission.Permission;
+/^import net.minecraft.server.permissions.Permission;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.commands.CommandSourceStack;
 ^///?}
 
 //? if 1.21.11 {
-/^import net.minecraft.command.permission.PermissionLevel;
+/^import net.minecraft.server.permissions.PermissionLevel;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.server.permissions.Permission;
 ^///?}
 
 //? if 1.21.11 {
-/^import net.minecraft.command.permission.PermissionPredicate;
+/^import net.minecraft.server.permissions.PermissionSet;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.server.permissions.PermissionLevel;
 ^///?}
 
 //? if 1.21.11 {
-/^import net.minecraft.server.command.ServerCommandSource;
+/^import net.minecraft.commands.CommandSourceStack;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.server.permissions.PermissionSet;
@@ -36,7 +36,7 @@ public final class VersionPermissions {
 
 
 //? if 1.21.11 {
-/^public static boolean hasLevel(ServerCommandSource source, int level)
+/^public static boolean hasLevel(CommandSourceStack source, int level)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static boolean hasLevel(CommandSourceStack source, int level)
@@ -44,7 +44,7 @@ public final class VersionPermissions {
 {
 
 //? if 1.21.11 {
-/^return hasLevel(source.getPermissions(), level);
+/^return hasLevel(source.permissions(), level);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return hasLevel(source.permissions(), level);
@@ -54,7 +54,7 @@ public final class VersionPermissions {
 
 
 //? if 1.21.11 {
-/^public static boolean hasLevel(PermissionPredicate permissions, int level)
+/^public static boolean hasLevel(PermissionSet permissions, int level)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^public static boolean hasLevel(PermissionSet permissions, int level)
@@ -65,7 +65,7 @@ public final class VersionPermissions {
 //? if 1.21.11 {
 /^return level == 0
                 || permissions.hasPermission(
-                        new Permission.Level(PermissionLevel.fromLevel(level)));
+                        new Permission.HasCommandLevel(PermissionLevel.byId(level)));
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^return level == 0

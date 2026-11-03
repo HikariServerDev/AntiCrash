@@ -3,35 +3,35 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.EndGatewayBlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.Level;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.state.BlockState;
@@ -44,7 +44,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(EndGatewayBlockEntity.class)
+@Mixin(TheEndGatewayBlockEntity.class)
 public abstract class EndGatewayBlockEntityMixin {
 
     //?}
@@ -61,12 +61,17 @@ public abstract class EndGatewayBlockEntityMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "serverTick", at = @At("TAIL"))
+    //? if (>=1.18 && <=1.20.6) {
+    @Inject(method = "teleportTick", at = @At("TAIL"))
+    //?}
+    //? if (>=1.21 && <=1.21.11) {
+    /*@Inject(method = "portalTick", at = @At("TAIL"))
+    *///?}
     private static void anticrash$markChunkDirty(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
-            EndGatewayBlockEntity gateway,
+            TheEndGatewayBlockEntity gateway,
             CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -81,7 +86,7 @@ public abstract class EndGatewayBlockEntityMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        world.markDirty(pos);
+        world.blockEntityChanged(pos);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*world.blockEntityChanged(pos);
@@ -94,20 +99,20 @@ public abstract class EndGatewayBlockEntityMixin {
      */
 
     //? if (>=1.18 && <=1.20.4) {
-    @Inject(method = "writeNbt", at = @At("TAIL"))
-    private void anticrash$saveTeleportCooldown(NbtCompound nbt, CallbackInfo callbackInfo)
+    @Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void anticrash$saveTeleportCooldown(CompoundTag nbt, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.20.5 && <=1.21.5) {
-                /*@Inject(method = "writeNbt", at = @At("TAIL"))
+                /*@Inject(method = "saveAdditional", at = @At("TAIL"))
                     private void anticrash$saveTeleportCooldown(
-                            NbtCompound nbt,
-                            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+                            CompoundTag nbt,
+                            net.minecraft.core.HolderLookup.Provider registries,
                             CallbackInfo callbackInfo)
 *///?}
                 //? if (>=1.21.6 && <=1.21.11) {
-                /*@Inject(method = "writeData", at = @At("TAIL"))
+                /*@Inject(method = "saveAdditional", at = @At("TAIL"))
                     private void anticrash$saveTeleportCooldown(
-                            net.minecraft.storage.WriteView nbt, CallbackInfo callbackInfo)
+                            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "saveAdditional", at = @At("TAIL"))
@@ -126,20 +131,20 @@ public abstract class EndGatewayBlockEntityMixin {
     }
 
     //? if (>=1.18 && <=1.20.4) {
-    @Inject(method = "readNbt", at = @At("TAIL"))
-    private void anticrash$loadTeleportCooldown(NbtCompound nbt, CallbackInfo callbackInfo)
+    @Inject(method = "load", at = @At("TAIL"))
+    private void anticrash$loadTeleportCooldown(CompoundTag nbt, CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.20.5 && <=1.21.5) {
-                /*@Inject(method = "readNbt", at = @At("TAIL"))
+                /*@Inject(method = "loadAdditional", at = @At("TAIL"))
                     private void anticrash$loadTeleportCooldown(
-                            NbtCompound nbt,
-                            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+                            CompoundTag nbt,
+                            net.minecraft.core.HolderLookup.Provider registries,
                             CallbackInfo callbackInfo)
 *///?}
                 //? if (>=1.21.6 && <=1.21.11) {
-                /*@Inject(method = "readData", at = @At("TAIL"))
+                /*@Inject(method = "loadAdditional", at = @At("TAIL"))
                     private void anticrash$loadTeleportCooldown(
-                            net.minecraft.storage.ReadView nbt, CallbackInfo callbackInfo)
+                            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo)
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*@Inject(method = "loadAdditional", at = @At("TAIL"))
@@ -149,7 +154,7 @@ public abstract class EndGatewayBlockEntityMixin {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+        CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);

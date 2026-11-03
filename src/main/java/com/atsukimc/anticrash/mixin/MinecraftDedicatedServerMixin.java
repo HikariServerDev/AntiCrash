@@ -4,7 +4,7 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.dedicated.MinecraftDedicatedServer;
+import net.minecraft.server.dedicated.DedicatedServer;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.dedicated.DedicatedServer;
@@ -17,15 +17,15 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(MinecraftDedicatedServer.class)
+@Mixin(DedicatedServer.class)
 public abstract class MinecraftDedicatedServerMixin {
     /**
      * AntiCrash's pre-world coordinator has already made the disk decision in the Fabric
      * entrypoint. Refuse to enter vanilla setup when that decision failed or is unresolved. This
-     * injection is at setupServer HEAD, before the dedicated server creates its console
-     * BufferedReader, binds a listener, or calls MinecraftServer.loadWorld().
+     * injection is at initServer HEAD, before the dedicated server creates its console
+     * BufferedReader, binds a listener, or calls MinecraftServer.loadLevel().
      */
-    @Inject(method = "setupServer", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "initServer", at = @At("HEAD"), cancellable = true)
     private void anticrash$gateWorldStartup(CallbackInfoReturnable<Boolean> callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -34,8 +34,8 @@ public abstract class MinecraftDedicatedServerMixin {
                     /^*
                      * AntiCrash's pre-world coordinator has already made the disk decision in the Fabric
                      * entrypoint. Refuse to enter vanilla setup when that decision failed or is unresolved. This
-                     * injection is at setupServer HEAD, before the dedicated server creates its console
-                     * BufferedReader, binds a listener, or calls MinecraftServer.loadWorld().
+                     * injection is at initServer HEAD, before the dedicated server creates its console
+                     * BufferedReader, binds a listener, or calls MinecraftServer.loadLevel().
                      ^/
                     @Inject(method = "initServer", at = @At("HEAD"), cancellable = true)
                     private void anticrash$gateWorldStartup(CallbackInfoReturnable<Boolean> callbackInfo)
@@ -52,12 +52,12 @@ public abstract class MinecraftDedicatedServerMixin {
      *
      * <p>The dedicated server drains its console queue at the end of every tick, including the
      * frozen ticks of a long checkpoint. A command run there would change the world after the cut,
-     * so CommandManager had to refuse it and the operator had to type it again. The queue is left
+     * so Commands had to refuse it and the operator had to type it again. The queue is left
      * intact instead and runs on the first tick after the checkpoint, in its original order.
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "executeQueuedCommands", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "handleConsoleInputs", at = @At("HEAD"), cancellable = true)
     private void anticrash$holdConsoleCommands(CallbackInfo callbackInfo)
                 //?}
                 //? if (>=26.1 && <=26.3) {

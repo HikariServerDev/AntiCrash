@@ -1,7 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
@@ -15,8 +15,8 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface EntityRuntimeAccessorMixin {
 
     //? if 1.21.11 {
-    /*@Accessor("movement")
-        net.minecraft.util.math.Vec3d anticrash$movement();
+    /*@Accessor("lastKnownSpeed")
+        net.minecraft.world.phys.Vec3 anticrash$movement();
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Accessor("lastKnownSpeed")
@@ -24,8 +24,8 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if 1.21.11 {
-    /*@Accessor("movement")
-        void anticrash$setMovement(net.minecraft.util.math.Vec3d value);
+    /*@Accessor("lastKnownSpeed")
+        void anticrash$setMovement(net.minecraft.world.phys.Vec3 value);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Accessor("lastKnownSpeed")
@@ -33,8 +33,8 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if 1.21.11 {
-    /*@Accessor("lastPos")
-        net.minecraft.util.math.Vec3d anticrash$lastPos();
+    /*@Accessor("lastKnownPosition")
+        net.minecraft.world.phys.Vec3 anticrash$lastPos();
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Accessor("lastKnownPosition")
@@ -42,8 +42,8 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if 1.21.11 {
-    /*@Accessor("lastPos")
-        void anticrash$setLastPos(net.minecraft.util.math.Vec3d value);
+    /*@Accessor("lastKnownPosition")
+        void anticrash$setLastPos(net.minecraft.world.phys.Vec3 value);
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Accessor("lastKnownPosition")
@@ -51,7 +51,7 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if (>=1.20 && <=1.21.11) {
-    /*@Accessor("forceUpdateSupportingBlockPos")
+    /*@Accessor("onGroundNoBlocks")
         boolean anticrash$forceSupportUpdate();
 *///?}
     //? if (>=26.1 && <=26.3) {
@@ -60,7 +60,7 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.20.6) {
-    @Accessor("inNetherPortal")
+    @Accessor("isInsidePortal")
     boolean anticrash$isInNetherPortal();
 
     //?}
@@ -70,7 +70,7 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.20.6) {
-    @Accessor("netherPortalTime")
+    @Accessor("portalTime")
     int anticrash$getNetherPortalTime();
 
     //?}
@@ -80,19 +80,19 @@ public interface EntityRuntimeAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("ridingCooldown")
+    @Accessor("boardingCooldown")
     int anticrash$getRidingCooldown();
 
     //?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("firstUpdate")
+    @Accessor("firstTick")
     boolean anticrash$isFirstUpdate();
 
     //?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("touchingWater")
+    @Accessor("wasTouchingWater")
     boolean anticrash$isTouchingWater();
 
     //?}
@@ -104,7 +104,7 @@ public interface EntityRuntimeAccessorMixin {
     /** The counter new entities take their network id from. */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("CURRENT_ID")
+    @Accessor("ENTITY_COUNTER")
     static java.util.concurrent.atomic.AtomicInteger anticrash$currentId()
                 //?}
                 //? if 26.1 {

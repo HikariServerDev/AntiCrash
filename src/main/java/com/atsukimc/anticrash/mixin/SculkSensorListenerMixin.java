@@ -2,21 +2,21 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.19 && <=1.19.4) {
-/*import net.minecraft.server.world.ServerWorld;
+/*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.19 && <=1.19.4) {
-/*import net.minecraft.util.math.BlockPos;
+/*import net.minecraft.core.BlockPos;
 *///?}
 
-import net.minecraft.world.World;
-import net.minecraft.world.event.GameEvent;
-import net.minecraft.world.event.PositionSource;
+import net.minecraft.world.level.Level;
+import net.minecraft.world.level.gameevent.GameEvent;
+import net.minecraft.world.level.gameevent.PositionSource;
 //? if (>=1.18 && <=1.18.2) {
-import net.minecraft.world.event.listener.SculkSensorListener;
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 //?}
 //? if (>=1.19 && <=1.19.4) {
-/*import net.minecraft.world.event.listener.VibrationListener;
+/*import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 *///?}
 
 import org.spongepowered.asm.mixin.Final;
@@ -35,7 +35,7 @@ import java.util.Optional;
 //?}
 
 //? if (>=1.18 && <=1.18.2) {
-@Mixin(SculkSensorListener.class)
+@Mixin(VibrationListener.class)
 public abstract class SculkSensorListenerMixin {
 
     //?}
@@ -43,14 +43,14 @@ public abstract class SculkSensorListenerMixin {
     /*@Mixin(VibrationListener.class)
     public abstract class SculkSensorListenerMixin {
 *///?}
-    @Shadow @Final protected PositionSource positionSource;
+    @Shadow @Final protected PositionSource listenerSource;
 
     //? if (>=1.18 && <=1.18.2) {
-    @Shadow protected Optional<GameEvent> event;
+    @Shadow protected Optional<GameEvent> receivingEvent;
 
     //?}
     //? if (>=1.19 && <=1.19.2) {
-    /*@Shadow protected VibrationListener.Vibration vibration;
+    /*@Shadow protected VibrationListener.ReceivingEvent receivingEvent;
 *///?}
 
     /**
@@ -59,32 +59,32 @@ public abstract class SculkSensorListenerMixin {
      * tick that delivers (and clears) the vibration is saved as well.
      */
     @Inject(method = "tick", at = @At("HEAD"))
-    private void anticrash$markPendingVibrationDirty(World world, CallbackInfo callbackInfo)
+    private void anticrash$markPendingVibrationDirty(Level world, CallbackInfo callbackInfo)
                 //? if (>=1.18 && <=1.19.2) {
             {
 
         //?}
         //? if (>=1.18 && <=1.18.2) {
-        if (world.isClient || event.isEmpty())
+        if (world.isClientSide || receivingEvent.isEmpty())
             //?}
             //? if (>=1.19 && <=1.19.2) {
-            /*if (world.isClient || vibration == null)
+            /*if (world.isClientSide || receivingEvent == null)
 *///?}
             //? if (>=1.19.3 && <=1.19.4) {
             /*{
                     // The selector may hold a same-tick candidate while the current vibration is still null.
-                    if (world.isClient)
+                    if (world.isClientSide)
 *///?}
             return;
 
         //? if (>=1.18 && <=1.18.2) {
-        positionSource.getPos(world).ifPresent(world::markDirty);
+        listenerSource.getPosition(world).ifPresent(world::blockEntityChanged);
         //?}
         //? if (>=1.19 && <=1.19.3) {
-        /*positionSource.getPos(world).ifPresent(pos -> world.markDirty(new BlockPos(pos)));
+        /*listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
 *///?}
         //? if 1.19.4 {
-        /*positionSource.getPos(world).ifPresent(pos -> world.markDirty(BlockPos.ofFloored(pos)));
+        /*listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
 *///?}
 
     }
@@ -97,49 +97,49 @@ public abstract class SculkSensorListenerMixin {
     //? if (>=1.18 && <=1.18.2) {
     @Inject(
             method =
-                    "listen(Lnet/minecraft/world/World;Lnet/minecraft/world/event/GameEvent;"
-                        + "Lnet/minecraft/util/math/BlockPos;Lnet/minecraft/util/math/BlockPos;)V",
+                    "sendSignal(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/gameevent/GameEvent;"
+                        + "Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)V",
             at = @At("TAIL"))
     private void anticrash$markHeardVibrationDirty(
-            World world,
+            Level world,
             GameEvent heard,
-            net.minecraft.util.math.BlockPos pos,
-            net.minecraft.util.math.BlockPos sourcePos,
+            net.minecraft.core.BlockPos pos,
+            net.minecraft.core.BlockPos sourcePos,
             CallbackInfo callbackInfo)
                 //?}
                 //? if (>=1.19 && <=1.19.2) {
                 /*@Inject(
                             method =
-                                    "listen(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/event/GameEvent$Message;)Z",
+                                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent$Message;)Z",
                             at = @At("RETURN"))
                     private void anticrash$markHeardVibrationDirty(
-                            ServerWorld world, GameEvent.Message event, CallbackInfoReturnable<Boolean> ci)
+                            ServerLevel world, GameEvent.Message event, CallbackInfoReturnable<Boolean> ci)
 *///?}
                 //? if (>=1.19.3 && <=1.19.4) {
                 /*@Inject(
                             method =
-                                    "listen(Lnet/minecraft/server/world/ServerWorld;Lnet/minecraft/world/event/GameEvent;Lnet/minecraft/world/event/GameEvent$Emitter;Lnet/minecraft/util/math/Vec3d;)Z",
+                                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
                             at = @At("RETURN"))
                     private void anticrash$markHeardVibrationDirty(
-                            ServerWorld world,
+                            ServerLevel world,
                             GameEvent event,
-                            GameEvent.Emitter emitter,
-                            net.minecraft.util.math.Vec3d origin,
+                            GameEvent.Context emitter,
+                            net.minecraft.world.phys.Vec3 origin,
                             CallbackInfoReturnable<Boolean> ci)
 *///?}
             {
 
         //? if (>=1.18 && <=1.18.2) {
-        if (!world.isClient) world.markDirty(pos);
+        if (!world.isClientSide) world.blockEntityChanged(pos);
         //?}
         //? if (>=1.19 && <=1.19.4) {
         /*if (ci.getReturnValueZ()) {
 *///?}
         //? if (>=1.19 && <=1.19.3) {
-        /*positionSource.getPos(world).ifPresent(pos -> world.markDirty(new BlockPos(pos)));
+        /*listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
 *///?}
         //? if 1.19.4 {
-        /*positionSource.getPos(world).ifPresent(pos -> world.markDirty(BlockPos.ofFloored(pos)));
+        /*listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
 *///?}
         //? if (>=1.19 && <=1.19.4) {
 

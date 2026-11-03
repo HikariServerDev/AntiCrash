@@ -1,60 +1,65 @@
 package com.atsukimc.anticrash.runtime;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BlockEntityType;
+import net.minecraft.world.level.block.entity.BlockEntityType;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 
 //? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.registry.Registries;
+/*import net.minecraft.core.registries.BuiltInRegistries;
 *///?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.resources.Identifier;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.Identifier;
+//? if (>=1.18 && <=1.21.10) {
+import net.minecraft.resources.ResourceLocation;
+//?}
+//? if 1.21.11 {
+/*import net.minecraft.resources.Identifier;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BlockEntityType;
 *///?}
 
 //? if (>=1.18 && <=1.19.2) {
-import net.minecraft.util.registry.Registry;
+import net.minecraft.core.Registry;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.TickingBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.BlockEntityTickInvoker;
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.chunk.WorldChunk;
+import net.minecraft.world.level.chunk.LevelChunk;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.LevelChunk;
@@ -93,7 +98,7 @@ public final class BlockEntityTickerSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    public static String keyFor(ServerWorld world, String queue, BlockEntityTickInvoker ticker)
+    public static String keyFor(ServerLevel world, String queue, TickingBlockEntity ticker)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static String keyFor(ServerLevel world, String queue, TickingBlockEntity ticker)
@@ -113,7 +118,7 @@ public final class BlockEntityTickerSnapshot {
                 + "|"
                 + typeId(loadedBlockEntity(world, position), null)
                 + "|"
-                + ticker.getName();
+                + ticker.getType();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*return queue
@@ -134,7 +139,7 @@ public final class BlockEntityTickerSnapshot {
     /**
      * True for a ticker Vanilla will drop without running it.
      *
-     * <p>Removing a block entity does not take its ticker out of the World list: WorldChunk swaps
+     * <p>Removing a block entity does not take its ticker out of the World list: LevelChunk swaps
      * the wrapped invoker for a shared empty one (position 0,0,0, name {@code <null>}), and
      * World#tickBlockEntities discards it on the next pass. Two removals in the same tick therefore
      * left two identical rows, which the capsule validator rejected as a duplicate and failed the
@@ -142,7 +147,7 @@ public final class BlockEntityTickerSnapshot {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    public static boolean removed(BlockEntityTickInvoker ticker)
+    public static boolean removed(TickingBlockEntity ticker)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static boolean removed(TickingBlockEntity ticker)
@@ -152,7 +157,7 @@ public final class BlockEntityTickerSnapshot {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    public static List<BlockEntityTickerSnapshot> capture(ServerWorld world)
+    public static List<BlockEntityTickerSnapshot> capture(ServerLevel world)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static List<BlockEntityTickerSnapshot> capture(ServerLevel world)
@@ -171,9 +176,9 @@ public final class BlockEntityTickerSnapshot {
     //? if (>=1.18 && <=1.21.11) {
     private static void captureList(
             List<BlockEntityTickerSnapshot> output,
-            ServerWorld world,
+            ServerLevel world,
             String queue,
-            List<BlockEntityTickInvoker> tickers,
+            List<TickingBlockEntity> tickers,
             Map<BlockEntityType<?>, String> typeIds)
                 //?}
                 //? if (>=26.1 && <=26.3) {
@@ -187,7 +192,12 @@ public final class BlockEntityTickerSnapshot {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        String dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        String dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*String dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*String dimension = world.dimension().identifier().toString();
@@ -196,7 +206,7 @@ public final class BlockEntityTickerSnapshot {
         int order = 0;
 
         //? if (>=1.18 && <=1.21.11) {
-        for (BlockEntityTickInvoker ticker : tickers)
+        for (TickingBlockEntity ticker : tickers)
         //?}
         //? if (>=26.1 && <=26.3) {
         /*for (TickingBlockEntity ticker : tickers)
@@ -212,7 +222,7 @@ public final class BlockEntityTickerSnapshot {
             snapshot.z = position.getZ();
 
             //? if (>=1.18 && <=1.21.11) {
-            snapshot.name = ticker.getName();
+            snapshot.name = ticker.getType();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*snapshot.name = ticker.getType();
@@ -237,7 +247,7 @@ public final class BlockEntityTickerSnapshot {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    public static BlockEntity loadedBlockEntity(ServerWorld world, BlockPos position)
+    public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position)
@@ -245,8 +255,8 @@ public final class BlockEntityTickerSnapshot {
             {
 
         //? if (>=1.18 && <=1.21.11) {
-        WorldChunk chunk =
-                world.getChunkManager().getWorldChunk(position.getX() >> 4, position.getZ() >> 4);
+        LevelChunk chunk =
+                world.getChunkSource().getChunkNow(position.getX() >> 4, position.getZ() >> 4);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*LevelChunk chunk =
@@ -265,11 +275,14 @@ public final class BlockEntityTickerSnapshot {
         }
 
         //? if (>=1.18 && <=1.19.2) {
-        Identifier id = Registry.BLOCK_ENTITY_TYPE.getId(type);
+        ResourceLocation id = Registry.BLOCK_ENTITY_TYPE.getKey(type);
         //?}
-        //? if (>=1.19.3 && <=1.21.11) {
-        /*Identifier id = Registries.BLOCK_ENTITY_TYPE.getId(type);
-*///?}
+        //? if (>=1.19.3 && <=1.21.10) {
+        /*ResourceLocation id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
+        *///?}
+        //? if 1.21.11 {
+        /*Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
+        *///?}
         //? if (>=26.1 && <=26.3) {
         /*Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
 *///?}

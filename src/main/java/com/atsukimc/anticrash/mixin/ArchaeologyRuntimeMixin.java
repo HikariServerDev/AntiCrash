@@ -4,24 +4,24 @@
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
 //? if 1.19.4 {
-/^import net.minecraft.block.entity.SuspiciousSandBlockEntity;
+/^import net.minecraft.world.level.block.entity.SuspiciousSandBlockEntity;
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
-/^import net.minecraft.block.entity.BrushableBlockEntity;
+/^import net.minecraft.world.level.block.entity.BrushableBlockEntity;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.core.Direction;
 ^///?}
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^import net.minecraft.nbt.NbtCompound;
+/^import net.minecraft.nbt.CompoundTag;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.nbt.CompoundTag;
 ^///?}
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^import net.minecraft.util.math.Direction;
+/^import net.minecraft.core.Direction;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.entity.BrushableBlockEntity;
@@ -35,7 +35,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-/^* 1.19.4 preview archaeology omits brushing progress, cooldowns and direction from writeNbt. ^/
+/^* 1.19.4 preview archaeology omits brushing progress, cooldowns and direction from saveAdditional. ^/
 //? if 1.19.4 {
 /^@Mixin(SuspiciousSandBlockEntity.class)
 public abstract class ArchaeologyRuntimeMixin {
@@ -47,7 +47,7 @@ public abstract class ArchaeologyRuntimeMixin {
 
 ^///?}
 //? if (>=1.19.4 && <=1.21.11) {
-/^@Shadow private int brushesCount;
+/^@Shadow private int brushCount;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Shadow private int brushCount;
@@ -55,7 +55,7 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^@Shadow private long nextDustTime;
+/^@Shadow private long brushCountResetsAtTick;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Shadow private long brushCountResetsAtTick;
@@ -63,7 +63,7 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^@Shadow private long nextBrushTime;
+/^@Shadow private long coolDownEndsAtTick;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Shadow private long coolDownEndsAtTick;
@@ -73,19 +73,19 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.20.4) {
-/^@Inject(method = "writeNbt", at = @At("TAIL"))
-    private void anticrash$saveBrush(NbtCompound nbt, CallbackInfo ci)
+/^@Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void anticrash$saveBrush(CompoundTag nbt, CallbackInfo ci)
 ^///?}
 //? if (>=1.20.5 && <=1.21.5) {
-/^@Inject(method = "writeNbt", at = @At("TAIL"))
+/^@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrush(
-            NbtCompound nbt,
-            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+            CompoundTag nbt,
+            net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
 ^///?}
 //? if (>=1.21.6 && <=1.21.11) {
-/^@Inject(method = "writeData", at = @At("TAIL"))
-    private void anticrash$saveBrush(net.minecraft.storage.WriteView nbt, CallbackInfo ci)
+/^@Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void anticrash$saveBrush(net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Inject(method = "saveAdditional", at = @At("TAIL"))
@@ -99,7 +99,7 @@ public abstract class ArchaeologyRuntimeMixin {
                 extension -> {
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^extension.putInt("BrushCount", brushesCount);
+/^extension.putInt("BrushCount", brushCount);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^extension.putInt("BrushCount", brushCount);
@@ -107,7 +107,7 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^extension.putLong("BrushNextDust", nextDustTime);
+/^extension.putLong("BrushNextDust", brushCountResetsAtTick);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^extension.putLong("BrushNextDust", brushCountResetsAtTick);
@@ -115,7 +115,7 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^extension.putLong("BrushNextUse", nextBrushTime);
+/^extension.putLong("BrushNextUse", coolDownEndsAtTick);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^extension.putLong("BrushNextUse", coolDownEndsAtTick);
@@ -124,11 +124,11 @@ public abstract class ArchaeologyRuntimeMixin {
 
 //? if (>=1.19.4 && <=1.21.4) {
 /^extension.putInt(
-                            "BrushDirection", hitDirection == null ? -1 : hitDirection.getId());
+                            "BrushDirection", hitDirection == null ? -1 : hitDirection.get3DDataValue());
 ^///?}
 //? if (>=1.21.5 && <=1.21.11) {
 /^extension.putInt(
-                            "BrushDirection", hitDirection == null ? -1 : hitDirection.getIndex());
+                            "BrushDirection", hitDirection == null ? -1 : hitDirection.get3DDataValue());
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^extension.putInt(
@@ -141,19 +141,19 @@ public abstract class ArchaeologyRuntimeMixin {
 
 
 //? if (>=1.19.4 && <=1.20.4) {
-/^@Inject(method = "readNbt", at = @At("TAIL"))
-    private void anticrash$loadBrush(NbtCompound nbt, CallbackInfo ci)
+/^@Inject(method = "load", at = @At("TAIL"))
+    private void anticrash$loadBrush(CompoundTag nbt, CallbackInfo ci)
 ^///?}
 //? if (>=1.20.5 && <=1.21.5) {
-/^@Inject(method = "readNbt", at = @At("TAIL"))
+/^@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrush(
-            NbtCompound nbt,
-            net.minecraft.registry.RegistryWrapper.WrapperLookup registries,
+            CompoundTag nbt,
+            net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
 ^///?}
 //? if (>=1.21.6 && <=1.21.11) {
-/^@Inject(method = "readData", at = @At("TAIL"))
-    private void anticrash$loadBrush(net.minecraft.storage.ReadView nbt, CallbackInfo ci)
+/^@Inject(method = "loadAdditional", at = @At("TAIL"))
+    private void anticrash$loadBrush(net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@Inject(method = "loadAdditional", at = @At("TAIL"))
@@ -163,7 +163,7 @@ public abstract class ArchaeologyRuntimeMixin {
 {
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+/^CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^CompoundTag extension = RuntimeExtensionNbt.read(nbt);
@@ -181,10 +181,10 @@ public abstract class ArchaeologyRuntimeMixin {
 return;
 
 //? if (>=1.19.4 && <=1.21.4) {
-/^brushesCount = extension.getInt("BrushCount");
+/^brushCount = extension.getInt("BrushCount");
 ^///?}
 //? if (>=1.21.5 && <=1.21.11) {
-/^brushesCount = extension.getInt("BrushCount").orElseThrow();
+/^brushCount = extension.getInt("BrushCount").orElseThrow();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^brushCount = extension.getInt("BrushCount").orElseThrow();
@@ -192,10 +192,10 @@ return;
 
 
 //? if (>=1.19.4 && <=1.21.4) {
-/^nextDustTime = extension.getLong("BrushNextDust");
+/^brushCountResetsAtTick = extension.getLong("BrushNextDust");
 ^///?}
 //? if (>=1.21.5 && <=1.21.11) {
-/^nextDustTime = extension.getLong("BrushNextDust").orElseThrow();
+/^brushCountResetsAtTick = extension.getLong("BrushNextDust").orElseThrow();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^brushCountResetsAtTick = extension.getLong("BrushNextDust").orElseThrow();
@@ -203,10 +203,10 @@ return;
 
 
 //? if (>=1.19.4 && <=1.21.4) {
-/^nextBrushTime = extension.getLong("BrushNextUse");
+/^coolDownEndsAtTick = extension.getLong("BrushNextUse");
 ^///?}
 //? if (>=1.21.5 && <=1.21.11) {
-/^nextBrushTime = extension.getLong("BrushNextUse").orElseThrow();
+/^coolDownEndsAtTick = extension.getLong("BrushNextUse").orElseThrow();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^coolDownEndsAtTick = extension.getLong("BrushNextUse").orElseThrow();
@@ -224,10 +224,10 @@ return;
             throw new IllegalStateException("Invalid saved brush direction");
 
 //? if (>=1.19.4 && <=1.21.4) {
-/^hitDirection = direction == -1 ? null : Direction.byId(direction);
+/^hitDirection = direction == -1 ? null : Direction.from3DDataValue(direction);
 ^///?}
 //? if (>=1.21.5 && <=1.21.11) {
-/^hitDirection = direction == -1 ? null : Direction.byIndex(direction);
+/^hitDirection = direction == -1 ? null : Direction.from3DDataValue(direction);
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^hitDirection = direction == -1 ? null : Direction.from3DDataValue(direction);
@@ -237,7 +237,7 @@ return;
 
 
 //? if (>=1.19.4 && <=1.21.11) {
-/^@Inject(method = "scheduledTick", at = @At("HEAD"))
+/^@Inject(method = "checkReset", at = @At("HEAD"))
     private void anticrash$dirtyDecay(CallbackInfo ci)
 ^///?}
 //? if (>=26.1 && <=26.3) {
@@ -247,10 +247,10 @@ return;
 {
 
 //? if 1.19.4 {
-/^((SuspiciousSandBlockEntity) (Object) this).markDirty();
+/^((SuspiciousSandBlockEntity) (Object) this).setChanged();
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
-/^((BrushableBlockEntity) (Object) this).markDirty();
+/^((BrushableBlockEntity) (Object) this).setChanged();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^((BrushableBlockEntity) (Object) this).setChanged();
@@ -262,10 +262,10 @@ return;
     private void anticrash$dirtyBrush(CallbackInfoReturnable<Boolean> ci) {
 
 //? if 1.19.4 {
-/^((SuspiciousSandBlockEntity) (Object) this).markDirty();
+/^((SuspiciousSandBlockEntity) (Object) this).setChanged();
 ^///?}
 //? if (>=1.20 && <=1.21.11) {
-/^((BrushableBlockEntity) (Object) this).markDirty();
+/^((BrushableBlockEntity) (Object) this).setChanged();
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^((BrushableBlockEntity) (Object) this).setChanged();

@@ -4,19 +4,18 @@ plugins {
 }
 fun targetProperty(key: String): String = sc.properties.get<String>(key)
 val minecraft = sc.current.version
-val namespace = targetProperty("mod.namespace")
-apply(plugin = if (namespace == "mojang") "net.fabricmc.fabric-loom" else "fabric-loom")
+val obfuscated = targetProperty("mod.obfuscated").toBoolean()
+apply(plugin = if (obfuscated) "fabric-loom" else "net.fabricmc.fabric-loom")
 group = targetProperty("mod.group")
 version = providers.gradleProperty("mod_version").get()
 
 // Runtime packages and Mixin names stay unchanged; only compilation selects API differences.
 extra["anticrashTarget"] = mapOf(
     "minecraft" to minecraft,
-    "namespace" to namespace,
+    "obfuscated" to obfuscated,
     "java" to targetProperty("mod.java"),
     "compiler" to targetProperty("mod.compile_java"),
     "loader" to targetProperty("deps.fabric_loader"),
-    "yarn" to targetProperty("deps.yarn"),
     "fabricApi" to targetProperty("deps.fabric_api"),
     "compileApi" to targetProperty("mod.compile_fabric_api"),
     "offlineAccess" to targetProperty("mod.offline_access"),

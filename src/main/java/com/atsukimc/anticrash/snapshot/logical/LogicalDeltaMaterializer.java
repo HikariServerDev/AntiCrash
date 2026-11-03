@@ -8,7 +8,7 @@ import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.util.Hashing;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtCompound;
+import net.minecraft.nbt.CompoundTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.CompoundTag;
@@ -20,25 +20,30 @@ import net.minecraft.nbt.NbtCompound;
 
 import net.minecraft.nbt.NbtIo;
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.ListTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.resources.Identifier;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.Identifier;
+//? if (>=1.18 && <=1.21.10) {
+import net.minecraft.resources.ResourceLocation;
+//?}
+//? if 1.21.11 {
+/*import net.minecraft.resources.Identifier;
+*///?}
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.ChunkPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.ChunkPos;
+import net.minecraft.world.level.ChunkPos;
 //?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.storage.RegionFile;
+import net.minecraft.world.level.chunk.storage.RegionFile;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.chunk.storage.RegionFile;
@@ -103,7 +108,7 @@ public final class LogicalDeltaMaterializer {
             replacedEntityChunks.add(chunk.key());
 
             //? if (>=1.18 && <=1.21.11) {
-            NbtCompound root = NbtCodec.decodeCompound(chunk.payloadBase64);
+            CompoundTag root = NbtCodec.decodeCompound(chunk.payloadBase64);
             //?}
             //? if (>=26.1 && <=26.3) {
             /*CompoundTag root = NbtCodec.decodeCompound(chunk.payloadBase64);
@@ -163,7 +168,7 @@ public final class LogicalDeltaMaterializer {
             copyOnWrite(level);
 
             //? if (>=1.18 && <=1.21.11) {
-            NbtCompound root = NbtCodec.decodeCompound(metadata);
+            CompoundTag root = NbtCodec.decodeCompound(metadata);
             //?}
             //? if (>=26.1 && <=26.3) {
             /*CompoundTag root = NbtCodec.decodeCompound(metadata);
@@ -225,7 +230,7 @@ public final class LogicalDeltaMaterializer {
         {
 
             //? if (>=1.18 && <=1.21.11) {
-            try (DataOutputStream output = region.getChunkOutputStream(chunk))
+            try (DataOutputStream output = region.getChunkDataOutputStream(chunk))
             //?}
             //? if (>=26.1 && <=26.3) {
             /*try (DataOutputStream output = region.getChunkDataOutputStream(chunk))
@@ -233,7 +238,15 @@ public final class LogicalDeltaMaterializer {
             {
 
                 //? if (>=1.18 && <=1.21.11) {
+                //? if (>=1.18 && <=1.20.1) {
                 NbtIo.write(NbtCodec.decodeCompound(encoded), output);
+                //?}
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(NbtCodec.decodeCompound(encoded), output);
+                *///?}
+                //? if (>=1.20.3 && <=1.21.11) {
+                /*NbtIo.writeUnnamedTagWithFallback(NbtCodec.decodeCompound(encoded), output);
+                *///?}
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*NbtIo.writeUnnamedTagWithFallback(NbtCodec.decodeCompound(encoded), output);
@@ -242,7 +255,7 @@ public final class LogicalDeltaMaterializer {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            region.sync();
+            region.flush();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*region.flush();
@@ -303,20 +316,18 @@ public final class LogicalDeltaMaterializer {
                                 false))
 *///?}
         {
-            // Mapped as method_31740 in Yarn 1.18.2+build.4: RegionFile#delete(ChunkPos).
-
             //? if (>=1.18 && <=1.19.1) {
-            region.method_31740(chunk);
+            region.clear(chunk);
             //?}
             //? if (>=1.19.2 && <=1.21.11) {
-            /*region.delete(chunk);
+            /*region.clear(chunk);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*region.clear(chunk);
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            region.sync();
+            region.flush();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*region.flush();
@@ -365,14 +376,14 @@ public final class LogicalDeltaMaterializer {
             if (!region.hasChunk(chunk)) return file;
 
             //? if (>=1.18 && <=1.21.11) {
-            NbtCompound root;
+            CompoundTag root;
             //?}
             //? if (>=26.1 && <=26.3) {
             /*CompoundTag root;
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            try (var input = region.getChunkInputStream(chunk))
+            try (var input = region.getChunkDataInputStream(chunk))
             //?}
             //? if (>=26.1 && <=26.3) {
             /*try (var input = region.getChunkDataInputStream(chunk))
@@ -385,13 +396,13 @@ public final class LogicalDeltaMaterializer {
                 //?}
                 //? if (>=1.20.2 && <=1.20.3) {
                 /*root =
-                                        NbtIo.readCompound(
-                                                input, net.minecraft.nbt.NbtTagSizeTracker.of(16 * 1024 * 1024));
+                                        NbtIo.read(
+                                                input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
 *///?}
                 //? if (>=1.20.4 && <=1.21.11) {
                 /*root =
-                                        NbtIo.readCompound(
-                                                input, net.minecraft.nbt.NbtSizeTracker.of(16 * 1024 * 1024));
+                                        NbtIo.read(
+                                                input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*root = NbtIo.read(input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
@@ -409,17 +420,17 @@ public final class LogicalDeltaMaterializer {
                 return file;
 
             //? if (>=1.18 && <=1.21.4) {
-            NbtList entities = root.getList("Entities", 10);
+            ListTag entities = root.getList("Entities", 10);
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*NbtList entities = com.atsukimc.anticrash.runtime.VersionNbt.list(root, "Entities", 10);
+            /*ListTag entities = com.atsukimc.anticrash.runtime.VersionNbt.list(root, "Entities", 10);
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*ListTag entities = com.atsukimc.anticrash.runtime.VersionNbt.list(root, "Entities", 10);
 *///?}
 
             //? if (>=1.18 && <=1.21.11) {
-            NbtList retained = new NbtList();
+            ListTag retained = new ListTag();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*ListTag retained = new ListTag();
@@ -428,10 +439,10 @@ public final class LogicalDeltaMaterializer {
             for (int index = 0; index < entities.size(); index++) {
 
                 //? if (>=1.18 && <=1.21.4) {
-                NbtCompound entity = entities.getCompound(index);
+                CompoundTag entity = entities.getCompound(index);
                 //?}
                 //? if (>=1.21.5 && <=1.21.11) {
-                /*NbtCompound entity = entities.getCompound(index).orElseThrow();
+                /*CompoundTag entity = entities.getCompound(index).orElseThrow();
 *///?}
                 //? if (>=26.1 && <=26.3) {
                 /*CompoundTag entity = entities.getCompound(index).orElseThrow();
@@ -442,7 +453,7 @@ public final class LogicalDeltaMaterializer {
             root.put("Entities", retained);
 
             //? if (>=1.18 && <=1.21.11) {
-            try (DataOutputStream output = region.getChunkOutputStream(chunk))
+            try (DataOutputStream output = region.getChunkDataOutputStream(chunk))
             //?}
             //? if (>=26.1 && <=26.3) {
             /*try (DataOutputStream output = region.getChunkDataOutputStream(chunk))
@@ -450,7 +461,15 @@ public final class LogicalDeltaMaterializer {
             {
 
                 //? if (>=1.18 && <=1.21.11) {
+                //? if (>=1.18 && <=1.20.1) {
                 NbtIo.write(root, output);
+                //?}
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(root, output);
+                *///?}
+                //? if (>=1.20.3 && <=1.21.11) {
+                /*NbtIo.writeUnnamedTagWithFallback(root, output);
+                *///?}
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*NbtIo.writeUnnamedTagWithFallback(root, output);
@@ -459,7 +478,7 @@ public final class LogicalDeltaMaterializer {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            region.sync();
+            region.flush();
             //?}
             //? if (>=26.1 && <=26.3) {
             /*region.flush();
@@ -470,7 +489,7 @@ public final class LogicalDeltaMaterializer {
     }
 
     //? if (>=1.18 && <=1.21.11) {
-    private static boolean matchesUuid(NbtCompound entity, String uuidText)
+    private static boolean matchesUuid(CompoundTag entity, String uuidText)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*private static boolean matchesUuid(CompoundTag entity, String uuidText)
@@ -478,11 +497,11 @@ public final class LogicalDeltaMaterializer {
             {
 
         //? if (>=1.18 && <=1.21.4) {
-        if (uuidText == null || !entity.containsUuid("UUID"))
+        if (uuidText == null || !entity.hasUUID("UUID"))
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
             /*if (uuidText == null
-                            || entity.get("UUID", net.minecraft.util.Uuids.INT_STREAM_CODEC).isEmpty())
+                            || entity.read("UUID", net.minecraft.core.UUIDUtil.CODEC).isEmpty())
 *///?}
             //? if (>=26.1 && <=26.3) {
             /*if (uuidText == null || entity.read("UUID", net.minecraft.core.UUIDUtil.CODEC).isEmpty())
@@ -491,11 +510,11 @@ public final class LogicalDeltaMaterializer {
         try {
 
             //? if (>=1.18 && <=1.21.4) {
-            return uuidText.equalsIgnoreCase(entity.getUuid("UUID").toString());
+            return uuidText.equalsIgnoreCase(entity.getUUID("UUID").toString());
             //?}
             //? if (>=1.21.5 && <=1.21.11) {
             /*return uuidText.equalsIgnoreCase(
-                                entity.get("UUID", net.minecraft.util.Uuids.INT_STREAM_CODEC)
+                                entity.read("UUID", net.minecraft.core.UUIDUtil.CODEC)
                                         .orElseThrow()
                                         .toString());
 *///?}
@@ -515,7 +534,12 @@ public final class LogicalDeltaMaterializer {
         if ("minecraft:overworld".equals(dimension)) return world;
         if ("minecraft:the_nether".equals(dimension)) return world.resolve("DIM-1");
         if ("minecraft:the_end".equals(dimension)) return world.resolve("DIM1");
-        Identifier identifier = Identifier.tryParse(dimension);
+        //? if (>=1.18 && <=1.21.10) {
+        ResourceLocation identifier = ResourceLocation.tryParse(dimension);
+        //?}
+        //? if (>=1.21.11 && <=26.3) {
+        /*Identifier identifier = Identifier.tryParse(dimension);
+        *///?}
         if (identifier == null
                 || identifier.getNamespace().contains("..")
                 || identifier.getPath().contains("..")) {

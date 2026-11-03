@@ -21,7 +21,7 @@ AntiCrash は単一の Java ソースツリーを Stonecutter 0.9.8 で各 Minec
 
 Java の実装は版別フォルダや shared フォルダを選択せず、Stonecutter の `//? if` 条件で選択する。完全共通の処理は条件なしで一度だけ定義する。差分のある処理は実際の API 境界で条件を付ける。既存の API ヘルパーと内部状態アクセサーを維持し、互換性のためだけに実行時 reflection や新しい分岐を追加しない。
 
-名前付き Yarn の 1.18〜1.21.11 と、難読化されていない 26.x では Loom のプラグイン ID が異なる。これらを同じバージョンの Loom で選択的に適用する。1.21.11 は旧 annotation processor の refmap 方式を使わないため、Yarn という理由だけで有効化しない。各版の設定は TOML に明記する。
+全版のソースは Mojang の名前で書く。難読化された 1.18〜1.21.11 は Loom の公式 Mojang マッピングで開発し、配布 JAR を intermediary へ再マップする。難読化されていない 26.x は再マップしない。Loom のプラグイン ID が異なるため、`mod.obfuscated` で同じバージョンの Loom を選択的に適用する。1.21.11 は旧 annotation processor の refmap 方式を使わないため、難読化版という理由だけで有効化しない。各版の設定は TOML に明記する。
 
 `gradle/minecraft.gradle` は共通の Minecraft ビルド設定である。Kotlin DSL のルートと Stonecutter 設定から読み込み、依存関係・リソース・テスト・検証 Mod・成果物収集を定義する。Groovy ファイルを残すのは Loom の動的なプラグイン適用と既存の検証タスクを一か所で扱うためであり、版別ビルドの複製ではない。
 

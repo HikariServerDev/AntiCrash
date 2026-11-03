@@ -41,7 +41,7 @@ python3 scripts/build_matrix.py --all --qualification \
 
 ## 新版の追加
 
-1. TOML に Minecraft、Java release/compiler、Loader、Yarn、Fabric API と API フラグを追加する。
+1. TOML に Minecraft、Java release/compiler、Loader、難読化の有無、Fabric API と API フラグを追加する。
 2. mapped bytecode を調査し、関係する条件枝と Mixin descriptor・注入位置を対応させる。
 3. 登録する Mixin を順序付き JSON プロファイルへ明示する。既存と同じなら再利用する。
 4. フィールド監査の TSV を確認し、完全一致の場合だけ既存 fixture を再利用する。

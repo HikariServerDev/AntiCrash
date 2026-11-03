@@ -3,35 +3,35 @@ package com.atsukimc.anticrash.mixin;
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.BlockEvent;
+import net.minecraft.world.level.BlockEventData;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerEntityManager;
+import net.minecraft.world.level.entity.PersistentEntitySectionManager;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.BlockEventData;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.EntityTickList;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.EntityList;
+import net.minecraft.world.level.entity.EntityTickList;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.entity.PersistentEntitySectionManager;
@@ -43,10 +43,10 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.List;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ServerWorld.class)
+@Mixin(ServerLevel.class)
 public interface ServerWorldAccessorMixin {
-    @Accessor("syncedBlockEventQueue")
-    ObjectLinkedOpenHashSet<BlockEvent> anticrash$getSyncedBlockEventQueue();
+    @Accessor("blockEvents")
+    ObjectLinkedOpenHashSet<BlockEventData> anticrash$getSyncedBlockEventQueue();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -57,8 +57,8 @@ public interface ServerWorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("blockEventQueue")
-    List<BlockEvent> anticrash$getBlockEventQueue();
+    @Accessor("blockEventsToReschedule")
+    List<BlockEventData> anticrash$getBlockEventQueue();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -68,7 +68,7 @@ public interface ServerWorldAccessorMixin {
 
     //? if (>=1.18 && <=1.21.11) {
     @Accessor("entityManager")
-    ServerEntityManager<Entity> anticrash$getEntityManager();
+    PersistentEntitySectionManager<Entity> anticrash$getEntityManager();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -77,8 +77,8 @@ public interface ServerWorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("entityList")
-    EntityList anticrash$getEntityList();
+    @Accessor("entityTickList")
+    EntityTickList anticrash$getEntityList();
 
     //?}
     //? if (>=26.1 && <=26.3) {
@@ -89,7 +89,7 @@ public interface ServerWorldAccessorMixin {
     /** Ticks this dimension has had neither a player nor a forced chunk; entities stop at 300. */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("idleTimeout")
+    @Accessor("emptyTime")
     int anticrash$getIdleTimeout();
 
     //?}
@@ -99,7 +99,7 @@ public interface ServerWorldAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("idleTimeout")
+    @Accessor("emptyTime")
     void anticrash$setIdleTimeout(int ticks);
     //?}
     //? if (>=26.1 && <=26.3) {

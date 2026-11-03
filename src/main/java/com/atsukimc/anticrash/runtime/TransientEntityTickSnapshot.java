@@ -3,35 +3,35 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.Entity;
+import net.minecraft.world.entity.Entity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.FallingBlockEntity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.server.level.ServerLevel;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.TntEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.Entity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.server.world.ServerWorld;
+import net.minecraft.server.level.ServerLevel;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.item.FallingBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.entity.item.PrimedTnt;
@@ -44,9 +44,9 @@ import java.util.List;
  * Persistent identity sequence for transient physics entities that actually belong to the
  * entity-ticking domain at the checkpoint boundary.
  *
- * <p>{@code ServerWorld.entityList} also contains entities in loaded-only chunks. Those entities
+ * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
  * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
- * recovery scan happened to see them. The same {@link ServerWorld#shouldTickEntity(BlockPos)}
+ * recovery scan happened to see them. The same {@link ServerLevel#shouldTickEntity(BlockPos)}
  * predicate used by the server tick is therefore applied while capturing.
  */
 
@@ -54,9 +54,9 @@ import java.util.List;
  * Persistent identity sequence for transient physics entities that actually belong to the
  * entity-ticking domain at the checkpoint boundary.
  *
- * <p>{@code ServerWorld.entityList} also contains entities in loaded-only chunks. Those entities
+ * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
  * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
- * recovery scan happened to see them. The same {@link ServerWorld#shouldTickEntityAt(BlockPos)}
+ * recovery scan happened to see them. The same {@link ServerLevel#shouldTickEntityAt(BlockPos)}
  * predicate used by the server tick is therefore applied while capturing.
  */
 
@@ -64,7 +64,7 @@ import java.util.List;
  * Persistent identity sequence for transient physics entities that actually belong to the
  * entity-ticking domain at the checkpoint boundary.
  *
- * <p>{@code ServerWorld.entityList} also contains entities in loaded-only chunks. Those entities
+ * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
  * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
  * recovery scan happened to see them. The same {@link
  * ServerLevel#isPositionEntityTicking(BlockPos)} predicate used by the server tick is therefore
@@ -81,7 +81,7 @@ public final class TransientEntityTickSnapshot {
     public int chunkZ;
 
     //? if (>=1.18 && <=1.21.11) {
-    public static List<TransientEntityTickSnapshot> capture(ServerWorld world)
+    public static List<TransientEntityTickSnapshot> capture(ServerLevel world)
                 //?}
                 //? if (>=26.1 && <=26.3) {
                 /*public static List<TransientEntityTickSnapshot> capture(ServerLevel world)
@@ -90,7 +90,12 @@ public final class TransientEntityTickSnapshot {
         List<TransientEntityTickSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
-        String dimension = world.getRegistryKey().getValue().toString();
+        //? if (>=1.18 && <=1.21.10) {
+        String dimension = world.dimension().location().toString();
+        //?}
+        //? if 1.21.11 {
+        /*String dimension = world.dimension().identifier().toString();
+        *///?}
         //?}
         //? if (>=26.1 && <=26.3) {
         /*String dimension = world.dimension().identifier().toString();
@@ -104,12 +109,12 @@ public final class TransientEntityTickSnapshot {
                     //? if (>=1.18 && <=1.21.4) {
                     if (kind == null
                             || entity.isRemoved()
-                            || !world.shouldTickEntity(entity.getBlockPos()))
+                            || !world.isPositionEntityTicking(entity.blockPosition()))
                         //?}
                         //? if (>=1.21.5 && <=1.21.11) {
                         /*if (kind == null
                                                     || entity.isRemoved()
-                                                    || !world.shouldTickEntityAt(entity.getBlockPos()))
+                                                    || !world.isPositionEntityTicking(entity.blockPosition()))
 *///?}
                         //? if (>=26.1 && <=26.3) {
                         /*if (kind == null
@@ -121,7 +126,7 @@ public final class TransientEntityTickSnapshot {
                     snapshot.dimension = dimension;
 
                     //? if (>=1.18 && <=1.21.11) {
-                    snapshot.uuid = entity.getUuidAsString();
+                    snapshot.uuid = entity.getStringUUID();
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*snapshot.uuid = entity.getStringUUID();
@@ -130,14 +135,14 @@ public final class TransientEntityTickSnapshot {
                     snapshot.kind = kind;
 
                     //? if (>=1.18 && <=1.21.11) {
-                    snapshot.chunkX = entity.getChunkPos().x;
+                    snapshot.chunkX = entity.chunkPosition().x;
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*snapshot.chunkX = entity.chunkPosition().x();
 *///?}
 
                     //? if (>=1.18 && <=1.21.11) {
-                    snapshot.chunkZ = entity.getChunkPos().z;
+                    snapshot.chunkZ = entity.chunkPosition().z;
                     //?}
                     //? if (>=26.1 && <=26.3) {
                     /*snapshot.chunkZ = entity.chunkPosition().z();
@@ -151,7 +156,7 @@ public final class TransientEntityTickSnapshot {
     public static String kind(Entity entity) {
 
         //? if (>=1.18 && <=1.21.11) {
-        if (entity instanceof TntEntity)
+        if (entity instanceof PrimedTnt)
             //?}
             //? if (>=26.1 && <=26.3) {
             /*if (entity instanceof PrimedTnt)

@@ -7,35 +7,35 @@ import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.BlockState;
+/^import net.minecraft.world.level.block.state.BlockState;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.item.crafting.*;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.CampfireBlock;
+/^import net.minecraft.world.level.block.CampfireBlock;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.item.crafting.RecipeManager;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.block.entity.*;
+/^import net.minecraft.world.level.block.entity.*;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.item.crafting.RecipeType;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.recipe.*;
+/^import net.minecraft.world.item.crafting.*;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.Level;
 ^///?}
 
 //? if (>=1.21.2 && <=1.21.11) {
-/^import net.minecraft.world.World;
+/^import net.minecraft.world.level.Level;
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^import net.minecraft.world.level.block.CampfireBlock;
@@ -67,7 +67,7 @@ import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
 /^*
- * 1.21.2 getTicker captures MatchGetter in a lambda rather than storing it on the BE. Bind at
+ * 1.21.2 getTicker captures CachedCheck in a lambda rather than storing it on the BE. Bind at
  * ticker construction, not first tick: relighting may be checkpointed before any tick.
  ^/
 @Mixin(CampfireBlock.class)
@@ -80,7 +80,7 @@ public abstract class CampfireTickerBindingMixin {
 //? if (>=1.21.2 && <=1.21.11) {
 /^@WrapMethod(method = "getTicker")
     private <T extends BlockEntity> BlockEntityTicker<T> anticrash$bind(
-            World world,
+            Level world,
             BlockState state,
             BlockEntityType<T> type,
             Operation<BlockEntityTicker<T>> original)
@@ -101,12 +101,12 @@ public abstract class CampfireTickerBindingMixin {
             BlockEntityTicker<T> ticker = original.call(world, state, type);
 
 //? if (>=1.21.2 && <=1.21.8) {
-/^return ticker == null || world.isClient
+/^return ticker == null || world.isClientSide
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
 ^///?}
 //? if (>=1.21.9 && <=1.21.11) {
-/^return ticker == null || world.isClient()
+/^return ticker == null || world.isClientSide()
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
 ^///?}
@@ -130,9 +130,9 @@ public abstract class CampfireTickerBindingMixin {
                     @At(
                             value = "INVOKE",
                             target =
-                                    "Lnet/minecraft/recipe/ServerRecipeManager;createCachedMatchGetter(Lnet/minecraft/recipe/RecipeType;)Lnet/minecraft/recipe/ServerRecipeManager$MatchGetter;"))
-    private ServerRecipeManager.MatchGetter<?, ?> anticrash$capture(
-            RecipeType<?> type, Operation<ServerRecipeManager.MatchGetter<?, ?>> original)
+                                    "Lnet/minecraft/world/item/crafting/RecipeManager;createCheck(Lnet/minecraft/world/item/crafting/RecipeType;)Lnet/minecraft/world/item/crafting/RecipeManager$CachedCheck;"))
+    private RecipeManager.CachedCheck<?, ?> anticrash$capture(
+            RecipeType<?> type, Operation<RecipeManager.CachedCheck<?, ?>> original)
 ^///?}
 //? if (>=26.1 && <=26.3) {
 /^@WrapOperation(

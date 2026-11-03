@@ -5,21 +5,21 @@ import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtElement;
+import net.minecraft.nbt.Tag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.ListTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtList;
+import net.minecraft.nbt.ListTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.StringTag;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.nbt.NbtString;
+import net.minecraft.nbt.StringTag;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.nbt.Tag;
@@ -37,14 +37,14 @@ class NbtCodecTest {
     void emptyRootRoundTripsAndTrailingBytesAreRejected() throws Exception {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtElement empty = NbtCodec.decode("AA==");
+        Tag empty = NbtCodec.decode("AA==");
         //?}
         //? if (>=26.1 && <=26.3) {
         /*Tag empty = NbtCodec.decode("AA==");
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        assertEquals(0, empty.getType());
+        assertEquals(0, empty.getId());
         //?}
         //? if (>=26.1 && <=26.3) {
         /*assertEquals(0, empty.getId());
@@ -58,21 +58,21 @@ class NbtCodecTest {
     void roundTripsAListRootUsedByEnderChestSnapshots() throws Exception {
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtList list = new NbtList();
+        ListTag list = new ListTag();
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ListTag list = new ListTag();
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        list.add(NbtString.of("slot"));
+        list.add(StringTag.valueOf("slot"));
         //?}
         //? if (>=26.1 && <=26.3) {
         /*list.add(StringTag.valueOf("slot"));
 *///?}
 
         //? if (>=1.18 && <=1.21.11) {
-        NbtList decoded = assertInstanceOf(NbtList.class, NbtCodec.decode(NbtCodec.encode(list)));
+        ListTag decoded = assertInstanceOf(ListTag.class, NbtCodec.decode(NbtCodec.encode(list)));
         //?}
         //? if (>=26.1 && <=26.3) {
         /*ListTag decoded = assertInstanceOf(ListTag.class, NbtCodec.decode(NbtCodec.encode(list)));
@@ -93,7 +93,7 @@ class NbtCodecTest {
         try (DataOutputStream output = new DataOutputStream(bytes)) {
 
             //? if (>=1.18 && <=1.21.11) {
-            output.writeByte(NbtElement.BYTE_ARRAY_TYPE);
+            output.writeByte(Tag.TAG_BYTE_ARRAY);
             //?}
             //? if (>=26.1 && <=26.3) {
             /*output.writeByte(Tag.TAG_BYTE_ARRAY);

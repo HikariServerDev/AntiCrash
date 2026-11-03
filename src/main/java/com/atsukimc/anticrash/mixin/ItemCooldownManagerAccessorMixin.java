@@ -1,11 +1,11 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.entity.player.ItemCooldownManager;
+import net.minecraft.world.item.ItemCooldowns;
 //?}
 
 //? if (>=1.18 && <=1.21.1) {
-import net.minecraft.item.Item;
+import net.minecraft.world.item.Item;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.item.ItemCooldowns;
@@ -17,18 +17,23 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 import java.util.Map;
 
 //? if (>=1.18 && <=1.21.11) {
-@Mixin(ItemCooldownManager.class)
+@Mixin(ItemCooldowns.class)
 public interface ItemCooldownManagerAccessorMixin {
 
     //?}
     //? if (>=1.18 && <=1.21.1) {
-    @Accessor("entries")
+    @Accessor("cooldowns")
     Map<Item, Object> anticrash$getEntries();
 
     //?}
     //? if (>=1.21.2 && <=1.21.11) {
-    /*@Accessor("entries")
-        Map<net.minecraft.util.Identifier, Object> anticrash$getEntries();
+    /*@Accessor("cooldowns")
+        //? if (>=1.21.2 && <=1.21.10) {
+        /^Map<net.minecraft.resources.ResourceLocation, Object> anticrash$getEntries();
+        ^///?}
+        //? if 1.21.11 {
+        /^Map<net.minecraft.resources.Identifier, Object> anticrash$getEntries();
+        ^///?}
 *///?}
     //? if (>=26.1 && <=26.3) {
     /*@Mixin(ItemCooldowns.class)
@@ -38,7 +43,7 @@ public interface ItemCooldownManagerAccessorMixin {
 *///?}
 
     //? if (>=1.18 && <=1.21.11) {
-    @Accessor("tick")
+    @Accessor("tickCount")
     int anticrash$getTick();
     //?}
     //? if (>=26.1 && <=26.3) {

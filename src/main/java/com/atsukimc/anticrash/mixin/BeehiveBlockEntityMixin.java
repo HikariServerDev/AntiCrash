@@ -1,28 +1,28 @@
 package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.BlockState;
+import net.minecraft.world.level.block.state.BlockState;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.core.BlockPos;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.block.entity.BeehiveBlockEntity;
+import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.Level;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.util.math.BlockPos;
+import net.minecraft.core.BlockPos;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.entity.BeehiveBlockEntity;
 *///?}
 
 //? if (>=1.18 && <=1.21.11) {
-import net.minecraft.world.World;
+import net.minecraft.world.level.Level;
 //?}
 //? if (>=26.1 && <=26.3) {
 /*import net.minecraft.world.level.block.state.BlockState;
@@ -43,9 +43,9 @@ public abstract class BeehiveBlockEntityMixin {
      */
 
     //? if (>=1.18 && <=1.21.11) {
-    @Inject(method = "tickBees", at = @At("TAIL"))
+    @Inject(method = "tickOccupants", at = @At("TAIL"))
     private static void anticrash$markChunkDirty(
-            World world,
+            Level world,
             BlockPos pos,
             BlockState state,
             List<?> bees,
@@ -65,7 +65,7 @@ public abstract class BeehiveBlockEntityMixin {
             {
         if (!bees.isEmpty())
             //? if (>=1.18 && <=1.21.11) {
-            world.markDirty(pos);
+            world.blockEntityChanged(pos);
         //?}
         //? if (>=26.1 && <=26.3) {
         /*world.blockEntityChanged(pos);
