@@ -82,7 +82,11 @@ class DetachedGenerationTest {
         Files.writeString(scratch, "0");
         long first = FileFacts.read(scratch).changeTime();
         if (first == 0L) return; // no ctime on this filesystem; content is always authenticated
+        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(2);
         for (int attempt = 1; FileFacts.read(scratch).changeTime() == first; attempt++) {
+            assertTrue(
+                    System.nanoTime() < deadline,
+                    "Filesystem ctime did not advance within 2 seconds");
             Thread.sleep(1L);
             Files.writeString(scratch, Integer.toString(attempt));
         }

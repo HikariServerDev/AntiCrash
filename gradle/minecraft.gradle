@@ -124,8 +124,20 @@ tasks.register('verifyDistribution') {
                 def entries = zip.entries().toList()
                 def names = entries*.name
                 require(names.size() == names.toSet().size(), "Duplicate entries: ${jar.name}")
-                // Reading every entry to the end verifies the stored CRC.
-                entries.each { entry -> zip.getInputStream(entry).withCloseable { it.transferTo(OutputStream.nullOutputStream()) } }
+                // ZipFile streams do not check CRCs, so compute and compare each entry explicitly.
+                byte[] buffer = new byte[8192]
+                entries.each { entry ->
+                    def crc = new java.util.zip.CRC32()
+                    long size = 0
+                    zip.getInputStream(entry).withCloseable { input ->
+                        int count
+                        while ((count = input.read(buffer)) != -1) {
+                            crc.update(buffer, 0, count)
+                            size += count
+                        }
+                    }
+                    require(size == entry.size && crc.value == entry.crc, "ZIP CRC/size mismatch: ${jar.name}/${entry.name}")
+                }
                 def bytes = { String name ->
                     require(zip.getEntry(name) != null, "Missing ${name}: ${jar.name}")
                     zip.getInputStream(zip.getEntry(name)).withCloseable { it.readAllBytes() }
