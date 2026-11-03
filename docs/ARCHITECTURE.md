@@ -1,0 +1,48 @@
+# AntiCrash のソース構造
+
+AntiCrash は単一の Java ソースツリーを Stonecutter 0.9.8 で各 Minecraft 版へ変換し、Loom 1.17.21 でビルドする。機能や保存形式の変更を伴わない構造移行であり、既存のパッケージ名・クラス名・Mixin 登録順を維持する。
+
+| 場所 | 役割 |
+| --- | --- |
+| `src/main/java` | 共通実装と、同じクラス内に明示した API 差分 |
+| `src/main/resources` | 共通メタデータ、日英メッセージ、Mod アイコン |
+| `src/test/java` | 従来の全単体テスト。各 Minecraft のクラスパスで実行 |
+| `src/test/resources` | オフライン検証用 JUnit 設定 |
+| `src/qualification` | 隔離サーバー用の検証 Mod。通常 JAR に含めない |
+| `qualification/fixtures` | 版別の Entity/BlockEntity フィールド分類の期待値。実装コードではない |
+| `supervisor` | Minecraft に依存しない Java 17 コンポーネント |
+| `gradle/mixins` | 実行時 Mixin 設定の差分。配列の順序も契約として維持 |
+| `scripts` | 所属検査、書式検査、順次ビルド、JAR/実行コード比較 |
+| `versions` | Stonecutter が生成する版別の作業先。Git 管理しない |
+
+## バージョンと互換性
+
+`stonecutter.properties.toml` がターゲットと依存バージョンの唯一のビルド用一覧である。`versions.json` は公開済み Release の履歴であり、新構造のソース選択には使わない。
+
+Java の実装は版別フォルダや shared フォルダを選択せず、Stonecutter の `//? if` 条件で選択する。完全共通の処理は条件なしで一度だけ定義する。差分のある処理は実際の API 境界で条件を付ける。既存の API ヘルパーと内部状態アクセサーを維持し、互換性のためだけに実行時 reflection や新しい分岐を追加しない。
+
+名前付き Yarn の 1.18〜1.21.11 と、難読化されていない 26.x では Loom のプラグイン ID が異なる。これらを同じバージョンの Loom で選択的に適用する。1.21.11 は旧 annotation processor の refmap 方式を使わないため、Yarn という理由だけで有効化しない。各版の設定は TOML に明記する。
+
+`gradle/minecraft.gradle` は共通の Minecraft ビルド設定である。Kotlin DSL のルートと Stonecutter 設定から読み込み、依存関係・リソース・テスト・検証 Mod・成果物収集を定義する。Groovy ファイルを残すのは Loom の動的なプラグイン適用と既存の検証タスクを一か所で扱うためであり、版別ビルドの複製ではない。
+
+Supervisor は一度コンパイルしてテストし、既存 CLI と版名付き JAR を維持する。Minecraft の単体テストは全版で実行する。実サーバー検証のソースセットは配布 JAR と分離する。
+
+## Hikari-Tweaks から採用したもの
+
+単一 src、公式 Stonecutter の条件コメント、TOML によるターゲット管理、ルートからの全版生成を採用した。AntiCrash では保存・復旧契約に直結するため、既存の Mixin クラスの改名や近接版の無条件統合は行わない。Mixin の登録順と field-audit データはコード条件とは別の明示的な入力として保持する。
+
+## 等価性の基準
+
+移行前の 1.0.2 JAR とクラス集合・フィールド・メソッド・命令・例外テーブル・注釈・リソースを比較する。ソース行位置などのデバッグ情報と ZIP の圧縮・時刻・項目順は構造移行により変わり得る。JSON はオブジェクトのキー順と空白だけを無視し、配列順と値は比較する。
+
+意図的に許す実行に無関係な manifest 差分は Gradle/Loom/TinyRemapper の版表示と、正しい値を持つ Stonecutter のビルド情報だけである。名前空間、Minecraft、Loader、Mixin 関連の属性は緩和しない。保存・復元順序や Capsule 形式を変更する差分は許可しない。
+
+## 検証用コードの意図的な差分
+
+旧 `probeJar` は通常の `build` ではコンパイルされておらず、新しい版で古い API 呼び出しが残っていた。移行時には probe も別途コンパイルし、CommandManager の入口、Identifier の生成、typed custom payload の wire decoder、クールダウン引数、NBT の registry/write-view、GameProfile の名前取得を実際の mapped API に対応させた。これらは検証 Mod だけの修正であり、通常の配布 JAR の実行コード比較から除外して成功扱いにするものではない。配布 JAR には probe のクラスを一切含めない。
+
+probe のコンパイル成功は、Carpet/Fabric の全ネットワーク機能や TMC 装置の試験成功を意味しない。実際に実行した隔離サーバーのシナリオと、その JAR の SHA-256 を検証報告へ別に記録する。
+
+1.21.5 の保存スコープ監査には、注釈文字列から先頭200文字だけを探す旧テストが残っていた。非選択枝の注釈やコメントを誤認するため、他版と同じ既存の Javac AST 監査へ統一した。最初の実行文が正しい保存スコープの否定判定と return であることを検査し、最低注入数の条件は維持する。コメント内の偽注釈も既存の監査テストへ加えている。配布コードのガードを変更したり監査を無効化したりする修正ではない。
+
+書式検査は無効な枝の import を削除・並べ替えず、Stonecutter の条件記号と ghost comment の終端を保持する。終端を普通のブロックコメントとして整形すると、切替のたびに空行が増えるため、公式ツールが使うコンパクトな終端へ戻す。26.3→1.21.11→1.18.2 の往復後に、全 Java ソースのバイト列が一致することも移行時に確認した。

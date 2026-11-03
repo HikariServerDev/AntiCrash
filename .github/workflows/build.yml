@@ -28,9 +28,12 @@ jobs:
         run: |
           python3 - <<'PY'
           import json, os
-          matrix = json.load(open('versions.json'))
-          targets = [{'minecraft': row['minecraft'], 'java': '25' if row['java_target'] >= 25 else '21', 'mod': matrix['mod_version']}
-                     for row in matrix['versions'] if row['status'] == 'BUILD_VERIFIED']
+          import sys
+          sys.path.insert(0, 'scripts')
+          from pathlib import Path
+          from build_model import load_targets, mod_version
+          root = Path.cwd()
+          targets = [{'minecraft': version, 'mod': mod_version(root)} for version in load_targets(root)]
           with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
               output.write('targets=' + json.dumps({'include': targets}) + '\n')
           PY
@@ -43,9 +46,6 @@ jobs:
       fail-fast: false
       max-parallel: 3
       matrix: ${{ fromJSON(needs.layout.outputs.targets) }}
-    defaults:
-      run:
-        working-directory: ${{ matrix.minecraft }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
@@ -55,9 +55,13 @@ jobs:
           distribution: temurin
           java-version: |
             17
-            ${{ matrix.java }}
+            21
+            25
       - uses: gradle/actions/setup-gradle@8da46b539cd8fe6ab27ca75128919a18d757604c # v6.4.1
-      - run: ./gradlew --no-daemon --max-workers=1 -Dorg.gradle.jvmargs=-Xmx1024m test build
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0
+        with:
+          python-version: '3.12'
+      - run: python3 scripts/build_matrix.py --version ${{ matrix.minecraft }} --qualification --output build/ci
       - run: python3 scripts/verify_artifacts.py --version ${{ matrix.minecraft }}
         working-directory: .
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -65,7 +69,8 @@ jobs:
         with:
           name: verification-${{ matrix.minecraft }}
           path: |
-            ${{ matrix.minecraft }}/build/reports/
-            ${{ matrix.minecraft }}/supervisor/build/reports/
-            ${{ matrix.minecraft }}/build/libs/AntiCrash-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
-            ${{ matrix.minecraft }}/supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
+            versions/${{ matrix.minecraft }}/build/reports/
+            supervisor/build/reports/
+            versions/${{ matrix.minecraft }}/build/libs/AntiCrash-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
+            supervisor/build/libs/AntiCrash-Supervisor-${{ matrix.mod }}+mc${{ matrix.minecraft }}.jar
+            build/ci/

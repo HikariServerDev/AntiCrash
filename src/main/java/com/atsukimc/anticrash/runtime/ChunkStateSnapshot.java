@@ -1,0 +1,563 @@
+package com.atsukimc.anticrash.runtime;
+
+import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+
+//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.server.level.ChunkHolder;
+*///?}
+
+//? if (>=1.18 && <=1.20.4) {
+import com.mojang.datafixers.util.Either;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+import net.minecraft.server.world.ChunkHolder;
+//?}
+//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.server.level.ChunkMap;
+*///?}
+
+//? if (>=1.21 && <=1.21.11) {
+/*import net.minecraft.server.world.ServerChunkLoadingManager;
+*///?}
+//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.server.level.ServerLevel;
+*///?}
+
+//? if (>=1.18 && <=1.21.11) {
+import net.minecraft.server.world.ServerWorld;
+//?}
+
+//? if (>=1.18 && <=1.20.6) {
+import net.minecraft.server.world.ThreadedAnvilChunkStorage;
+//?}
+
+//? if (>=1.18 && <=1.21.11) {
+import net.minecraft.util.math.ChunkPos;
+//?}
+
+//? if (>=1.18 && <=1.20.6) {
+import net.minecraft.world.chunk.ChunkStatus;
+//?}
+//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.world.level.ChunkPos;
+*///?}
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+
+public final class ChunkStateSnapshot {
+    /** Version 3 records the exact observable ChunkHolder execution domain. */
+    public int formatVersion = 3;
+
+    public String dimension;
+    public final List<Long> loadedChunks = new ArrayList<>();
+
+    /** Chunks whose FULL future was complete at the checkpoint boundary. */
+    public final List<Long> fullChunks = new ArrayList<>();
+
+    /** Chunks whose block-ticking future/readiness was complete at the boundary. */
+    public final List<Long> blockTickingChunks = new ArrayList<>();
+
+    public final List<Long> entityTickingChunks = new ArrayList<>();
+    public final List<Long> forcedChunks = new ArrayList<>();
+
+    /** Moving pistons, scheduled ticks, primed TNT or falling blocks at the save boundary. */
+    public final List<Long> transientStateChunks = new ArrayList<>();
+
+    /** One semantic row per chunk known to the storage/ticket domain. */
+    public final List<ChunkReadiness> domain = new ArrayList<>();
+
+    //? if (>=1.18 && <=1.21.11) {
+    public static ChunkStateSnapshot capture(ServerWorld world, Set<Long> transientStateChunks)
+                //?}
+                //? if (>=26.1 && <=26.3) {
+                /*public static ChunkStateSnapshot capture(ServerLevel world, Set<Long> transientStateChunks)
+*///?}
+            {
+        ChunkStateSnapshot snapshot = new ChunkStateSnapshot();
+
+        //? if (>=1.18 && <=1.21.11) {
+        snapshot.dimension = world.getRegistryKey().getValue().toString();
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*snapshot.dimension = world.dimension().identifier().toString();
+*///?}
+
+        Set<Long> loaded = new LinkedHashSet<>();
+
+        //? if (>=1.18 && <=1.20.6) {
+        ThreadedAnvilChunkStorage storage = world.getChunkManager().threadedAnvilChunkStorage;
+        //?}
+        //? if (>=1.21 && <=1.21.11) {
+        /*ServerChunkLoadingManager storage = world.getChunkManager().chunkLoadingManager;
+*///?}
+        //? if (>=26.1 && <=26.3) {
+        /*ChunkMap storage = world.getChunkSource().chunkMap;
+*///?}
+
+        ThreadedAnvilChunkStorageAccessorMixin accessor =
+                (ThreadedAnvilChunkStorageAccessorMixin) storage;
+
+        //? if (>=1.18 && <=1.20.6) {
+        for (Long position : accessor.anticrash$getLoadedChunks()) loaded.add(position);
+        //?}
+
+        // 1.21 removed storage.loadedChunks. Observe already-completed FULL holders and their
+        // actual loadedToWorld flag, including the pending unload map; never request/load a chunk.
+
+        //? if (>=1.21 && <=26.3) {
+        /*for (var holders :
+                        java.util.List.of(
+                                accessor.anticrash$getCurrentChunkHolders(),
+                                accessor.anticrash$getChunksToUnload())) {
+                    for (ChunkHolder holder : holders.values()) {
+                        var chunk = VersionChunkView.worldChunk(holder);
+*///?}
+
+        //? if (>=1.21 && <=26.3) {
+        /*if (chunk != null
+                                && ((com.atsukimc.anticrash.mixin.WorldChunkAccessorMixin) chunk)
+                                        .anticrash$isLoadedToWorld())
+*///?}
+        //? if (>=1.21 && <=1.21.11) {
+        /*loaded.add(holder.getPos().toLong());
+*///?}
+        //? if (>=26.1 && <=26.3) {
+        /*loaded.add(holder.getPos().pack());
+*///?}
+        //? if (>=1.21 && <=26.3) {
+
+        /*}
+        }
+*///?}
+
+        snapshot.loadedChunks.addAll(loaded);
+        Set<Long> forced = new LinkedHashSet<>();
+
+        //? if (>=1.18 && <=1.21.11) {
+        for (Long position : world.getForcedChunks())
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*for (Long position : world.getForceLoadedChunks())
+*///?}
+        {
+            forced.add(position);
+            snapshot.forcedChunks.add(position);
+        }
+        for (ChunkHolder holder : accessor.anticrash$getCurrentChunkHolders().values()) {
+            if (holder == null) continue;
+
+            //? if (>=1.18 && <=1.21.11) {
+            long packed = holder.getPos().toLong();
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*long packed = holder.getPos().pack();
+*///?}
+
+            //? if (>=1.18 && <=1.20.6) {
+            boolean full = completed(holder.getValidFutureFor(ChunkStatus.FULL));
+            //?}
+            //? if (>=1.21 && <=1.21.11) {
+            /*boolean full = completed(holder.getAccessibleFuture());
+*///?}
+            //? if (>=26.1 && <=26.3) {
+            /*boolean full = completed(holder.getFullChunkFuture());
+*///?}
+
+            //? if (>=1.18 && <=1.19.4) {
+            boolean block =
+                    holder.getLevelType() == ChunkHolder.LevelType.TICKING
+                            || holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING;
+            //?}
+            //? if (>=1.20 && <=1.21.11) {
+            /*boolean block =
+                                holder.getLevelType() == net.minecraft.server.world.ChunkLevelType.BLOCK_TICKING
+                                        || holder.getLevelType()
+                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING;
+*///?}
+            //? if (>=26.1 && <=26.3) {
+            /*boolean block =
+                                holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
+                                        || holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING;
+*///?}
+
+            //? if (>=1.18 && <=1.21.11) {
+            block =
+                    block
+                            && completed(holder.getTickingFuture())
+                            && world.getChunkManager().isTickingFutureReady(packed);
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*block =
+                                block
+                                        && completed(holder.getTickingChunkFuture())
+                                        && world.getChunkSource().isPositionTicking(packed);
+*///?}
+
+            //? if (>=1.18 && <=1.19.4) {
+            boolean entity =
+                    holder.getLevelType() == ChunkHolder.LevelType.ENTITY_TICKING
+                            && completed(holder.getEntityTickingFuture());
+            //?}
+            //? if (>=1.20 && <=1.21.4) {
+            /*boolean entity =
+                                holder.getLevelType()
+                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
+                                        && completed(holder.getEntityTickingFuture());
+*///?}
+            //? if (>=1.21.5 && <=1.21.11) {
+            /*boolean entity =
+                                holder.getLevelType()
+                                                == net.minecraft.server.world.ChunkLevelType.ENTITY_TICKING
+                                        && completed(holder.getEntityTickingFuture())
+                                        && world.shouldTickEntityAt(
+                                                new net.minecraft.util.math.BlockPos(
+                                                        holder.getPos().getStartX(),
+                                                        0,
+                                                        holder.getPos().getStartZ()));
+*///?}
+            //? if (>=26.1 && <=26.3) {
+            /*boolean entity =
+                                holder.getFullStatus()
+                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                                        && completed(holder.getEntityTickingChunkFuture())
+                                        && world.isPositionEntityTicking(
+                                                new net.minecraft.core.BlockPos(
+                                                        holder.getPos().getMinBlockX(),
+                                                        0,
+                                                        holder.getPos().getMinBlockZ()));
+*///?}
+
+            // ChunkHolder also contains propagated BORDER/INACCESSIBLE entries created around a
+            // ticket. They are storage bookkeeping, not part of the executable checkpoint tick
+            // domain. Recording them would make the post-recovery domain differ merely because
+            // AntiCrash's temporary ticket graph is still being drained. Keep every actual
+            // loaded/readiness/forced chunk, and deliberately omit non-executable halo holders.
+            if (!loaded.contains(packed)
+                    && !full
+                    && !block
+                    && !entity
+                    && !forced.contains(packed)) {
+                continue;
+            }
+            if (full) snapshot.fullChunks.add(packed);
+            if (block) snapshot.blockTickingChunks.add(packed);
+            if (entity) snapshot.entityTickingChunks.add(packed);
+            snapshot.domain.add(
+                    ChunkReadiness.of(
+                            holder,
+                            loaded.contains(packed),
+                            full,
+                            block,
+                            entity,
+                            forced.contains(packed),
+                            "holder"));
+        }
+        // A loaded or forced position may not have a live holder row during the narrow snapshot
+        // boundary. Keep it in the domain with explicit false readiness instead of silently
+        // treating a missing holder as READY.
+        Set<Long> known = new LinkedHashSet<>();
+        for (ChunkReadiness readiness : snapshot.domain) known.add(readiness.packedPosition);
+        for (Long packed : loaded) {
+            if (known.add(packed))
+                snapshot.domain.add(
+                        ChunkReadiness.simple(
+                                packed,
+                                true,
+                                false,
+                                false,
+                                false,
+                                forced.contains(packed),
+                                "loaded"));
+        }
+        for (Long packed : forced) {
+            if (known.add(packed))
+                snapshot.domain.add(
+                        ChunkReadiness.simple(
+                                packed,
+                                loaded.contains(packed),
+                                false,
+                                false,
+                                false,
+                                true,
+                                "forced"));
+        }
+        if (transientStateChunks != null)
+            snapshot.transientStateChunks.addAll(transientStateChunks);
+        snapshot.loadedChunks.sort(Long::compare);
+        snapshot.fullChunks.sort(Long::compare);
+        snapshot.blockTickingChunks.sort(Long::compare);
+        snapshot.entityTickingChunks.sort(Long::compare);
+        snapshot.forcedChunks.sort(Long::compare);
+        snapshot.transientStateChunks.sort(Long::compare);
+        snapshot.domain.sort(Comparator.comparingLong(row -> row.packedPosition));
+        return snapshot;
+    }
+
+    public int loadedCount() {
+        return loadedChunks.size();
+    }
+
+    public int entityTickingCount() {
+        return entityTickingChunks.size();
+    }
+
+    public int fullCount() {
+        return fullChunks == null ? 0 : fullChunks.size();
+    }
+
+    public int blockTickingCount() {
+        return blockTickingChunks == null ? 0 : blockTickingChunks.size();
+    }
+
+    public int forcedCount() {
+        return forcedChunks == null ? 0 : forcedChunks.size();
+    }
+
+    public List<String> domainLines() {
+        List<String> lines = new ArrayList<>();
+        if (domain == null) return lines;
+        for (ChunkReadiness readiness : domain) {
+            if (readiness != null) lines.add(readiness.canonical());
+        }
+        return lines;
+    }
+
+    //? if (>=1.18 && <=1.20.4) {
+    private static boolean completed(CompletableFuture<? extends Either<?, ?>> future)
+                //?}
+                //? if (>=1.20.5 && <=1.21.11) {
+                /*private static boolean completed(
+                            CompletableFuture<? extends net.minecraft.server.world.OptionalChunk<?>> future)
+*///?}
+                //? if (>=26.1 && <=26.3) {
+                /*private static boolean completed(
+                            CompletableFuture<? extends net.minecraft.server.level.ChunkResult<?>> future)
+*///?}
+            {
+        if (future == null || !future.isDone() || future.isCompletedExceptionally()) return false;
+        try {
+
+            //? if (>=1.18 && <=1.20.4) {
+            Either<?, ?> result = future.getNow(null);
+            //?}
+            //? if (>=1.20.5 && <=1.21.11) {
+            /*net.minecraft.server.world.OptionalChunk<?> result = future.getNow(null);
+*///?}
+            //? if (>=26.1 && <=26.3) {
+            /*net.minecraft.server.level.ChunkResult<?> result = future.getNow(null);
+*///?}
+
+            //? if (>=1.18 && <=1.20.4) {
+            return result != null && result.left().isPresent();
+            //?}
+            //? if (>=1.20.5 && <=1.21.11) {
+            /*return result != null && result.isPresent();
+*///?}
+            //? if (>=26.1 && <=26.3) {
+            /*return result != null && result.isSuccess();
+*///?}
+
+        } catch (RuntimeException ignored) {
+            return false;
+        }
+    }
+
+    public static final class ChunkReadiness {
+        public int formatVersion = 1;
+        public long packedPosition;
+        public boolean loaded;
+        public boolean full;
+        public boolean blockTicking;
+        public boolean entityTicking;
+        public boolean forced;
+
+        /** ChunkHolder level at capture time; -1 means no holder was observable. */
+        public int level = -1;
+
+        public int completedLevel = -1;
+        public String levelType;
+        public String source;
+
+        private static ChunkReadiness of(
+                ChunkHolder holder,
+                boolean loaded,
+                boolean full,
+                boolean blockTicking,
+                boolean entityTicking,
+                boolean forced,
+                String source) {
+
+            //? if (>=1.18 && <=1.21.11) {
+            ChunkReadiness result =
+                    simple(
+                            holder.getPos().toLong(),
+                            loaded,
+                            full,
+                            blockTicking,
+                            entityTicking,
+                            forced,
+                            source);
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*ChunkReadiness result =
+                                simple(
+                                        holder.getPos().pack(),
+                                        loaded,
+                                        full,
+                                        blockTicking,
+                                        entityTicking,
+                                        forced,
+                                        source);
+*///?}
+
+            //? if (>=1.18 && <=1.21.11) {
+            result.level = holder.getLevel();
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*result.level = holder.getTicketLevel();
+*///?}
+
+            //? if (>=1.18 && <=1.21.11) {
+            result.completedLevel = holder.getCompletedLevel();
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*result.completedLevel = holder.getQueueLevel();
+*///?}
+
+            //? if (>=1.18 && <=1.21.11) {
+            result.levelType =
+                    holder.getLevelType() == null
+                            ? null
+                            : ChunkDomainLevel.canonical(holder.getLevelType().name());
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*result.levelType =
+                                holder.getFullStatus() == null
+                                        ? null
+                                        : ChunkDomainLevel.canonical(holder.getFullStatus().name());
+*///?}
+
+            return result;
+        }
+
+        private static ChunkReadiness simple(
+                long packedPosition,
+                boolean loaded,
+                boolean full,
+                boolean blockTicking,
+                boolean entityTicking,
+                boolean forced,
+                String source) {
+            ChunkReadiness result = new ChunkReadiness();
+            result.packedPosition = packedPosition;
+            result.loaded = loaded;
+            result.full = full;
+            result.blockTicking = blockTicking;
+            result.entityTicking = entityTicking;
+            result.forced = forced;
+            result.source = source;
+            result.levelType = "INACCESSIBLE";
+            return result;
+        }
+
+        public String canonical() {
+
+            //? if (>=1.18 && <=1.21.11) {
+            return new ChunkPos(packedPosition).x
+                    + ","
+                    + new ChunkPos(packedPosition).z
+                    + "|loaded="
+                    + loaded
+                    + "|full="
+                    + full
+                    + "|block="
+                    + blockTicking
+                    + "|entity="
+                    + entityTicking
+                    + "|forced="
+                    + forced
+                    + "|level="
+                    + level
+                    + "|completed="
+                    + completedLevel
+                    + "|type="
+                    + levelType
+                    + "|source="
+                    + source;
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*return ChunkPos.getX(packedPosition)
+                                + ","
+                                + ChunkPos.getZ(packedPosition)
+                                + "|loaded="
+                                + loaded
+                                + "|full="
+                                + full
+                                + "|block="
+                                + blockTicking
+                                + "|entity="
+                                + entityTicking
+                                + "|forced="
+                                + forced
+                                + "|level="
+                                + level
+                                + "|completed="
+                                + completedLevel
+                                + "|type="
+                                + levelType
+                                + "|source="
+                                + source;
+*///?}
+
+        }
+
+        /**
+         * Returns only the flags that define whether this chunk can execute world ticks. Holder
+         * level, completed level, type and source are diagnostic metadata; they can legitimately
+         * change after restart while the actual executable domain remains equivalent because
+         * vanilla and temporary recovery tickets are reconstructed.
+         */
+        public String executionCanonical() {
+
+            //? if (>=1.18 && <=1.21.11) {
+            return new ChunkPos(packedPosition).x
+                    + ","
+                    + new ChunkPos(packedPosition).z
+                    + "|loaded="
+                    + loaded
+                    + "|full="
+                    + full
+                    + "|block="
+                    + blockTicking
+                    + "|entity="
+                    + entityTicking
+                    + "|forced="
+                    + forced;
+            //?}
+            //? if (>=26.1 && <=26.3) {
+            /*return ChunkPos.getX(packedPosition)
+                                + ","
+                                + ChunkPos.getZ(packedPosition)
+                                + "|loaded="
+                                + loaded
+                                + "|full="
+                                + full
+                                + "|block="
+                                + blockTicking
+                                + "|entity="
+                                + entityTicking
+                                + "|forced="
+                                + forced;
+*///?}
+
+        }
+    }
+}

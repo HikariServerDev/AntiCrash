@@ -398,9 +398,20 @@ AntiCrash cannot guarantee recovery of every machine, mod, or asynchronous opera
 
 ### Building and license
 
-To build, clone the whole repository and run `./gradlew test build` inside the desired version directory. Use Java 21 for older targets' Gradle builds or Java 25 for 26.x, with JDK 17 installed for the Supervisor toolchain.
+Clone the whole repository. Run Gradle with **JDK 25** and install **JDK 17 and 21** as compilation/test toolchains. The server's minimum Java requirement in the version table does not change.
 
-Version 1.0.2 fixes the chunk-storage Mixin failure and BASE checkpoint failure, and improves shared code, recovery validation, diagnostics, configuration tests, and Carpet integration. The save format is unchanged. The shared-source and audit improvements incorporate aomona's contribution. Download all supported Minecraft JARs from [GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases): tags `1.0.0`, `1.0.1`, and `1.0.2` identify each Mod release. Older releases are preserved unchanged; use 1.0.2 for the fixes. After building, run `python3 scripts/verify_artifacts.py --version 26.3 --collect` from the repository root, replacing `26.3` with the target version. This verifies the JARs and collects them in `dist/1.0.2/`. Generated JARs and logs are not stored in Git.
+```sh
+./gradlew -PmcVersion=1.18.2 :1.18.2:test :1.18.2:build
+python3 scripts/build_matrix.py --all --qualification
+```
+
+The first command builds one version. The second tests and builds all 30 versions sequentially, checks the JARs, and collects candidates in `dist/refactor/1.0.2/`. The root `./gradlew buildAll` builds all targets in one Gradle invocation; the Python runner is recommended to keep memory usage bounded. Python 3.11 or newer is required for these scripts.
+
+There is one `src/main/java` tree and one `src/test/java` tree. Stonecutter selects API differences using version conditions in the same files; `stonecutter.properties.toml` holds the target versions and pinned dependencies. `gradle/mixins` contains ordered Mixin profiles. `supervisor/` is an independent Java component. Isolated server probes live in `src/qualification` and never enter the Mod JAR. The generated `versions/` and `build/` directories are not source directories.
+
+To add a Minecraft target, add its dependency/API properties to the TOML matrix, review all affected source conditions and Mixin targets against mapped bytecode, then run its tests, build, artifact inspection and isolated server checks. Do not assume nearby versions have identical APIs.
+
+Version 1.0.2 fixes the chunk-storage Mixin failure and BASE checkpoint failure, and improves shared code, recovery validation, diagnostics, configuration tests, and Carpet integration. The save format is unchanged. The shared-source and audit improvements incorporate aomona's contribution. Download all supported Minecraft JARs from [GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases): tags `1.0.0`, `1.0.1`, and `1.0.2` identify each Mod release. Older releases are preserved unchanged; use 1.0.2 for the fixes. After building, run `python3 scripts/verify_artifacts.py --version 26.3 --collect` from the repository root, replacing `26.3` with the target version. This verifies the JARs and collects them in `dist/refactor/1.0.2/`. Generated JARs and logs are not stored in Git.
 
 License: **GNU Lesser General Public License v3.0 only** (`LGPL-3.0-only`).
 
@@ -798,10 +809,21 @@ Supervisorなしでも保存・復元は使えます。Supervisorの再起動機
 
 ### ビルドとライセンス
 
-自分でビルドする場合はリポジトリ全体を取得し、対象バージョンのディレクトリで`./gradlew test build`を実行します。旧版のGradle実行にはJava 21、26.xにはJava 25を使い、Supervisor用にJDK 17も用意します。
+リポジトリ全体を取得し、Gradleの実行に**JDK 25**を使ってください。コンパイル・テスト用に**JDK 17と21**も必要です。サーバー実行時の最低Javaバージョンは、対応表のとおりです。
+
+```sh
+./gradlew -PmcVersion=1.18.2 :1.18.2:test :1.18.2:build
+python3 scripts/build_matrix.py --all --qualification
+```
+
+1つ目は1.18.2だけをビルドします。2つ目は全30版を順番にテスト・ビルドし、JARの検査後に`dist/refactor/1.0.2/`へ集めます。ルートの`./gradlew buildAll`でも全版をビルドできます。メモリを抑える場合は、版ごとにGradleを終了するPythonスクリプトを使ってください。スクリプトにはPython 3.11以上が必要です。
+
+ソースは`src/main/java`、単体テストは`src/test/java`に集約しています。同じファイル内のStonecutter条件分岐でAPI差分を扱い、対応版と依存関係は`stonecutter.properties.toml`で管理します。`gradle/mixins`には登録順を維持したMixin設定、`supervisor/`には独立した監視プログラムを置いています。隔離サーバー検証用の`src/qualification`は、配布Modに含まれません。`versions/`と`build/`は生成物です。
+
+Minecraft版を追加するときは、TOMLへ依存関係とAPI設定を追加します。関係するソース条件とMixin対象を実際のバイトコードで確認し、その版のテスト・ビルド・JAR検査・隔離サーバー検証を行ってください。近いバージョンでもAPIが同じとは限りません。
 
 1.0.2ではチャンク保存時のMixin適用失敗とBASE保存失敗を修正し、共有コード・復旧判定・診断・設定テスト・Carpet連携を改善しました。従来の保存形式は維持しています。共通化・監査の改善にはaomonaさんの提案を取り入れています。
 
-各Minecraft版のJARは[GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases)で配布します。タグ`1.0.0`・`1.0.1`・`1.0.2`がModの各版に対応します。過去版は当時のJARをそのまま残しています。今回の修正を使う場合は1.0.2を選んでください。ビルド後、リポジトリのルートで`python3 scripts/verify_artifacts.py --version 26.3 --collect`を実行すると、JARを検査して`dist/1.0.2/`へ集められます。`26.3`は対象のMinecraft版に置き換えてください。生成物やログはGitには含めません。
+各Minecraft版のJARは[GitHub Releases](https://github.com/HikariServerDev/AntiCrash/releases)で配布します。タグ`1.0.0`・`1.0.1`・`1.0.2`がModの各版に対応します。過去版は当時のJARをそのまま残しています。今回の修正を使う場合は1.0.2を選んでください。ビルド後、リポジトリのルートで`python3 scripts/verify_artifacts.py --version 26.3 --collect`を実行すると、JARを検査して`dist/refactor/1.0.2/`へ集められます。`26.3`は対象のMinecraft版に置き換えてください。生成物やログはGitには含めません。
 
 ライセンスは**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）です。

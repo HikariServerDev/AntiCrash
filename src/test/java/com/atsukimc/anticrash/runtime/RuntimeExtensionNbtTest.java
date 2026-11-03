@@ -1,0 +1,207 @@
+package com.atsukimc.anticrash.runtime;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+//? if (>=1.18 && <=1.21.11) {
+import net.minecraft.nbt.NbtCompound;
+//?}
+//? if (>=26.1 && <=26.3) {
+/*import net.minecraft.nbt.CompoundTag;
+*///?}
+
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
+
+class RuntimeExtensionNbtTest {
+    @AfterEach
+    void reset() {
+        RuntimeExtensionNbt.entitySave(false);
+        RuntimeExtensionNbt.entityUnload(false);
+        RuntimeExtensionNbt.loadedChunkSave(false);
+    }
+
+    @Test
+    void extensionIsOneVersionedCompoundBesideVanillaKeys() {
+
+        //? if (>=1.18 && <=1.21.11) {
+        NbtCompound nbt = new NbtCompound();
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*CompoundTag nbt = new CompoundTag();
+*///?}
+
+        nbt.putFloat("progress", 0.5f);
+        RuntimeExtensionNbt.write(nbt, extension -> extension.putFloat("Progress", 1.0f));
+
+        //? if (>=1.18 && <=1.21.4) {
+        assertEquals(0.5f, nbt.getFloat("progress"));
+        //?}
+        //? if (>=1.21.5 && <=26.3) {
+        /*assertEquals(0.5f, nbt.getFloat("progress").orElseThrow());
+*///?}
+
+        //? if (>=1.18 && <=1.21.11) {
+        NbtCompound extension = RuntimeExtensionNbt.read(nbt);
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
+*///?}
+
+        assertNotNull(extension);
+
+        //? if (>=1.18 && <=1.21.4) {
+        assertEquals(1.0f, extension.getFloat("Progress"));
+        //?}
+        //? if (>=1.21.5 && <=26.3) {
+        /*assertEquals(1.0f, extension.getFloat("Progress").orElseThrow());
+*///?}
+
+        //? if (>=1.18 && <=1.21.4) {
+        assertEquals(
+                RuntimeExtensionNbt.VERSION, nbt.getCompound(RuntimeExtensionNbt.KEY).getInt("v"));
+        //?}
+        //? if (>=1.21.5 && <=26.3) {
+        /*assertEquals(
+                        RuntimeExtensionNbt.VERSION,
+                        nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
+*///?}
+
+    }
+
+    @Test
+    void nothingIsAddedWhenThereIsNothingToSave() {
+
+        //? if (>=1.18 && <=1.21.11) {
+        NbtCompound nbt = new NbtCompound();
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*CompoundTag nbt = new CompoundTag();
+*///?}
+
+        RuntimeExtensionNbt.write(nbt, extension -> {});
+        assertFalse(nbt.contains(RuntimeExtensionNbt.KEY));
+        assertNull(RuntimeExtensionNbt.read(nbt));
+
+        RuntimeExtensionNbt.write(nbt, extension -> extension.putInt("TeleportCooldown", 7));
+        RuntimeExtensionNbt.write(nbt, extension -> extension.remove("TeleportCooldown"));
+        assertFalse(nbt.contains(RuntimeExtensionNbt.KEY));
+    }
+
+    @Test
+    void aNewerFormatIsIgnoredInsteadOfGuessed() {
+
+        //? if (>=1.18 && <=1.21.11) {
+        NbtCompound nbt = new NbtCompound();
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*CompoundTag nbt = new CompoundTag();
+*///?}
+
+        //? if (>=1.18 && <=1.21.11) {
+        NbtCompound future = new NbtCompound();
+        //?}
+        //? if (>=26.1 && <=26.3) {
+        /*CompoundTag future = new CompoundTag();
+*///?}
+
+        future.putInt("v", RuntimeExtensionNbt.VERSION + 1);
+        future.putFloat("Progress", 1.0f);
+        nbt.put(RuntimeExtensionNbt.KEY, future);
+        assertNull(RuntimeExtensionNbt.read(nbt));
+    }
+
+    @Test
+    void entityStateIsWrittenOnlyForEntitiesThatStayLoaded() {
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+        RuntimeExtensionNbt.entitySave(true);
+        assertTrue(RuntimeExtensionNbt.savingLoadedEntities());
+        // Vanilla unloading a section saves it too; that reload must behave as Vanilla's does.
+        RuntimeExtensionNbt.entityUnload(true);
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+        RuntimeExtensionNbt.entityUnload(false);
+        RuntimeExtensionNbt.entitySave(false);
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+
+        assertFalse(RuntimeExtensionNbt.savingLoadedChunk());
+        RuntimeExtensionNbt.loadedChunkSave(true);
+        assertTrue(RuntimeExtensionNbt.savingLoadedChunk());
+    }
+
+    /**
+     * Permanent regression test. Entity#copyFrom (a dimension change) is writeNbt on the old entity
+     * followed by readNbt on the new one. An earlier build wrote the pending portal state on every
+     * writeNbt, so the copy arrived "inside a portal" and went straight back. The extension may
+     * only be written inside an entity chunk save of entities that stay loaded.
+     */
+
+    /**
+     * Permanent regression test. Entity#copyFrom (a dimension change) is writeData on the old
+     * entity followed by readNbt on the new one. An earlier build wrote the pending portal state on
+     * every writeData, so the copy arrived "inside a portal" and went straight back. The extension
+     * may only be written inside an entity chunk save of entities that stay loaded.
+     */
+    @Test
+    void portalStateIsNeverWrittenDuringADimensionChangeCopy() {
+        // Entity#copyFrom, /data get, spawn eggs, structure blocks: no save scope at all.
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+        // A chunk being serialised on this thread does not open the entity scope either.
+        RuntimeExtensionNbt.loadedChunkSave(true);
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+        // The old entity is removed with CHANGED_DIMENSION; a section unloading at that moment
+        // is the only save that can overlap, and it is excluded as well.
+        RuntimeExtensionNbt.entitySave(true);
+        RuntimeExtensionNbt.entityUnload(true);
+        assertFalse(RuntimeExtensionNbt.savingLoadedEntities());
+    }
+
+    @Test
+    void scopeBelongsToTheSavingThreadOnly() throws Exception {
+        RuntimeExtensionNbt.entitySave(true);
+        boolean[] other = new boolean[1];
+        Thread thread = new Thread(() -> other[0] = RuntimeExtensionNbt.savingLoadedEntities());
+        thread.start();
+        thread.join();
+        assertFalse(other[0]);
+        assertTrue(RuntimeExtensionNbt.savingLoadedEntities());
+    }
+
+    /** Every mixin that adds to a Vanilla writeNbt must be gated by one of the two save scopes. */
+
+    //? if (>=1.18 && <=1.21.5) {
+    @Test
+    void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception
+                //?}
+
+                /** Every mixin that adds to a Vanilla writeData must be gated by one of the two save scopes. */
+
+                //? if (>=1.21.6 && <=26.3) {
+                /*@Test
+                    void everyWriteDataInjectionIsGatedByASaveScope() throws Exception
+*///?}
+            {
+
+        // Parse executable source, not the first 200 characters after a textual
+        // annotation: inactive Stonecutter branches contain annotation-shaped comments.
+        //? if <=1.21.5 {
+        int injections =
+                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
+                        java.util.Set.of("writeNbt"));
+        //?} else if <=1.21.11 {
+        /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
+                java.util.Set.of("writeData"));
+*///?} else {
+        /*int injections = com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
+                java.util.Set.of("saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
+*///?}
+        //? if <=1.18.2 {
+        assertTrue(injections >= 5, "save injections found: " + injections);
+        //?} else {
+        /*assertTrue(injections >= 4, "save injections found: " + injections);
+*///?}
+
+    }
+}

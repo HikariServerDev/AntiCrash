@@ -844,5 +844,8 @@
     ],
     "isolated_runtime_scope": "BASE_DELTA_CRASH_RECOVERY_FREEZE_START_BLOCK_AND_CHEST_OPTIMIZED",
     "production_modified": false
-  }
+  },
+  "manifest_scope": "PUBLISHED_RELEASE",
+  "published_source_commit": "e16c24604bed20f7029fc12db72194a8b272c0e3",
+  "build_configuration_file": "stonecutter.properties.toml"
 }
