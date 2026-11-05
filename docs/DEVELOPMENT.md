@@ -1,77 +1,168 @@
-# 開発・検証
+# AntiCrashの開発
 
-## 必要な環境
+AntiCrashは、共通のJavaソースをStonecutterでMinecraft各版へ展開してビルドします。開発時は対象版を一つ選び、変更に関係するAPI境界の版も検証してください。対応版と依存関係は`stonecutter.properties.toml`で管理しています。
 
-Gradle 9.6 を JDK 25 で実行する。JDK 17 と 21 もインストールし、Gradle toolchain が検出できるようにする。Python スクリプトには Python 3.11 以上が必要。JDK はリポジトリに含めない。Gradle は worker 1、最大ヒープ 1536 MB、認識 CPU 2 に制限している。
+## 開発環境
 
-## 1 版を変更・検証する
+リポジトリのルートで、同梱のGradle Wrapperを使います。以下の環境が必要です。
+
+| ツール | 用途 |
+| --- | --- |
+| JDK 25 | Gradleの実行と新しいMinecraft版のコンパイル |
+| JDK 21 | 古いMinecraft版のコンパイル |
+| JDK 17 | Supervisorのコンパイル |
+| Python 3.11以上 | 整形、ソース構成検査、補助ツールのテスト |
+| Bash・jq | CIのRelease組み立てと、その回帰テスト |
+
+`JAVA_HOME`にJDK 25を指定し、JDK 17・21をGradle toolchainが検出できるようにします。Pythonのビルド・整形スクリプトは、`.toolchains/jdk-25*`がある場合はそのJDKを優先します。JDKやキャッシュはGitへ追加しません。
 
 ```sh
-./gradlew -PmcVersion=1.18.2 :1.18.2:build
+./gradlew --version
+```
+
+現在の構成はGradle 9.6、Stonecutter 0.9.8、Loom 1.17.21です。Gradleのworker数は1、ヒープ上限は1536 MB、認識CPU数は2に設定されています。版ごとのテストJVMには別途最大512 MBを使用します。
+
+## ソースとビルド設定
+
+| 場所 | 内容 |
+| --- | --- |
+| `src/main/java`・`src/main/resources` | Modの共通ソースとリソース |
+| `src/test` | 単体テスト、Minecraft内部API・Mixinの検査 |
+| `src/qualification` | 隔離サーバー用の検証Mod。通常の配布JARには含めません |
+| `supervisor` | Minecraftに依存しない監視・再起動プログラム |
+| `stonecutter.properties.toml` | 対応版、Java・Loader要件、APIフラグ、検査データの選択 |
+| `settings.gradle.kts`・`stonecutter.gradle.kts` | 対象プロジェクトの選択、共通タスク、VCS基準版 |
+| `build.gradle.kts`・`gradle/minecraft.gradle` | 各版の依存関係、テスト、JAR生成・検査 |
+| `gradle/mixins` | 順序を含むMixin登録設定 |
+| `qualification/fixtures` | 版ごとのEntity・BlockEntityフィールド監査データ |
+| `scripts` | 整形、比較、全版ビルド、Release組み立ての補助ツール |
+
+`versions/`はStonecutterが作る版別の作業・出力先です。ソースを手動で複製する場所ではありません。
+
+## 一つの版をビルドする
+
+Minecraft 1.18.2を対象にする例です。
+
+```sh
+./gradlew --no-daemon -PmcVersion=1.18.2 :1.18.2:build
+```
+
+このコマンドは対象版のコンパイル、単体テスト、配布JAR検査、Supervisorの生成・テストを実行します。検証Modに対応する版では`probeJar`も生成します。`-PmcVersion`は設定するプロジェクトを絞る指定です。実行対象の版は`:1.18.2:build`のようにタスクにも明記してください。
+
+| 出力先 | 内容 |
+| --- | --- |
+| `versions/1.18.2/build/libs/` | Mod JARとソースJAR |
+| `supervisor/build/libs/` | Supervisor JAR |
+| `versions/1.18.2/build/qualification/` | 対応版の検証Mod |
+| `dist/refactor/<Mod版>/` | ビルドしたMod・Supervisorの配布候補 |
+| `versions/1.18.2/build/reports/tests/test/` | 対象版のテストレポート |
+
+テストだけをやり直す場合は次を使います。
+
+```sh
+./gradlew --no-daemon -PmcVersion=1.18.2 :1.18.2:cleanTest :1.18.2:test :supervisor:test
+```
+
+## 整形と共通の検査
+
+```sh
 ./gradlew -PmcVersion=26.3 qualityCheck
-python3 scripts/verify_artifacts.py --version 1.18.2 --collect
+./gradlew -PmcVersion=26.3 formatApply
 ```
 
-`-PmcVersion` は今回必要なプロジェクトだけを設定し、メモリを節約する。指定しなければ全版が IDE に表示される。Stonecutter の active を切り替える操作は、別々の Gradle 呼び出しで行う。異なる版の切替タスクを同じ呼び出しに混ぜない。コミット時の active と `vcsVersion` は最新の対応版（現在26.3）。新版追加時はTOML末尾の版がVCS基準になる。`./gradlew -PmcVersion=26.3 stonecutterSwitchTo26.3` で基準へ戻す。
+`qualityCheck`は整形の確認、ソース配置・ビルド入力の検査、補助スクリプトのテストを実行します。Javaの単体テストは各版の`test`または`build`で実行してください。`formatApply`はソースを書き換えるため、実行後に差分を確認します。
 
-ソース内の条件コメントは公式 Stonecutter が管理する。無効な枝もソースなので削除しない。formatter は import の削除・並べ替えなどを行わず、別の枝専用の import も保持する。条件コメントの追加後は対象版だけでなく、隣接する API 境界の版もビルドする。
+整形にはgoogle-java-formatを使い、Pythonの前後処理でStonecutterの条件コメントと非アクティブなコードを保護しています。版専用のimportも保持します。
 
-you should re-consider the stonecutter's philosophy, one-source-multi-versioning does not mean crazy if chain
-why you think that, why you do that, just AI slop? where is your principle?  lol
-yea ik you always rely on the AI AlL ThE TiMe,
-but if you do, let’s make sure you use it sensibly, your AI is crying baby
+## Stonecutterの版切り替えと条件分岐
 
-and please don’t produce rubbish, You can’t boast about it even if you do produce rubbish.
-
-I doubt you'll even look at this anyway, but do delete it once you found this and reviewed, i hope you
-
-`./gradlew qualityCheck` で整形・ソース構成・Pythonスクリプトの回帰テストをまとめて実行する。個別実行は `formatCheck`、`sourceCheck`、`scriptTest`。`formatApply` はJavaソースを整形する。`./gradlew check` はこれらと現在の版・Supervisorの単体テストを実行する。CIの入口は `release.yml`（Verify and release）。`checks.yml` の品質検査と `build.yml` の版別ビルドを再利用し、PR・main pushごとに一度だけ実行する。各版の `build` はJavaテスト、対応版のprobe生成、ModとSupervisorの `verifyDistribution`（ZIP CRC・ライセンス・メタデータ・不要クラス検査）も行う。
-
-formatterはgoogle-java-formatを使う。Pythonの前後処理は無効なStonecutter枝と条件コメントを保護するために残す。標準formatterへ直接置き換える場合は、非アクティブ版のコードやimportを削除しないことを確認する。
-
-### 条件分岐の整理
-
-連続した排他的な版別処理は `if / else if` でまとめる。同時に成立する条件は独立させる。`python3 scripts/check_conditions.py --baseline <変更前コミット>` は公式Stonecutterで変更前後を全対応版へ展開し、選択されたJavaトークンの一致を確認する。Gradle・Minecraftのコンパイルは行わない。ヒープ上限は512 MiB、認識CPU数は2。
-
-## 全版を生成する
+コミット時のactive版とVCS基準版は、現在は26.3です。VCS基準版はTOMLの最後の対象版から決まります。IDEで別の版を編集した場合は、コミット前に基準版へ戻してください。
 
 ```sh
-python3 scripts/build_matrix.py --all --qualification
-# 全モデルを一度に設定する標準 Gradle 集約タスク
+./gradlew -PmcVersion=1.18.2 stonecutterSwitchTo1.18.2
+# 対象版で編集・検証したあとに戻す
+./gradlew -PmcVersion=26.3 stonecutterSwitchTo26.3
+```
+
+版切り替えは一回のGradle呼び出しにつき一つにします。非アクティブな枝はコメントとして保存されるため、通常の不要コードと判断して削除しないでください。
+
+APIと処理が同じ部分は条件の外へ出し、差がある箇所だけを条件分岐にします。同じimport、メソッド宣言、ループ全体を版ごとに繰り返す必要はありません。`if / else if`を使うかは条件の意味に合わせて選び、分岐数を減らすために版固有の挙動を失わないようにしてください。
+
+条件整理前後のJavaトークンを全版で比較する補助コマンドもあります。
+
+```sh
+python3 scripts/check_conditions.py --baseline <変更前コミット>
+```
+
+この比較はコメントと空白を除外しますが、importやその順序の変更も差分になります。コンパイルや名前解決の同一性は検証しません。import整理を含む変更では、全版のビルドとJAR内の実行コード比較を併用してください。
+
+## 全対応版を検証する
+
+ローカルでメモリ使用量を抑える場合は、版ごとにGradleプロセスを終了する実行方法を使います。
+
+```sh
+python3 scripts/build_matrix.py --all
+```
+
+各版のテストを再実行し、ビルド、JAR検査、ログと`summary.json`の保存まで行います。保存先の初期値は`build/matrix/<日時>/`です。`--output`で変更できます。`--version 1.18.2 --version 26.3`のように対象を絞ることもできます。
+
+Gradleだけで全版を実行する場合は以下を使います。全版を設定するため、`-PmcVersion`は付けません。
+
+```sh
 ./gradlew buildAll
+./gradlew testAll
 ```
 
-各版を別の Gradle プロセスで順番に実行し、全版の test/build と JAR 検査を行う。Supervisor のテストは独立コンポーネントとして一度だけ実行する。`--qualification` は元から probe がある版で probeJar も作成する。標準集約タスクは全版を一つの Gradle プロセスで設定する。モデルの保持メモリを抑える場合は Python を使う。全版の単体テストだけなら `./gradlew testAll`、プロセスを版ごとに分けるなら `python3 scripts/build_matrix.py --all --test-only`。複数の `--version` で対象を絞れる。
+`buildAll`は各版の`build`、`testAll`は各版とSupervisorの`test`を集約します。`qualityCheck`は別途実行してください。Gradleの集約タスクは複数版のモデルを同じプロセスに保持します。Pythonの実行方法とはログの保存方法やメモリ使用量が異なります。
 
-通常 JAR は `versions/<Minecraft>/build/libs/`、Supervisor JAR は `supervisor/build/libs/` に作成される。検査した候補は `dist/refactor/<Mod version>/` に集まる。公開済み `dist/<Mod version>/` は上書きしない。ログと機械可読な検証結果は `build/matrix/<日時>/`。`--output` で保存先を指定できる。
+## 変更前のJARとの比較
 
-## 移行前との比較
+比較元として、同じMod版の変更前JAR一式を別ディレクトリへ保存します。
 
 ```sh
-python3 scripts/build_matrix.py --all --qualification \
-  --baseline-dir /absolute/path/to/preserved-jars --output /absolute/path/to/evidence
+python3 scripts/build_matrix.py --all \
+  --baseline-dir ../anticrash-before \
+  --output ../anticrash-verification
 ```
 
-同じ Mod バージョンの移行前 Mod/Supervisor JAR 全60本を保存したディレクトリを指定する。ASM によりデバッグ情報を除いた実行コードを比較する。未許可のリソース差分や注入契約の差分があれば失敗する。比較用 JAR がなければ、通常の整合性検査だけを行い、等価性検証済みとは扱わない。
+比較ではクラスの集合、デバッグ情報を除いた実行コード、リソースを確認します。Gradle・Loomなどの許可されたビルド情報は比較対象から除外します。比較に失敗した場合は差分の理由を調べ、同じ動作と決めつけないでください。比較元がなければ、通常のビルド・整合性検査のみを実施した結果として記録します。
 
-## 新版の追加
+## 変更とコミット
 
-1. TOML に Minecraft、Java release/compiler、Loader、難読化の有無、Fabric API と API フラグを追加する。
-2. mapped bytecode を調査し、関係する条件枝と Mixin descriptor・注入位置を対応させる。
-3. 登録する Mixin を順序付き JSON プロファイルへ明示する。既存と同じなら再利用する。
-4. フィールド監査の TSV を確認し、完全一致の場合だけ既存 fixture を再利用する。
-5. test/build、Mixin 契約、配布 JAR、必要な隔離サーバー検証を実施する。
+一つのコミットには一つの目的を持たせます。例えば、条件分岐の共通化、検査ツールの修正、開発文書の更新は別コミットにします。一つの共通化に必要な複数ファイルは、同じコミットに含められます。
 
-`versions.json` の公開履歴へ追加するのは正式リリースを作るとき。ビルド可能であることと、実サーバーでの確認は別に記録する。
+コミット前にステージした差分全体を確認してください。変更理由と影響範囲をコミット本文へ書き、import整理、設定変更、検査方式の変更なども省略しません。PRには全変更の一覧と検証結果を記載し、未検証の範囲も明示します。
 
-## 実 Minecraft の検証
+```sh
+git diff --stat
+git diff --cached
+git diff --cached --check
+```
 
-既存の承諾済み EULA を持つ隔離検証環境だけを使う。本番ディレクトリ・ワールド・設定・Mod・プロセスを変更しない。検証プロセスは一度に一つとし、起動した PID だけを停止する。
+ログ、ワールド、ローカル設定、キャッシュ、ビルド出力はコミットしません。
 
-起動と Mixin 適用、forced chunk とチェストを含む BASE/DELTA、READY/manifest/全チェックサム、正常停止と異常終了後の復旧を確認する。凍結中の game time が進まないこと、`/ac recovery verify` と `/ac start`、復元後のブロックとインベントリを検証する。これだけで全 TMC 装置の動作保証にはならない。
+## CIとRelease
 
-## Releaseの自動生成
+CIの入口は`.github/workflows/release.yml`です。品質検査用の`checks.yml`と全版ビルド用の`build.yml`を呼び出し、成功後に配布物を組み立てます。PRとmainへのpushでは、検証用artifactを作成します。文書だけを変更するPRはワークフローの対象外です。
 
-`gradle.properties` の `mod_version` と同じタグをpushすると、品質検査・全版ビルド・成果物検査後にdraft Releaseを作成する。PRとmain pushでは同じ工程で成果物を組み立てるだけで、Releaseは作成しない。手動実行の `publish` も、同じ版番号のタグを選択した場合のみ許可する。既存Releaseは上書きしない。
+正式版を用意するときは、`gradle.properties`の`mod_version`と同じタグをpushします。検査成功後にdraft Releaseが作成されるため、内容を確認して公開します。手動実行で`publish`を有効にする場合も、その版のタグを選択する必要があります。既存Releaseを上書きする処理はありません。
 
-`assemble_release.sh` は全対象版のMod/Supervisor JARの名前が完全に揃うことと、各版のJUnitレポートを確認し、JAR・SHA256SUMS・artifacts.jsonだけを組み立てる。ログやテストレポートは検証用workflow artifactに保存し、Releaseには添付しない。CIのテスト数・commit・run URLは記録するが、実Minecraftの動作確認や旧JARとの等価性を証明したものではない。
+Releaseの添付物は全対象版のMod・Supervisor JAR、`SHA256SUMS`、`artifacts.json`です。テストレポートやログは検証用artifactに保存します。マニフェストにはビルド元のcommit、CIのURL、テスト数、JARのハッシュを記録します。
+
+## Minecraft対応版を追加する
+
+1. `stonecutter.properties.toml`へ対象版と依存関係、Java要件、APIフラグを追加します。最後に追加した版がVCS基準版になることも確認します。
+2. 対象MinecraftのAPIとbytecodeを調べ、互換処理とMixinの対象・注入位置を確認します。
+3. 必要なMixin設定を`gradle/mixins`へ追加し、登録順序も確認します。
+4. Entity・BlockEntityのフィールドを調査し、`qualification/fixtures`の監査データを用意します。既存データを使う場合も対象版との一致を確認します。
+5. ビルド・テスト・配布JAR検査と、必要な隔離サーバー検証を実施します。
+
+`versions.json`は公開版の検証記録です。正式リリース時に、実施した検証結果に合わせて更新してください。
+
+## 隔離サーバーでの動作確認
+
+実Minecraftの検証には、EULAに同意済みの専用テスト環境を使います。既存サーバーのワールド、設定、Mod、稼働プロセスを変更しないでください。検証サーバーは一度に一つとし、自分で起動したプロセスだけを停止します。
+
+起動とMixin適用、forced chunkとチェストを含むBASE・DELTA作成、READY・manifest・チェックサム、正常終了と異常終了後の復旧を確認します。復旧準備中にゲーム内時間が進まないこと、`/ac recovery verify`と`/ac start`、復元したブロックとインベントリも確認します。
+
+ビルド・単体テスト・JAR比較の結果と、Minecraft上での動作確認結果は別に記録してください。
