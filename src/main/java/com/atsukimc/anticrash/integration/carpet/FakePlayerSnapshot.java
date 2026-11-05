@@ -59,11 +59,14 @@ public final class FakePlayerSnapshot {
 
     //? if (>=1.21.11 && <=26.3) {
     public String motionFrameNbt;
-    public Long lastKineticAttackTime;
     //?}
 
     //? if (>=26.1 && <=26.3) {
     public String fluidTrackersNbt;
+    //?}
+
+    //? if (>=1.21.11 && <=26.3) {
+    public Long lastKineticAttackTime;
     //?}
 
     /**

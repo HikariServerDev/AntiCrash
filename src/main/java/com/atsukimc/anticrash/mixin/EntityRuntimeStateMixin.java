@@ -45,17 +45,17 @@ public abstract class EntityRuntimeStateMixin {
     @Shadow public net.minecraft.world.entity.PortalProcessor portalProcess;
     //?}
 
+    @Shadow protected int boardingCooldown;
+    @Shadow protected boolean firstTick;
+    @Shadow protected boolean wasTouchingWater;
+    @Shadow public int invulnerableTime;
+    @Shadow public int tickCount;
+
     //? if (>=1.20 && <=26.3) {
     @Shadow public java.util.Optional<BlockPos> mainSupportingBlockPos;
     @Shadow private boolean onGroundNoBlocks;
     @Shadow public boolean verticalCollisionBelow;
     //?}
-
-    @Shadow protected int boardingCooldown;
-    @Shadow public int invulnerableTime;
-    @Shadow protected boolean firstTick;
-    @Shadow public int tickCount;
-    @Shadow protected boolean wasTouchingWater;
 
     //? if (>=1.18 && <=1.21.5) {
     /*@Inject(method = "saveWithoutId", at = @At("RETURN"))
