@@ -24,7 +24,11 @@ public abstract class CrafterMutationMixin {
             CrafterBlockEntity crafter,
             CallbackInfo ci) {
 
+        //? if <=1.21.8 {
+        /*if (!world.isClientSide
+        *///?} else {
         if (!world.isClientSide()
+        //?}
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
             world.blockEntityChanged(pos);
     }
