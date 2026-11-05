@@ -1,40 +1,17 @@
 package com.atsukimc.anticrash.runtime;
 
-//? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.resources.Identifier;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*//? if (>=1.18 && <=1.21.10) {
-/^import net.minecraft.resources.ResourceLocation;
-^///?}
-//? if 1.21.11 {
-/^import net.minecraft.resources.Identifier;
-^///?}
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
+import net.minecraft.world.level.ChunkPos;
 
 //? if (>=1.18 && <=1.19.2) {
 /*import net.minecraft.core.Registry;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.ChunkPos;
+*///?} else {
+import net.minecraft.core.registries.BuiltInRegistries;
+//?}
+//? if (>=1.18 && <=1.21.10) {
+/*import net.minecraft.resources.ResourceLocation;
+*///?} else {
+import net.minecraft.resources.Identifier;
 //?}
 
 import java.util.ArrayList;
@@ -85,21 +62,18 @@ public final class EntityRuntimeSnapshot {
                 + removed;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static List<EntityRuntimeSnapshot> capture(ServerLevel world)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static List<EntityRuntimeSnapshot> capture(ServerLevel world)
-                //?}
-            {
+    public static List<EntityRuntimeSnapshot> capture(ServerLevel world) {
         List<EntityRuntimeSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
         /^String dimension = world.dimension().location().toString();
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^String dimension = world.dimension().identifier().toString();
         ^///?}
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         String dimension = world.dimension().identifier().toString();
         //?}
 
@@ -110,40 +84,34 @@ public final class EntityRuntimeSnapshot {
                     EntityRuntimeSnapshot snapshot = new EntityRuntimeSnapshot();
                     snapshot.dimension = dimension;
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.uuid = entity.getStringUUID();
-                    *///?} else if (>=26.1 && <=26.3) {
                     snapshot.uuid = entity.getStringUUID();
-                    //?}
 
                     //? if (>=1.18 && <=1.19.2) {
                     /*ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
-                    *///?} else if (>=1.19.3 && <=1.21.10) {
+                    *///?}
+                    //? if (>=1.19.3 && <=1.21.10) {
                     /*ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                    *///?} else if 1.21.11 {
-                    /*Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=1.21.11 && <=26.3) {
                     Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
                     //?}
 
                     snapshot.type = id == null ? entity.getType().toString() : id.toString();
                     snapshot.networkEntityId = entity.getId();
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*ChunkPos chunk = entity.chunkPosition();
-                    *///?} else if (>=26.1 && <=26.3) {
                     ChunkPos chunk = entity.chunkPosition();
-                    //?}
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*snapshot.chunkX = chunk.x;
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkX = chunk.x();
                     //?}
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*snapshot.chunkZ = chunk.z;
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkZ = chunk.z();
                     //?}
 

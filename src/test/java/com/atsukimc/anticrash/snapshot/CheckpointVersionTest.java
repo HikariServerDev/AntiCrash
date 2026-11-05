@@ -16,63 +16,92 @@ class CheckpointVersionTest {
 
         //? if 1.18.2 {
         /*assertEquals("1.18.2", manifest.minecraftVersion);
-        *///?} else if 1.18 {
+        *///?}
+        //? if 1.18 {
         /*assertEquals("1.18", manifest.minecraftVersion);
-*///?} else if 1.18.1 {
+*///?}
+        //? if 1.18.1 {
         /*assertEquals("1.18.1", manifest.minecraftVersion);
-*///?} else if 1.19 {
+*///?}
+        //? if 1.19 {
         /*assertEquals("1.19", manifest.minecraftVersion);
-*///?} else if 1.19.1 {
+*///?}
+        //? if 1.19.1 {
         /*assertEquals("1.19.1", manifest.minecraftVersion);
-*///?} else if 1.19.2 {
+*///?}
+        //? if 1.19.2 {
         /*assertEquals("1.19.2", manifest.minecraftVersion);
-*///?} else if 1.19.3 {
+*///?}
+        //? if 1.19.3 {
         /*assertEquals("1.19.3", manifest.minecraftVersion);
-*///?} else if 1.19.4 {
+*///?}
+        //? if 1.19.4 {
         /*assertEquals("1.19.4", manifest.minecraftVersion);
-*///?} else if 1.20 {
+*///?}
+        //? if 1.20 {
         /*assertEquals("1.20", manifest.minecraftVersion);
-*///?} else if 1.20.1 {
+*///?}
+        //? if 1.20.1 {
         /*assertEquals("1.20.1", manifest.minecraftVersion);
-*///?} else if 1.20.2 {
+*///?}
+        //? if 1.20.2 {
         /*assertEquals("1.20.2", manifest.minecraftVersion);
-*///?} else if 1.20.3 {
+*///?}
+        //? if 1.20.3 {
         /*assertEquals("1.20.3", manifest.minecraftVersion);
-*///?} else if 1.20.4 {
+*///?}
+        //? if 1.20.4 {
         /*assertEquals("1.20.4", manifest.minecraftVersion);
-*///?} else if 1.20.5 {
+*///?}
+        //? if 1.20.5 {
         /*assertEquals("1.20.5", manifest.minecraftVersion);
-*///?} else if 1.20.6 {
+*///?}
+        //? if 1.20.6 {
         /*assertEquals("1.20.6", manifest.minecraftVersion);
-*///?} else if 1.21 {
+*///?}
+        //? if 1.21 {
         /*assertEquals("1.21", manifest.minecraftVersion);
-*///?} else if 1.21.1 {
+*///?}
+        //? if 1.21.1 {
         /*assertEquals("1.21.1", manifest.minecraftVersion);
-*///?} else if 1.21.2 {
+*///?}
+        //? if 1.21.2 {
         /*assertEquals("1.21.2", manifest.minecraftVersion);
-*///?} else if 1.21.3 {
+*///?}
+        //? if 1.21.3 {
         /*assertEquals("1.21.3", manifest.minecraftVersion);
-*///?} else if 1.21.4 {
+*///?}
+        //? if 1.21.4 {
         /*assertEquals("1.21.4", manifest.minecraftVersion);
-*///?} else if 1.21.5 {
+*///?}
+        //? if 1.21.5 {
         /*assertEquals("1.21.5", manifest.minecraftVersion);
-*///?} else if 1.21.6 {
+*///?}
+        //? if 1.21.6 {
         /*assertEquals("1.21.6", manifest.minecraftVersion);
-*///?} else if 1.21.7 {
+*///?}
+        //? if 1.21.7 {
         /*assertEquals("1.21.7", manifest.minecraftVersion);
-*///?} else if 1.21.8 {
+*///?}
+        //? if 1.21.8 {
         /*assertEquals("1.21.8", manifest.minecraftVersion);
-*///?} else if 1.21.9 {
+*///?}
+        //? if 1.21.9 {
         /*assertEquals("1.21.9", manifest.minecraftVersion);
-*///?} else if 1.21.10 {
+*///?}
+        //? if 1.21.10 {
         /*assertEquals("1.21.10", manifest.minecraftVersion);
-*///?} else if 1.21.11 {
+*///?}
+        //? if 1.21.11 {
         /*assertEquals("1.21.11", manifest.minecraftVersion);
-*///?} else if 26.1 {
+*///?}
+        //? if 26.1 {
         /*assertEquals("26.1", manifest.minecraftVersion);
-*///?} else if 26.2 {
+*///?}
+        //? if 26.2 {
         /*assertEquals("26.2", manifest.minecraftVersion);
-*///?} else if 26.3 {
+*///?}
+        //? if 26.3 {
         assertEquals("26.3", manifest.minecraftVersion);
         //?}
 

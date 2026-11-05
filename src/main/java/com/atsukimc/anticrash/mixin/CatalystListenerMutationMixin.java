@@ -1,47 +1,12 @@
 //? if (>=1.20 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
-//?}
-
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
-//?}
-
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.phys.Vec3;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.gameevent.GameEvent;
-//?}
-
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.level.gameevent.GameEvent;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.gameevent.PositionSource;
-//?}
-
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.level.gameevent.PositionSource;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.phys.Vec3;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -49,18 +14,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-//? if (>=1.20 && <=1.21.11) {
-/*@Mixin(SculkCatalystBlockEntity.CatalystListener.class)
-public abstract class CatalystListenerMutationMixin {
-    @Shadow
-    public abstract PositionSource getListenerSource();
-*///?} else if (>=26.1 && <=26.3) {
 @Mixin(SculkCatalystBlockEntity.CatalystListener.class)
 public abstract class CatalystListenerMutationMixin {
     @Shadow
     public abstract PositionSource getListenerSource();
-
-    //?}
 
     //? if (>=1.20 && <=1.20.4) {
     /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
@@ -69,37 +26,21 @@ public abstract class CatalystListenerMutationMixin {
             GameEvent event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci)
-*///?} else if (>=1.20.5 && <=1.21.11) {
-    /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
-    private void anticrash$dirtyCursor(
-            ServerLevel world,
-            net.minecraft.core.Holder<GameEvent> event,
-            GameEvent.Context emitter,
-            Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci)
-*///?} else if (>=26.1 && <=26.3) {
+            CallbackInfoReturnable<Boolean> ci
+    ) {
+    *///?} else {
     @Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$dirtyCursor(
             ServerLevel world,
             net.minecraft.core.Holder<GameEvent> event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci)
-                //?}
-            {
+            CallbackInfoReturnable<Boolean> ci) {
+        //?}
         if (ci.getReturnValueZ())
-
-            //? if (>=1.20 && <=1.21.11) {
-            /*getListenerSource()
-                    .getPosition(world)
-                    .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
-*///?} else if (>=26.1 && <=26.3) {
             getListenerSource()
                     .getPosition(world)
                     .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
-        //?}
-
     }
 }
 //?}

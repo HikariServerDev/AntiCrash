@@ -3,43 +3,22 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 
-//? if (>=1.19 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.nbt.CompoundTag;
-//?}
+import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 
-//? if (>=1.19 && <=1.21.11) {
-/*import net.minecraft.nbt.CompoundTag;
-*///?}
-//? if (>=26.1 && <=26.3) {
+//? if (>=1.19 && <=1.21.10) {
+/*import net.minecraft.resources.ResourceLocation;
+*///?} else {
 import net.minecraft.resources.Identifier;
 //?}
 
 //? if (>=1.19 && <=1.21.1) {
 /*import net.minecraft.world.item.crafting.RecipeManager;
-*///?}
-
-//? if (>=1.19 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?}
-//? if 1.21.11 {
-/*import net.minecraft.resources.Identifier;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-//?}
-
-//? if (>=1.19 && <=1.21.1) {
-/*import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Final;
+import org.spongepowered.asm.mixin.Shadow;
 *///?}
 
 import org.spongepowered.asm.mixin.Mixin;
-//? if (>=1.19 && <=1.21.1) {
-/*import org.spongepowered.asm.mixin.Shadow;
-*///?}
-
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -49,7 +28,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /*@Mixin(CampfireBlockEntity.class)
 public abstract class CampfireRecipeMatchingMixin {
     @Shadow @Final private RecipeManager.CachedCheck quickCheck;
-*///?} else if (>=1.21.2 && <=26.3) {
+*///?} else {
 @Mixin(CampfireBlockEntity.class)
 public abstract class CampfireRecipeMatchingMixin
         implements com.atsukimc.anticrash.runtime.CampfireRecipeState {
@@ -57,62 +36,26 @@ public abstract class CampfireRecipeMatchingMixin
 
     //?}
 
-    //? if (>=1.19 && <=1.20.4) {
-    /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveRecipeMatch(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.21.2 && <=1.21.11) {
-    /*@org.spongepowered.asm.mixin.Unique
-    private net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>> anticrash$savedId;
-*///?} else if (>=26.1 && <=26.3) {
+    //? if (>=1.21.2 && <=26.3) {
     @org.spongepowered.asm.mixin.Unique
     private net.minecraft.resources.ResourceKey<net.minecraft.world.item.crafting.Recipe<?>>
             anticrash$savedId;
 
-    //?}
-
-    //? if (>=1.21.2 && <=26.3) {
     @org.spongepowered.asm.mixin.Unique private boolean anticrash$pending;
 
-    //?}
-
-    //? if (>=1.21.2 && <=26.3) {
     @Override
     public void anticrash$bindRecipeGetter(RecipeMatchGetterAccessorMixin getter) {
         if (anticrash$pending && getter != null) {
             getter.anticrash$setRecipeId(anticrash$savedId);
-            //?}
-
-            //? if (>=1.21.2 && <=26.3) {
             anticrash$pending = false;
         }
-        //?}
-
-        //? if (>=1.21.2 && <=26.3) {
         anticrash$getter = getter;
-        //?}
-
-        //? if (>=1.21.2 && <=26.3) {
         if (getter == null) {
             anticrash$savedId = null;
-            //?}
-
-            //? if (>=1.21.2 && <=26.3) {
             anticrash$pending = false;
         }
     }
 
-    //?}
-
-    //? if (>=1.21.2 && <=1.21.11) {
-    /*@Inject(method = "cookTick", at = @At("HEAD"))
-    private static void anticrash$restoreRecipeBeforeFirstTick(
-            net.minecraft.server.level.ServerLevel world,
-            net.minecraft.core.BlockPos pos,
-            net.minecraft.world.level.block.state.BlockState state,
-            CampfireBlockEntity campfire,
-            net.minecraft.world.item.crafting.RecipeManager.CachedCheck getter,
-            CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "cookTick", at = @At("HEAD"))
     private static void anticrash$restoreRecipeBeforeFirstTick(
             net.minecraft.server.level.ServerLevel world,
@@ -120,26 +63,23 @@ public abstract class CampfireRecipeMatchingMixin
             net.minecraft.world.level.block.state.BlockState state,
             CampfireBlockEntity campfire,
             net.minecraft.world.item.crafting.RecipeManager.CachedCheck getter,
-            CallbackInfo ci)
-                //?}
-                //? if (>=1.21.2 && <=26.3) {
-            {
+            CallbackInfo ci) {
         ((com.atsukimc.anticrash.runtime.CampfireRecipeState) campfire)
                 .anticrash$bindRecipeGetter((RecipeMatchGetterAccessorMixin) getter);
     }
 
     //?}
 
-    //? if (>=1.20.5 && <=1.21.5) {
+    //? if (>=1.19 && <=1.20.4) {
+    /*@Inject(method = "saveAdditional", at = @At("TAIL"))
+    private void anticrash$saveRecipeMatch(CompoundTag nbt, CallbackInfo ci)
+    *///?} else if <= 1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
-*///?} else if (>=1.21.6 && <=1.21.11) {
-    /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveRecipeMatch(net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
+    *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
@@ -149,7 +89,7 @@ public abstract class CampfireRecipeMatchingMixin
 
         //? if (>=1.19 && <=1.21.1) {
         /*ResourceLocation id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-*///?} else if (>=1.21.2 && <=26.3) {
+        *///?} else {
         var id =
                 anticrash$getter == null
                         ? anticrash$savedId
@@ -163,42 +103,30 @@ public abstract class CampfireRecipeMatchingMixin
                     if (id != null)
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
-*///?} else if (>=1.21.2 && <=1.21.10) {
+                        *///?} else if <= 1.21.10 {
                         /*extension.putString("RecipeMatch", id.location().toString());
-*///?} else if 1.21.11 {
-                        /*extension.putString("RecipeMatch", id.identifier().toString());
-*///?} else if (>=26.1 && <=26.3) {
+                        *///?} else {
                         extension.putString("RecipeMatch", id.identifier().toString());
                     //?}
-
                 });
     }
 
     //? if (>=1.19 && <=1.20.4) {
     /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.20.5 && <=1.21.5) {
+    *///?} else if <= 1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
-*///?} else if (>=1.21.6 && <=1.21.11) {
-    /*@Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void anticrash$loadRecipeMatch(net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
+    *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
                 //?}
             {
-
-        //? if (>=1.19 && <=1.21.11) {
-        /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-*///?} else if (>=26.1 && <=26.3) {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-        //?}
-
         if (extension == null) return;
 
         //? if (>=1.19 && <=1.21.1) {
@@ -207,27 +135,21 @@ public abstract class CampfireRecipeMatchingMixin
                         extension.contains("RecipeMatch", 8)
                                 ? ResourceLocation.tryParse(extension.getString("RecipeMatch"))
                                 : null);
-*///?} else if (>=1.21.2 && <=1.21.4) {
+        *///?} else if <= 1.21.4 {
         /*anticrash$savedId =
                 extension.contains("RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
                                 ResourceLocation.parse(extension.getString("RecipeMatch")))
                         : null;
-*///?} else if (>=1.21.5 && <=1.21.11) {
+        *///?} else if <= 1.21.10 {
         /*anticrash$savedId =
                 com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-*///?}
-        //? if (>=1.21.5 && <=1.21.10) {
-        /*ResourceLocation.parse(extension.getString("RecipeMatch").orElseThrow()))
-*///?} else if 1.21.11 {
-        /*Identifier.parse(extension.getString("RecipeMatch").orElseThrow()))
-*///?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*: null;
-*///?} else if (>=26.1 && <=26.3) {
+                                ResourceLocation.parse(extension.getString("RecipeMatch").orElseThrow()))
+                        : null;
+        *///?} else {
         anticrash$savedId =
                 com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
@@ -239,7 +161,6 @@ public abstract class CampfireRecipeMatchingMixin
         //? if (>=1.21.2 && <=26.3) {
         anticrash$pending = true;
         //?}
-
     }
 }
 //?}

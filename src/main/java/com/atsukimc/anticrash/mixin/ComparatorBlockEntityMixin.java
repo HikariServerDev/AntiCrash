@@ -1,18 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.BlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.BlockEntity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -28,13 +17,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(ComparatorBlockEntity.class)
 public abstract class ComparatorBlockEntityMixin {
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Shadow private int output;
-
-    *///?} else if (>=26.1 && <=26.3) {
     @Shadow private int output;
-
-    //?}
 
     @Inject(method = "setOutputSignal", at = @At("HEAD"))
     private void anticrash$markSignalDirty(int signal, CallbackInfo callbackInfo) {
@@ -44,26 +27,14 @@ public abstract class ComparatorBlockEntityMixin {
         /*if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
-                && !self.getLevel().isClientSide)
-        *///?} else if (>=1.21.9 && <=1.21.11) {
-        /*if (signal != output
-                        && self.hasLevel()
-                        && self.getLevel() != null
-                        && !self.getLevel().isClientSide())
-*///?} else if (>=26.1 && <=26.3) {
+                && !self.getLevel().isClientSide) {
+            *///?} else {
         if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
-                && !self.getLevel().isClientSide())
-        //?}
-        {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*self.getLevel().blockEntityChanged(self.getBlockPos());
-            *///?} else if (>=26.1 && <=26.3) {
-            self.getLevel().blockEntityChanged(self.getBlockPos());
+                && !self.getLevel().isClientSide()) {
             //?}
-
+            self.getLevel().blockEntityChanged(self.getBlockPos());
         }
     }
 }

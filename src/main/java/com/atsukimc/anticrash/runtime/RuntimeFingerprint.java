@@ -5,12 +5,7 @@ import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
 import com.atsukimc.anticrash.util.Hashing;
 
 import net.minecraft.server.MinecraftServer;
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerPlayer;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerPlayer;
-//?}
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -243,18 +238,12 @@ public final class RuntimeFingerprint {
     //? if (>=26.1 && <=26.3) {
     public static List<String> worldLines(RuntimeCapsule capsule) {
         List<String> lines = worldLines(capsule.worlds);
-        //?}
 
-        //? if (>=26.1 && <=26.3) {
         if (capsule.clockStates == null) lines.add("clock=MISSING");
         else for (ClockSnapshot clock : capsule.clockStates) lines.add(clock.canonical());
-        //?}
 
-        //? if (>=26.1 && <=26.3) {
         lines.sort(String::compareTo);
-        //?}
 
-        //? if (>=26.1 && <=26.3) {
         return lines;
     }
 
@@ -272,7 +261,8 @@ public final class RuntimeFingerprint {
                 "implementation=java.util.Random",
                 "state=UNSUPPORTED",
                 "reason=internal-state-not-exposed-by-minecraft-1.18.2");
-        *///?} else if (>=1.19 && <=26.3) {
+        *///?}
+        //? if (>=1.19 && <=26.3) {
         return List.of(
                 "implementation=net.minecraft.util.math.random.Random",
                 "state=UNSUPPORTED",
@@ -329,12 +319,7 @@ public final class RuntimeFingerprint {
         List<String> lines = new ArrayList<>();
         if (server == null) return lines;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerPlayer player : server.getPlayerList().getPlayers())
-        //?}
-        {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (com.atsukimc.anticrash.integration.carpet.CarpetIntegration.isFakePlayer(player)) {
                 continue;
             }
@@ -347,10 +332,12 @@ public final class RuntimeFingerprint {
                             + "|"
                             //? if (>=1.18 && <=1.19.4) {
                             /^+ player.getLevel().dimension().location());
-            ^///?} else if (>=1.20 && <=1.21.8) {
+            ^///?}
+            //? if (>=1.20 && <=1.21.8) {
             /^+ player.level().dimension().location());
                             ^///?}
-            *///?} else if (>=1.21.9 && <=1.21.11) {
+            *///?}
+            //? if (>=1.21.9 && <=1.21.11) {
             /*lines.add(
                                 player.getStringUUID()
                                         + "|"
@@ -358,10 +345,12 @@ public final class RuntimeFingerprint {
                                         + "|"
                                         //? if (>=1.21.9 && <=1.21.10) {
                                         /^+ player.level().dimension().location());
-                                        ^///?} else if 1.21.11 {
+                                        ^///?}
+                                        //? if 1.21.11 {
                                         /^+ player.level().dimension().identifier());
                                         ^///?}
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=26.1 && <=26.3) {
             lines.add(
                     player.getStringUUID()
                             + "|"

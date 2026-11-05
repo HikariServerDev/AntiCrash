@@ -3,30 +3,9 @@ package com.atsukimc.anticrash.snapshot.logical;
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 
-//? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.resources.ResourceKey;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.resources.ResourceKey;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.ChunkPos;
-//?}
-
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.resources.ResourceKey;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.Level;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.Level;
-//?}
 
 import java.util.HashMap;
 import java.util.IdentityHashMap;
@@ -51,12 +30,7 @@ public final class ChunkMutationTracker {
      */
     private final Map<String, Long2LongOpenHashMap> generations = new HashMap<>();
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private final Map<ResourceKey<Level>, String> dimensionNames = new IdentityHashMap<>();
-
-    *///?} else if (>=26.1 && <=26.3) {
     private final Map<ResourceKey<Level>, String> dimensionNames = new IdentityHashMap<>();
-    //?}
 
     /**
      * LevelTicks has no World reference in 1.18.2; bind its identity while worlds exist.
@@ -72,26 +46,21 @@ public final class ChunkMutationTracker {
 
     /** Mixin entry point; it does no allocation when the tracker is not being inspected. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static void record(Level world, ChunkPos position, String reason)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static void record(Level world, ChunkPos position, String reason)
-                //?}
-            {
+    public static void record(Level world, ChunkPos position, String reason) {
 
         //? if (>=1.18 && <=1.21.8) {
         /*if (!LogicalTracking.enabled() || world == null || position == null || world.isClientSide)
 
-            *///?} else if (>=1.21.9 && <=1.21.11) {
-        /*if (!LogicalTracking.enabled() || world == null || position == null || world.isClientSide())
-*///?} else if (>=26.1 && <=26.3) {
+            *///?}
+        //? if (>=1.21.9 && <=26.3) {
         if (!LogicalTracking.enabled() || world == null || position == null || world.isClientSide())
             //?}
             return;
 
         //? if (>=1.18 && <=1.21.11) {
         /*GLOBAL.record(GLOBAL.dimensionName(world), position.toLong(), reason);
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         GLOBAL.record(GLOBAL.dimensionName(world), position.pack(), reason);
         //?}
 
@@ -123,7 +92,8 @@ public final class ChunkMutationTracker {
 
         //? if (>=1.18 && <=1.21.11) {
         /*GLOBAL.record(dimension, position.toLong(), reason);
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         GLOBAL.record(dimension, position.pack(), reason);
         //?}
 
@@ -155,22 +125,19 @@ public final class ChunkMutationTracker {
         return next;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private synchronized String dimensionName(Level world)
-                *///?} else if (>=26.1 && <=26.3) {
-    private synchronized String dimensionName(Level world)
-                //?}
-            {
+    private synchronized String dimensionName(Level world) {
         // ResourceKey instances are interned, so identity lookup avoids Identifier#toString.
 
         //? if (>=1.18 && <=1.21.11) {
         /*return dimensionNames.computeIfAbsent(
                 //? if (>=1.18 && <=1.21.10) {
                 /^world.dimension(), key -> key.location().toString());
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^world.dimension(), key -> key.identifier().toString());
                 ^///?}
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         return dimensionNames.computeIfAbsent(
                 world.dimension(), key -> key.identifier().toString());
         //?}

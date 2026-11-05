@@ -3,12 +3,7 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.dedicated.DedicatedServer;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.dedicated.DedicatedServer;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -16,30 +11,16 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-//? if (>=1.18 && <=1.21.11) {
-/*@Mixin(DedicatedServer.class)
+@Mixin(DedicatedServer.class)
 public abstract class MinecraftDedicatedServerMixin {
-    /^*
+    /**
      * AntiCrash's pre-world coordinator has already made the disk decision in the Fabric
      * entrypoint. Refuse to enter vanilla setup when that decision failed or is unresolved. This
      * injection is at initServer HEAD, before the dedicated server creates its console
      * BufferedReader, binds a listener, or calls MinecraftServer.loadLevel().
-     ^/
+     */
     @Inject(method = "initServer", at = @At("HEAD"), cancellable = true)
-    private void anticrash$gateWorldStartup(CallbackInfoReturnable<Boolean> callbackInfo)
-                *///?} else if (>=26.1 && <=26.3) {
-@Mixin(DedicatedServer.class)
-public abstract class MinecraftDedicatedServerMixin {
-    /**
-                     * AntiCrash's pre-world coordinator has already made the disk decision in the Fabric
-                     * entrypoint. Refuse to enter vanilla setup when that decision failed or is unresolved. This
-                     * injection is at initServer HEAD, before the dedicated server creates its console
-                     * BufferedReader, binds a listener, or calls MinecraftServer.loadLevel().
-                     */
-    @Inject(method = "initServer", at = @At("HEAD"), cancellable = true)
-    private void anticrash$gateWorldStartup(CallbackInfoReturnable<Boolean> callbackInfo)
-                //?}
-            {
+    private void anticrash$gateWorldStartup(CallbackInfoReturnable<Boolean> callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null && !controller.allowWorldLoadBeforeServer()) {
             callbackInfo.setReturnValue(false);
@@ -55,14 +36,8 @@ public abstract class MinecraftDedicatedServerMixin {
      * intact instead and runs on the first tick after the checkpoint, in its original order.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Inject(method = "handleConsoleInputs", at = @At("HEAD"), cancellable = true)
-    private void anticrash$holdConsoleCommands(CallbackInfo callbackInfo)
-                *///?} else if (>=26.1 && <=26.3) {
     @Inject(method = "handleConsoleInputs", at = @At("HEAD"), cancellable = true)
-    private void anticrash$holdConsoleCommands(CallbackInfo callbackInfo)
-                //?}
-            {
+    private void anticrash$holdConsoleCommands(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null && controller.holdsServerTasks()) callbackInfo.cancel();
     }

@@ -10,12 +10,7 @@ import com.atsukimc.anticrash.runtime.MovingPistonTickSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.ChunkPos;
-//?}
 
 import org.junit.jupiter.api.Test;
 
@@ -36,19 +31,22 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long loadedOnly = new ChunkPos(1, 2).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long loadedOnly = new ChunkPos(1, 2).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long entity = new ChunkPos(3, 4).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long entity = new ChunkPos(3, 4).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long forced = new ChunkPos(5, 6).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long forced = new ChunkPos(5, 6).pack();
         //?}
 
@@ -81,25 +79,29 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long loadedOnly = new ChunkPos(1, 2).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long loadedOnly = new ChunkPos(1, 2).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long entity = new ChunkPos(3, 4).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long entity = new ChunkPos(3, 4).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long forced = new ChunkPos(5, 6).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long forced = new ChunkPos(5, 6).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long anchor = new ChunkPos(7, 8).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long anchor = new ChunkPos(7, 8).pack();
         //?}
 
@@ -146,7 +148,8 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long transientChunk = new ChunkPos(-328, 123).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long transientChunk = new ChunkPos(-328, 123).pack();
         //?}
 
@@ -183,19 +186,22 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long entityTicking = new ChunkPos(1, 1).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long entityTicking = new ChunkPos(1, 1).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long blockTicking = new ChunkPos(2, 2).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long blockTicking = new ChunkPos(2, 2).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long fullOnly = new ChunkPos(3, 3).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long fullOnly = new ChunkPos(3, 3).pack();
         //?}
 
@@ -212,13 +218,15 @@ class ChunkRecoveryPlanTest {
 
             //? if (>=1.18 && <=1.21.11) {
             /*tick.x = new ChunkPos(packed).getMinBlockX();
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             tick.x = ChunkPos.unpack(packed).getMinBlockX();
             //?}
 
             //? if (>=1.18 && <=1.21.11) {
             /*tick.z = new ChunkPos(packed).getMinBlockZ();
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             tick.z = ChunkPos.unpack(packed).getMinBlockZ();
             //?}
 
@@ -251,19 +259,22 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long entityTicking = new ChunkPos(1, 1).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long entityTicking = new ChunkPos(1, 1).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long blockTicking = new ChunkPos(2, 2).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long blockTicking = new ChunkPos(2, 2).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long fullOnly = new ChunkPos(3, 3).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long fullOnly = new ChunkPos(3, 3).pack();
         //?}
 
@@ -307,7 +318,8 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*chunks.transientStateChunks.add(new ChunkPos(10, 10).toLong());
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         chunks.transientStateChunks.add(new ChunkPos(10, 10).pack());
         //?}
 
@@ -333,7 +345,8 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long dormant = new ChunkPos(20, 20).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long dormant = new ChunkPos(20, 20).pack();
         //?}
 
@@ -362,7 +375,8 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*chunks.forcedChunks.add(new ChunkPos(1, 1).toLong());
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         chunks.forcedChunks.add(new ChunkPos(1, 1).pack());
         //?}
 
@@ -380,7 +394,8 @@ class ChunkRecoveryPlanTest {
                                                 "minecraft:overworld",
                                                 new ChunkPos(2, 2).toLong())),
                                 1));
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
@@ -401,7 +416,8 @@ class ChunkRecoveryPlanTest {
     //? if (>=1.18 && <=1.21.4) {
     /*@Test
     void convertsVanillaTicketLevelsToServerChunkManagerRadii()
-                *///?} else if (>=1.21.5 && <=26.3) {
+                *///?}
+    //? if (>=1.21.5 && <=26.3) {
     @Test
     void passesVanillaTicketLevelsDirectlyIn1215()
                 //?}
@@ -410,7 +426,8 @@ class ChunkRecoveryPlanTest {
         //? if (>=1.18 && <=1.21.4) {
         /*assertEquals(
                 0, ChunkRecoveryPlan.ticketRadiusForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 33, ChunkRecoveryPlan.ticketArgumentForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
         //?}
@@ -420,7 +437,8 @@ class ChunkRecoveryPlanTest {
                 2,
                 ChunkRecoveryPlan.ticketRadiusForLevel(
                         ChunkRecoveryPlan.ENTITY_TICKING_TICKET_LEVEL));
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 31,
                 ChunkRecoveryPlan.ticketArgumentForLevel(
@@ -430,7 +448,8 @@ class ChunkRecoveryPlanTest {
         //? if (>=1.18 && <=1.21.4) {
         /*assertThrows(
                 IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketRadiusForLevel(-1));
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         assertThrows(
                 IllegalArgumentException.class, () -> ChunkRecoveryPlan.ticketArgumentForLevel(-1));
         //?}
@@ -441,7 +460,8 @@ class ChunkRecoveryPlanTest {
                 () ->
                         ChunkRecoveryPlan.ticketRadiusForLevel(
                                 ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         assertThrows(
                 IllegalArgumentException.class,
                 () ->
@@ -488,7 +508,8 @@ class ChunkRecoveryPlanTest {
                                 entry.packedPosition() == new ChunkPos(2, 3).toLong()
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
@@ -504,7 +525,8 @@ class ChunkRecoveryPlanTest {
                                 entry.packedPosition() == new ChunkPos(-2, -1).toLong()
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
@@ -529,7 +551,8 @@ class ChunkRecoveryPlanTest {
 
             //? if (>=1.18 && <=1.21.11) {
             /*chunks.loadedChunks.add(new ChunkPos(index, 0).toLong());
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             chunks.loadedChunks.add(new ChunkPos(index, 0).pack());
             //?}
 
@@ -538,7 +561,8 @@ class ChunkRecoveryPlanTest {
 
             //? if (>=1.18 && <=1.21.11) {
             /*chunks.entityTickingChunks.add(new ChunkPos(index, 100).toLong());
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             chunks.entityTickingChunks.add(new ChunkPos(index, 100).pack());
             //?}
 
@@ -546,7 +570,8 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long forced = new ChunkPos(0, 200).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long forced = new ChunkPos(0, 200).pack();
         //?}
 
@@ -564,7 +589,8 @@ class ChunkRecoveryPlanTest {
                                 new ChunkRecoveryPlan.Anchor(
                                         "minecraft:overworld", new ChunkPos(1, 201).toLong())),
                         256);
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         ChunkRecoveryPlan.Selection selection =
                 ChunkRecoveryPlan.select(
                         capsule,
@@ -586,7 +612,8 @@ class ChunkRecoveryPlanTest {
                 selection.entries().stream()
                         .allMatch(entry ->
                                 ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel()) <= 2));
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         assertTrue(
                 selection.entries().stream()
                         .allMatch(entry ->
@@ -610,19 +637,22 @@ class ChunkRecoveryPlanTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*long entity = new ChunkPos(-330, 122).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long entity = new ChunkPos(-330, 122).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long full = new ChunkPos(-330, 123).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long full = new ChunkPos(-330, 123).pack();
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long forced = new ChunkPos(-330, 124).toLong();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         long forced = new ChunkPos(-330, 124).pack();
         //?}
 

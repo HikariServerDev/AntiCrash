@@ -25,7 +25,8 @@ public final class PlayerSnapshotData {
 
     //? if (>=1.18 && <=1.21.4) {
     /*public float fallDistance;
-    *///?} else if (>=1.21.5 && <=26.3) {
+    *///?}
+    //? if (>=1.21.5 && <=26.3) {
     public double fallDistance;
     //?}
 

@@ -1,11 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
@@ -17,21 +12,13 @@ public interface AbstractFurnaceBlockEntityTimerAccessor {
     /*@Accessor("litTime")
     int anticrash$getBurnTime();
 
-    *///?} else if (>=1.21.4 && <=26.3) {
+    @Accessor("cookingProgress")
+    int anticrash$getCookTime();
+    *///?} else {
     @Accessor("litTimeRemaining")
     int anticrash$getBurnTime();
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.3) {
-    /*@Accessor("cookingProgress")
-    int anticrash$getCookTime();
-    *///?} else if (>=1.21.4 && <=1.21.11) {
-    /*@Accessor("cookingTimer")
-        int anticrash$getCookTime();
-*///?} else if (>=26.1 && <=26.3) {
     @Accessor("cookingTimer")
     int anticrash$getCookTime();
     //?}
-
 }

@@ -1,25 +1,8 @@
 package com.atsukimc.anticrash.player;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.player.Player;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.entity.player.Inventory;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.player.Inventory;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.entity.player.Player;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.item.ItemStack;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.item.ItemStack;
-//?}
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -31,32 +14,17 @@ public final class InventorySnapshot {
     public final List<String> offhand = new ArrayList<>();
     public int selectedSlot;
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static InventorySnapshot capture(
-            Player player,
-            boolean mainEnabled,
-            boolean armorEnabled,
-            boolean offhandEnabled,
-            boolean selectedEnabled)
-            throws IOException
-                *///?} else if (>=26.1 && <=26.3) {
     public static InventorySnapshot capture(
             Player player,
             boolean mainEnabled,
             boolean armorEnabled,
             boolean offhandEnabled,
             boolean selectedEnabled)
-            throws IOException
-                //?}
-            {
+            throws IOException {
         if (!(mainEnabled || armorEnabled || offhandEnabled || selectedEnabled)) return null;
         InventorySnapshot snapshot = new InventorySnapshot();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Inventory inventory = player.getInventory();
-        *///?} else if (>=26.1 && <=26.3) {
         Inventory inventory = player.getInventory();
-        //?}
 
         if (mainEnabled)
 
@@ -66,19 +34,12 @@ public final class InventorySnapshot {
                 *///?}
             //? if (>=1.18 && <=1.20.4) {
             /*snapshot.main.add(NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
-        *///?} else if (>=1.20.5 && <=1.21.1) {
+        *///?}
+            //? if (>=1.20.5 && <=1.21.4) {
             /*snapshot.main.add(
                                 NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.2 && <=1.21.4) {
-            /*snapshot.main.add(
-                                NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.5 && <=1.21.11) {
-            /*for (ItemStack stack : inventory.getNonEquipmentItems())
-                        snapshot.main.add(
-                                NbtCodec.encode(
-                                        com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                                stack, player.registryAccess())));
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : inventory.getNonEquipmentItems())
                 snapshot.main.add(
                         NbtCodec.encode(
@@ -95,21 +56,13 @@ public final class InventorySnapshot {
             //? if (>=1.18 && <=1.20.4) {
             /*snapshot.armor.add(
                         NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
-        *///?} else if (>=1.20.5 && <=1.21.1) {
+        *///?}
+            //? if (>=1.20.5 && <=1.21.4) {
             /*snapshot.armor.add(
                                 NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.2 && <=1.21.4) {
-            /*snapshot.armor.add(
-                                NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.5 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : equipmentStacks(inventory, 36, 4))
-                //?}
-                //? if (>=1.21.5 && <=1.21.11) {
-                /*snapshot.armor.add(
-                                NbtCodec.encode(
-                                        com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                                stack, player.registryAccess())));
-*///?} else if (>=26.1 && <=26.3) {
                 snapshot.armor.add(
                         NbtCodec.encode(
                                 com.atsukimc.anticrash.runtime.VersionNbt.item(
@@ -125,21 +78,13 @@ public final class InventorySnapshot {
             //? if (>=1.18 && <=1.20.4) {
             /*snapshot.offhand.add(
                         NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
-        *///?} else if (>=1.20.5 && <=1.21.1) {
+        *///?}
+            //? if (>=1.20.5 && <=1.21.4) {
             /*snapshot.offhand.add(
                                 NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.2 && <=1.21.4) {
-            /*snapshot.offhand.add(
-                                NbtCodec.encode(stack.saveOptional(player.registryAccess())));
-*///?} else if (>=1.21.5 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : equipmentStacks(inventory, 40, 1))
-                //?}
-                //? if (>=1.21.5 && <=1.21.11) {
-                /*snapshot.offhand.add(
-                                NbtCodec.encode(
-                                        com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                                stack, player.registryAccess())));
-*///?} else if (>=26.1 && <=26.3) {
                 snapshot.offhand.add(
                         NbtCodec.encode(
                                 com.atsukimc.anticrash.runtime.VersionNbt.item(
@@ -149,57 +94,36 @@ public final class InventorySnapshot {
         if (selectedEnabled)
             //? if (>=1.18 && <=1.21.4) {
             /*snapshot.selectedSlot = inventory.selected;
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+            //? if (>=1.21.5 && <=26.3) {
             snapshot.selectedSlot = inventory.getSelectedSlot();
         //?}
 
         return snapshot;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public boolean restore(
-            Player player,
-            boolean mainEnabled,
-            boolean armorEnabled,
-            boolean offhandEnabled,
-            boolean selectedEnabled)
-            throws IOException
-                *///?} else if (>=26.1 && <=26.3) {
     public boolean restore(
             Player player,
             boolean mainEnabled,
             boolean armorEnabled,
             boolean offhandEnabled,
             boolean selectedEnabled)
-            throws IOException
-                //?}
-            {
+            throws IOException {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Inventory inventory = player.getInventory();
-        *///?} else if (>=26.1 && <=26.3) {
         Inventory inventory = player.getInventory();
-        //?}
 
         //? if (>=1.18 && <=1.20.4) {
         /*List<ItemStack> decodedMain =
                 mainEnabled ? decodeList(main, inventory.items.size(), "main") : null;
-        *///?} else if (>=1.20.5 && <=1.21.4) {
+        *///?}
+        //? if (>=1.20.5 && <=1.21.4) {
         /*List<ItemStack> decodedMain =
                         mainEnabled
                                 ? decodeList(
                                         main, inventory.items.size(), "main", player.registryAccess())
                                 : null;
-*///?} else if (>=1.21.5 && <=1.21.11) {
-        /*List<ItemStack> decodedMain =
-                        mainEnabled
-                                ? decodeList(
-                                        main,
-                                        inventory.getNonEquipmentItems().size(),
-                                        "main",
-                                        player.registryAccess())
-                                : null;
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=1.21.5 && <=26.3) {
         List<ItemStack> decodedMain =
                 mainEnabled
                         ? decodeList(
@@ -213,16 +137,15 @@ public final class InventorySnapshot {
         //? if (>=1.18 && <=1.20.4) {
         /*List<ItemStack> decodedArmor =
                 armorEnabled ? decodeList(armor, inventory.armor.size(), "armor") : null;
-        *///?} else if (>=1.20.5 && <=1.21.4) {
+        *///?}
+        //? if (>=1.20.5 && <=1.21.4) {
         /*List<ItemStack> decodedArmor =
                         armorEnabled
                                 ? decodeList(
                                         armor, inventory.armor.size(), "armor", player.registryAccess())
                                 : null;
-*///?} else if (>=1.21.5 && <=1.21.11) {
-        /*List<ItemStack> decodedArmor =
-                        armorEnabled ? decodeList(armor, 4, "armor", player.registryAccess()) : null;
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=1.21.5 && <=26.3) {
         List<ItemStack> decodedArmor =
                 armorEnabled ? decodeList(armor, 4, "armor", player.registryAccess()) : null;
         //?}
@@ -230,7 +153,8 @@ public final class InventorySnapshot {
         //? if (>=1.18 && <=1.20.4) {
         /*List<ItemStack> decodedOffhand =
                 offhandEnabled ? decodeList(offhand, inventory.offhand.size(), "offhand") : null;
-        *///?} else if (>=1.20.5 && <=1.21.4) {
+        *///?}
+        //? if (>=1.20.5 && <=1.21.4) {
         /*List<ItemStack> decodedOffhand =
                         offhandEnabled
                                 ? decodeList(
@@ -239,12 +163,8 @@ public final class InventorySnapshot {
                                         "offhand",
                                         player.registryAccess())
                                 : null;
-*///?} else if (>=1.21.5 && <=1.21.11) {
-        /*List<ItemStack> decodedOffhand =
-                        offhandEnabled
-                                ? decodeList(offhand, 1, "offhand", player.registryAccess())
-                                : null;
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=1.21.5 && <=26.3) {
         List<ItemStack> decodedOffhand =
                 offhandEnabled ? decodeList(offhand, 1, "offhand", player.registryAccess()) : null;
         //?}
@@ -258,12 +178,9 @@ public final class InventorySnapshot {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (decodedArmor != null) applyList(inventory, decodedArmor, inventory.items.size());
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         if (decodedArmor != null)
-            //?}
-            //? if (>=1.21.5 && <=1.21.11) {
-            /*applyList(inventory, decodedArmor, inventory.getNonEquipmentItems().size());
-*///?} else if (>=26.1 && <=26.3) {
             applyList(inventory, decodedArmor, inventory.getNonEquipmentItems().size());
         //?}
 
@@ -271,67 +188,47 @@ public final class InventorySnapshot {
 
             //? if (>=1.18 && <=1.21.4) {
             /*applyList(inventory, decodedOffhand, inventory.items.size() + inventory.armor.size());
-        *///?} else if (>=1.21.5 && <=1.21.11) {
-            /*applyList(inventory, decodedOffhand, inventory.getNonEquipmentItems().size() + 4);
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+            //? if (>=1.21.5 && <=26.3) {
             applyList(inventory, decodedOffhand, inventory.getNonEquipmentItems().size() + 4);
         //?}
 
         if (selectedEnabled)
             //? if (>=1.18 && <=1.21.4) {
             /*inventory.selected = selectedSlot;
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+            //? if (>=1.21.5 && <=26.3) {
             inventory.setSelectedSlot(selectedSlot);
         //?}
 
         boolean changed = mainEnabled || armorEnabled || offhandEnabled || selectedEnabled;
-        if (changed)
-            //? if (>=1.18 && <=1.21.11) {
-            /*inventory.setChanged();
-        *///?} else if (>=26.1 && <=26.3) {
-            inventory.setChanged();
-        //?}
+        if (changed) inventory.setChanged();
 
         return changed;
     }
 
     /** Decodes every enabled slot without mutating the live inventory. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public void validate(
-            Player player,
-            boolean mainEnabled,
-            boolean armorEnabled,
-            boolean offhandEnabled,
-            boolean selectedEnabled)
-            throws IOException
-                *///?} else if (>=26.1 && <=26.3) {
     public void validate(
             Player player,
             boolean mainEnabled,
             boolean armorEnabled,
             boolean offhandEnabled,
             boolean selectedEnabled)
-            throws IOException
-                //?}
-            {
+            throws IOException {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Inventory inventory = player.getInventory();
-        *///?} else if (>=26.1 && <=26.3) {
         Inventory inventory = player.getInventory();
-        //?}
 
         //? if (>=1.18 && <=1.20.4) {
         /*if (mainEnabled) decodeList(main, inventory.items.size(), "main");
-        *///?} else if (>=1.20.5 && <=26.3) {
+        *///?}
+        //? if (>=1.20.5 && <=26.3) {
         if (mainEnabled)
             //?}
             //? if (>=1.20.5 && <=1.21.4) {
             /*decodeList(main, inventory.items.size(), "main", player.registryAccess());
-*///?} else if (>=1.21.5 && <=1.21.11) {
-            /*decodeList(main, inventory.getNonEquipmentItems().size(), "main", player.registryAccess());
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             decodeList(
                     main, inventory.getNonEquipmentItems().size(), "main", player.registryAccess());
         //?}
@@ -341,12 +238,12 @@ public final class InventorySnapshot {
             //?}
             //? if (>=1.18 && <=1.20.4) {
             /*decodeList(armor, inventory.armor.size(), "armor");
-        *///?} else if (>=1.20.5 && <=1.21.4) {
+        *///?}
+            //? if (>=1.20.5 && <=1.21.4) {
             /*if (armorEnabled)
                     decodeList(armor, inventory.armor.size(), "armor", player.registryAccess());
-*///?} else if (>=1.21.5 && <=1.21.11) {
-            /*decodeList(armor, 4, "armor", player.registryAccess());
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             decodeList(armor, 4, "armor", player.registryAccess());
         //?}
 
@@ -355,12 +252,12 @@ public final class InventorySnapshot {
             //?}
             //? if (>=1.18 && <=1.20.4) {
             /*decodeList(offhand, inventory.offhand.size(), "offhand");
-        *///?} else if (>=1.20.5 && <=1.21.4) {
+        *///?}
+            //? if (>=1.20.5 && <=1.21.4) {
             /*if (offhandEnabled)
                     decodeList(offhand, inventory.offhand.size(), "offhand", player.registryAccess());
-*///?} else if (>=1.21.5 && <=1.21.11) {
-            /*decodeList(offhand, 1, "offhand", player.registryAccess());
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=1.21.5 && <=26.3) {
             decodeList(offhand, 1, "offhand", player.registryAccess());
         //?}
 
@@ -379,21 +276,24 @@ public final class InventorySnapshot {
         if (mainEnabled)
             //? if (>=1.18 && <=1.20.4) {
             /*decodeList(main, 36, "main");
-        *///?} else if (>=1.20.5 && <=26.3) {
+        *///?}
+            //? if (>=1.20.5 && <=26.3) {
             validateEncodedList(main, 36, "main");
         //?}
 
         if (armorEnabled)
             //? if (>=1.18 && <=1.20.4) {
             /*decodeList(armor, 4, "armor");
-        *///?} else if (>=1.20.5 && <=26.3) {
+        *///?}
+            //? if (>=1.20.5 && <=26.3) {
             validateEncodedList(armor, 4, "armor");
         //?}
 
         if (offhandEnabled)
             //? if (>=1.18 && <=1.20.4) {
             /*decodeList(offhand, 1, "offhand");
-        *///?} else if (>=1.20.5 && <=26.3) {
+        *///?}
+            //? if (>=1.20.5 && <=26.3) {
             validateEncodedList(offhand, 1, "offhand");
         //?}
 
@@ -405,10 +305,8 @@ public final class InventorySnapshot {
     //? if (>=1.18 && <=1.20.4) {
     /*private static List<ItemStack> decodeList(
             List<String> encoded, int expectedSize, String category) throws IOException
-                *///?} else if (>=1.20.5 && <=1.21.11) {
-    /*private static List<net.minecraft.nbt.CompoundTag> validateEncodedList(
-                            List<String> encoded, int expectedSize, String category) throws IOException
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+    //? if (>=1.20.5 && <=26.3) {
     private static List<net.minecraft.nbt.CompoundTag> validateEncodedList(
             List<String> encoded, int expectedSize, String category) throws IOException
                 //?}
@@ -425,27 +323,17 @@ public final class InventorySnapshot {
 
         //? if (>=1.18 && <=1.20.4) {
         /*List<ItemStack> decoded = new ArrayList<>(expectedSize);
-        *///?} else if (>=1.20.5 && <=1.21.11) {
-        /*List<net.minecraft.nbt.CompoundTag> decoded = new ArrayList<>(expectedSize);
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.20.5 && <=26.3) {
         List<net.minecraft.nbt.CompoundTag> decoded = new ArrayList<>(expectedSize);
         //?}
 
         for (String item : encoded) {
             try {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*net.minecraft.nbt.Tag element = NbtCodec.decode(item);
-                *///?} else if (>=26.1 && <=26.3) {
                 net.minecraft.nbt.Tag element = NbtCodec.decode(item);
-                //?}
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (!(element instanceof net.minecraft.nbt.CompoundTag compound))
-                *///?} else if (>=26.1 && <=26.3) {
-                if (!(element instanceof net.minecraft.nbt.CompoundTag compound))
-                //?}
-                {
+                if (!(element instanceof net.minecraft.nbt.CompoundTag compound)) {
                     throw new IOException(
                             "Inventory " + category + " contains a non-compound item");
                 }
@@ -460,12 +348,14 @@ public final class InventorySnapshot {
                                                         == null
                                                 || !compound.contains("count", 99)
                                                 || compound.getInt("count") < 1))
-*///?} else if (>=1.21.5 && <=1.21.11) {
+*///?}
+                //? if (>=1.21.5 && <=1.21.11) {
                 /*if (!compound.isEmpty()
                                         && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
                                                 //? if (>=1.21.5 && <=1.21.10) {
                                                 /^|| net.minecraft.resources.ResourceLocation.tryParse(
-                                                ^///?} else if 1.21.11 {
+                                                ^///?}
+                                                //? if 1.21.11 {
                                                 /^|| net.minecraft.resources.Identifier.tryParse(
                                                 ^///?}
                                                                 compound.getString("id").orElseThrow())
@@ -473,7 +363,8 @@ public final class InventorySnapshot {
                                                 || !com.atsukimc.anticrash.runtime.VersionNbt.contains(
                                                         compound, "count", 99)
                                                 || compound.getInt("count").orElseThrow() < 1))
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+                //? if (>=26.1 && <=26.3) {
                 if (!compound.isEmpty()
                         && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
                                 || net.minecraft.resources.Identifier.tryParse(
@@ -487,7 +378,9 @@ public final class InventorySnapshot {
                 {
                     throw new IOException("Invalid component item envelope in " + category);
                 }
-                //?} else if (>=1.18 && <=1.20.4) {
+                //?}
+
+                //? if (>=1.18 && <=1.20.4) {
                 /*decoded.add(ItemStack.of(compound));
                 *///?}
                 //? if (>=1.20.5 && <=26.3) {
@@ -506,29 +399,14 @@ public final class InventorySnapshot {
 
     }
 
-    //?}
-
-    //? if (>=1.20.5 && <=1.21.11) {
-    /*private static List<ItemStack> decodeList(
-                    List<String> encoded,
-                    int expectedSize,
-                    String category,
-                    net.minecraft.core.HolderLookup.Provider registries)
-                    throws IOException
-*///?} else if (>=26.1 && <=26.3) {
     private static List<ItemStack> decodeList(
             List<String> encoded,
             int expectedSize,
             String category,
             net.minecraft.core.HolderLookup.Provider registries)
-            throws IOException
-                //?}
-                //? if (>=1.20.5 && <=26.3) {
-            {
+            throws IOException {
         List<ItemStack> result = new ArrayList<>(expectedSize);
-        //?}
 
-        //? if (>=1.20.5 && <=26.3) {
         for (var compound : validateEncodedList(encoded, expectedSize, category)) {
             if (compound.isEmpty()) result.add(ItemStack.EMPTY);
             else
@@ -539,17 +417,8 @@ public final class InventorySnapshot {
                                         .orElseThrow(() ->
                                                 new IOException(
                                                         "Unresolvable item/components in " + category)));
-*///?} else if (>=1.21.6 && <=1.21.11) {
-                /*result.add(
-                                ItemStack.CODEC
-                                        .parse(
-                                                registries.createSerializationContext(net.minecraft.nbt.NbtOps.INSTANCE),
-                                                compound)
-                                        .result()
-                                        .orElseThrow(() ->
-                                                new IOException(
-                                                        "Unresolvable item/components in " + category)));
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+                //? if (>=1.21.6 && <=26.3) {
                 result.add(
                         ItemStack.CODEC
                                 .parse(
@@ -564,51 +433,23 @@ public final class InventorySnapshot {
             //? if (>=1.20.5 && <=26.3) {
 
         }
-        //?}
 
-        //? if (>=1.20.5 && <=26.3) {
         return result;
         //?}
 
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static void applyList(Inventory inventory, List<ItemStack> decoded, int offset)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static void applyList(Inventory inventory, List<ItemStack> decoded, int offset)
-                //?}
-            {
+    private static void applyList(Inventory inventory, List<ItemStack> decoded, int offset) {
         for (int index = 0; index < decoded.size(); index++)
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*inventory.setItem(offset + index, decoded.get(index));
-        *///?} else if (>=26.1 && <=26.3) {
             inventory.setItem(offset + index, decoded.get(index));
-        //?}
-
     }
 
-    //? if (>=1.21.5 && <=1.21.11) {
-    /*private static List<ItemStack> equipmentStacks(
-                Inventory inventory, int offset, int count)
-*///?} else if (>=26.1 && <=26.3) {
-    private static List<ItemStack> equipmentStacks(Inventory inventory, int offset, int count)
-                //?}
-                //? if (>=1.21.5 && <=26.3) {
-            {
+    //? if (>=1.21.5 && <=26.3) {
+    private static List<ItemStack> equipmentStacks(Inventory inventory, int offset, int count) {
         List<ItemStack> stacks = new ArrayList<>(count);
-        //?}
 
-        //? if (>=1.21.5 && <=26.3) {
-        for (int index = 0; index < count; index++)
-            //?}
-            //? if (>=1.21.5 && <=1.21.11) {
-            /*stacks.add(inventory.getItem(offset + index));
-*///?} else if (>=26.1 && <=26.3) {
-            stacks.add(inventory.getItem(offset + index));
-        //?}
+        for (int index = 0; index < count; index++) stacks.add(inventory.getItem(offset + index));
 
-        //? if (>=1.21.5 && <=26.3) {
         return stacks;
     }
 

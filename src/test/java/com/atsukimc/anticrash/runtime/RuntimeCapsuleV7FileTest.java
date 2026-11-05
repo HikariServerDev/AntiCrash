@@ -32,7 +32,8 @@ class RuntimeCapsuleV7FileTest {
 
         //? if (>=1.18 && <=1.21.11) {
         /*inhabited.chunks.add(net.minecraft.world.level.ChunkPos.asLong(-3, 7));
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         inhabited.chunks.add(net.minecraft.world.level.ChunkPos.pack(-3, 7));
         //?}
 
@@ -58,7 +59,8 @@ class RuntimeCapsuleV7FileTest {
         /*assertEquals(
                 net.minecraft.world.level.ChunkPos.asLong(-3, 7),
                 read.inhabitedTimes.get(0).chunks.get(0));
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         assertEquals(
                 net.minecraft.world.level.ChunkPos.pack(-3, 7),
                 read.inhabitedTimes.get(0).chunks.get(0));

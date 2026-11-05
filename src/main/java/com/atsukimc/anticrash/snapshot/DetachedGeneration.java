@@ -9,18 +9,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
+import java.util.*;
+import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.atomic.AtomicReference;
@@ -283,14 +273,8 @@ public final class DetachedGeneration {
                 /*net.minecraft.world.level.chunk.storage.RegionFile file =
                         new net.minecraft.world.level.chunk.storage.RegionFile(
                                 target, target.getParent(), false);
-                *///?} else if (>=1.20.5 && <=1.21.11) {
-                /*net.minecraft.world.level.chunk.storage.RegionFile file =
-                                        new net.minecraft.world.level.chunk.storage.RegionFile(
-                                                com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
-                                                target,
-                                                target.getParent(),
-                                                false);
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=1.20.5 && <=26.3) {
                 net.minecraft.world.level.chunk.storage.RegionFile file =
                         new net.minecraft.world.level.chunk.storage.RegionFile(
                                 com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
@@ -304,13 +288,7 @@ public final class DetachedGeneration {
                         PendingRegionWrite write = queued.write;
                         if (write.nbt() == null) {
 
-                            //? if (>=1.18 && <=1.19.1) {
-                            /*file.clear(write.pos());
-                            *///?} else if (>=1.19.2 && <=1.21.11) {
-                            /*file.clear(write.pos());
-*///?} else if (>=26.1 && <=26.3) {
                             file.clear(write.pos());
-                            //?}
 
                         } else {
                             if (write.nbt().contains("__context")) {
@@ -318,24 +296,21 @@ public final class DetachedGeneration {
                                         "Queued chunk data was being modified: " + write.pos());
                             }
 
-                            //? if (>=1.18 && <=1.21.11) {
-                            /*try (java.io.DataOutputStream output =
-                                    file.getChunkDataOutputStream(write.pos()))
-                            *///?} else if (>=26.1 && <=26.3) {
                             try (java.io.DataOutputStream output =
-                                    file.getChunkDataOutputStream(write.pos()))
-                            //?}
-                            {
+                                    file.getChunkDataOutputStream(write.pos())) {
 
                                 //? if (>=1.18 && <=1.21.11) {
                                 /*//? if (>=1.18 && <=1.20.1) {
                                 /^net.minecraft.nbt.NbtIo.write(write.nbt(), output);
-                                ^///?} else if 1.20.2 {
+                                ^///?}
+                                //? if 1.20.2 {
                                 /^net.minecraft.nbt.NbtIo.writeUnnamedTag(write.nbt(), output);
-                                ^///?} else if (>=1.20.3 && <=1.21.11) {
+                                ^///?}
+                                //? if (>=1.20.3 && <=1.21.11) {
                                 /^net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(write.nbt(), output);
                                 ^///?}
-                                *///?} else if (>=26.1 && <=26.3) {
+                                *///?}
+                                //? if (>=26.1 && <=26.3) {
                                 net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(
                                         write.nbt(), output);
                                 //?}

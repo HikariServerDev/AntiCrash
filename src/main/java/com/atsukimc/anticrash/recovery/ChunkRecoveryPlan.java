@@ -57,7 +57,8 @@ public final class ChunkRecoveryPlan {
 
         //? if (>=1.18 && <=1.21.4) {
         /*return FULL_TICKET_LEVEL - ticketLevel;
-        *///?} else if (>=1.21.5 && <=26.3) {
+        *///?}
+        //? if (>=1.21.5 && <=26.3) {
         return ticketLevel;
         //?}
 
@@ -128,7 +129,8 @@ public final class ChunkRecoveryPlan {
                                 tick.dimension,
                                 new net.minecraft.world.level.ChunkPos(tick.x >> 4, tick.z >> 4)
                                         .toLong()));
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 scheduledTickChunks.add(
                         new Key(
                                 tick.dimension,
@@ -150,7 +152,8 @@ public final class ChunkRecoveryPlan {
                                 piston.dimension,
                                 new net.minecraft.world.level.ChunkPos(piston.x >> 4, piston.z >> 4)
                                         .toLong()));
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 movingPistonChunks.add(
                         new Key(
                                 piston.dimension,

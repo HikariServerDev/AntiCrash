@@ -16,6 +16,15 @@ python3 scripts/verify_artifacts.py --version 1.18.2 --collect
 
 ソース内の条件コメントは公式 Stonecutter が管理する。無効な枝もソースなので削除しない。formatter は import の削除・並べ替えなどを行わず、別の枝専用の import も保持する。条件コメントの追加後は対象版だけでなく、隣接する API 境界の版もビルドする。
 
+you should re-consider the stonecutter's philosophy, one-source-multi-versioning does not mean crazy if chain
+why you think that, why you do that, just AI slop? where is your principle?  lol
+yea ik you always rely on the AI AlL ThE TiMe,
+but if you do, let’s make sure you use it sensibly, your AI is crying baby
+
+and please don’t produce rubbish, You can’t boast about it even if you do produce rubbish.
+
+I doubt you'll even look at this anyway, but do delete it once you found this and reviewed, i hope you
+
 `./gradlew qualityCheck` で整形・ソース構成・Pythonスクリプトの回帰テストをまとめて実行する。個別実行は `formatCheck`、`sourceCheck`、`scriptTest`。`formatApply` はJavaソースを整形する。`./gradlew check` はこれらと現在の版・Supervisorの単体テストを実行する。CIの入口は `release.yml`（Verify and release）。`checks.yml` の品質検査と `build.yml` の版別ビルドを再利用し、PR・main pushごとに一度だけ実行する。各版の `build` はJavaテスト、対応版のprobe生成、ModとSupervisorの `verifyDistribution`（ZIP CRC・ライセンス・メタデータ・不要クラス検査）も行う。
 
 formatterはgoogle-java-formatを使う。Pythonの前後処理は無効なStonecutter枝と条件コメントを保護するために残す。標準formatterへ直接置き換える場合は、非アクティブ版のコードやimportを削除しないことを確認する。

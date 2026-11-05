@@ -38,62 +38,14 @@ import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.AtomicFiles;
 
 import net.fabricmc.loader.api.FabricLoader;
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.SectionPos;
-//?}
-
 import net.minecraft.server.MinecraftServer;
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ChunkHolder;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ChunkHolder;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.SectionPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.ChunkAccess;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.ChunkAccess;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
-//?}
-
-//? if (>=1.18 && <=1.19.4) {
-/*import net.minecraft.world.level.chunk.ImposterProtoChunk;
-*///?}
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.LevelChunk;
-//?}
-
-//? if (>=1.18 && <=1.19.4) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
-*///?}
-//? if (>=1.20 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.ImposterProtoChunk;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.storage.IOWorker;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.chunk.storage.IOWorker;
-//?}
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -391,85 +343,43 @@ public final class CheckpointManager {
         int prepared = 0;
         try {
             outer:
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (ServerLevel world : server.getAllLevels())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (ServerLevel world : server.getAllLevels())
-            //?}
-            {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*world.getChunkSource().pollTask();
-                *///?} else if (>=26.1 && <=26.3) {
+            for (ServerLevel world : server.getAllLevels()) {
                 world.getChunkSource().pollTask();
-                //?}
-
-                //? if (>=1.18 && <=1.20.6) {
-                /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                        (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-                *///?} else if (>=1.21 && <=1.21.11) {
-                /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                                        (ThreadedAnvilChunkStorageAccessorMixin)
-                                                world.getChunkSource().chunkMap;
-*///?} else if (>=26.1 && <=26.3) {
                 ThreadedAnvilChunkStorageAccessorMixin storage =
                         (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-                //?}
-
                 for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                     if (prepared >= 16 || System.nanoTime() - started >= budget) break outer;
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*if (holder == null || !holder.wasAccessibleSinceLastSave())
-                        *///?} else if (>=26.1 && <=26.3) {
-                    if (holder == null || !holder.wasAccessibleSinceLastSave())
-                        //?}
-                        continue;
-
+                    if (holder == null || !holder.wasAccessibleSinceLastSave()) continue;
                     //? if (>=1.18 && <=1.20.6) {
                     /*CompletableFuture<ChunkAccess> saving = holder.getChunkToSave();
-                    *///?} else if (>=1.21 && <=1.21.11) {
-                    /*CompletableFuture<?> saving = holder.getSaveSyncFuture();
-*///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=1.21 && <=26.3) {
                     CompletableFuture<?> saving = holder.getSaveSyncFuture();
                     //?}
 
                     //? if (>=1.18 && <=1.20.6) {
                     /*if (!saving.isDone())
-                        *///?} else if (>=1.21 && <=1.21.11) {
-                    /*if (!holder.isReadyForSaving())
-*///?} else if (>=26.1 && <=26.3) {
+                        *///?}
+                    //? if (>=1.21 && <=26.3) {
                     if (!holder.isReadyForSaving())
                         //?}
                         continue;
 
                     //? if (>=1.18 && <=1.20.6) {
                     /*ChunkAccess chunk = saving.getNow(null);
-                    *///?} else if (>=1.21 && <=26.3) {
+                    *///?}
+                    //? if (>=1.21 && <=26.3) {
                     saving.getNow(null);
                     //?}
                     // surface exceptional completion; never block
 
-                    //? if (>=1.21 && <=1.21.11) {
-                    /*ChunkAccess chunk = holder.getLatestChunk();
-*///?} else if (>=26.1 && <=26.3) {
+                    //? if (>=1.21 && <=26.3) {
                     ChunkAccess chunk = holder.getLatestChunk();
-                    //?}
 
-                    //? if (>=1.21 && <=1.21.11) {
-                    /*if (chunk instanceof ImposterProtoChunk readOnly)
-                                            chunk = readOnly.getWrapped();
-*///?} else if (>=26.1 && <=26.3) {
                     if (chunk instanceof ImposterProtoChunk readOnly) chunk = readOnly.getWrapped();
                     //?}
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*if (chunk != null && chunk.isUnsaved() && storage.anticrash$saveChunk(chunk))
-                    *///?} else if (>=26.1 && <=26.3) {
-                    if (chunk != null && chunk.isUnsaved() && storage.anticrash$saveChunk(chunk))
-                    //?}
-                    {
+                    if (chunk != null && chunk.isUnsaved() && storage.anticrash$saveChunk(chunk)) {
                         prepared++;
                     }
                 }
@@ -477,28 +387,10 @@ public final class CheckpointManager {
             // Do not wait for these writes. Whatever is still queued at the cut is sealed with the
             // IO workers and taken into the checkpoint from the queue (see IoSeal).
             List<CompletableFuture<Void>> drains = new ArrayList<>();
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (ServerLevel world : server.getAllLevels())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (ServerLevel world : server.getAllLevels())
-            //?}
-            {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*Object worker = world.getChunkSource().chunkScanner();
-                *///?} else if (>=26.1 && <=26.3) {
+            for (ServerLevel world : server.getAllLevels()) {
                 Object worker = world.getChunkSource().chunkScanner();
-                //?}
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (prepared > 0 && worker instanceof IOWorker storageIoWorker)
-                    drains.add(storageIoWorker.synchronize(false));
-                *///?} else if (>=26.1 && <=26.3) {
                 if (prepared > 0 && worker instanceof IOWorker storageIoWorker)
                     drains.add(storageIoWorker.synchronize(false));
-                //?}
-
             }
             if (!drains.isEmpty())
                 rollingDrain = CompletableFuture.allOf(drains.toArray(CompletableFuture[]::new));
@@ -681,15 +573,9 @@ public final class CheckpointManager {
             activePhase = "RUNTIME_CAPTURE";
             checkMemoryHeadroom();
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*ScheduledTickMutationTracer.Capture initialScheduledTrace =
-                    ScheduledTickMutationTracer.begin(
-                            server.getTickCount(), config.checkpoint.mirrorTraceLimit);
-            *///?} else if (>=26.1 && <=26.3) {
             ScheduledTickMutationTracer.Capture initialScheduledTrace =
                     ScheduledTickMutationTracer.begin(
                             server.getTickCount(), config.checkpoint.mirrorTraceLimit);
-            //?}
 
             RuntimeCapsule capsule;
             TransientChunkStateMarker.MarkResult transientState;
@@ -799,51 +685,6 @@ public final class CheckpointManager {
                 store.pin(pinnedParentId);
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*pendingBarrier =
-                    new PendingBarrier(
-                            timelineParent,
-                            server,
-                            world,
-                            capsule,
-                            playerSnapshots,
-                            fakeSnapshots,
-                            barrierStart,
-                            server.getTickCount(),
-                            server.overworld() == null ? 0L : server.overworld().getGameTime(),
-                            captureDimensions(server),
-                            FabricLoader.getInstance()
-                                    .getModContainer("fabricloader")
-                                    .map(container ->
-                                            container
-                                                    .getMetadata()
-                                                    .getVersion()
-                                                    .getFriendlyString())
-                                    .orElse("unknown"),
-                            FabricLoader.getInstance()
-                                    .getModContainer("fabric-api")
-                                    .map(container ->
-                                            container
-                                                    .getMetadata()
-                                                    .getVersion()
-                                                    .getFriendlyString())
-                                    .orElse(null),
-                            CarpetIntegration.version(),
-                            transientState,
-                            generationPlan.previousWorld(),
-                            generationPlan.parentCheckpointId(),
-                            generationPlan.parentChainDepth(),
-                            generationPlan.previousFiles(),
-                            liveHashes,
-                            captureBarrierWorlds(server),
-                            temporary,
-                            timing,
-                            logicalDelta,
-                            portableGeneration,
-                            unsupportedPersistentState,
-                            generationPlan.rebase(),
-                            generationPlan.sourceCheckpointId());
-            *///?} else if (>=26.1 && <=26.3) {
             pendingBarrier =
                     new PendingBarrier(
                             timelineParent,
@@ -887,7 +728,6 @@ public final class CheckpointManager {
                             unsupportedPersistentState,
                             generationPlan.rebase(),
                             generationPlan.sourceCheckpointId());
-            //?}
 
             capturing = true;
             lastJobSuccessful = false;
@@ -906,46 +746,18 @@ public final class CheckpointManager {
 
     private List<BarrierWorld> captureBarrierWorlds(MinecraftServer server) {
         List<BarrierWorld> result = new ArrayList<>();
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerLevel world : server.getAllLevels())
-        //?}
-        {
-
-            //? if (>=1.18 && <=1.20.6) {
-            /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                    (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-            *///?} else if (>=1.21 && <=1.21.11) {
-            /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                                (ThreadedAnvilChunkStorageAccessorMixin)
-                                        world.getChunkSource().chunkMap;
-*///?} else if (>=26.1 && <=26.3) {
+        for (ServerLevel world : server.getAllLevels()) {
             ThreadedAnvilChunkStorageAccessorMixin storage =
                     (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
-            //?}
 
             List<ChunkHolder> holders = new ArrayList<>();
             for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (holder != null && holder.wasAccessibleSinceLastSave())
-                    *///?} else if (>=26.1 && <=26.3) {
-                if (holder != null && holder.wasAccessibleSinceLastSave())
-                    //?}
-                    holders.add(holder);
+                if (holder != null && holder.wasAccessibleSinceLastSave()) holders.add(holder);
             }
             // A chunk whose level dropped leaves the live map before its unload task saves it.
             // Vanilla's flush ran those unloads; without it their last changes would be missing.
             for (ChunkHolder holder : storage.anticrash$getChunksToUnload().values()) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (holder != null && holder.wasAccessibleSinceLastSave())
-                    *///?} else if (>=26.1 && <=26.3) {
-                if (holder != null && holder.wasAccessibleSinceLastSave())
-                    //?}
-                    holders.add(holder);
+                if (holder != null && holder.wasAccessibleSinceLastSave()) holders.add(holder);
             }
             result.add(new BarrierWorld(world, List.copyOf(holders)));
         }
@@ -1051,35 +863,14 @@ public final class CheckpointManager {
             while (barrier.worldCursor < barrier.worlds.size()) {
                 BarrierWorld barrierWorld = barrier.worlds.get(barrier.worldCursor);
 
-                //? if (>=1.18 && <=1.20.6) {
-                /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                        (ThreadedAnvilChunkStorageAccessorMixin)
-                                barrierWorld.world.getChunkSource().chunkMap;
-                *///?} else if (>=1.21 && <=1.21.11) {
-                /*ThreadedAnvilChunkStorageAccessorMixin storage =
-                                        (ThreadedAnvilChunkStorageAccessorMixin)
-                                                barrierWorld.world.getChunkSource().chunkMap;
-*///?} else if (>=26.1 && <=26.3) {
                 ThreadedAnvilChunkStorageAccessorMixin storage =
                         (ThreadedAnvilChunkStorageAccessorMixin)
                                 barrierWorld.world.getChunkSource().chunkMap;
-                //?}
 
                 while (barrier.holderCursor < barrierWorld.holders.size()) {
                     ChunkHolder holder = barrierWorld.holders.get(barrier.holderCursor++);
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*ChunkAccess chunk = savableChunk(holder);
-                    *///?} else if (>=26.1 && <=26.3) {
                     ChunkAccess chunk = savableChunk(holder);
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*if (chunk == null || !chunk.isUnsaved())
-                        *///?} else if (>=26.1 && <=26.3) {
-                    if (chunk == null || !chunk.isUnsaved())
-                        //?}
-                        continue;
+                    if (chunk == null || !chunk.isUnsaved()) continue;
                     checkMemoryHeadroom();
                     if (storage.anticrash$saveChunk(chunk)) {
                         barrier.savedChunks++;
@@ -1142,44 +933,22 @@ public final class CheckpointManager {
      * what the cut contains, exactly as Vanilla's own autosave treats it.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static ChunkAccess savableChunk(ChunkHolder holder)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static ChunkAccess savableChunk(ChunkHolder holder)
-                //?}
-            {
-
+    private static ChunkAccess savableChunk(ChunkHolder holder) {
         //? if (>=1.18 && <=1.20.6) {
         /*ChunkAccess current = holder.getLastAvailable();
-        *///?} else if (>=1.21 && <=1.21.11) {
-        /*ChunkAccess current = holder.getLatestChunk();
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.21 && <=26.3) {
         ChunkAccess current = holder.getLatestChunk();
         //?}
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*if (current instanceof ImposterProtoChunk readOnly)
-            *///?} else if (>=1.20 && <=1.21.11) {
-        /*if (current instanceof ImposterProtoChunk readOnly)
-*///?}
-        //? if (>=1.18 && <=1.21.11) {
-        /*current = readOnly.getWrapped();
-        *///?} else if (>=26.1 && <=26.3) {
         if (current instanceof ImposterProtoChunk readOnly) current = readOnly.getWrapped();
-        //?}
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*if (current instanceof LevelChunk)
-            *///?} else if (>=26.1 && <=26.3) {
-        if (current instanceof LevelChunk)
-            //?}
-            return current;
+        if (current instanceof LevelChunk) return current;
 
         //? if (>=1.18 && <=1.20.6) {
         /*CompletableFuture<ChunkAccess> saving = holder.getChunkToSave();
-        *///?} else if (>=1.21 && <=1.21.11) {
-        /*CompletableFuture<?> saving = holder.getSaveSyncFuture();
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.21 && <=26.3) {
         CompletableFuture<?> saving = holder.getSaveSyncFuture();
         //?}
 
@@ -1188,33 +957,25 @@ public final class CheckpointManager {
 
         //? if (>=1.18 && <=1.20.6) {
         /*if (!saving.isDone())
-            *///?} else if (>=1.21 && <=1.21.11) {
-        /*if (!holder.isReadyForSaving())
-*///?} else if (>=26.1 && <=26.3) {
+            *///?}
+        //? if (>=1.21 && <=26.3) {
         if (!holder.isReadyForSaving())
             //?}
             return null;
 
         //? if (>=1.18 && <=1.20.6) {
         /*ChunkAccess saved = saving.getNow(null);
-        *///?} else if (>=1.21 && <=26.3) {
+        *///?}
+        //? if (>=1.21 && <=26.3) {
         saving.getNow(null);
         //?}
         // future represents completion now, not a Chunk payload
 
-        //? if (>=1.21 && <=1.21.11) {
-        /*ChunkAccess saved = holder.getLatestChunk();
-*///?} else if (>=26.1 && <=26.3) {
+        //? if (>=1.21 && <=26.3) {
         ChunkAccess saved = holder.getLatestChunk();
-        //?} else if (>=1.18 && <=1.19.4) {
-        /*return saved instanceof ImposterProtoChunk readOnly ? readOnly.getWrapped() : saved;
-        *///?}
-        //? if (>=1.20 && <=1.21.11) {
-        /*return saved instanceof ImposterProtoChunk readOnly ? readOnly.getWrapped() : saved;
-*///?} else if (>=26.1 && <=26.3) {
-        return saved instanceof ImposterProtoChunk readOnly ? readOnly.getWrapped() : saved;
         //?}
 
+        return saved instanceof ImposterProtoChunk readOnly ? readOnly.getWrapped() : saved;
     }
 
     /**
@@ -1232,12 +993,7 @@ public final class CheckpointManager {
             // flushed before the capsule (see CutSave). The flush variant would also fsync every
             // region file and wait for every chunk holder, which dominated the old freeze.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!server.saveAllChunks(true, false, false))
-            *///?} else if (>=26.1 && <=26.3) {
-            if (!server.saveAllChunks(true, false, false))
-            //?}
-            {
+            if (!server.saveAllChunks(true, false, false)) {
                 throw new IOException("Minecraft refused the world save");
             }
         } finally {
@@ -1346,12 +1102,7 @@ public final class CheckpointManager {
         logger.verboseKey(
                 "checkpoint.staged_save_complete", barrier.savedChunks, barrier.drainedBatches);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*if (!server.saveAllChunks(true, true, false))
-        *///?} else if (>=26.1 && <=26.3) {
-        if (!server.saveAllChunks(true, true, false))
-        //?}
-        {
+        if (!server.saveAllChunks(true, true, false)) {
             throw new IOException("Minecraft refused the world save");
         }
         long minimumFreeBytes = Math.max(0L, config.checkpoint.minimumFreeMb) * 1024L * 1024L;
@@ -1382,31 +1133,11 @@ public final class CheckpointManager {
     private static void flushEntitiesAtCut(MinecraftServer server) {
         CutSave.begin();
         try {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (ServerLevel world : server.getAllLevels())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (ServerLevel world : server.getAllLevels())
-            //?}
-            {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (world.noSave)
-                    *///?} else if (>=26.1 && <=26.3) {
-                if (world.noSave)
-                    //?}
-                    continue;
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                        .anticrash$getEntityManager()
-                        .saveAll();
-                *///?} else if (>=26.1 && <=26.3) {
+            for (ServerLevel world : server.getAllLevels()) {
+                if (world.noSave) continue;
                 ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
                         .anticrash$getEntityManager()
                         .saveAll();
-                //?}
-
             }
         } finally {
             CutSave.end();
@@ -1420,34 +1151,16 @@ public final class CheckpointManager {
      * queue. The POI queue is sealed with the others (see {@link IoSeal}).
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static void savePointsOfInterest(ServerLevel world)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static void savePointsOfInterest(ServerLevel world)
-                //?}
-            {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*SerializingRegionBasedStorageAccessorMixin poi =
-                (SerializingRegionBasedStorageAccessorMixin) world.getPoiManager();
-        *///?} else if (>=26.1 && <=26.3) {
+    private static void savePointsOfInterest(ServerLevel world) {
         SerializingRegionBasedStorageAccessorMixin poi =
                 (SerializingRegionBasedStorageAccessorMixin) world.getPoiManager();
-        //?}
-
         var unsaved = poi.anticrash$getUnsavedElements();
         // save() removes every section of the chunk from the set; the bound only protects the
         // frozen server thread from a storage that failed to do so.
         int remaining = unsaved.size() + 1;
         int queued = 0;
         while (!unsaved.isEmpty() && remaining-- > 0) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*poi.anticrash$save(SectionPos.of(unsaved.firstLong()).chunk());
-            *///?} else if (>=26.1 && <=26.3) {
             poi.anticrash$save(SectionPos.of(unsaved.firstLong()).chunk());
-            //?}
-
             // POI data is a few kilobytes per chunk; the queue is sealed with the others and is
             // waited for only when an implausible number of sections is pending.
             if (++queued >= 4096 || (queued >= 16 && heapTight())) {
@@ -1455,13 +1168,8 @@ public final class CheckpointManager {
 
                 //? if (>=1.18 && <=1.20.4) {
                 /*poi.anticrash$getWorker().synchronize(false).join();
-                *///?} else if (>=1.20.5 && <=1.21.11) {
-                /*((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
-                                                poi.anticrash$getStorageAccess())
-                                        .anticrash$getWorker()
-                                        .synchronize(false)
-                                        .join();
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=1.20.5 && <=26.3) {
                 ((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
                                 poi.anticrash$getStorageAccess())
                         .anticrash$getWorker()
@@ -1478,10 +1186,12 @@ public final class CheckpointManager {
             /*throw new IllegalStateException(
                     //? if (>=1.18 && <=1.21.10) {
                     /^"POI sections could not be saved in " + world.dimension().location());
-            ^///?} else if 1.21.11 {
+            ^///?}
+            //? if 1.21.11 {
             /^"POI sections could not be saved in " + world.dimension().identifier());
                     ^///?}
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             throw new IllegalStateException(
                     "POI sections could not be saved in " + world.dimension().identifier());
             //?}
@@ -1494,42 +1204,21 @@ public final class CheckpointManager {
      * files.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static List<IOWorker> storageWorkers(List<BarrierWorld> worlds)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static List<IOWorker> storageWorkers(List<BarrierWorld> worlds)
-                //?}
-            {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*List<IOWorker> workers = new ArrayList<>(worlds.size() * 3);
-        *///?} else if (>=26.1 && <=26.3) {
+    private static List<IOWorker> storageWorkers(List<BarrierWorld> worlds) {
         List<IOWorker> workers = new ArrayList<>(worlds.size() * 3);
-        //?}
-
         for (BarrierWorld barrierWorld : worlds) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*ServerLevel world = barrierWorld.world;
-            *///?} else if (>=26.1 && <=26.3) {
             ServerLevel world = barrierWorld.world;
-            //?}
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!(world.getChunkSource().chunkScanner() instanceof IOWorker chunks))
-            *///?} else if (>=26.1 && <=26.3) {
-            if (!(world.getChunkSource().chunkScanner() instanceof IOWorker chunks))
-            //?}
-            {
-
+            if (!(world.getChunkSource().chunkScanner() instanceof IOWorker chunks)) {
                 //? if (>=1.18 && <=1.21.11) {
                 /*throw new IllegalStateException(
                         //? if (>=1.18 && <=1.21.10) {
                         /^"Unsupported chunk IO worker for " + world.dimension().location());
-                ^///?} else if 1.21.11 {
+                ^///?}
+                //? if 1.21.11 {
                 /^"Unsupported chunk IO worker for " + world.dimension().identifier());
                         ^///?}
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported chunk IO worker for " + world.dimension().identifier());
                 //?}
@@ -1542,23 +1231,20 @@ public final class CheckpointManager {
                                             .anticrash$getEntityManager())
                             .anticrash$getDataAccess();
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!(entities
-                    instanceof net.minecraft.world.level.chunk.storage.EntityStorage entityAccess))
-            *///?} else if (>=26.1 && <=26.3) {
             if (!(entities
-                    instanceof net.minecraft.world.level.chunk.storage.EntityStorage entityAccess))
-            //?}
-            {
+                    instanceof
+                    net.minecraft.world.level.chunk.storage.EntityStorage entityAccess)) {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*throw new IllegalStateException(
                         //? if (>=1.18 && <=1.21.10) {
                         /^"Unsupported entity storage for " + world.dimension().location());
-                ^///?} else if 1.21.11 {
+                ^///?}
+                //? if 1.21.11 {
                 /^"Unsupported entity storage for " + world.dimension().identifier());
                         ^///?}
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported entity storage for " + world.dimension().identifier());
                 //?}
@@ -1569,7 +1255,8 @@ public final class CheckpointManager {
             /*workers.add(
                     ((com.atsukimc.anticrash.mixin.EntityChunkDataAccessAccessorMixin) entityAccess)
                             .anticrash$getDataLoadWorker());
-            *///?} else if (>=1.20.5 && <=26.3) {
+            *///?}
+            //? if (>=1.20.5 && <=26.3) {
             workers.add(
                     ((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
                                     ((com.atsukimc.anticrash.mixin
@@ -1583,14 +1270,8 @@ public final class CheckpointManager {
             /*workers.add(
                     ((SerializingRegionBasedStorageAccessorMixin) world.getPoiManager())
                             .anticrash$getWorker());
-            *///?} else if (>=1.20.5 && <=1.21.11) {
-            /*workers.add(
-                                ((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
-                                                ((SerializingRegionBasedStorageAccessorMixin)
-                                                                world.getPoiManager())
-                                                        .anticrash$getStorageAccess())
-                                        .anticrash$getWorker());
-*///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=1.20.5 && <=26.3) {
             workers.add(
                     ((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
                                     ((SerializingRegionBasedStorageAccessorMixin)
@@ -1744,29 +1425,19 @@ public final class CheckpointManager {
     private List<CompletableFuture<Void>> beginChunkIoDrain(List<BarrierWorld> worlds) {
         List<CompletableFuture<Void>> futures = new ArrayList<>();
         for (BarrierWorld barrierWorld : worlds) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*Object worker = barrierWorld.world.getChunkSource().chunkScanner();
-            *///?} else if (>=26.1 && <=26.3) {
             Object worker = barrierWorld.world.getChunkSource().chunkScanner();
-            //?}
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!(worker instanceof IOWorker storageIoWorker))
-            *///?} else if (>=26.1 && <=26.3) {
-            if (!(worker instanceof IOWorker storageIoWorker))
-            //?}
-            {
-
+            if (!(worker instanceof IOWorker storageIoWorker)) {
                 //? if (>=1.18 && <=1.21.11) {
                 /*throw new IllegalStateException(
                         "Unsupported chunk IO worker for "
                                 //? if (>=1.18 && <=1.21.10) {
                                 /^+ barrierWorld.world.dimension().location());
-                ^///?} else if 1.21.11 {
+                ^///?}
+                //? if 1.21.11 {
                 /^+ barrierWorld.world.dimension().identifier());
                                 ^///?}
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported chunk IO worker for "
                                 + barrierWorld.world.dimension().identifier());
@@ -1774,12 +1445,7 @@ public final class CheckpointManager {
 
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*futures.add(storageIoWorker.synchronize(false));
-            *///?} else if (>=26.1 && <=26.3) {
             futures.add(storageIoWorker.synchronize(false));
-            //?}
-
         }
         return List.copyOf(futures);
     }
@@ -1830,11 +1496,13 @@ public final class CheckpointManager {
         /*return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 //? if (>=1.18 && <=1.21.10) {
                 /^.map(world -> world.dimension().location().toString())
-                ^///?} else if 1.21.11 {
+                ^///?}
+                //? if 1.21.11 {
                 /^.map(world -> world.dimension().identifier().toString())
                 ^///?}
                 .toList();
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 .map(world -> world.dimension().identifier().toString())
                 .toList();
@@ -2412,19 +2080,8 @@ public final class CheckpointManager {
             // No server tick runs during shutdown, so chunk tasks that complete saving futures
             // would never execute and the staged save would wait out the whole timeout.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (ServerLevel world : barrierServer.getAllLevels())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (ServerLevel world : barrierServer.getAllLevels())
-            //?}
-            {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*world.getChunkSource().pollTask();
-                *///?} else if (>=26.1 && <=26.3) {
+            for (ServerLevel world : barrierServer.getAllLevels()) {
                 world.getChunkSource().pollTask();
-                //?}
-
             }
             advanceBarrier(barrierServer);
             if (pendingBarrier != null) {
@@ -2691,20 +2348,8 @@ public final class CheckpointManager {
     }
 
     private static boolean savingDisabled(MinecraftServer server) {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerLevel world : server.getAllLevels())
-        //?}
-        {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (world.noSave)
-                *///?} else if (>=26.1 && <=26.3) {
-            if (world.noSave)
-                //?}
-                return true;
+        for (ServerLevel world : server.getAllLevels()) {
+            if (world.noSave) return true;
         }
         return false;
     }
@@ -2861,14 +2506,7 @@ public final class CheckpointManager {
             boolean rebase,
             String sourceCheckpointId) {}
 
-    private record BarrierWorld(
-            //? if (>=1.18 && <=1.21.11) {
-            /*ServerLevel world
-                    *///?} else if (>=26.1 && <=26.3) {
-            ServerLevel world
-                    //?}
-                    ,
-            List<ChunkHolder> holders) {}
+    private record BarrierWorld(ServerLevel world, List<ChunkHolder> holders) {}
 
     private static final class PendingBarrier {
         private final String timelineParentCheckpointId;

@@ -3,45 +3,16 @@ package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.19.1 && <=1.20.6) {
 /*import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import net.minecraft.nbt.CompoundTag;
+import org.spongepowered.asm.mixin.Shadow;
 *///?}
 
-//? if (>=1.19.1 && <=1.21.11) {
-/*import net.minecraft.world.level.block.state.BlockState;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.BlockPos;
-//?}
-
-//? if (>=1.19.1 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.Level;
-//?}
-
-//? if (>=1.19.1 && <=1.20.6) {
-/*import net.minecraft.nbt.CompoundTag;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
-//?}
-
-//? if (>=1.19.1 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-
-//? if (>=1.19.1 && <=1.21.11) {
-/*import net.minecraft.world.level.Level;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.state.BlockState;
-//?}
+import net.minecraft.core.BlockPos;
+import net.minecraft.world.level.block.entity.JukeboxBlockEntity;
+import net.minecraft.world.level.Level;
 
 import org.spongepowered.asm.mixin.Mixin;
-//? if (>=1.19.1 && <=1.20.6) {
-/*import org.spongepowered.asm.mixin.Shadow;
-*///?}
-
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -59,21 +30,15 @@ public abstract class JukeboxRuntimeMixin {
     //? if (>=1.19.1 && <=1.20.4) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveEventPhase(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.20.5 && <=1.20.6) {
+*///?}
+    //? if (>=1.20.5 && <=1.20.6) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveEventPhase(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
-*///?} else if (>=1.21 && <=1.21.11) {
-    /*@Inject(method = "tick", at = @At("HEAD"))
-    private static void anticrash$markPlaybackTick(
-            Level world,
-            BlockPos pos,
-            BlockState state,
-            JukeboxBlockEntity jukebox,
-            CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=1.21 && <=26.3) {
     @Inject(method = "tick", at = @At("HEAD"))
     private static void anticrash$markPlaybackTick(
             Level world,
@@ -86,10 +51,9 @@ public abstract class JukeboxRuntimeMixin {
 
         //? if (>=1.19.1 && <=1.20.6) {
         /*if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
-*///?}
 
-        //? if (>=1.19.1 && <=1.20.6) {
-        /*RuntimeExtensionNbt.write(
+
+RuntimeExtensionNbt.write(
                 nbt, extension -> extension.putInt("JukeboxEventPhase", ticksSinceLastEvent));
     }
 *///?}
@@ -97,7 +61,8 @@ public abstract class JukeboxRuntimeMixin {
         //? if (>=1.19.1 && <=1.20.4) {
         /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadEventPhase(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.20.5 && <=1.20.6) {
+*///?}
+        //? if (>=1.20.5 && <=1.20.6) {
         /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadEventPhase(
             CompoundTag nbt,
@@ -107,10 +72,9 @@ public abstract class JukeboxRuntimeMixin {
         //? if (>=1.19.1 && <=1.20.6) {
         /*{
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-*///?}
 
-        //? if (>=1.19.1 && <=1.20.6) {
-        /*if (extension != null && extension.contains("JukeboxEventPhase", 3)) {
+
+if (extension != null && extension.contains("JukeboxEventPhase", 3)) {
             ticksSinceLastEvent = extension.getInt("JukeboxEventPhase");
         }
     }
@@ -124,7 +88,8 @@ public abstract class JukeboxRuntimeMixin {
             BlockState state,
             JukeboxBlockEntity jukebox,
             CallbackInfo ci)
-*///?} else if (>=1.19.4 && <=1.20.6) {
+*///?}
+        //? if (>=1.19.4 && <=1.20.6) {
         /*@Inject(
             method =
                     "tick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V",
@@ -135,14 +100,17 @@ public abstract class JukeboxRuntimeMixin {
         //? if (>=1.19.1 && <=1.20.6) {
         /*{
         if (!world.isClientSide)
-*///?} else if (>=1.21 && <=1.21.8) {
+*///?}
+        //? if (>=1.21 && <=1.21.8) {
         /*if (!world.isClientSide && jukebox.getSongPlayer().getSong() != null)
-*///?} else if (>=1.21.9 && <=1.21.11) {
+*///?}
+        //? if (>=1.21.9 && <=1.21.11) {
         /*if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
 *///?}
         //? if (>=1.19.1 && <=1.21.11) {
         /*world.blockEntityChanged(pos);
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=26.1 && <=26.3) {
         if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
             world.blockEntityChanged(pos);
         //?}

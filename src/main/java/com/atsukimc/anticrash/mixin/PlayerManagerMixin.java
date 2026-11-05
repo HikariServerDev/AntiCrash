@@ -4,42 +4,17 @@ import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
 
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.network.Connection;
-//?}
-
-//? if (>=1.18 && <=1.21.8) {
-/*import com.mojang.authlib.GameProfile;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.network.Connection;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.network.chat.Component;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.players.PlayerList;
-*///?}
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.players.PlayerList;
 import net.minecraft.server.level.ServerPlayer;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerPlayer;
-*///?}
 
 //? if (>=1.18 && <=1.18.2) {
 /*import net.minecraft.network.chat.TextComponent;
 *///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.network.chat.Component;
+//? if (>=1.18 && <=1.21.8) {
+/*import com.mojang.authlib.GameProfile;
 *///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.server.players.PlayerList;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -60,13 +35,15 @@ public abstract class PlayerManagerMixin {
             SocketAddress address,
             GameProfile profile,
             CallbackInfoReturnable<Component> callbackInfo)
-                *///?} else if (>=1.21.9 && <=1.21.11) {
+                *///?}
+//? if (>=1.21.9 && <=1.21.11) {
 /*@Inject(method = "canPlayerLogin", at = @At("RETURN"), cancellable = true)
                     private void anticrash$loginGate(
                             SocketAddress address,
                             net.minecraft.server.players.NameAndId profile,
                             CallbackInfoReturnable<Component> callbackInfo)
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+//? if (>=26.1 && <=26.3) {
 @Mixin(PlayerList.class)
 public abstract class PlayerManagerMixin {
     @Inject(method = "canPlayerLogin", at = @At("RETURN"), cancellable = true)
@@ -89,12 +66,8 @@ public abstract class PlayerManagerMixin {
                     new TextComponent(
                             MessageCatalog.text(
                                     controller.config().language, "recovery.login_blocked")));
-            *///?} else if (>=1.19 && <=1.21.11) {
-            /*callbackInfo.setReturnValue(
-                                Component.literal(
-                                        MessageCatalog.text(
-                                                controller.config().language, "recovery.login_blocked")));
-*///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=1.19 && <=26.3) {
             callbackInfo.setReturnValue(
                     Component.literal(
                             MessageCatalog.text(
@@ -108,14 +81,8 @@ public abstract class PlayerManagerMixin {
     /*@Inject(method = "placeNewPlayer", at = @At("RETURN"))
     private void anticrash$playerConnected(
             Connection connection, ServerPlayer player, CallbackInfo callbackInfo)
-                *///?} else if (>=1.20.2 && <=1.21.11) {
-    /*@Inject(method = "placeNewPlayer", at = @At("RETURN"))
-                    private void anticrash$playerConnected(
-                            Connection connection,
-                            ServerPlayer player,
-                            net.minecraft.server.network.CommonListenerCookie clientData,
-                            CallbackInfo callbackInfo)
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+    //? if (>=1.20.2 && <=26.3) {
     @Inject(method = "placeNewPlayer", at = @At("RETURN"))
     private void anticrash$playerConnected(
             Connection connection,

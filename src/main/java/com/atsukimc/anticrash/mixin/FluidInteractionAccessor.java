@@ -11,13 +11,11 @@ public interface FluidInteractionAccessor {
     /*@Accessor("trackerByFluid")
     java.util.Map<net.minecraft.tags.TagKey<net.minecraft.world.level.material.Fluid>, ?>
             anticrash$trackers();
-*///?} else if 26.3 {
+*///?}
+    //? if 26.3 {
     @Accessor("fluidTrackers")
     java.util.List<?> anticrash$trackers();
 
-    //?}
-
-    //? if 26.3 {
     @Accessor("currentAccumulators")
     it.unimi.dsi.fastutil.objects.Reference2ObjectMap<
                     net.minecraft.tags.TagKey<net.minecraft.world.level.material.Fluid>, ?>

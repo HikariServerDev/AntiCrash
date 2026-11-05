@@ -2,22 +2,10 @@ package com.atsukimc.anticrash.audit;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.BlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.entity.Entity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.Entity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.block.entity.BlockEntity;
-//?}
-
 import org.junit.jupiter.api.Test;
+
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.entity.Entity;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -69,7 +57,8 @@ class RuntimeStateAuditCoverageTest {
                     "net.minecraft.world.entity.projectile.Projectile",
                     "net.minecraft.world.entity.projectile.AbstractArrow");
 
-    *///?} else if (>=1.21.2 && <=1.21.11) {
+    *///?}
+    //? if (>=1.21.2 && <=1.21.11) {
     /*private static final List<String> REQUIRED_ENTITIES =
                 List.of(
                         "net.minecraft.world.entity.Entity",
@@ -79,46 +68,55 @@ class RuntimeStateAuditCoverageTest {
                         "net.minecraft.world.entity.ExperienceOrb",
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractMinecart",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecart",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartHopper",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartHopper",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartFurnace",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartFurnace",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.MinecartTNT",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.MinecartTNT",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractMinecartContainer",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.Boat",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.boat.Boat",
                         ^///?}
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.vehicle.AbstractBoat",
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.vehicle.boat.AbstractBoat",
                         ^///?}
                         "net.minecraft.world.entity.projectile.Projectile",
                         //? if (>=1.21.2 && <=1.21.10) {
                         /^"net.minecraft.world.entity.projectile.AbstractArrow");
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^"net.minecraft.world.entity.projectile.arrow.AbstractArrow");
                         ^///?}
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=26.1 && <=26.3) {
     private static final List<String> REQUIRED_ENTITIES =
             List.of(
                     "net.minecraft.world.entity.Entity",
@@ -167,19 +165,11 @@ class RuntimeStateAuditCoverageTest {
     void everyBlockEntityFieldHasADecision() throws Exception {
         Map<String, Set<String>> audited = matrix("/runtime-audit/block-entities.tsv");
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Map<String, List<String>> actual =
-                RuntimeFieldDump.declaredFields(
-                        BlockEntity.class,
-                        "net/minecraft/world/level/block/entity",
-                        "net/minecraft/world/level/block/piston");
-        *///?} else if (>=26.1 && <=26.3) {
         Map<String, List<String>> actual =
                 RuntimeFieldDump.declaredFields(
                         BlockEntity.class,
                         "net/minecraft/world/level/block/entity",
                         "net/minecraft/world/level/block/piston");
-        //?}
 
         List<String> problems = new ArrayList<>();
         for (Map.Entry<String, List<String>> type : actual.entrySet()) {
@@ -203,13 +193,8 @@ class RuntimeStateAuditCoverageTest {
     void everyFieldOfTheMachineRelevantEntitiesHasADecision() throws Exception {
         Map<String, Set<String>> audited = matrix("/runtime-audit/entities.tsv");
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Map<String, List<String>> actual =
-                RuntimeFieldDump.declaredFields(Entity.class, "net/minecraft/world/entity");
-        *///?} else if (>=26.1 && <=26.3) {
         Map<String, List<String>> actual =
                 RuntimeFieldDump.declaredFields(Entity.class, "net/minecraft/world/entity");
-        //?}
 
         List<String> problems = new ArrayList<>();
         for (String required : REQUIRED_ENTITIES) {
