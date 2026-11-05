@@ -15,6 +15,7 @@ public interface ChunkTicketAccessorMixin {
     /*TicketType<?> anticrash$getType();
     *///?} else {
     TicketType anticrash$getType();
+
     //?}
 
     //? if (>=1.18 && <=1.21.4) {

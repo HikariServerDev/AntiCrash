@@ -1206,7 +1206,7 @@ public final class CarpetIntegration {
                     /*throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
                     *///?} else {
                     throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                    //?}
+                //?}
 
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.

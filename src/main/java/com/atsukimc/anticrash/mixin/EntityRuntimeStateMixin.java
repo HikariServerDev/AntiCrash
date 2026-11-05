@@ -55,6 +55,7 @@ public abstract class EntityRuntimeStateMixin {
     @Shadow public java.util.Optional<BlockPos> mainSupportingBlockPos;
     @Shadow private boolean onGroundNoBlocks;
     @Shadow public boolean verticalCollisionBelow;
+
     //?}
 
     //? if (>=1.18 && <=1.21.5) {

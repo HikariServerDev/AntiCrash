@@ -39,10 +39,10 @@ public abstract class CampfireTickerBindingMixin {
             BlockEntityTicker<T> ticker = original.call(world, state, type);
 
             //? if <=1.21.8 {
-        /*return ticker == null || world.isClientSide
+            /*return ticker == null || world.isClientSide
         *///?} else {
-        return ticker == null || world.isClientSide()
-        //?}
+            return ticker == null || world.isClientSide()
+                    //?}
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
 
