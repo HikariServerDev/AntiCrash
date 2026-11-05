@@ -1,37 +1,15 @@
 //? if (>=1.20.5 && <=26.3) {
 package com.atsukimc.anticrash.snapshot;
 
-//? if (>=1.20.5 && <=1.21.11) {
-/*import net.minecraft.resources.ResourceKey;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.registries.Registries;
-//?}
-
-//? if (>=1.20.5 && <=1.21.11) {
-/*import net.minecraft.core.registries.Registries;
-*///?}
-//? if (>=26.1 && <=26.3) {
+//? if (>=1.20.5 && <=1.21.10) {
+/*import net.minecraft.resources.ResourceLocation;
+*///?} else {
 import net.minecraft.resources.Identifier;
 //?}
 
-//? if (>=1.20.5 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?}
-//? if 1.21.11 {
-/*import net.minecraft.resources.Identifier;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.resources.ResourceKey;
-//?}
-
-//? if (>=1.20.5 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
-*///?}
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.chunk.storage.RegionStorageInfo;
-
-//?}
 
 /** The StorageKey labels diagnostics/JFR; detached file contents/coordinates stay authoritative. */
 public final class RegionStorageAdapter {
@@ -42,19 +20,22 @@ public final class RegionStorageAdapter {
                     "anticrash-checkpoint",
                     ResourceKey.create(Registries.DIMENSION, new ResourceLocation("anticrash", "offline")),
                     "checkpoint-overlay");
-*///?} else if (>=1.21 && <=1.21.11) {
+*///?}
+    //? if (>=1.21 && <=1.21.11) {
     /*public static final RegionStorageInfo KEY =
             new RegionStorageInfo(
                     "anticrash-checkpoint",
 *///?}
     //? if (>=1.21 && <=1.21.10) {
     /*ResourceKey.create(Registries.DIMENSION, ResourceLocation.fromNamespaceAndPath("anticrash", "offline")),
-*///?} else if 1.21.11 {
+*///?}
+    //? if 1.21.11 {
     /*ResourceKey.create(Registries.DIMENSION, Identifier.fromNamespaceAndPath("anticrash", "offline")),
 *///?}
     //? if (>=1.21 && <=1.21.11) {
     /*"checkpoint-overlay");
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=26.1 && <=26.3) {
     public static final RegionStorageInfo KEY =
             new RegionStorageInfo(
                     "anticrash-checkpoint",

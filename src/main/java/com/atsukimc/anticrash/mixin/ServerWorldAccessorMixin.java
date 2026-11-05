@@ -2,108 +2,36 @@ package com.atsukimc.anticrash.mixin;
 
 import it.unimi.dsi.fastutil.objects.ObjectLinkedOpenHashSet;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.Entity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.BlockEventData;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.entity.Entity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.entity.PersistentEntitySectionManager;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.BlockEventData;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.entity.EntityTickList;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.entity.EntityTickList;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.entity.PersistentEntitySectionManager;
-//?}
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
 import java.util.List;
 
-//? if (>=1.18 && <=1.21.11) {
-/*@Mixin(ServerLevel.class)
-public interface ServerWorldAccessorMixin {
-    @Accessor("blockEvents")
-    ObjectLinkedOpenHashSet<BlockEventData> anticrash$getSyncedBlockEventQueue();
-
-    *///?} else if (>=26.1 && <=26.3) {
 @Mixin(ServerLevel.class)
 public interface ServerWorldAccessorMixin {
     @Accessor("blockEvents")
     ObjectLinkedOpenHashSet<BlockEventData> anticrash$getSyncedBlockEventQueue();
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("blockEventsToReschedule")
-    List<BlockEventData> anticrash$getBlockEventQueue();
-
-    *///?} else if (>=26.1 && <=26.3) {
     @Accessor("blockEventsToReschedule")
     List<BlockEventData> anticrash$getBlockEventQueue();
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("entityManager")
-    PersistentEntitySectionManager<Entity> anticrash$getEntityManager();
-
-    *///?} else if (>=26.1 && <=26.3) {
     @Accessor("entityManager")
     PersistentEntitySectionManager<Entity> anticrash$getEntityManager();
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("entityTickList")
-    EntityTickList anticrash$getEntityList();
-
-    *///?} else if (>=26.1 && <=26.3) {
     @Accessor("entityTickList")
     EntityTickList anticrash$getEntityList();
 
-    //?}
-
     /** Ticks this dimension has had neither a player nor a forced chunk; entities stop at 300. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("emptyTime")
-    int anticrash$getIdleTimeout();
-
-    *///?} else if (>=26.1 && <=26.3) {
     @Accessor("emptyTime")
     int anticrash$getIdleTimeout();
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("emptyTime")
-    void anticrash$setIdleTimeout(int ticks);
-    *///?} else if (>=26.1 && <=26.3) {
     @Accessor("emptyTime")
     void anticrash$setIdleTimeout(int ticks);
-    //?}
-
 }

@@ -1,23 +1,18 @@
 //? if (>=1.18 && <=1.19.4) {
 /*package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.server.level.ServerLevel;
-^///?}
-
-//? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.core.BlockPos;
-^///?}
+//? if (>=1.18 && <=1.18.2) {
+/^import java.util.Optional;
+^///?} else {
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+//?}
 
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.PositionSource;
-//? if (>=1.18 && <=1.18.2) {
-/^import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
-^///?}
-//? if (>=1.19 && <=1.19.4) {
-/^import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
-^///?}
+import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -25,29 +20,17 @@ import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-//? if (>=1.19 && <=1.19.4) {
-/^import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-^///?}
 
-//? if (>=1.18 && <=1.18.2) {
-/^import java.util.Optional;
-
-^///?}
-
-//? if (>=1.18 && <=1.18.2) {
-/^@Mixin(VibrationListener.class)
+@Mixin(VibrationListener.class)
 public abstract class SculkSensorListenerMixin {
 
-    ^///?} else if (>=1.19 && <=1.19.4) {
-    /^@Mixin(VibrationListener.class)
-    public abstract class SculkSensorListenerMixin {
-^///?}
     @Shadow @Final protected PositionSource listenerSource;
 
     //? if (>=1.18 && <=1.18.2) {
     /^@Shadow protected Optional<GameEvent> receivingEvent;
 
-    ^///?} else if (>=1.19 && <=1.19.2) {
+    ^///?}
+    //? if (>=1.19 && <=1.19.2) {
     /^@Shadow protected VibrationListener.ReceivingEvent receivingEvent;
 ^///?}
 
@@ -64,9 +47,11 @@ public abstract class SculkSensorListenerMixin {
         ^///?}
         //? if (>=1.18 && <=1.18.2) {
         /^if (world.isClientSide || receivingEvent.isEmpty())
-            ^///?} else if (>=1.19 && <=1.19.2) {
+            ^///?}
+            //? if (>=1.19 && <=1.19.2) {
             /^if (world.isClientSide || receivingEvent == null)
-^///?} else if (>=1.19.3 && <=1.19.4) {
+^///?}
+            //? if (>=1.19.3 && <=1.19.4) {
             /^{
                     // The selector may hold a same-tick candidate while the current vibration is still null.
                     if (world.isClientSide)
@@ -75,9 +60,11 @@ public abstract class SculkSensorListenerMixin {
 
         //? if (>=1.18 && <=1.18.2) {
         /^listenerSource.getPosition(world).ifPresent(world::blockEntityChanged);
-        ^///?} else if (>=1.19 && <=1.19.3) {
+        ^///?}
+        //? if (>=1.19 && <=1.19.3) {
         /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
-^///?} else if 1.19.4 {
+^///?}
+        //? if 1.19.4 {
         /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
 ^///?}
 
@@ -100,14 +87,16 @@ public abstract class SculkSensorListenerMixin {
             net.minecraft.core.BlockPos pos,
             net.minecraft.core.BlockPos sourcePos,
             CallbackInfo callbackInfo)
-                ^///?} else if (>=1.19 && <=1.19.2) {
+                ^///?}
+                //? if (>=1.19 && <=1.19.2) {
                 /^@Inject(
                             method =
                                     "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent$Message;)Z",
                             at = @At("RETURN"))
                     private void anticrash$markHeardVibrationDirty(
                             ServerLevel world, GameEvent.Message event, CallbackInfoReturnable<Boolean> ci)
-^///?} else if (>=1.19.3 && <=1.19.4) {
+^///?}
+                //? if (>=1.19.3 && <=1.19.4) {
                 /^@Inject(
                             method =
                                     "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
@@ -123,12 +112,14 @@ public abstract class SculkSensorListenerMixin {
 
         //? if (>=1.18 && <=1.18.2) {
         /^if (!world.isClientSide) world.blockEntityChanged(pos);
-        ^///?} else if (>=1.19 && <=1.19.4) {
+        ^///?}
+        //? if (>=1.19 && <=1.19.4) {
         /^if (ci.getReturnValueZ()) {
 ^///?}
         //? if (>=1.19 && <=1.19.3) {
         /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
-^///?} else if 1.19.4 {
+^///?}
+        //? if 1.19.4 {
         /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
 ^///?}
         //? if (>=1.19 && <=1.19.4) {

@@ -2,90 +2,18 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.BlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.BlockPos;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.Entity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.item.FallingBlockEntity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.item.PrimedTnt;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.nbt.CompoundTag;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-
-import net.minecraft.server.MinecraftServer;
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ChunkHolder;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.server.level.ChunkHolder;
-//?}
-
-//? if (>=1.21 && <=1.21.11) {
-/*import net.minecraft.server.level.ChunkMap;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.server.level.ChunkMap;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.20.6) {
-/*import net.minecraft.server.level.ChunkMap;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.entity.Entity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.entity.item.FallingBlockEntity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.entity.item.PrimedTnt;
-//?}
-
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.BlockEntity;
-//?}
-
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-//?}
-
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.item.FallingBlockEntity;
+import net.minecraft.world.entity.item.PrimedTnt;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ChunkHolder;
+import net.minecraft.server.level.ChunkMap;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.LevelChunk;
-//?}
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -132,31 +60,16 @@ public final class TransientChunkStateMarker {
         Set<ChunkReference> criticalChunks = new LinkedHashSet<>();
         List<ScheduledTickSnapshot> orderedScheduledTicks = new ArrayList<>();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerLevel world : server.getAllLevels())
-        //?}
-        {
+        for (ServerLevel world : server.getAllLevels()) {
 
-            //? if (>=1.18 && <=1.20.6) {
-            /*ChunkMap storage = world.getChunkSource().chunkMap;
-            *///?} else if (>=1.21 && <=1.21.11) {
-            /*ChunkMap storage = world.getChunkSource().chunkMap;
-*///?} else if (>=26.1 && <=26.3) {
             ChunkMap storage = world.getChunkSource().chunkMap;
-            //?}
 
             ThreadedAnvilChunkStorageAccessorMixin accessor =
                     (ThreadedAnvilChunkStorageAccessorMixin) storage;
             for (ChunkHolder holder : accessor.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*LevelChunk chunk = accessibleChunk(holder);
-                *///?} else if (>=26.1 && <=26.3) {
                 LevelChunk chunk = accessibleChunk(holder);
-                //?}
 
                 if (chunk == null) continue;
                 inspectedChunks++;
@@ -173,7 +86,8 @@ public final class TransientChunkStateMarker {
                                                                 instanceof
                                                                 net.minecraft.world.level.block.entity
                                                                         .PotentSulfurBlockEntity);
-*///?} else if 26.3 {
+*///?}
+                //? if 26.3 {
                 boolean sulfur =
                         chunk.getBlockEntities().values().stream()
                                 .anyMatch(entity ->
@@ -192,17 +106,9 @@ public final class TransientChunkStateMarker {
                 // mutation tracer covers a concurrent add/remove between this count and the
                 // read; we never infer a mixed epoch from two list observations.
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*int blockTicks = chunk.getBlockTicks().count();
-                *///?} else if (>=26.1 && <=26.3) {
                 int blockTicks = chunk.getBlockTicks().count();
-                //?}
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*int fluidTicks = chunk.getFluidTicks().count();
-                *///?} else if (>=26.1 && <=26.3) {
                 int fluidTicks = chunk.getFluidTicks().count();
-                //?}
 
                 long advertisedScheduledTicks = (long) blockTicks + fluidTicks;
 
@@ -213,10 +119,12 @@ public final class TransientChunkStateMarker {
                                 : ScheduledTickSnapshot.capture(
                                         //? if (>=1.18 && <=1.21.10) {
                                         /^world.dimension().location().toString(), chunk);
-                ^///?} else if 1.21.11 {
+                ^///?}
+                //? if 1.21.11 {
                 /^world.dimension().identifier().toString(), chunk);
                                         ^///?}
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 List<ScheduledTickSnapshot> exactTicks =
                         advertisedScheduledTicks == 0L
                                 ? List.of()
@@ -234,7 +142,8 @@ public final class TransientChunkStateMarker {
 
                 //? if (>=1.18 && <=26.1) {
                 /*if (!needsTransientSave(pistonsInChunk > 0, blockTicks, fluidTicks))
-                    *///?} else if (>=26.2 && <=26.3) {
+                    *///?}
+                //? if (>=26.2 && <=26.3) {
                 if (!needsTransientSave(pistonsInChunk > 0 || sulfur, blockTicks, fluidTicks))
                     //?}
                     continue;
@@ -244,11 +153,13 @@ public final class TransientChunkStateMarker {
                         new ChunkReference(
                                 //? if (>=1.18 && <=1.21.10) {
                                 /^world.dimension().location().toString(),
-                                ^///?} else if 1.21.11 {
+                                ^///?}
+                                //? if 1.21.11 {
                                 /^world.dimension().identifier().toString(),
                                 ^///?}
                                 chunk.getPos().toLong()));
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
                                 world.dimension().identifier().toString(), chunk.getPos().pack()));
@@ -263,21 +174,13 @@ public final class TransientChunkStateMarker {
                     scheduledTicks += chunkScheduledTicks;
                 }
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*if (!chunk.isUnsaved())
-                *///?} else if (>=26.1 && <=26.3) {
-                if (!chunk.isUnsaved())
-                //?}
-                {
+                if (!chunk.isUnsaved()) {
                     chunksMadeDirty++;
 
-                    //? if (>=1.18.2 && <=1.21.1) {
+                    //? if (>=1.18 && <=1.21.1) {
                     /*chunk.setUnsaved(true);
-                    *///?} else if (>=1.18 && <=1.18.1) {
-                    /*chunk.setUnsaved(true);
-*///?} else if (>=1.21.2 && <=1.21.11) {
-                    /*chunk.markUnsaved();
-*///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=1.21.2 && <=26.3) {
                     chunk.markUnsaved();
                     //?}
 
@@ -288,12 +191,7 @@ public final class TransientChunkStateMarker {
             // entity NBT is flushed by the normal save, but their chunks must also reach
             // entity-ticking readiness before restored simulation resumes.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (Entity entity : world.getAllEntities())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (Entity entity : world.getAllEntities())
-            //?}
-            {
+            for (Entity entity : world.getAllEntities()) {
                 if (!isCheckpointCriticalEntity(entity)) continue;
                 transientPhysicsEntities++;
 
@@ -302,11 +200,13 @@ public final class TransientChunkStateMarker {
                         new ChunkReference(
                                 //? if (>=1.18 && <=1.21.10) {
                                 /^world.dimension().location().toString(),
-                                ^///?} else if 1.21.11 {
+                                ^///?}
+                                //? if 1.21.11 {
                                 /^world.dimension().identifier().toString(),
                                 ^///?}
                                 entity.chunkPosition().toLong()));
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
                                 world.dimension().identifier().toString(),
@@ -335,30 +235,14 @@ public final class TransientChunkStateMarker {
 
     static boolean isCheckpointCriticalEntity(Entity entity) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*return entity != null
-                && !entity.isRemoved()
-                && (entity instanceof PrimedTnt || entity instanceof FallingBlockEntity);
-        *///?} else if (>=26.1 && <=26.3) {
         return entity != null
                 && !entity.isRemoved()
                 && (entity instanceof PrimedTnt || entity instanceof FallingBlockEntity);
-        //?}
-
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static LevelChunk accessibleChunk(ChunkHolder holder)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static LevelChunk accessibleChunk(ChunkHolder holder)
-                //?}
-            {
+    private static LevelChunk accessibleChunk(ChunkHolder holder) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*var future = holder.getFullChunkFuture();
-        *///?} else if (>=26.1 && <=26.3) {
         var future = holder.getFullChunkFuture();
-        //?}
 
         if (!future.isDone() || future.isCompletedExceptionally()) return null;
         try {
@@ -366,7 +250,8 @@ public final class TransientChunkStateMarker {
 
             //? if (>=1.18 && <=1.20.4) {
             /*return ready == null ? null : ready.left().orElse(null);
-            *///?} else if (>=1.20.5 && <=26.3) {
+            *///?}
+            //? if (>=1.20.5 && <=26.3) {
             return ready == null ? null : ready.orElse(null);
             //?}
 
@@ -377,40 +262,21 @@ public final class TransientChunkStateMarker {
         }
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static int countMovingPistons(LevelChunk chunk)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static int countMovingPistons(LevelChunk chunk)
-                //?}
-            {
+    private static int countMovingPistons(LevelChunk chunk) {
         Map<BlockPos, BlockEntity> liveBlockEntities = chunk.getBlockEntities();
         int count = 0;
         for (BlockEntity blockEntity : liveBlockEntities.values()) {
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (blockEntity instanceof PistonMovingBlockEntity)
-                *///?} else if (>=26.1 && <=26.3) {
-            if (blockEntity instanceof PistonMovingBlockEntity)
-                //?}
-                count++;
+            if (blockEntity instanceof PistonMovingBlockEntity) count++;
         }
 
         // LevelChunk can retain a pending NBT entry before the block entity is materialized.
         // Include that representation too, while avoiding a duplicate for a live entry.
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (BlockPos position : chunk.getBlockEntitiesPos())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (BlockPos position : chunk.getBlockEntitiesPos())
-        //?}
-        {
+        for (BlockPos position : chunk.getBlockEntitiesPos()) {
             if (liveBlockEntities.containsKey(position)) continue;
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*CompoundTag pending = chunk.getBlockEntityNbt(position);
-            *///?} else if (>=26.1 && <=26.3) {
             CompoundTag pending = chunk.getBlockEntityNbt(position);
-            //?}
 
             if (pending != null && PISTON_BLOCK_ENTITY_ID.equals(pending.getString("id"))) count++;
         }

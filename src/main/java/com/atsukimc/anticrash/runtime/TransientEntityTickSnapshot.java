@@ -2,40 +2,11 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.Entity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.BlockPos;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.item.FallingBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.entity.item.PrimedTnt;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.entity.Entity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.entity.item.FallingBlockEntity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.entity.item.PrimedTnt;
-//?}
 
 import java.util.ArrayList;
 import java.util.List;
@@ -80,21 +51,18 @@ public final class TransientEntityTickSnapshot {
     public int chunkX;
     public int chunkZ;
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static List<TransientEntityTickSnapshot> capture(ServerLevel world)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static List<TransientEntityTickSnapshot> capture(ServerLevel world)
-                //?}
-            {
+    public static List<TransientEntityTickSnapshot> capture(ServerLevel world) {
         List<TransientEntityTickSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
         /^String dimension = world.dimension().location().toString();
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^String dimension = world.dimension().identifier().toString();
         ^///?}
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         String dimension = world.dimension().identifier().toString();
         //?}
 
@@ -103,40 +71,27 @@ public final class TransientEntityTickSnapshot {
                 .forEach(entity -> {
                     String kind = kind(entity);
 
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*if (kind == null
-                            || entity.isRemoved()
-                            || !world.isPositionEntityTicking(entity.blockPosition()))
-                        *///?} else if (>=1.21.5 && <=1.21.11) {
-                    /*if (kind == null
-                                                    || entity.isRemoved()
-                                                    || !world.isPositionEntityTicking(entity.blockPosition()))
-*///?} else if (>=26.1 && <=26.3) {
                     if (kind == null
                             || entity.isRemoved()
-                            || !world.isPositionEntityTicking(entity.blockPosition()))
-                        //?}
-                        return;
+                            || !world.isPositionEntityTicking(entity.blockPosition())) return;
                     TransientEntityTickSnapshot snapshot = new TransientEntityTickSnapshot();
                     snapshot.dimension = dimension;
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.uuid = entity.getStringUUID();
-                    *///?} else if (>=26.1 && <=26.3) {
                     snapshot.uuid = entity.getStringUUID();
-                    //?}
 
                     snapshot.kind = kind;
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*snapshot.chunkX = entity.chunkPosition().x;
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkX = entity.chunkPosition().x();
                     //?}
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*snapshot.chunkZ = entity.chunkPosition().z;
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkZ = entity.chunkPosition().z();
                     //?}
 
@@ -147,12 +102,7 @@ public final class TransientEntityTickSnapshot {
 
     public static String kind(Entity entity) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*if (entity instanceof PrimedTnt)
-            *///?} else if (>=26.1 && <=26.3) {
-        if (entity instanceof PrimedTnt)
-            //?}
-            return TNT;
+        if (entity instanceof PrimedTnt) return TNT;
         if (entity instanceof FallingBlockEntity) return FALLING_BLOCK;
         return null;
     }

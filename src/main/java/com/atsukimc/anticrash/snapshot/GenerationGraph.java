@@ -1,12 +1,6 @@
 package com.atsukimc.anticrash.snapshot;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /** Pure dependency-graph helpers used by retention and tests. */
 public final class GenerationGraph {

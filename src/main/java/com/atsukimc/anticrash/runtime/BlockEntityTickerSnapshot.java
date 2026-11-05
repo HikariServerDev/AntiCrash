@@ -1,68 +1,21 @@
 package com.atsukimc.anticrash.runtime;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.BlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.BlockEntityType;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-
-//? if (>=1.19.3 && <=1.21.11) {
-/*import net.minecraft.core.registries.BuiltInRegistries;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.resources.Identifier;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerLevel;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerLevel;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*//? if (>=1.18 && <=1.21.10) {
-/^import net.minecraft.resources.ResourceLocation;
-^///?}
-//? if 1.21.11 {
-/^import net.minecraft.resources.Identifier;
-^///?}
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.BlockEntity;
-//?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.BlockEntityType;
-//?}
+import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 //? if (>=1.18 && <=1.19.2) {
 /*import net.minecraft.core.Registry;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.block.entity.TickingBlockEntity;
+*///?} else {
+import net.minecraft.core.registries.BuiltInRegistries;
 //?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.chunk.LevelChunk;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.chunk.LevelChunk;
+//? if (>=1.18 && <=1.21.10) {
+/*import net.minecraft.resources.ResourceLocation;
+*///?} else {
+import net.minecraft.resources.Identifier;
 //?}
 
 import java.util.ArrayList;
@@ -97,28 +50,10 @@ public final class BlockEntityTickerSnapshot {
         return order + "|" + dimension + "|" + key();
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static String keyFor(ServerLevel world, String queue, TickingBlockEntity ticker)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static String keyFor(ServerLevel world, String queue, TickingBlockEntity ticker)
-                //?}
-            {
+    public static String keyFor(ServerLevel world, String queue, TickingBlockEntity ticker) {
         if (ticker == null) return null;
         BlockPos position = ticker.getPos();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*return queue
-                + "|"
-                + position.getX()
-                + ','
-                + position.getY()
-                + ','
-                + position.getZ()
-                + "|"
-                + typeId(loadedBlockEntity(world, position), null)
-                + "|"
-                + ticker.getType();
-        *///?} else if (>=26.1 && <=26.3) {
         return queue
                 + "|"
                 + position.getX()
@@ -130,8 +65,6 @@ public final class BlockEntityTickerSnapshot {
                 + typeId(loadedBlockEntity(world, position), null)
                 + "|"
                 + ticker.getType();
-        //?}
-
     }
 
     /**
@@ -144,21 +77,11 @@ public final class BlockEntityTickerSnapshot {
      * whole checkpoint. A removed ticker never runs again, so it carries no order.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static boolean removed(TickingBlockEntity ticker)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static boolean removed(TickingBlockEntity ticker)
-                //?}
-            {
+    public static boolean removed(TickingBlockEntity ticker) {
         return ticker == null || ticker.isRemoved();
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static List<BlockEntityTickerSnapshot> capture(ServerLevel world)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static List<BlockEntityTickerSnapshot> capture(ServerLevel world)
-                //?}
-            {
+    public static List<BlockEntityTickerSnapshot> capture(ServerLevel world) {
         List<BlockEntityTickerSnapshot> result = new ArrayList<>();
         com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
                 (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
@@ -169,41 +92,28 @@ public final class BlockEntityTickerSnapshot {
         return result;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static void captureList(
-            List<BlockEntityTickerSnapshot> output,
-            ServerLevel world,
-            String queue,
-            List<TickingBlockEntity> tickers,
-            Map<BlockEntityType<?>, String> typeIds)
-                *///?} else if (>=26.1 && <=26.3) {
     private static void captureList(
             List<BlockEntityTickerSnapshot> output,
             ServerLevel world,
             String queue,
             List<TickingBlockEntity> tickers,
-            Map<BlockEntityType<?>, String> typeIds)
-                //?}
-            {
+            Map<BlockEntityType<?>, String> typeIds) {
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
         /^String dimension = world.dimension().location().toString();
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^String dimension = world.dimension().identifier().toString();
         ^///?}
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         String dimension = world.dimension().identifier().toString();
         //?}
 
         int order = 0;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (TickingBlockEntity ticker : tickers)
-        *///?} else if (>=26.1 && <=26.3) {
-        for (TickingBlockEntity ticker : tickers)
-        //?}
-        {
+        for (TickingBlockEntity ticker : tickers) {
             if (removed(ticker)) continue;
             BlockEntityTickerSnapshot snapshot = new BlockEntityTickerSnapshot();
             BlockPos position = ticker.getPos();
@@ -213,11 +123,7 @@ public final class BlockEntityTickerSnapshot {
             snapshot.y = position.getY();
             snapshot.z = position.getZ();
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*snapshot.name = ticker.getType();
-            *///?} else if (>=26.1 && <=26.3) {
             snapshot.name = ticker.getType();
-            //?}
 
             snapshot.type = typeId(loadedBlockEntity(world, position), typeIds);
             // Ordering is local to each Vanilla list. PENDING is copied into CURRENT by
@@ -237,20 +143,10 @@ public final class BlockEntityTickerSnapshot {
      * and the plain map lookup is also several times cheaper for thousands of tickers.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position)
-                *///?} else if (>=26.1 && <=26.3) {
-    public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position)
-                //?}
-            {
+    public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*LevelChunk chunk =
-                world.getChunkSource().getChunkNow(position.getX() >> 4, position.getZ() >> 4);
-        *///?} else if (>=26.1 && <=26.3) {
         LevelChunk chunk =
                 world.getChunkSource().getChunkNow(position.getX() >> 4, position.getZ() >> 4);
-        //?}
 
         return chunk == null ? null : chunk.getBlockEntities().get(position);
     }
@@ -265,11 +161,11 @@ public final class BlockEntityTickerSnapshot {
 
         //? if (>=1.18 && <=1.19.2) {
         /*ResourceLocation id = Registry.BLOCK_ENTITY_TYPE.getKey(type);
-        *///?} else if (>=1.19.3 && <=1.21.10) {
+        *///?}
+        //? if (>=1.19.3 && <=1.21.10) {
         /*ResourceLocation id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        *///?} else if 1.21.11 {
-        /*Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.21.11 && <=26.3) {
         Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
         //?}
 

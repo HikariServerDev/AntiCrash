@@ -1,6 +1,12 @@
 //? if (>=1.18 && <=1.21.11) {
 /*package com.atsukimc.anticrash.probe;
 
+//? if (>=1.18 && <=1.19.2) {
+/^import net.minecraft.core.Registry;
+^///?} else {
+import net.minecraft.core.registries.BuiltInRegistries;
+//?}
+
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin;
@@ -25,18 +31,10 @@ import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
-//? if (>=1.19.3 && <=1.21.11) {
-/^import net.minecraft.core.registries.BuiltInRegistries;
-^///?}
-
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.core.BlockPos;
-//? if (>=1.18 && <=1.19.2) {
-/^import net.minecraft.core.Registry;
-^///?}
-
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -91,7 +89,8 @@ public final class RuntimeStateProbe implements ModInitializer {
     private boolean audited;
     //? if (>=1.18 && <=1.21.10) {
     /^private static final net.minecraft.resources.ResourceLocation ECHO_CHANNEL =
-            ^///?} else if 1.21.11 {
+            ^///?}
+            //? if 1.21.11 {
             /^private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
     ^///?}
             identifier("anticrash_probe", "echo");
@@ -104,14 +103,17 @@ public final class RuntimeStateProbe implements ModInitializer {
     //? if (>=1.18 && <=1.21.10) {
     /^private static net.minecraft.resources.ResourceLocation identifier(
             String namespace, String path) {
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^private static net.minecraft.resources.Identifier identifier(String namespace, String path) {
     ^///?}
         //? if <=1.20.6 {
         /^return new net.minecraft.resources.ResourceLocation(namespace, path);
-        ^///?} else if (>=1.21 && <=1.21.10) {
+        ^///?}
+        //? if (>=1.21 && <=1.21.10) {
         /^return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(namespace, path);
-^///?} else if 1.21.11 {
+^///?}
+        //? if 1.21.11 {
         /^return net.minecraft.resources.Identifier.fromNamespaceAndPath(namespace, path);
 ^///?}
     }
@@ -126,7 +128,8 @@ public final class RuntimeStateProbe implements ModInitializer {
             //? if (>=1.18 && <=1.21.10) {
             /^net.minecraft.resources.ResourceLocation channel,
             net.minecraft.network.FriendlyByteBuf data) {
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^net.minecraft.resources.Identifier channel, net.minecraft.network.FriendlyByteBuf data) {
             ^///?}
         //? if <=1.20.1 {
@@ -137,7 +140,8 @@ public final class RuntimeStateProbe implements ModInitializer {
         try {
             //? if (>=1.20.2 && <=1.21.10) {
             /^wire.writeResourceLocation(channel);
-            ^///?} else if 1.21.11 {
+            ^///?}
+            //? if 1.21.11 {
             /^wire.writeIdentifier(channel);
             ^///?}
             wire.writeBytes(data, data.readerIndex(), data.readableBytes());
@@ -267,7 +271,8 @@ public final class RuntimeStateProbe implements ModInitializer {
                             payload(
                                     //? if (>=1.18 && <=1.21.10) {
                                     /^(net.minecraft.resources.ResourceLocation)
-                                            ^///?} else if 1.21.11 {
+                                            ^///?}
+                                            //? if 1.21.11 {
                                             /^(net.minecraft.resources.Identifier)
                                     ^///?}
                                             client.getField("CARPET_CHANNEL").get(null),
@@ -594,9 +599,7 @@ public final class RuntimeStateProbe implements ModInitializer {
             //? if <=1.19 {
             /^default ->
                     server.getCommands().performCommand(server.createCommandSourceStack(), command);
-                ^///?} else if <=1.21.9 {
-                /^default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
-^///?} else {
+                ^///?} else {
                 default -> server.getCommands().performPrefixedCommand(server.createCommandSourceStack(), command);
 //?}
         }
@@ -609,7 +612,8 @@ public final class RuntimeStateProbe implements ModInitializer {
         for (ServerLevel world : server.getAllLevels())
             //? if (>=1.18 && <=1.21.10) {
             /^worlds.put(world.dimension().location().toString(), world);
-        ^///?} else if 1.21.11 {
+        ^///?}
+        //? if 1.21.11 {
         /^worlds.put(world.dimension().identifier().toString(), world);
             ^///?}
         for (Map.Entry<String, ServerLevel> entry : worlds.entrySet())
@@ -793,7 +797,8 @@ public final class RuntimeStateProbe implements ModInitializer {
 
                     //? if (>=1.18 && <=1.19.2) {
                     /^String id = Registry.ENTITY_TYPE.getKey(entity.getType()).toString();
-                    ^///?} else if (>=1.19.3 && <=1.21.11) {
+                    ^///?}
+                    //? if (>=1.19.3 && <=1.21.11) {
                     /^String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
 ^///?}
 

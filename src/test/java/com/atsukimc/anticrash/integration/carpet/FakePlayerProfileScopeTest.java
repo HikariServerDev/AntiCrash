@@ -30,19 +30,22 @@ class FakePlayerProfileScopeTest {
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals(CHECKPOINT_ID, selected.getId());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals(CHECKPOINT_ID, selected.id());
             //?}
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals("msbot", selected.getName());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals("msbot", selected.name());
             //?}
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals(OTHER_ID, cached.getId());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals(OTHER_ID, cached.id());
             //?}
 
@@ -57,7 +60,8 @@ class FakePlayerProfileScopeTest {
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").getName());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").name());
             //?}
 
@@ -78,7 +82,8 @@ class FakePlayerProfileScopeTest {
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
 
@@ -107,7 +112,8 @@ class FakePlayerProfileScopeTest {
 
                 //? if (>=1.18 && <=1.21.8) {
                 /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
-                *///?} else if (>=1.21.9 && <=26.3) {
+                *///?}
+                //? if (>=1.21.9 && <=26.3) {
                 assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
                 //?}
 
@@ -115,7 +121,8 @@ class FakePlayerProfileScopeTest {
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
 
@@ -139,7 +146,8 @@ class FakePlayerProfileScopeTest {
 
             //? if (>=1.18 && <=1.21.8) {
             /*assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").getId());
-            *///?} else if (>=1.21.9 && <=26.3) {
+            *///?}
+            //? if (>=1.21.9 && <=26.3) {
             assertEquals(CHECKPOINT_ID, FakePlayerProfileScope.lookup(cache, "msbot").id());
             //?}
 
@@ -158,7 +166,8 @@ class FakePlayerProfileScopeTest {
 
                 //? if (>=1.18 && <=1.21.8) {
                 /*assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").getId());
-                *///?} else if (>=1.21.9 && <=26.3) {
+                *///?}
+                //? if (>=1.21.9 && <=26.3) {
                 assertEquals(OTHER_ID, FakePlayerProfileScope.lookup(cache, "other_bot").id());
                 //?}
 

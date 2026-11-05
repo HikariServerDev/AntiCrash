@@ -9,12 +9,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.atsukimc.anticrash.util.AtomicFiles;
 import com.google.gson.JsonObject;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
-//?}
 
 import org.junit.jupiter.api.Test;
 

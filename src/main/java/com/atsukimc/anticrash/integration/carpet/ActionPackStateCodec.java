@@ -7,12 +7,7 @@ import com.google.gson.JsonNull;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
-//?}
 
 import java.io.IOException;
 import java.lang.reflect.Array;

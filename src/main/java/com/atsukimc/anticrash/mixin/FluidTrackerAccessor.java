@@ -28,20 +28,14 @@ public interface FluidTrackerAccessor {
     //? if (>=26.1 && <=26.2) {
     /*@Accessor("accumulatedCurrent")
     net.minecraft.world.phys.Vec3 anticrash$current();
-*///?}
 
-    //? if (>=26.1 && <=26.2) {
-    /*@Accessor("accumulatedCurrent")
+@Accessor("accumulatedCurrent")
     void anticrash$current(net.minecraft.world.phys.Vec3 value);
-*///?}
 
-    //? if (>=26.1 && <=26.2) {
-    /*@Accessor("currentCount")
+@Accessor("currentCount")
     int anticrash$count();
-*///?}
 
-    //? if (>=26.1 && <=26.2) {
-    /*@Accessor("currentCount")
+@Accessor("currentCount")
     void anticrash$count(int value);
 *///?}
 

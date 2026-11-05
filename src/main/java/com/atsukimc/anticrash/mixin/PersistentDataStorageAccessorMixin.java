@@ -12,7 +12,8 @@ import java.util.concurrent.CompletableFuture;
 public interface PersistentDataStorageAccessorMixin {
     @Accessor("pendingWriteFuture")
     CompletableFuture<?> anticrash$getPendingWrite();
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+//? if (>=26.1 && <=26.3) {
 @Mixin(net.minecraft.world.level.storage.SavedDataStorage.class)
 public interface PersistentDataStorageAccessorMixin {
     @Accessor("pendingWriteFuture")

@@ -3,32 +3,16 @@ package com.atsukimc.anticrash;
 import com.atsukimc.anticrash.checkpoint.CheckpointManager;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.consistency.ConsistencyManager;
-import com.atsukimc.anticrash.core.AntiCrashState;
-import com.atsukimc.anticrash.core.AntiCrashStateMachine;
-import com.atsukimc.anticrash.core.CrashCause;
-import com.atsukimc.anticrash.core.CrashDetector;
-import com.atsukimc.anticrash.core.InternalProcessLock;
-import com.atsukimc.anticrash.core.InternalStateManager;
-import com.atsukimc.anticrash.core.RecoveryStateData;
+import com.atsukimc.anticrash.core.*;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.PlayerSnapshotData;
 import com.atsukimc.anticrash.player.PlayerSnapshotManager;
-import com.atsukimc.anticrash.recovery.ChunkRecoveryManager;
-import com.atsukimc.anticrash.recovery.ChunkRecoveryPlan;
-import com.atsukimc.anticrash.recovery.PreWorldDecisionInput;
-import com.atsukimc.anticrash.recovery.RecoveryChecks;
-import com.atsukimc.anticrash.recovery.RecoveryPayloadValidator;
-import com.atsukimc.anticrash.recovery.StartupRecoveryPlan;
-import com.atsukimc.anticrash.recovery.WorldRestorer;
+import com.atsukimc.anticrash.recovery.*;
 import com.atsukimc.anticrash.restart.RestartCoordinator;
-import com.atsukimc.anticrash.runtime.BlockEventSnapshot;
-import com.atsukimc.anticrash.runtime.EquivalenceCategory;
-import com.atsukimc.anticrash.runtime.RecoveryEquivalenceReport;
-import com.atsukimc.anticrash.runtime.RuntimeCapsule;
-import com.atsukimc.anticrash.runtime.RuntimeCapsuleManager;
+import com.atsukimc.anticrash.runtime.*;
 import com.atsukimc.anticrash.snapshot.CheckpointCandidate;
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.atsukimc.anticrash.snapshot.CrashRawManager;
@@ -37,40 +21,15 @@ import com.atsukimc.anticrash.util.AtomicFiles;
 import com.google.gson.reflect.TypeToken;
 
 import net.fabricmc.loader.api.FabricLoader;
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.ChatFormatting;
-//?}
-
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.network.chat.Component;
-//?}
-
 import net.minecraft.server.MinecraftServer;
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.server.level.ServerPlayer;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.server.level.ServerPlayer;
-//?}
+import net.minecraft.world.level.ChunkPos;
 
 //? if (>=1.18 && <=1.18.2) {
 /*import net.minecraft.network.chat.TextComponent;
 *///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.network.chat.Component;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.ChatFormatting;
-*///?}
-
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.ChunkPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.ChunkPos;
-//?}
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -921,7 +880,8 @@ public final class AntiCrashController {
         /*ChunkRecoveryPlan.Anchor anchor =
                 new ChunkRecoveryPlan.Anchor(
                         dimension, new ChunkPos((int) chunkX, (int) chunkZ).toLong());
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         ChunkRecoveryPlan.Anchor anchor =
                 new ChunkRecoveryPlan.Anchor(
                         dimension, new ChunkPos((int) chunkX, (int) chunkZ).pack());
@@ -1121,17 +1081,13 @@ public final class AntiCrashController {
                 String notice =
                         MessageCatalog.text(config.language, "recovery.player_resumed_notice");
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-                *///?} else if (>=26.1 && <=26.3) {
-                for (ServerPlayer player : server.getPlayerList().getPlayers())
-                //?}
-                {
+                for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     if (!CarpetIntegration.isFakePlayer(player))
 
                         //? if (>=1.18 && <=1.21.11) {
                         /*player.displayClientMessage(chat(notice, null), false);
-                    *///?} else if (>=26.1 && <=26.3) {
+                    *///?}
+                        //? if (>=26.1 && <=26.3) {
                         com.atsukimc.anticrash.runtime.VersionMessages.send(
                                 player, chat(notice, null), false);
                     //?}
@@ -1188,12 +1144,8 @@ public final class AntiCrashController {
                     net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket>
             deferredPayloads;
 
-    *///?} else if (>=1.20.2 && <=1.21.11) {
-    /*private volatile com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                        net.minecraft.server.network.ServerGamePacketListenerImpl,
-                        net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
-                deferredPayloads;
-*///?} else if (>=26.1 && <=26.3) {
+    *///?}
+    //? if (>=1.20.2 && <=26.3) {
     private volatile com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
                     net.minecraft.server.network.ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
@@ -1207,11 +1159,8 @@ public final class AntiCrashController {
     /*public void deferCustomPayload(
             net.minecraft.server.network.ServerGamePacketListenerImpl handler,
             net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket packet)
-                *///?} else if (>=1.20.2 && <=1.21.11) {
-    /*public void deferCustomPayload(
-                            net.minecraft.server.network.ServerGamePacketListenerImpl handler,
-                            net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet)
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+    //? if (>=1.20.2 && <=26.3) {
     public void deferCustomPayload(
             net.minecraft.server.network.ServerGamePacketListenerImpl handler,
             net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet)
@@ -1240,12 +1189,8 @@ public final class AntiCrashController {
                     net.minecraft.server.network.ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket>
             payloadDelivery()
-                *///?} else if (>=1.20.2 && <=1.21.11) {
-    /*private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                                    net.minecraft.server.network.ServerGamePacketListenerImpl,
-                                    net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
-                            payloadDelivery()
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+    //? if (>=1.20.2 && <=26.3) {
     private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
                     net.minecraft.server.network.ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
@@ -1253,21 +1198,11 @@ public final class AntiCrashController {
                 //?}
             {
         if (deferredPayloads == null)
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*deferredPayloads =
-                    new com.atsukimc.anticrash.network.DeferredPayloadDispatcher<>(
-                            handler ->
-                                    !(handler.player == null || handler.player.hasDisconnected()),
-                            handler ->
-                            *///?} else if (>=26.1 && <=26.3) {
             deferredPayloads =
                     new com.atsukimc.anticrash.network.DeferredPayloadDispatcher<>(
                             handler ->
                                     !(handler.player == null || handler.player.hasDisconnected()),
-                            handler ->
-                            //?}
-                            {
+                            handler -> {
 
                                 //? if (>=1.18 && <=1.19.3) {
                                 /*var channel =
@@ -1275,7 +1210,8 @@ public final class AntiCrashController {
                                                                 .ClientConnectionAccessorMixin)
                                                         handler.connection)
                                                 .anticrash$getChannel();
-                                *///?} else if (>=1.19.4 && <=26.3) {
+                                *///?}
+                                //? if (>=1.19.4 && <=26.3) {
                                 var channel =
                                         ((com.atsukimc.anticrash.mixin
                                                                 .ClientConnectionAccessorMixin)
@@ -1293,23 +1229,11 @@ public final class AntiCrashController {
                             (handler, packet) -> {
                                 try {
 
-                                    //? if (>=1.18 && <=1.21.11) {
-                                    /*handler.handleCustomPayload(packet);
-                                    *///?} else if (>=26.1 && <=26.3) {
                                     handler.handleCustomPayload(packet);
-                                    //?}
 
-                                }
-                                //? if (>=1.18 && <=1.21.11) {
-                                /*catch (
+                                } catch (
                                         net.minecraft.server.RunningOnDifferentThreadException
-                                                rescheduled)
-                                *///?} else if (>=26.1 && <=26.3) {
-                                catch (
-                                        net.minecraft.server.RunningOnDifferentThreadException
-                                                rescheduled)
-                                //?}
-                                {
+                                                rescheduled) {
                                     // Vanilla scheduled the packet on its server thread; this is
                                     // success.
                                 }
@@ -1322,19 +1246,11 @@ public final class AntiCrashController {
         com.atsukimc.anticrash.runtime.RuntimeCapsule capsule = pendingRuntimeCapsule;
         if (capsule == null || capsule.ticketLedger == null || server == null) return false;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*int missing =
-                com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.missingPermanentTickets(
-                        com.atsukimc.anticrash.runtime.TicketLedgerSnapshot.capture(
-                                server.getAllLevels()),
-                        capsule.ticketLedger);
-        *///?} else if (>=26.1 && <=26.3) {
         int missing =
                 com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.missingPermanentTickets(
                         com.atsukimc.anticrash.runtime.TicketLedgerSnapshot.capture(
                                 server.getAllLevels()),
                         capsule.ticketLedger);
-        //?}
 
         if (missing == 0) return false;
         if (permanentTicketWaitTicks++ >= MAX_PERMANENT_TICKET_WAIT_TICKS) return false;
@@ -1347,11 +1263,7 @@ public final class AntiCrashController {
             return false;
         }
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
         for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        //?}
         //? if (>=1.18.2 && <=26.3) {
         {
             // No chunk is ticked (second argument); this only advances tickets and chunk loading.
@@ -1359,11 +1271,13 @@ public final class AntiCrashController {
             //?}
             //? if (>=1.18.2 && <=1.21.11) {
             /*world.getChunkSource().tick(() -> true, false);
-            *///?} else if (>=1.18 && <=1.18.1) {
+            *///?}
+            //? if (>=1.18 && <=1.18.1) {
             /*{
                         // 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
                         com.atsukimc.anticrash.recovery.VersionChunkLifecycle.advance(world.getChunkSource());
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+            //? if (>=26.1 && <=26.3) {
             world.getChunkSource().tick(() -> true, false);
             //?}
 
@@ -1373,12 +1287,7 @@ public final class AntiCrashController {
 
     private void pumpEntityLoading(MinecraftServer server) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        //?}
-        {
+        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels()) {
             try {
                 ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
                         .anticrash$getEntityManager()
@@ -1390,11 +1299,13 @@ public final class AntiCrashController {
                         "recovery.entity_load_pump_failed",
                         //? if (>=1.18 && <=1.21.10) {
                         /^world.dimension().location(),
-                        ^///?} else if 1.21.11 {
+                        ^///?}
+                        //? if 1.21.11 {
                         /^world.dimension().identifier(),
                         ^///?}
                         exception.getMessage());
-                *///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=26.1 && <=26.3) {
                 logger.verboseKey(
                         "recovery.entity_load_pump_failed",
                         world.dimension().identifier(),
@@ -1423,9 +1334,8 @@ public final class AntiCrashController {
 
                 //? if (>=1.18 && <=1.18.2) {
                 /*broadcastActionBar(new TextComponent(""));
-                *///?} else if (>=1.19 && <=1.21.11) {
-                /*broadcastActionBar(Component.literal(""));
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=1.19 && <=26.3) {
                 broadcastActionBar(Component.literal(""));
                 //?}
 
@@ -1447,9 +1357,8 @@ public final class AntiCrashController {
 
                 //? if (>=1.18 && <=1.18.2) {
                 /*broadcastActionBar(new TextComponent(""));
-                *///?} else if (>=1.19 && <=1.21.11) {
-                /*broadcastActionBar(Component.literal(""));
-*///?} else if (>=26.1 && <=26.3) {
+                *///?}
+                //? if (>=1.19 && <=26.3) {
                 broadcastActionBar(Component.literal(""));
                 //?}
 
@@ -1462,84 +1371,34 @@ public final class AntiCrashController {
         broadcastActionBar(frozenActionBarText(state));
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private Component frozenActionBarText(AntiCrashState state)
-                *///?} else if (>=26.1 && <=26.3) {
-    private Component frozenActionBarText(AntiCrashState state)
-                //?}
-            {
+    private Component frozenActionBarText(AntiCrashState state) {
         return switch (state) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*case CHECKPOINT_BARRIER, CHECKPOINTING ->
-                    actionBar(ChatFormatting.YELLOW, "actionbar.checkpoint");
-            *///?} else if (>=26.1 && <=26.3) {
             case CHECKPOINT_BARRIER, CHECKPOINTING ->
                     actionBar(ChatFormatting.YELLOW, "actionbar.checkpoint");
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case WAITING_FOR_CHUNKS ->
-                    actionBar(
-                            ChatFormatting.GOLD,
-                            "actionbar.recovery_chunks",
-                            chunks.ready(),
-                            chunks.expected());
-            *///?} else if (>=26.1 && <=26.3) {
             case WAITING_FOR_CHUNKS ->
                     actionBar(
                             ChatFormatting.GOLD,
                             "actionbar.recovery_chunks",
                             chunks.ready(),
                             chunks.expected());
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case RESTORING_FAKEPLAYERS ->
-                    actionBar(ChatFormatting.GOLD, "actionbar.recovery_fakeplayers");
-            *///?} else if (>=26.1 && <=26.3) {
             case RESTORING_FAKEPLAYERS ->
                     actionBar(ChatFormatting.GOLD, "actionbar.recovery_fakeplayers");
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case READY_TO_START, RECOVERY_FROZEN ->
-                    actionBar(
-                            ChatFormatting.GREEN,
-                            "actionbar.recovery_ready",
-                            config.recovery.startCommand);
-            *///?} else if (>=26.1 && <=26.3) {
             case READY_TO_START, RECOVERY_FROZEN ->
                     actionBar(
                             ChatFormatting.GREEN,
                             "actionbar.recovery_ready",
                             config.recovery.startCommand);
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case STARTING -> actionBar(ChatFormatting.GREEN, "actionbar.starting");
-            *///?} else if (>=26.1 && <=26.3) {
             case STARTING -> actionBar(ChatFormatting.GREEN, "actionbar.starting");
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case RECOVERY_DECISION -> actionBar(ChatFormatting.GOLD, "actionbar.recovery_decision");
-            *///?} else if (>=26.1 && <=26.3) {
             case RECOVERY_DECISION -> actionBar(ChatFormatting.GOLD, "actionbar.recovery_decision");
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*case RECOVERY_FAILED -> actionBar(ChatFormatting.RED, "actionbar.recovery_failed");
-            *///?} else if (>=26.1 && <=26.3) {
             case RECOVERY_FAILED -> actionBar(ChatFormatting.RED, "actionbar.recovery_failed");
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*default -> actionBar(ChatFormatting.GOLD, "actionbar.recovery_restoring");
-                *///?} else if (>=26.1 && <=26.3) {
             default -> actionBar(ChatFormatting.GOLD, "actionbar.recovery_restoring");
-                //?}
-
         };
     }
 
@@ -1554,35 +1413,20 @@ public final class AntiCrashController {
         boolean strict = "STRICT".equalsIgnoreCase(config.recovery.fidelity);
         try {
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds =
-                    com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.worlds(
-                            server.getAllLevels());
-            *///?} else if (>=26.1 && <=26.3) {
             java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds =
                     com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.worlds(
                             server.getAllLevels());
-            //?}
 
             int tickers = 0, tickersUnknown = 0, tickersMissing = 0;
             int entities = 0, entitiesUnknown = 0, entitiesMissing = 0;
             int absentPlayers = 0;
             // STRICT already restored both orders with its own all-or-nothing checks.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (java.util.Map.Entry<String, net.minecraft.server.level.ServerLevel> world :
-                    strict
-                            ? java.util.Map.<String, net.minecraft.server.level.ServerLevel>of()
-                                    .entrySet()
-                            : worlds.entrySet())
-            *///?} else if (>=26.1 && <=26.3) {
             for (java.util.Map.Entry<String, net.minecraft.server.level.ServerLevel> world :
                     strict
                             ? java.util.Map.<String, net.minecraft.server.level.ServerLevel>of()
                                     .entrySet()
-                            : worlds.entrySet())
-            //?}
-            {
+                            : worlds.entrySet()) {
                 java.util.List<com.atsukimc.anticrash.runtime.BlockEntityTickerSnapshot>
                         tickerOrder = new ArrayList<>();
                 if (capsule.blockEntityTickerOrder != null) {
@@ -1669,7 +1513,8 @@ public final class AntiCrashController {
                 /*java.util.concurrent.atomic.AtomicInteger ids =
                         com.atsukimc.anticrash.mixin.EntityRuntimeAccessorMixin
                                 .anticrash$currentId();
-                *///?} else if (>=26.2 && <=26.3) {
+                *///?}
+                //? if (>=26.2 && <=26.3) {
                 java.util.concurrent.atomic.AtomicInteger ids =
                         com.atsukimc.anticrash.mixin.ServerEntityIdAccessor.anticrash$currentId();
                 //?}
@@ -1683,16 +1528,9 @@ public final class AntiCrashController {
             // the configured delay they keep chunks loaded that were about to unload, which is
             // not what the checkpoint's world would have done.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (capsule.ticketLedger != null
-                    && com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.permanentTicketsCovered(
-                            server.getAllLevels(), capsule.ticketLedger))
-            *///?} else if (>=26.1 && <=26.3) {
             if (capsule.ticketLedger != null
                     && com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.permanentTicketsCovered(
-                            server.getAllLevels(), capsule.ticketLedger))
-            //?}
-            {
+                            server.getAllLevels(), capsule.ticketLedger)) {
                 chunks.releaseNow(server);
                 logger.normalKey("chunk.recovery_tickets_released_at_start");
             } else {
@@ -1720,41 +1558,13 @@ public final class AntiCrashController {
      */
     private void verifyRuntimeCategories(com.atsukimc.anticrash.runtime.RuntimeCapsule expected) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        //?}
-        {
+        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels()) {
             // Apply the ticket changes to the chunk holders without ageing any ticket.
 
-            //? if (>=1.18 && <=1.20.1) {
-            /*world.getChunkSource()
-                    .chunkMap
-                    .getDistanceManager()
-                    .runAllUpdates(world.getChunkSource().chunkMap);
-            *///?} else if (>=1.20.2 && <=1.20.6) {
-            /*world.getChunkSource()
-                                .chunkMap
-                                .getDistanceManager()
-                                .runAllUpdates(world.getChunkSource().chunkMap);
-*///?} else if (>=1.21 && <=1.21.4) {
-            /*world.getChunkSource()
-                                .chunkMap
-                                .getDistanceManager()
-                                .runAllUpdates(world.getChunkSource().chunkMap);
-*///?} else if (>=1.21.5 && <=1.21.11) {
-            /*world.getChunkSource()
-                                .chunkMap
-                                .getDistanceManager()
-                                .runAllUpdates(world.getChunkSource().chunkMap);
-*///?} else if (>=26.1 && <=26.3) {
             world.getChunkSource()
                     .chunkMap
                     .getDistanceManager()
                     .runAllUpdates(world.getChunkSource().chunkMap);
-            //?}
-
         }
         com.atsukimc.anticrash.runtime.RuntimeCapsule actual =
                 runtime.captureCurrentForEquivalence(server);
@@ -1830,13 +1640,8 @@ public final class AntiCrashController {
     private boolean playerOnline(String uuid) {
         try {
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*return uuid != null
-                    && server.getPlayerList().getPlayer(java.util.UUID.fromString(uuid)) != null;
-            *///?} else if (>=26.1 && <=26.3) {
             return uuid != null
                     && server.getPlayerList().getPlayer(java.util.UUID.fromString(uuid)) != null;
-            //?}
 
         } catch (IllegalArgumentException invalid) {
             return false;
@@ -1907,16 +1712,9 @@ public final class AntiCrashController {
 
     /** Compares every moving piston with the progress the checkpoint recorded for it. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private void verifyPistonRuntime(
-            com.atsukimc.anticrash.runtime.RuntimeCapsule capsule,
-            java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds)
-                *///?} else if (>=26.1 && <=26.3) {
     private void verifyPistonRuntime(
             com.atsukimc.anticrash.runtime.RuntimeCapsule capsule,
-            java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds)
-                //?}
-            {
+            java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds) {
         lastPistonVerification = "NOT_APPLICABLE";
         if (capsule.movingPistonTickOrder == null || capsule.movingPistonTickOrder.isEmpty())
             return;
@@ -1929,26 +1727,13 @@ public final class AntiCrashController {
                 continue;
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*net.minecraft.server.level.ServerLevel world = worlds.get(snapshot.dimension);
-            *///?} else if (>=26.1 && <=26.3) {
             net.minecraft.server.level.ServerLevel world = worlds.get(snapshot.dimension);
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (world != null
-                    && com.atsukimc.anticrash.runtime.BlockEntityTickerSnapshot.loadedBlockEntity(
-                                    world, snapshot.position())
-                            instanceof
-                            net.minecraft.world.level.block.piston.PistonMovingBlockEntity piston)
-            *///?} else if (>=26.1 && <=26.3) {
             if (world != null
                     && com.atsukimc.anticrash.runtime.BlockEntityTickerSnapshot.loadedBlockEntity(
                                     world, snapshot.position())
                             instanceof
-                            net.minecraft.world.level.block.piston.PistonMovingBlockEntity piston)
-            //?}
-            {
+                            net.minecraft.world.level.block.piston.PistonMovingBlockEntity piston) {
                 var accessor = (com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin) piston;
                 if (accessor.anticrash$getProgress() == snapshot.progress
                         && accessor.anticrash$getLastProgress() == snapshot.lastProgress) match++;
@@ -1988,12 +1773,7 @@ public final class AntiCrashController {
 
     /** A chat message coloured by {@link com.atsukimc.anticrash.logging.ChatStyle}. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public Component chat(String message, ChatFormatting base)
-                *///?} else if (>=26.1 && <=26.3) {
-    public Component chat(String message, ChatFormatting base)
-                //?}
-            {
+    public Component chat(String message, ChatFormatting base) {
         return com.atsukimc.anticrash.logging.ChatStyle.text(
                 message, base, config.logging.chatColor);
     }
@@ -2002,42 +1782,27 @@ public final class AntiCrashController {
         return logger;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private Component actionBar(ChatFormatting color, String key, Object... arguments)
-                *///?} else if (>=26.1 && <=26.3) {
-    private Component actionBar(ChatFormatting color, String key, Object... arguments)
-                //?}
-            {
+    private Component actionBar(ChatFormatting color, String key, Object... arguments) {
 
         //? if (>=1.18 && <=1.18.2) {
         /*return new TextComponent(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
-        *///?} else if (>=1.19 && <=1.21.11) {
-        /*return Component.literal(MessageCatalog.text(config.language, key, arguments)).withStyle(color);
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.19 && <=26.3) {
         return Component.literal(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
         //?}
 
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private void broadcastActionBar(Component message)
-                *///?} else if (>=26.1 && <=26.3) {
-    private void broadcastActionBar(Component message)
-                //?}
-            {
+    private void broadcastActionBar(Component message) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerPlayer player : server.getPlayerList().getPlayers())
-        //?}
-        {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
             //? if (>=1.18 && <=1.21.11) {
             /*if (!CarpetIntegration.isFakePlayer(player)) player.displayClientMessage(message, true);
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             if (!CarpetIntegration.isFakePlayer(player))
                 com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, true);
             //?}
@@ -2094,33 +1859,20 @@ public final class AntiCrashController {
     private void broadcastAskPrompt() {
         if (!config.notifications.askPromptInGame || server == null) return;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-        *///?} else if (>=26.1 && <=26.3) {
-        for (ServerPlayer player : server.getPlayerList().getPlayers())
-        //?}
-        {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
             if (!CarpetIntegration.isFakePlayer(player)) sendAskPrompt(player);
         }
     }
 
     /** Sends the ASK question to one player who is allowed to answer it. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private void sendAskPrompt(ServerPlayer player)
-                *///?} else if (>=26.1 && <=26.3) {
-    private void sendAskPrompt(ServerPlayer player)
-                //?}
-            {
+    private void sendAskPrompt(ServerPlayer player) {
 
         //? if (>=1.18 && <=1.21.10) {
         /*if (selectedCheckpointId == null
                 || !player.createCommandSourceStack().hasPermission(config.commands.recovery))
-        *///?} else if 1.21.11 {
-        /*if (selectedCheckpointId == null
-                        || !com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
-                                player.createCommandSourceStack(), config.commands.recovery))
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.21.11 && <=26.3) {
         if (selectedCheckpointId == null
                 || !com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
                         player.createCommandSourceStack(), config.commands.recovery))
@@ -2130,23 +1882,6 @@ public final class AntiCrashController {
         }
         long remaining = askRemainingSeconds();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Component message =
-                chat(
-                        remaining < 0
-                                ? MessageCatalog.text(
-                                        config.language,
-                                        "recovery.ask_prompt_ingame_no_timeout",
-                                        selectedCheckpointId,
-                                        askExitStatus())
-                                : MessageCatalog.text(
-                                        config.language,
-                                        "recovery.ask_prompt_ingame",
-                                        selectedCheckpointId,
-                                        askExitStatus(),
-                                        remaining),
-                        ChatFormatting.YELLOW);
-        *///?} else if (>=26.1 && <=26.3) {
         Component message =
                 chat(
                         remaining < 0
@@ -2162,11 +1897,11 @@ public final class AntiCrashController {
                                         askExitStatus(),
                                         remaining),
                         ChatFormatting.YELLOW);
-        //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*player.displayClientMessage(message, false);
-        *///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=26.1 && <=26.3) {
         com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, false);
         //?}
 
@@ -2234,12 +1969,7 @@ public final class AntiCrashController {
      * {@link #answerRecoveryFromChat} on the server thread.
      */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public boolean isRecoveryAnswerCandidate(ServerPlayer player, String message)
-                *///?} else if (>=26.1 && <=26.3) {
-    public boolean isRecoveryAnswerCandidate(ServerPlayer player, String message)
-                //?}
-            {
+    public boolean isRecoveryAnswerCandidate(ServerPlayer player, String message) {
         if (player == null || message == null) return false;
         String answer = message.trim();
 
@@ -2247,12 +1977,8 @@ public final class AntiCrashController {
         /*return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
                 && player.createCommandSourceStack().hasPermission(config.commands.recovery);
-        *///?} else if 1.21.11 {
-        /*return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
-                        && states.get() == AntiCrashState.RECOVERY_DECISION
-                        && com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
-                                player.createCommandSourceStack(), config.commands.recovery);
-*///?} else if (>=26.1 && <=26.3) {
+        *///?}
+        //? if (>=1.21.11 && <=26.3) {
         return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
                 && com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
@@ -2263,22 +1989,15 @@ public final class AntiCrashController {
 
     /** Accepts a plain Y/N chat message from an operator during an ASK prompt. */
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public boolean answerRecoveryFromChat(ServerPlayer player, String message)
-                *///?} else if (>=26.1 && <=26.3) {
-    public boolean answerRecoveryFromChat(ServerPlayer player, String message)
-                //?}
-            {
+    public boolean answerRecoveryFromChat(ServerPlayer player, String message) {
         if (player == null || message == null) return false;
         String answer = message.trim();
         if (!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))) return false;
 
         //? if (>=1.18 && <=1.21.10) {
         /*if (!player.createCommandSourceStack().hasPermission(config.commands.recovery))
-            *///?} else if 1.21.11 {
-        /*if (!com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
-                            player.createCommandSourceStack(), config.commands.recovery))
-*///?} else if (>=26.1 && <=26.3) {
+            *///?}
+        //? if (>=1.21.11 && <=26.3) {
         if (!com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
                 player.createCommandSourceStack(), config.commands.recovery))
             //?}
@@ -2300,7 +2019,8 @@ public final class AntiCrashController {
                                             config.language, "command.recovery.answer_continue"),
                             null),
                     false);
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             com.atsukimc.anticrash.runtime.VersionMessages.send(
                     player,
                     chat(
@@ -2319,12 +2039,7 @@ public final class AntiCrashController {
         return accepted;
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public void onPlayerConnected(ServerPlayer player)
-                *///?} else if (>=26.1 && <=26.3) {
-    public void onPlayerConnected(ServerPlayer player)
-                //?}
-            {
+    public void onPlayerConnected(ServerPlayer player) {
         // A real player may join either while recovery is frozen or after /ac start. Apply the
         // selected checkpoint exactly once on that player's first post-restore login.
         if (worldRestored
@@ -2333,16 +2048,9 @@ public final class AntiCrashController {
                 && playerSnapshots != null
                 && !playerSnapshots.restoreOnJoin(player)) {
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*failRecoverySetup(
-                    new IOException(
-                            "Real Player snapshot restore failed for " + player.getStringUUID()));
-            *///?} else if (>=26.1 && <=26.3) {
             failRecoverySetup(
                     new IOException(
                             "Real Player snapshot restore failed for " + player.getStringUUID()));
-            //?}
-
         }
         if (CarpetIntegration.isFakePlayer(player)) return;
         if (states.canResumeWithStart()) {
@@ -2356,7 +2064,8 @@ public final class AntiCrashController {
                                     config.recovery.startCommand),
                             ChatFormatting.YELLOW),
                     false);
-            *///?} else if (>=26.1 && <=26.3) {
+            *///?}
+            //? if (>=26.1 && <=26.3) {
             com.atsukimc.anticrash.runtime.VersionMessages.send(
                     player,
                     chat(
@@ -2385,12 +2094,7 @@ public final class AntiCrashController {
         // call must not be treated as an operator-requested clean stop. Only a stop initiated
         // on Minecraft's own server thread is trusted as /stop or a controlled AntiCrash stop.
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*if (!isTrustedNormalShutdownCaller(Thread.currentThread(), server.getRunningThread()))
-        *///?} else if (>=26.1 && <=26.3) {
-        if (!isTrustedNormalShutdownCaller(Thread.currentThread(), server.getRunningThread()))
-        //?}
-        {
+        if (!isTrustedNormalShutdownCaller(Thread.currentThread(), server.getRunningThread())) {
             normalShutdownRequested = false;
             if (checkpoints != null) checkpoints.cancelForShutdown();
             return;
@@ -2690,15 +2394,6 @@ public final class AntiCrashController {
                                 ? "OK"
                                 : "PENDING");
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*List<String> realPlayers =
-                server == null
-                        ? List.of()
-                        : server.getPlayerList().getPlayers().stream()
-                                .filter(player -> !CarpetIntegration.isFakePlayer(player))
-                                .map(player -> player.getName().getString())
-                                .toList();
-        *///?} else if (>=26.1 && <=26.3) {
         List<String> realPlayers =
                 server == null
                         ? List.of()
@@ -2706,7 +2401,6 @@ public final class AntiCrashController {
                                 .filter(player -> !CarpetIntegration.isFakePlayer(player))
                                 .map(player -> player.getName().getString())
                                 .toList();
-        //?}
 
         String world;
         try {
@@ -2929,11 +2623,7 @@ public final class AntiCrashController {
             if (!states.set(AntiCrashState.RESTORING))
                 throw new IOException("Could not persist RESTORING state");
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*server.halt(false);
-            *///?} else if (>=26.1 && <=26.3) {
             server.halt(false);
-            //?}
 
             return true;
         } catch (Exception exception) {
@@ -2981,11 +2671,7 @@ public final class AntiCrashController {
             if (!states.set(AntiCrashState.RESTORING))
                 throw new IOException("Could not persist RESTORING state");
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*server.halt(false);
-            *///?} else if (>=26.1 && <=26.3) {
             server.halt(false);
-            //?}
 
             return true;
         } catch (Exception exception) {
@@ -3050,19 +2736,9 @@ public final class AntiCrashController {
         if (checkpoints != null) checkpoints.resetDeadline();
         if (server != null) {
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (ServerPlayer player : server.getPlayerList().getPlayers())
-            *///?} else if (>=26.1 && <=26.3) {
-            for (ServerPlayer player : server.getPlayerList().getPlayers())
-            //?}
-            {
+            for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*server.getPlayerList().sendPlayerPermissionLevel(player);
-                *///?} else if (>=26.1 && <=26.3) {
                 server.getPlayerList().sendPlayerPermissionLevel(player);
-                //?}
-
             }
         }
         logger.normalKey("config.reloaded");
@@ -3131,24 +2807,13 @@ public final class AntiCrashController {
         return internal.internalRoot();
     }
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*public void recordTransaction(
-            String type,
-            ServerPlayer player,
-            String source,
-            String destination,
-            net.minecraft.core.BlockPos pos,
-            net.minecraft.world.item.ItemStack stack)
-                *///?} else if (>=26.1 && <=26.3) {
     public void recordTransaction(
             String type,
             ServerPlayer player,
             String source,
             String destination,
             net.minecraft.core.BlockPos pos,
-            net.minecraft.world.item.ItemStack stack)
-                //?}
-            {
+            net.minecraft.world.item.ItemStack stack) {
         if (consistency != null)
             consistency.record(type, player, source, destination, pos, stack, server);
     }

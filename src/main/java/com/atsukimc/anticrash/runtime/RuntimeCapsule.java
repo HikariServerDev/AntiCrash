@@ -9,7 +9,8 @@ public final class RuntimeCapsule {
     //? if (>=1.18 && <=1.21.11) {
     /*public static final int CURRENT_FORMAT_VERSION = 7;
 
-    *///?} else if (>=26.1 && <=26.3) {
+    *///?}
+    //? if (>=26.1 && <=26.3) {
     public static final int CURRENT_FORMAT_VERSION = 8;
     //?}
 

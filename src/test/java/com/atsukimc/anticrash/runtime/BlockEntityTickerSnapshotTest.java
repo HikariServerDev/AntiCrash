@@ -3,37 +3,17 @@ package com.atsukimc.anticrash.runtime;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.core.BlockPos;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.core.BlockPos;
-//?}
 
-//? if (>=1.18 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.TickingBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
-//?}
 
 import org.junit.jupiter.api.Test;
 
 class BlockEntityTickerSnapshotTest {
 
-    //? if (>=1.18 && <=1.21.11) {
-    /*private static TickingBlockEntity ticker(boolean removed)
-                *///?} else if (>=26.1 && <=26.3) {
-    private static TickingBlockEntity ticker(boolean removed)
-                //?}
-            {
+    private static TickingBlockEntity ticker(boolean removed) {
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*return new TickingBlockEntity()
-        *///?} else if (>=26.1 && <=26.3) {
-        return new TickingBlockEntity()
-        //?}
-        {
+        return new TickingBlockEntity() {
             @Override
             public void tick() {}
 
@@ -45,22 +25,11 @@ class BlockEntityTickerSnapshotTest {
             @Override
             public BlockPos getPos() {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*return BlockPos.ZERO;
-                *///?} else if (>=26.1 && <=26.3) {
                 return BlockPos.ZERO;
-                //?}
-
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*@Override
-            public String getType()
-                        *///?} else if (>=26.1 && <=26.3) {
             @Override
-            public String getType()
-                        //?}
-                    {
+            public String getType() {
                 return "<null>";
             }
         };

@@ -15,7 +15,8 @@ class ProfileCacheBytecodeContractTest {
                         .getClassLoader()
                         .getResourceAsStream(
                                 "net/minecraft/server/players/GameProfileCache.class"))
-        *///?} else if (>=1.21.9 && <=26.3) {
+        *///?}
+        //? if (>=1.21.9 && <=26.3) {
         try (var input =
                 getClass()
                         .getClassLoader()
@@ -36,16 +37,9 @@ class ProfileCacheBytecodeContractTest {
                                         String signature,
                                         String[] exceptions) {
 
-                                    //? if (>=1.18 && <=1.21.11) {
-                                    /*if (name.equals("get")
-                                            && descriptor.equals(
-                                                    "(Ljava/lang/String;)Ljava/util/Optional;"))
-
-                                        *///?} else if (>=26.1 && <=26.3) {
                                     if (name.equals("get")
                                             && descriptor.equals(
                                                     "(Ljava/lang/String;)Ljava/util/Optional;"))
-                                        //?}
                                         found[0] = true;
                                     return null;
                                 }

@@ -1,35 +1,19 @@
 //? if (>=1.19 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
-import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
-
-//? if (>=1.19 && <=1.21.11) {
-/*import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.nbt.CompoundTag;
-//?}
-
-//? if (>=1.19 && <=1.21.11) {
-/*import net.minecraft.nbt.CompoundTag;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.resources.Identifier;
-//?}
-
 //? if (>=1.19 && <=1.21.1) {
 /*import net.minecraft.world.item.crafting.RecipeManager;
 *///?}
-
 //? if (>=1.19 && <=1.21.10) {
 /*import net.minecraft.resources.ResourceLocation;
-*///?}
-//? if 1.21.11 {
-/*import net.minecraft.resources.Identifier;
-*///?}
-//? if (>=26.1 && <=26.3) {
-import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+*///?} else {
+import net.minecraft.resources.Identifier;
 //?}
+
+import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+
+import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
+import net.minecraft.nbt.CompoundTag;
 
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
@@ -44,9 +28,8 @@ public abstract class RecipeMatchingBlockEntityMixin {
 
     //? if (>=1.19 && <=1.21.1) {
     /*@Shadow @Final private RecipeManager.CachedCheck quickCheck;
-*///?} else if (>=1.21.2 && <=1.21.11) {
-    /*@Shadow @Final private net.minecraft.world.item.crafting.RecipeManager.CachedCheck quickCheck;
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=1.21.2 && <=26.3) {
     @Shadow @Final private net.minecraft.world.item.crafting.RecipeManager.CachedCheck quickCheck;
 
     //?}
@@ -54,16 +37,15 @@ public abstract class RecipeMatchingBlockEntityMixin {
     //? if (>=1.19 && <=1.20.4) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.20.5 && <=1.21.5) {
+*///?}
+    //? if (>=1.20.5 && <=1.21.5) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
-*///?} else if (>=1.21.6 && <=1.21.11) {
-    /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveRecipeMatch(net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=1.21.6 && <=26.3) {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
@@ -73,9 +55,8 @@ public abstract class RecipeMatchingBlockEntityMixin {
 
         //? if (>=1.19 && <=1.21.1) {
         /*ResourceLocation id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-*///?} else if (>=1.21.2 && <=1.21.11) {
-        /*var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=1.21.2 && <=26.3) {
         var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
         //?}
 
@@ -86,11 +67,11 @@ public abstract class RecipeMatchingBlockEntityMixin {
                     if (id != null)
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
-*///?} else if (>=1.21.2 && <=1.21.10) {
+*///?}
+                        //? if (>=1.21.2 && <=1.21.10) {
                         /*extension.putString("RecipeMatch", id.location().toString());
-*///?} else if 1.21.11 {
-                        /*extension.putString("RecipeMatch", id.identifier().toString());
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+                        //? if (>=1.21.11 && <=26.3) {
                         extension.putString("RecipeMatch", id.identifier().toString());
                     //?}
 
@@ -100,27 +81,22 @@ public abstract class RecipeMatchingBlockEntityMixin {
     //? if (>=1.19 && <=1.20.4) {
     /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(CompoundTag nbt, CallbackInfo ci)
-*///?} else if (>=1.20.5 && <=1.21.5) {
+*///?}
+    //? if (>=1.20.5 && <=1.21.5) {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo ci)
-*///?} else if (>=1.21.6 && <=1.21.11) {
-    /*@Inject(method = "loadAdditional", at = @At("TAIL"))
-    private void anticrash$loadRecipeMatch(net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+    //? if (>=1.21.6 && <=26.3) {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
                 //?}
             {
 
-        //? if (>=1.19 && <=1.21.11) {
-        /*CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-*///?} else if (>=26.1 && <=26.3) {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
-        //?}
 
         if (extension == null) return;
 
@@ -130,7 +106,8 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         extension.contains("RecipeMatch", 8)
                                 ? ResourceLocation.tryParse(extension.getString("RecipeMatch"))
                                 : null);
-*///?} else if (>=1.21.2 && <=1.21.4) {
+*///?}
+        //? if (>=1.21.2 && <=1.21.4) {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         extension.contains("RecipeMatch", 8)
@@ -138,7 +115,8 @@ public abstract class RecipeMatchingBlockEntityMixin {
                                         net.minecraft.core.registries.Registries.RECIPE,
                                         ResourceLocation.parse(extension.getString("RecipeMatch")))
                                 : null);
-*///?} else if (>=1.21.5 && <=1.21.11) {
+*///?}
+        //? if (>=1.21.5 && <=1.21.11) {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         com.atsukimc.anticrash.runtime.VersionNbt.contains(
@@ -148,13 +126,15 @@ public abstract class RecipeMatchingBlockEntityMixin {
 *///?}
         //? if (>=1.21.5 && <=1.21.10) {
         /*ResourceLocation.parse(
-*///?} else if 1.21.11 {
+*///?}
+        //? if 1.21.11 {
         /*Identifier.parse(
 *///?}
         //? if (>=1.21.5 && <=1.21.11) {
         /*extension.getString("RecipeMatch").orElseThrow()))
                                 : null);
-*///?} else if (>=26.1 && <=26.3) {
+*///?}
+        //? if (>=26.1 && <=26.3) {
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         com.atsukimc.anticrash.runtime.VersionNbt.contains(

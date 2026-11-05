@@ -16,7 +16,8 @@ class FluidInteractionSnapshotTest {
         /*var state =
                 new FluidInteractionSnapshot.State(
                         "minecraft:water", 0.875, true, new Vec3(0.5, -1, 2), 17);
-*///?} else if 26.3 {
+*///?}
+        //? if 26.3 {
         var state =
                 new FluidInteractionSnapshot.State(
                         "minecraft:water", 0.875, false, new Vec3(0.5, -1, 2), 17);
@@ -49,7 +50,8 @@ class FluidInteractionSnapshotTest {
     //? if (>=26.1 && <=26.2) {
     /*@Test
     void decodedOrderingIsStableWithoutMutatingInput()
-*///?} else if 26.3 {
+*///?}
+    //? if 26.3 {
     @Test
     void decodedOrderingPreservesNativeFirstMatchingTagWithoutMutatingInput()
                 //?}
@@ -57,7 +59,8 @@ class FluidInteractionSnapshotTest {
 
         //? if (>=26.1 && <=26.2) {
         /*var water = new FluidInteractionSnapshot.State("minecraft:water", 1, true, Vec3.ZERO, 0);
-*///?} else if 26.3 {
+*///?}
+        //? if 26.3 {
         var water = new FluidInteractionSnapshot.State("minecraft:water", 1, false, Vec3.ZERO, 0);
         //?}
 
@@ -68,7 +71,8 @@ class FluidInteractionSnapshotTest {
 
         //? if (>=26.1 && <=26.2) {
         /*assertEquals(java.util.List.of(lava, water), FluidInteractionSnapshot.decode(n));
-*///?} else if 26.3 {
+*///?}
+        //? if 26.3 {
         assertEquals(java.util.List.of(water, lava), FluidInteractionSnapshot.decode(n));
         //?}
 
@@ -86,55 +90,34 @@ class FluidInteractionSnapshotTest {
                         true,
                         Vec3.ZERO,
                         0);
-        //?}
 
-        //? if 26.3 {
         var current =
                 new FluidInteractionSnapshot.State(
                         "minecraft:water", 0.5, false, new Vec3(0.5, 0, 0), 2);
-        //?}
 
-        //? if 26.3 {
         var n = new ListTag();
-        //?}
 
-        //? if 26.3 {
         n.add(contact.write());
-        //?}
 
-        //? if 26.3 {
         n.add(current.write());
-        //?}
 
-        //? if 26.3 {
         assertEquals(java.util.List.of(contact, current), FluidInteractionSnapshot.decode(n));
     }
 
-    //?}
-
-    //? if 26.3 {
     @Test
     void wrongDomainOrOrderCannotBeApplied() {
         var water = new FluidInteractionSnapshot.State("minecraft:water", 0, false, Vec3.ZERO, 0);
-        //?}
 
-        //? if 26.3 {
         var lava = new FluidInteractionSnapshot.State("minecraft:lava", 0, false, Vec3.ZERO, 0);
-        //?}
 
-        //? if 26.3 {
         var expected = java.util.List.of(water, lava);
-        //?}
 
-        //? if 26.3 {
         assertDoesNotThrow(() ->
                 FluidInteractionSnapshot.validateDomains(
                         expected,
                         java.util.List.of(),
                         java.util.List.of("minecraft:water", "minecraft:lava")));
-        //?}
 
-        //? if 26.3 {
         assertThrows(
                 IllegalStateException.class,
                 () ->
@@ -142,9 +125,7 @@ class FluidInteractionSnapshotTest {
                                 expected,
                                 java.util.List.of(),
                                 java.util.List.of("minecraft:lava", "minecraft:water")));
-        //?}
 
-        //? if 26.3 {
         assertThrows(
                 IllegalStateException.class,
                 () ->
@@ -154,15 +135,10 @@ class FluidInteractionSnapshotTest {
                                 java.util.List.of("minecraft:water", "minecraft:lava")));
     }
 
-    //?}
-
-    //? if 26.3 {
     @Test
     void auditedNativeFactoryReusesTrackerWithoutReplacingCollection() throws Exception {
         var interaction = new net.minecraft.world.entity.EntityFluidInteraction(java.util.Set.of());
-        //?}
 
-        //? if 26.3 {
         var fluid =
                 net.minecraft.core.registries.BuiltInRegistries.FLUID
                         .get(
@@ -171,25 +147,15 @@ class FluidInteractionSnapshotTest {
                                         net.minecraft.resources.Identifier.parse(
                                                 "minecraft:water")))
                         .orElseThrow();
-        //?}
 
-        //? if 26.3 {
         var first = FluidInteractionSnapshot.createTracker(interaction, fluid);
-        //?}
 
-        //? if 26.3 {
         assertSame(first, FluidInteractionSnapshot.createTracker(interaction, fluid));
-        //?}
 
-        //? if 26.3 {
         var list = interaction.getClass().getDeclaredField("fluidTrackers");
-        //?}
 
-        //? if 26.3 {
         list.setAccessible(true);
-        //?}
 
-        //? if 26.3 {
         assertEquals(1, ((java.util.List<?>) list.get(interaction)).size());
     }
     //?}
