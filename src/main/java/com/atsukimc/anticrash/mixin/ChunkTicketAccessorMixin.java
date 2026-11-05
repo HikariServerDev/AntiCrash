@@ -11,7 +11,11 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 public interface ChunkTicketAccessorMixin {
 
     @Accessor("type")
+    //? if <=1.21.4 {
+    /*TicketType<?> anticrash$getType();
+    *///?} else {
     TicketType anticrash$getType();
+    //?}
 
     //? if (>=1.18 && <=1.21.4) {
     /*@Accessor("key")
