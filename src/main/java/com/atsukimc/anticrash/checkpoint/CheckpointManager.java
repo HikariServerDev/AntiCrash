@@ -359,10 +359,10 @@ public final class CheckpointManager {
 
                     //? if (>=1.18 && <=1.20.6) {
                     /*if (!saving.isDone())
-                        *///?}
+                    *///?}
                     //? if (>=1.21 && <=26.3) {
                     if (!holder.isReadyForSaving())
-                        //?}
+                    //?}
                         continue;
 
                     //? if (>=1.18 && <=1.20.6) {
@@ -932,7 +932,6 @@ public final class CheckpointManager {
      * holds world generation output only, never a player's block, and its saved form on disk is
      * what the cut contains, exactly as Vanilla's own autosave treats it.
      */
-
     private static ChunkAccess savableChunk(ChunkHolder holder) {
         //? if (>=1.18 && <=1.20.6) {
         /*ChunkAccess current = holder.getLastAvailable();
@@ -957,10 +956,10 @@ public final class CheckpointManager {
 
         //? if (>=1.18 && <=1.20.6) {
         /*if (!saving.isDone())
-            *///?}
+        *///?}
         //? if (>=1.21 && <=26.3) {
         if (!holder.isReadyForSaving())
-            //?}
+        //?}
             return null;
 
         //? if (>=1.18 && <=1.20.6) {
@@ -1150,7 +1149,6 @@ public final class CheckpointManager {
      * <p>Vanilla's flush reaches POI only through the chunks it saves, and never waits for the POI
      * queue. The POI queue is sealed with the others (see {@link IoSeal}).
      */
-
     private static void savePointsOfInterest(ServerLevel world) {
         SerializingRegionBasedStorageAccessorMixin poi =
                 (SerializingRegionBasedStorageAccessorMixin) world.getPoiManager();
@@ -1186,9 +1184,9 @@ public final class CheckpointManager {
             /*throw new IllegalStateException(
                     //? if (>=1.18 && <=1.21.10) {
                     /^"POI sections could not be saved in " + world.dimension().location());
-            ^///?}
-            //? if 1.21.11 {
-            /^"POI sections could not be saved in " + world.dimension().identifier());
+                    ^///?}
+                    //? if 1.21.11 {
+                    /^"POI sections could not be saved in " + world.dimension().identifier());
                     ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
@@ -1203,7 +1201,6 @@ public final class CheckpointManager {
      * The chunk, entity and POI IO workers of every world, i.e. everything that writes region
      * files.
      */
-
     private static List<IOWorker> storageWorkers(List<BarrierWorld> worlds) {
         List<IOWorker> workers = new ArrayList<>(worlds.size() * 3);
         for (BarrierWorld barrierWorld : worlds) {
@@ -1213,9 +1210,9 @@ public final class CheckpointManager {
                 /*throw new IllegalStateException(
                         //? if (>=1.18 && <=1.21.10) {
                         /^"Unsupported chunk IO worker for " + world.dimension().location());
-                ^///?}
-                //? if 1.21.11 {
-                /^"Unsupported chunk IO worker for " + world.dimension().identifier());
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^"Unsupported chunk IO worker for " + world.dimension().identifier());
                         ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
@@ -1239,9 +1236,9 @@ public final class CheckpointManager {
                 /*throw new IllegalStateException(
                         //? if (>=1.18 && <=1.21.10) {
                         /^"Unsupported entity storage for " + world.dimension().location());
-                ^///?}
-                //? if 1.21.11 {
-                /^"Unsupported entity storage for " + world.dimension().identifier());
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^"Unsupported entity storage for " + world.dimension().identifier());
                         ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
@@ -1432,9 +1429,9 @@ public final class CheckpointManager {
                         "Unsupported chunk IO worker for "
                                 //? if (>=1.18 && <=1.21.10) {
                                 /^+ barrierWorld.world.dimension().location());
-                ^///?}
-                //? if 1.21.11 {
-                /^+ barrierWorld.world.dimension().identifier());
+                                ^///?}
+                                //? if 1.21.11 {
+                                /^+ barrierWorld.world.dimension().identifier());
                                 ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {

@@ -44,13 +44,13 @@ import java.util.concurrent.CompletableFuture;
 /*public final class ChunkRecoveryManager {
     private static final TicketType<Unit> RECOVERY_TICKET =
             TicketType.create("anticrash_recovery", (left, right) -> 0);
-    *///?}
+*///?}
 //? if (>=1.21.5 && <=1.21.8) {
 /*public final class ChunkRecoveryManager {
-        // An ephemeral, non-persisted type. Long.MAX_VALUE avoids record equality with START;
-        // only public ticket APIs are used, and every abort/completion explicitly releases it.
-        public static final TicketType RECOVERY_TICKET =
-                new TicketType(Long.MAX_VALUE, false, TicketType.TicketUse.LOADING_AND_SIMULATION);
+    // An ephemeral, non-persisted type. Long.MAX_VALUE avoids record equality with START;
+    // only public ticket APIs are used, and every abort/completion explicitly releases it.
+    public static final TicketType RECOVERY_TICKET =
+            new TicketType(Long.MAX_VALUE, false, TicketType.TicketUse.LOADING_AND_SIMULATION);
 *///?}
 //? if (>=1.21.9 && <=26.3) {
 public final class ChunkRecoveryManager {
@@ -58,7 +58,7 @@ public final class ChunkRecoveryManager {
     // only public ticket APIs are used, and every abort/completion explicitly releases it.
     public static final TicketType RECOVERY_TICKET =
             new TicketType(Long.MAX_VALUE, TicketType.FLAG_LOADING | TicketType.FLAG_SIMULATION);
-    //?}
+//?}
 
     private static final long MAX_POLL_NANOS = 20_000_000L;
     private static final long PROGRESS_LOG_NANOS = 5_000_000_000L;
@@ -380,12 +380,12 @@ public final class ChunkRecoveryManager {
             // level. Track the converted radius before touching Minecraft so an OOM in
             // addTicket/getChunk still leaves abort() with an entry it can remove.
             int ticketRadius = ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel());
-            *///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         {
             // 1.21.5 takes the LEVEL directly; the pre-1.21.5 radius conversion is not applicable.
             int ticketRadius = ChunkRecoveryPlan.ticketArgumentForLevel(entry.ticketLevel());
-            //?}
+        //?}
 
             ticket = new Ticket(world, pos, ticketRadius, entry.ticketLevel());
             tickets.add(ticket);
@@ -432,7 +432,7 @@ public final class ChunkRecoveryManager {
             *///?}
             //? if (>=1.18 && <=1.18.1) {
             /*VersionChunkLifecycle.advance(world.getChunkSource());
-*///?}
+            *///?}
             //? if (>=26.1 && <=26.3) {
             world.getChunkSource().tick(() -> true, false);
             //?}
@@ -444,13 +444,13 @@ public final class ChunkRecoveryManager {
             *///?}
             //? if (>=1.20.5 && <=1.21.11) {
             /*CompletableFuture<
-                                        net.minecraft.server.level.ChunkResult<
-                                                net.minecraft.world.level.chunk.ChunkAccess>>
-                                future =
-                                        ((ServerChunkManagerAccessorMixin) (Object) world.getChunkSource())
-                                                .anticrash$getChunkFuture(
-                                                        pos.x, pos.z, ChunkStatus.FULL, false);
-*///?}
+                            net.minecraft.server.level.ChunkResult<
+                                    net.minecraft.world.level.chunk.ChunkAccess>>
+                    future =
+                            ((ServerChunkManagerAccessorMixin) (Object) world.getChunkSource())
+                                    .anticrash$getChunkFuture(
+                                            pos.x, pos.z, ChunkStatus.FULL, false);
+            *///?}
             //? if (>=26.1 && <=26.3) {
             CompletableFuture<
                             net.minecraft.server.level.ChunkResult<
@@ -494,7 +494,7 @@ public final class ChunkRecoveryManager {
             *///?}
             //? if (>=1.18 && <=1.18.1) {
             /*VersionChunkLifecycle.advance(world.getChunkSource());
-*///?}
+            *///?}
             //? if (>=26.1 && <=26.3) {
             world.getChunkSource().tick(() -> true, false);
             //?}
@@ -572,10 +572,10 @@ public final class ChunkRecoveryManager {
 
         //? if (>=1.18 && <=1.21.11) {
         /*if (!ticket.world.areEntitiesLoaded(ticket.pos.toLong()))
-            *///?}
+        *///?}
         //? if (>=26.1 && <=26.3) {
         if (!ticket.world.areEntitiesLoaded(ticket.pos.pack()))
-            //?}
+        //?}
             return false;
 
         //? if (>=1.18 && <=1.21.11) {
@@ -611,12 +611,13 @@ public final class ChunkRecoveryManager {
                     && ticket.world.getChunkSource().isPositionTicking(ticket.pos.toLong());
             *///?}
             //? if (>=1.20 && <=1.21.11) {
-            /*return (holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
-                                        || holder.getFullStatus()
-                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING)
-                                && completed(holder.getTickingChunkFuture())
-                                && ticket.world.getChunkSource().isPositionTicking(ticket.pos.toLong());
-*///?}
+            /*return (holder.getFullStatus()
+                                    == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
+                            || holder.getFullStatus()
+                                    == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING)
+                    && completed(holder.getTickingChunkFuture())
+                    && ticket.world.getChunkSource().isPositionTicking(ticket.pos.toLong());
+            *///?}
             //? if (>=26.1 && <=26.3) {
             return (holder.getFullStatus()
                                     == net.minecraft.server.level.FullChunkStatus.BLOCK_TICKING
@@ -634,8 +635,8 @@ public final class ChunkRecoveryManager {
         *///?}
         //? if (>=1.20 && <=1.21.4) {
         /*return holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
-                        && completed(holder.getEntityTickingChunkFuture());
-*///?}
+                && completed(holder.getEntityTickingChunkFuture());
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         return holder.getFullStatus() == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
                 && completed(holder.getEntityTickingChunkFuture())
@@ -648,11 +649,11 @@ public final class ChunkRecoveryManager {
 
     //? if (>=1.18 && <=1.20.4) {
     /*private static boolean completed(CompletableFuture<? extends Either<?, ?>> future)
-                *///?}
+    *///?}
     //? if (>=1.20.5 && <=26.3) {
     private static boolean completed(
             CompletableFuture<? extends net.minecraft.server.level.ChunkResult<?>> future)
-                //?}
+    //?}
             {
         if (future == null || !future.isDone() || future.isCompletedExceptionally()) return false;
         try {
@@ -841,13 +842,13 @@ public final class ChunkRecoveryManager {
                     //? if (>=1.18 && <=1.20.4) {
                     /*,
             CompletableFuture<Either<LevelChunk, ChunkHolder.ChunkLoadingFailure>> future
-            *///?}
+                    *///?}
                     //? if (>=1.20.5 && <=26.3) {
                     ,
             CompletableFuture<
                             net.minecraft.server.level.ChunkResult<
                                     net.minecraft.world.level.chunk.ChunkAccess>>
                     future
-            //?}
+                    //?}
             ) {}
 }

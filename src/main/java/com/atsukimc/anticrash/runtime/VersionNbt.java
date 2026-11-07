@@ -11,7 +11,6 @@ public final class VersionNbt {
     private VersionNbt() {}
 
     /** Sparse true-only flags default to false only when absent, never when malformed. */
-
     public static boolean sparseFlag(CompoundTag nbt, String key) {
         return !nbt.contains(key)
                 ? false

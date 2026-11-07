@@ -13,11 +13,11 @@ import org.junit.jupiter.api.Test;
         return expiry != 0L && age - tickCreated > expiry;
     }
 
-    *///?}
+*///?}
 
 //? if (>=1.21.5 && <=26.3) {
 class RuntimeOrderRestorerTest {
-    //?}
+//?}
     @Test
     void aRestoredTicketLapsesOnTheSameTickItWouldHave() {
         long[][] cases = {

@@ -17,7 +17,7 @@ public final class FluidInteractionSnapshot {
 
     //? if (>=26.1 && <=26.2) {
     /*public record State(
-*///?}
+    *///?}
     //? if 26.3 {
     public enum Kind {
         FLUID,
@@ -26,7 +26,7 @@ public final class FluidInteractionSnapshot {
 
     public record State(
             Kind kind,
-            //?}
+    //?}
             String tag,
             double height,
             boolean eyes,
@@ -52,7 +52,7 @@ public final class FluidInteractionSnapshot {
                     || !Double.isFinite(current.z)
                     || count < 0)
 
-*///?}
+            *///?}
             //? if 26.3 {
             if (kind == null
                     || !Double.isFinite(height)
@@ -63,7 +63,7 @@ public final class FluidInteractionSnapshot {
                     || !Double.isFinite(current.z)
                     || count < 0)
 
-                //?}
+            //?}
                 throw new IllegalArgumentException("Invalid fluid interaction state");
         }
 
@@ -91,7 +91,7 @@ public final class FluidInteractionSnapshot {
                     n.getBoolean("Eyes").orElseThrow(),
                     n.read("Current", Vec3.CODEC).orElseThrow(),
                     n.getInt("Count").orElseThrow());
-*///?}
+            *///?}
             //? if 26.3 {
             return new State(
                     Kind.valueOf(n.getString("Kind").orElseThrow()),
@@ -103,28 +103,23 @@ public final class FluidInteractionSnapshot {
             //?}
 
         }
-        //? if (>=26.1 && <=26.2) {
+    //? if (>=26.1 && <=26.2) {
 
-        /*}
+    /*}
 
-
-
-private static Map<String, FluidTrackerAccessor> trackers(Entity entity) {
+    private static Map<String, FluidTrackerAccessor> trackers(Entity entity) {
         var source =
                 ((FluidInteractionAccessor) ((EntityFluidAccessor) entity).anticrash$fluids())
                         .anticrash$trackers();
 
+        Map<String, FluidTrackerAccessor> result = new TreeMap<>();
 
-Map<String, FluidTrackerAccessor> result = new TreeMap<>();
-
-
-source.forEach((tag, tracker) -> {
+        source.forEach((tag, tracker) -> {
             if (result.put(tag.location().toString(), (FluidTrackerAccessor) tracker) != null)
                 throw new IllegalStateException("Duplicate fluid tag");
         });
 
-
-return result;
+        return result;
     *///?}
 
     }
@@ -150,7 +145,7 @@ return result;
                                                 t.anticrash$current(),
                                                 t.anticrash$count())
                                         .write()));
-*///?}
+        *///?}
         //? if 26.3 {
         for (Object tracker : access.anticrash$trackers()) {
             var t = (FluidTrackerAccessor) tracker;
@@ -200,11 +195,11 @@ return result;
 
             //? if (>=26.1 && <=26.2) {
             /*if (!ids.add(state.tag()))
-*///?}
+            *///?}
             //? if 26.3 {
             if (!ids.add(state.kind() + ":" + state.tag()))
 
-                //?}
+            //?}
                 throw new IllegalArgumentException("Duplicate fluid entry");
 
             //? if 26.3 {
@@ -232,7 +227,7 @@ return result;
 
         //? if (>=26.1 && <=26.2) {
         /*result.sort(Comparator.comparing(State::tag));
-*///?}
+        *///?}
         //? if 26.3 {
         var currents =
                 expected.stream().filter(s -> s.kind() == Kind.CURRENT).map(State::tag).toList();
@@ -240,7 +235,7 @@ return result;
 
         //? if (>=26.1 && <=26.2) {
         /*return result;
-*///?}
+        *///?}
         //? if 26.3 {
         if (!currents.equals(currentTags)
                 || existingFluids.size() > fluids.size()
@@ -248,7 +243,7 @@ return result;
             throw new IllegalStateException("Fluid interaction domain/order differs");
     }
 
-    //?}
+        //?}
 
     /**
      * Native private return type is not source-accessible. Invoke the audited Vanilla factory,
@@ -282,7 +277,7 @@ return result;
                 throw new IllegalStateException("Unsupported fluid tracker factory", error);
             }
         }
-        //?}
+    //?}
 
     }
 
@@ -291,7 +286,7 @@ return result;
 
         //? if (>=26.1 && <=26.2) {
         /*var live = trackers(entity);
-*///?}
+        *///?}
         //? if 26.3 {
         var interaction = ((EntityFluidAccessor) entity).anticrash$fluids();
         //?}
@@ -299,7 +294,7 @@ return result;
         //? if (>=26.1 && <=26.2) {
         /*if (!live.keySet().equals(new HashSet<>(expected.stream().map(State::tag).toList())))
             throw new IllegalStateException("Fluid tracker domain differs");
-*///?}
+        *///?}
         //? if 26.3 {
         var access = (FluidInteractionAccessor) interaction;
 
@@ -347,24 +342,23 @@ return result;
 
             //? if (>=26.1 && <=26.2) {
             /*var t = live.get(s.tag());
-*///?}
+            *///?}
 
             //? if 26.3 {
             if (s.kind() == Kind.FLUID) {
                 var t = (FluidTrackerAccessor) createTracker(interaction, holders.get(s.tag()));
-                //?}
+            //?}
 
                 t.anticrash$height(s.height());
 
                 t.anticrash$eyes(s.eyes());
 
-                //? if (>=26.1 && <=26.2) {
-                /*t.anticrash$current(s.current());
+            //? if (>=26.1 && <=26.2) {
+            /*t.anticrash$current(s.current());
 
-
-t.anticrash$count(s.count());
-*///?}
-                //? if 26.3 {
+            t.anticrash$count(s.count());
+            *///?}
+            //? if 26.3 {
 
             } else {
                 var c = currents.get(s.tag());

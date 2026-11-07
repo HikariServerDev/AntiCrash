@@ -46,18 +46,17 @@ public abstract class EndGatewayBlockEntityMixin {
     //? if (>=1.18 && <=1.20.4) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveTeleportCooldown(CompoundTag nbt, CallbackInfo callbackInfo) {
-        *///?} else if <= 1.21.5 {
+    *///?} else if <= 1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveTeleportCooldown(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo callbackInfo
-    ) {
+            CallbackInfo callbackInfo) {
     *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveTeleportCooldown(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo) {
-        //?}
+    //?}
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         RuntimeExtensionNbt.write(
                 nbt,
@@ -71,18 +70,17 @@ public abstract class EndGatewayBlockEntityMixin {
     //? if (>=1.18 && <=1.20.4) {
     /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadTeleportCooldown(CompoundTag nbt, CallbackInfo callbackInfo) {
-        *///?} else if <= 1.21.5 {
+    *///?} else if <= 1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadTeleportCooldown(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo callbackInfo
-    ) {
+            CallbackInfo callbackInfo) {
     *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadTeleportCooldown(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo) {
-        //?}
+    //?}
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 

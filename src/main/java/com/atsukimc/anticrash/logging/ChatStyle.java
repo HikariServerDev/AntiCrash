@@ -16,14 +16,13 @@ public final class ChatStyle {
      * @param base colour of the unstyled text, or null to inherit (white for feedback, red when
      *     Vanilla wraps the text as a command error)
      */
-
     public static Component text(String message, ChatFormatting base, boolean coloured) {
         if (message == null)
             //? if (>=1.18 && <=1.18.2) {
             /*return new TextComponent("");
-        *///?} else {
+            *///?} else {
             return Component.literal("");
-        //?}
+            //?}
 
         if (!coloured) {
 

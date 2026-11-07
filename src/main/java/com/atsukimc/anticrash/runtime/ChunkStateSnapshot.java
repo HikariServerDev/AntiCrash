@@ -83,18 +83,18 @@ public final class ChunkStateSnapshot {
                 if (chunk != null
                         && ((com.atsukimc.anticrash.mixin.WorldChunkAccessorMixin) chunk)
                                 .anticrash$isLoadedToWorld())
-                    //?}
+        //?}
                     //? if (>=1.21 && <=1.21.11) {
                     /*loaded.add(holder.getPos().toLong());
-*///?}
+                    *///?}
                     //? if (>=26.1 && <=26.3) {
                     loaded.add(holder.getPos().pack());
-                //?}
-                //? if (>=1.21 && <=26.3) {
+                    //?}
+            //? if (>=1.21 && <=26.3) {
 
             }
         }
-        //?}
+            //?}
 
         snapshot.loadedChunks.addAll(loaded);
         Set<Long> forced = new LinkedHashSet<>();
@@ -156,10 +156,10 @@ public final class ChunkStateSnapshot {
             *///?}
             //? if (>=1.20 && <=1.21.4) {
             /*boolean entity =
-                                holder.getFullStatus()
-                                                == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
-                                        && completed(holder.getEntityTickingChunkFuture());
-*///?}
+                    holder.getFullStatus()
+                                    == net.minecraft.server.level.FullChunkStatus.ENTITY_TICKING
+                            && completed(holder.getEntityTickingChunkFuture());
+            *///?}
             //? if (>=1.21.5 && <=26.3) {
             boolean entity =
                     holder.getFullStatus()
@@ -269,11 +269,11 @@ public final class ChunkStateSnapshot {
 
     //? if (>=1.18 && <=1.20.4) {
     /*private static boolean completed(CompletableFuture<? extends Either<?, ?>> future)
-                *///?}
+    *///?}
     //? if (>=1.20.5 && <=26.3) {
     private static boolean completed(
             CompletableFuture<? extends net.minecraft.server.level.ChunkResult<?>> future)
-                //?}
+    //?}
             {
         if (future == null || !future.isDone() || future.isCompletedExceptionally()) return false;
         try {

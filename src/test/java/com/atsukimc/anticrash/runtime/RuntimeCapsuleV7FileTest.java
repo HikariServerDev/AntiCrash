@@ -79,7 +79,7 @@ class RuntimeCapsuleV7FileTest {
         Files.writeString(
                 file,
                 "{\"formatVersion\":6,\"expectedFingerprints\":{\"CHUNK_DOMAIN\":\"abc\"},"
-                    + "\"ticketLedger\":[{\"dimension\":\"minecraft:overworld\",\"type\":\"portal\",\"expiryTicks\":300}]}");
+                        + "\"ticketLedger\":[{\"dimension\":\"minecraft:overworld\",\"type\":\"portal\",\"expiryTicks\":300}]}");
         RuntimeCapsule old = AtomicFiles.readJson(file, RuntimeCapsule.class);
 
         assertTrue(old.inhabitedTimes.isEmpty());

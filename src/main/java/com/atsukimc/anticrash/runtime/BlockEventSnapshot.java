@@ -56,9 +56,9 @@ public final class BlockEventSnapshot {
         /*for (ServerLevel world : worlds)
             //? if (>=1.18 && <=1.21.10) {
             /^byDimension.put(world.dimension().location().toString(), world);
-        ^///?}
-        //? if 1.21.11 {
-        /^byDimension.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            //? if 1.21.11 {
+            /^byDimension.put(world.dimension().identifier().toString(), world);
             ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
@@ -91,10 +91,10 @@ public final class BlockEventSnapshot {
                 //? if (>=1.18 && <=1.19.2) {
                 /*if (!Registry.BLOCK.containsKey(blockId))
 
-                    *///?}
+                *///?}
                 //? if (>=1.19.3 && <=26.3) {
                 if (!BuiltInRegistries.BLOCK.containsKey(blockId))
-                    //?}
+                //?}
                     throw new IllegalArgumentException("unknown block id");
 
                 //? if (>=1.18 && <=1.19.2) {

@@ -27,7 +27,7 @@ public abstract class ArchaeologyRuntimeMixin {
 *///?} else {
 @Mixin(BrushableBlockEntity.class)
 public abstract class ArchaeologyRuntimeMixin {
-    //?}
+//?}
     @Shadow private int brushCount;
 
     @Shadow private long brushCountResetsAtTick;
@@ -42,14 +42,12 @@ public abstract class ArchaeologyRuntimeMixin {
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrush(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
     *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrush(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
-                //?}
+    //?}
             {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         RuntimeExtensionNbt.write(
@@ -70,14 +68,12 @@ public abstract class ArchaeologyRuntimeMixin {
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrush(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
     *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrush(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
-                //?}
+    //?}
             {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 

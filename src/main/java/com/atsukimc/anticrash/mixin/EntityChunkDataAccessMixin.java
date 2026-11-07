@@ -32,7 +32,6 @@ public abstract class EntityChunkDataAccessMixin {
      * Entity runtime state is added only to data that goes to the entity's chunk on disk. A wrap,
      * so the scope also ends when an entity fails to save.
      */
-
     @com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "storeEntities")
     private void anticrash$scopeEntitySave(
             net.minecraft.world.level.entity.ChunkEntities<?> dataList, Operation<Void> original) {
@@ -57,7 +56,7 @@ public abstract class EntityChunkDataAccessMixin {
             ChunkPos pos,
             CompoundTag nbt,
             Operation<CompletableFuture<Void>> original) {
-        *///?} else {
+    *///?} else {
     @WrapOperation(
             method = "storeEntities",
             at =
@@ -70,7 +69,7 @@ public abstract class EntityChunkDataAccessMixin {
             ChunkPos pos,
             CompoundTag nbt,
             Operation<CompletableFuture<Void>> original) {
-        //?}
+    //?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*long chunk = pos.toLong();

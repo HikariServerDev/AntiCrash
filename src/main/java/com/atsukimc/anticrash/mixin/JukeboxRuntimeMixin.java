@@ -25,19 +25,18 @@ public abstract class JukeboxRuntimeMixin {
 
     //? if (>=1.19.1 && <=1.20.6) {
     /*@Shadow private int ticksSinceLastEvent;
-*///?}
+
+    *///?}
 
     //? if (>=1.19.1 && <=1.20.4) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveEventPhase(CompoundTag nbt, CallbackInfo ci)
-*///?}
+    *///?}
     //? if (>=1.20.5 && <=1.20.6) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveEventPhase(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
-*///?}
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
+    *///?}
     //? if (>=1.21 && <=26.3) {
     @Inject(method = "tick", at = @At("HEAD"))
     private static void anticrash$markPlaybackTick(
@@ -46,70 +45,68 @@ public abstract class JukeboxRuntimeMixin {
             BlockState state,
             JukeboxBlockEntity jukebox,
             CallbackInfo ci)
-                //?}
+    //?}
             {
 
         //? if (>=1.19.1 && <=1.20.6) {
         /*if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
-
-RuntimeExtensionNbt.write(
+        RuntimeExtensionNbt.write(
                 nbt, extension -> extension.putInt("JukeboxEventPhase", ticksSinceLastEvent));
     }
-*///?}
 
-        //? if (>=1.19.1 && <=1.20.4) {
-        /*@Inject(method = "load", at = @At("TAIL"))
+        *///?}
+
+    //? if (>=1.19.1 && <=1.20.4) {
+    /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadEventPhase(CompoundTag nbt, CallbackInfo ci)
-*///?}
-        //? if (>=1.20.5 && <=1.20.6) {
-        /*@Inject(method = "loadAdditional", at = @At("TAIL"))
+    *///?}
+    //? if (>=1.20.5 && <=1.20.6) {
+    /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadEventPhase(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
-*///?}
-        //? if (>=1.19.1 && <=1.20.6) {
-        /*{
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
+    *///?}
+            //? if (>=1.19.1 && <=1.20.6) {
+            /*{
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-
-if (extension != null && extension.contains("JukeboxEventPhase", 3)) {
+        if (extension != null && extension.contains("JukeboxEventPhase", 3)) {
             ticksSinceLastEvent = extension.getInt("JukeboxEventPhase");
         }
     }
-*///?}
 
-        //? if (>=1.19.1 && <=1.19.3) {
-        /*@Inject(method = "playRecordTick", at = @At("HEAD"))
+            *///?}
+
+    //? if (>=1.19.1 && <=1.19.3) {
+    /*@Inject(method = "playRecordTick", at = @At("HEAD"))
     private static void anticrash$markPlaybackTick(
             Level world,
             BlockPos pos,
             BlockState state,
             JukeboxBlockEntity jukebox,
             CallbackInfo ci)
-*///?}
-        //? if (>=1.19.4 && <=1.20.6) {
-        /*@Inject(
+    *///?}
+    //? if (>=1.19.4 && <=1.20.6) {
+    /*@Inject(
             method =
                     "tick(Lnet/minecraft/world/level/Level;Lnet/minecraft/core/BlockPos;Lnet/minecraft/world/level/block/state/BlockState;)V",
             at = @At("HEAD"))
     private void anticrash$markPlaybackTick(
             Level world, BlockPos pos, BlockState state, CallbackInfo ci)
-*///?}
-        //? if (>=1.19.1 && <=1.20.6) {
-        /*{
+    *///?}
+            //? if (>=1.19.1 && <=1.20.6) {
+            /*{
         if (!world.isClientSide)
-*///?}
+            *///?}
         //? if (>=1.21 && <=1.21.8) {
         /*if (!world.isClientSide && jukebox.getSongPlayer().getSong() != null)
-*///?}
+        *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
-*///?}
-        //? if (>=1.19.1 && <=1.21.11) {
-        /*world.blockEntityChanged(pos);
-*///?}
+        *///?}
+            //? if (>=1.19.1 && <=1.21.11) {
+            /*world.blockEntityChanged(pos);
+            *///?}
         //? if (>=26.1 && <=26.3) {
         if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
             world.blockEntityChanged(pos);

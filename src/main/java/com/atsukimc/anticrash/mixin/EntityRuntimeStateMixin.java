@@ -62,11 +62,11 @@ public abstract class EntityRuntimeStateMixin {
     /*@Inject(method = "saveWithoutId", at = @At("RETURN"))
     private void anticrash$saveRuntimeState(
             CompoundTag nbt, CallbackInfoReturnable<CompoundTag> callbackInfo) {
-        *///?} else {
+    *///?} else {
     @Inject(method = "saveWithoutId", at = @At("RETURN"))
     private void anticrash$saveRuntimeState(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo) {
-        //?}
+    //?}
 
         if (!RuntimeExtensionNbt.savingLoadedEntities()) return;
         Object self = this;
@@ -74,10 +74,9 @@ public abstract class EntityRuntimeStateMixin {
                 nbt,
                 extension -> {
                     //? if 1.18 {
-                    /*
-                    // 1.18 EntityGetter reads this for collision queries. Falling-block construction
-                    // paths do not all set the same default; preserve both true and false at the
-                    // cut.
+                    /*// 1.18 EntityGetter reads this for collision queries. Falling-block
+                    // construction paths do not all set the same default; preserve both true and
+                    // false at the cut.
                     extension.putBoolean("Inanimate", blocksBuilding);
                     *///?}
 
@@ -215,11 +214,11 @@ public abstract class EntityRuntimeStateMixin {
     //? if (>=1.18 && <=1.21.5) {
     /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadRuntimeState(CompoundTag nbt, CallbackInfo callbackInfo) {
-        *///?} else {
+    *///?} else {
     @Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadRuntimeState(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo) {
-        //?}
+    //?}
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
@@ -247,8 +246,9 @@ public abstract class EntityRuntimeStateMixin {
         *///?}
         //? if (>=1.21 && <=1.21.4) {
         /*if (self instanceof net.minecraft.world.entity.item.PrimedTnt
-                        && extension.contains("TeleportedTnt", 1))
-                    ((TntRuntimeAccessorMixin) self).anticrash$setTeleported(extension.getBoolean("TeleportedTnt"));
+                && extension.contains("TeleportedTnt", 1))
+            ((TntRuntimeAccessorMixin) self)
+                    .anticrash$setTeleported(extension.getBoolean("TeleportedTnt"));
         *///?}
         //? if (>=1.21.11 && <=26.3) {
         if (self instanceof LivingEntity && extension.contains("LastKineticAttackTime"))
@@ -278,8 +278,8 @@ public abstract class EntityRuntimeStateMixin {
 
         //? if (>=1.21 && <=1.21.4) {
         /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
-                        && extension.contains("ShouldDupe", 1))
-                    falling.forceTickAfterTeleportToDuplicate = extension.getBoolean("ShouldDupe");
+                && extension.contains("ShouldDupe", 1))
+            falling.forceTickAfterTeleportToDuplicate = extension.getBoolean("ShouldDupe");
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
@@ -294,10 +294,10 @@ public abstract class EntityRuntimeStateMixin {
             verticalCollisionBelow = extension.getBoolean("GroundCollision");
             //? if <=1.20.4 {
             mainSupportingBlockPos =
-                            extension.contains("SupportingBlock", 10)
-                                    ? java.util.Optional.of(
-                                            NbtUtils.readBlockPos(extension.getCompound("SupportingBlock")))
-                                    : java.util.Optional.empty();
+                    extension.contains("SupportingBlock", 10)
+                            ? java.util.Optional.of(
+                                    NbtUtils.readBlockPos(extension.getCompound("SupportingBlock")))
+                            : java.util.Optional.empty();
             //?} else {
             /^mainSupportingBlockPos = NbtUtils.readBlockPos(extension, "SupportingBlock");
             ^///?}
@@ -315,9 +315,9 @@ public abstract class EntityRuntimeStateMixin {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (extension.contains("Portal", 10)) {
-            *///?} else {
+        *///?} else {
         if (com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "Portal", 10)) {
-            //?}
+        //?}
             //? if (>=1.18 && <=1.20.6) {
             /*CompoundTag portal = extension.getCompound("Portal");
             isInsidePortal = portal.getBoolean("In");
@@ -328,9 +328,11 @@ public abstract class EntityRuntimeStateMixin {
             /*if (portal.contains("Pos", 10))
                 portalEntrancePos = NbtUtils.readBlockPos(portal.getCompound("Pos"));
             *///?} else if <= 1.20.6 {
-            /*portalEntrancePos =NbtUtils.readBlockPos(portal, "Pos").orElse(portalEntrancePos);
+            /*portalEntrancePos = NbtUtils.readBlockPos(portal, "Pos").orElse(portalEntrancePos);
             *///?} else if <= 1.21.4 {
-            /*portalProcess =com.atsukimc.anticrash.runtime.PortalRuntime.read(extension.getCompound("Portal"));
+            /*portalProcess =
+                    com.atsukimc.anticrash.runtime.PortalRuntime.read(
+                            extension.getCompound("Portal"));
             *///?} else {
             portalProcess =
                     com.atsukimc.anticrash.runtime.PortalRuntime.read(
@@ -343,12 +345,12 @@ public abstract class EntityRuntimeStateMixin {
             boardingCooldown = Math.max(0, extension.getInt("RidingCooldown"));
 
         if (extension.getBoolean("Ticked")) {
-            *///?} else {
+        *///?} else {
         if (com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RidingCooldown", 99))
             boardingCooldown = Math.max(0, extension.getInt("RidingCooldown").orElseThrow());
 
         if (com.atsukimc.anticrash.runtime.VersionNbt.sparseFlag(extension, "Ticked")) {
-            //?}
+        //?}
 
             firstTick = false;
 

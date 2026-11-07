@@ -28,7 +28,7 @@ public abstract class CrafterMutationMixin {
         /*if (!world.isClientSide
         *///?} else {
         if (!world.isClientSide()
-                //?}
+        //?}
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
             world.blockEntityChanged(pos);
     }

@@ -17,14 +17,15 @@ public interface SculkSensorListenerAccessorMixin {
     @Accessor("receivingEvent")
     Optional<GameEvent> anticrash$getEvent();
 
-    ^///?}
+^///?}
 
-    /^* 1.19 Vanilla persists vibration/source UUIDs/distance/delay via the listener codec. ^/
-    //? if (>=1.19 && <=1.19.2) {
-    /^@Mixin(VibrationListener.class)
-    public interface SculkSensorListenerAccessorMixin {
-        @Accessor("receivingEvent")
-        VibrationListener.ReceivingEvent anticrash$getVibration();
+/^* 1.19 Vanilla persists vibration/source UUIDs/distance/delay via the listener codec. ^/
+//? if (>=1.19 && <=1.19.2) {
+/^@Mixin(VibrationListener.class)
+public interface SculkSensorListenerAccessorMixin {
+    @Accessor("receivingEvent")
+    VibrationListener.ReceivingEvent anticrash$getVibration();
+
 ^///?}
 
     //? if (>=1.18 && <=1.18.2) {
@@ -40,8 +41,9 @@ public interface SculkSensorListenerAccessorMixin {
     ^///?}
     //? if (>=1.19 && <=1.19.2) {
     /^@Accessor("receivingDistance")
-        float anticrash$getDistance();
-^///?}
+    float anticrash$getDistance();
+
+    ^///?}
 
     @Accessor("travelTimeInTicks")
     int anticrash$getDelay();

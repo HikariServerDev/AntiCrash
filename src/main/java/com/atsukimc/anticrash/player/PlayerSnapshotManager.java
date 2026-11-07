@@ -125,17 +125,17 @@ public final class PlayerSnapshotManager {
             //? if (>=1.18 && <=1.21.8) {
             /*//? if (>=1.18 && <=1.19.4) {
             /^data.dimension = player.getLevel().dimension().location().toString();
-        ^///?}
-        //? if (>=1.20 && <=1.21.8) {
-        /^data.dimension = player.level().dimension().location().toString();
             ^///?}
-        *///?}
+            //? if (>=1.20 && <=1.21.8) {
+            /^data.dimension = player.level().dimension().location().toString();
+            ^///?}
+            *///?}
             //? if (>=1.21.9 && <=1.21.10) {
             /*data.dimension = player.level().dimension().location().toString();
-        *///?}
+            *///?}
             //? if (>=1.21.11 && <=26.3) {
             data.dimension = player.level().dimension().identifier().toString();
-        //?}
+            //?}
 
         if (config.playerSnapshot.position) {
             data.x = player.getX();
@@ -152,10 +152,10 @@ public final class PlayerSnapshotManager {
 
             //? if (>=1.18 && <=1.21.4) {
             /*data.gamemode = player.gameMode.getGameModeForPlayer().getName();
-        *///?}
+            *///?}
             //? if (>=1.21.5 && <=26.3) {
             data.gamemode = player.gameMode.getGameModeForPlayer().getSerializedName();
-        //?}
+            //?}
 
         if (config.playerSnapshot.abilities) {
 
@@ -186,18 +186,18 @@ public final class PlayerSnapshotManager {
 
             //? if (>=1.18 && <=1.20.4) {
             /*data.enderChestNbt = NbtCodec.encode(player.getEnderChestInventory().createTag());
-        *///?}
+            *///?}
             //? if (>=1.20.5 && <=1.21.5) {
             /*data.enderChestNbt =
-                            NbtCodec.encode(
-                                    player.getEnderChestInventory().createTag(player.registryAccess()));
-*///?}
+                    NbtCodec.encode(
+                            player.getEnderChestInventory().createTag(player.registryAccess()));
+            *///?}
             //? if (>=1.21.6 && <=26.3) {
             data.enderChestNbt =
                     NbtCodec.encode(
                             com.atsukimc.anticrash.runtime.VersionStorage.inventory(
                                     player.getEnderChestInventory(), player.registryAccess()));
-        //?}
+            //?}
 
         if (config.playerSnapshot.health) data.health = player.getHealth();
         if (config.playerSnapshot.absorption) data.absorption = player.getAbsorptionAmount();
@@ -211,33 +211,33 @@ public final class PlayerSnapshotManager {
 
             //? if (>=1.18 && <=1.21.1) {
             /*data.foodExhaustion = player.getFoodData().getExhaustionLevel();
-        *///?}
+            *///?}
             //? if (>=1.21.2 && <=26.3) {
             data.foodExhaustion =
                     ((com.atsukimc.anticrash.mixin.HungerManagerAccessorMixin) player.getFoodData())
                             .anticrash$getExhaustion();
-        //?}
+            //?}
 
         if (config.playerSnapshot.potionEffects)
 
             //? if (>=1.18 && <=1.21.11) {
             /*for (MobEffectInstance effect : player.getActiveEffects())
 
-                *///?}
-            //? if (>=1.18 && <=1.20.4) {
-            /*data.effectsNbt.add(
+            *///?}
+                //? if (>=1.18 && <=1.20.4) {
+                /*data.effectsNbt.add(
                         NbtCodec.encode(effect.save(new net.minecraft.nbt.CompoundTag())));
-        *///?}
-            //? if (>=1.20.5 && <=1.21.4) {
-            /*data.effectsNbt.add(NbtCodec.encode(effect.save()));
-*///?}
+                *///?}
+                //? if (>=1.20.5 && <=1.21.4) {
+                /*data.effectsNbt.add(NbtCodec.encode(effect.save()));
+                *///?}
             //? if (>=26.1 && <=26.3) {
             for (MobEffectInstance effect : player.getActiveEffects())
-                //?}
+            //?}
                 //? if (>=1.21.5 && <=26.3) {
                 data.effectsNbt.add(
                         NbtCodec.encode(com.atsukimc.anticrash.runtime.VersionNbt.effect(effect)));
-        //?}
+                //?}
 
         if (config.playerSnapshot.velocity) {
 
@@ -275,7 +275,7 @@ public final class PlayerSnapshotManager {
             *///?}
             //? if (>=1.21.5 && <=1.21.8) {
             /*BlockPos pos = respawn.pos();
-*///?}
+            *///?}
             //? if (>=1.21.9 && <=26.3) {
             BlockPos pos = spawn.pos();
             //?}
@@ -289,7 +289,7 @@ public final class PlayerSnapshotManager {
             *///?}
             //? if (>=1.21.5 && <=1.21.8) {
             /*data.spawnAngle = respawn.angle();
-*///?}
+            *///?}
             //? if (>=1.21.9 && <=26.3) {
             data.spawnAngle = spawn.yaw();
             //?}
@@ -323,7 +323,7 @@ public final class PlayerSnapshotManager {
             *///?}
             //? if (>=1.21.5 && <=1.21.8) {
             /*data.spawnDimension = respawn.dimension().location().toString();
-*///?}
+            *///?}
             //? if (>=1.21.9 && <=1.21.10) {
             /*data.spawnDimension = spawn.dimension().location().toString();
             *///?}
@@ -443,7 +443,7 @@ public final class PlayerSnapshotManager {
             *///?}
             //? if (>=1.21.6 && <=1.21.8) {
             /*MinecraftServer server = player.getServer();
-*///?}
+            *///?}
             //? if (>=1.21.9 && <=26.3) {
             MinecraftServer server = player.level().getServer();
             //?}
@@ -638,15 +638,14 @@ public final class PlayerSnapshotManager {
             *///?}
             //? if (>=1.20.5 && <=26.3) {
             if (enderChest != null)
-                //?}
+            //?}
                 //? if (>=1.20.5 && <=1.21.5) {
-                /*player.getEnderChestInventory()
-                                    .fromTag(enderChest, player.registryAccess());
-*///?}
+                /*player.getEnderChestInventory().fromTag(enderChest, player.registryAccess());
+                *///?}
                 //? if (>=1.21.6 && <=26.3) {
                 com.atsukimc.anticrash.runtime.VersionStorage.applyInventory(
                         player.getEnderChestInventory(), enderChest);
-            //?}
+                //?}
 
             if (config.playerSnapshot.health) player.setHealth(data.health);
             if (config.playerSnapshot.absorption) player.setAbsorptionAmount(data.absorption);
@@ -660,11 +659,11 @@ public final class PlayerSnapshotManager {
 
                 //? if (>=1.18 && <=1.21.1) {
                 /*player.getFoodData().setExhaustion(data.foodExhaustion);
-            *///?}
+                *///?}
                 //? if (>=1.21.2 && <=26.3) {
                 ((com.atsukimc.anticrash.mixin.HungerManagerAccessorMixin) player.getFoodData())
                         .anticrash$setExhaustion(data.foodExhaustion);
-            //?}
+                //?}
 
             if (effects != null) {
 
@@ -689,16 +688,16 @@ public final class PlayerSnapshotManager {
                         data.spawnAngle,
                         data.spawnForced,
                         false);
-            *///?}
+                *///?}
                 //? if (>=1.21.5 && <=1.21.8) {
                 /*player.setRespawnPosition(
-                                    new ServerPlayer.RespawnConfig(
-                                            spawnWorld.dimension(),
-                                            new BlockPos(data.spawnX, data.spawnY, data.spawnZ),
-                                            data.spawnAngle,
-                                            data.spawnForced),
-                                    false);
-*///?}
+                        new ServerPlayer.RespawnConfig(
+                                spawnWorld.dimension(),
+                                new BlockPos(data.spawnX, data.spawnY, data.spawnZ),
+                                data.spawnAngle,
+                                data.spawnForced),
+                        false);
+                *///?}
                 //? if (>=1.21.9 && <=26.3) {
                 player.setRespawnPosition(
                         new ServerPlayer.RespawnConfig(
@@ -709,7 +708,7 @@ public final class PlayerSnapshotManager {
                                         data.spawnPitch),
                                 data.spawnForced),
                         false);
-            //?}
+                //?}
 
             if (inventoryChanged) player.inventoryMenu.sendAllDataToRemote();
 
@@ -730,15 +729,15 @@ public final class PlayerSnapshotManager {
         /*for (ServerLevel world : server.getAllLevels())
             //? if (>=1.18 && <=1.21.10) {
             /^if (world.dimension().location().toString().equals(id))
-                ^///?}
-                //? if 1.21.11 {
-                /^if (world.dimension().identifier().toString().equals(id))
             ^///?}
-                *///?}
+            //? if 1.21.11 {
+            /^if (world.dimension().identifier().toString().equals(id))
+            ^///?}
+        *///?}
         //? if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
             if (world.dimension().identifier().toString().equals(id))
-                //?}
+        //?}
                 return world;
         return null;
     }
@@ -773,10 +772,10 @@ public final class PlayerSnapshotManager {
         //? if (>=1.18 && <=1.21.4) {
         /*if (config.playerSnapshot.fallDistance && !Float.isFinite(data.fallDistance))
 
-            *///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         if (config.playerSnapshot.fallDistance && !Double.isFinite(data.fallDistance))
-            //?}
+        //?}
             throw new IOException("Fall distance is not finite");
 
         //? if (>=1.18 && <=1.21.8) {
@@ -784,12 +783,12 @@ public final class PlayerSnapshotManager {
                 && data.hasSpawnPoint
                 && !Float.isFinite(data.spawnAngle))
 
-            *///?}
+        *///?}
         //? if (>=1.21.9 && <=26.3) {
         if (config.playerSnapshot.spawnPoint
                 && data.hasSpawnPoint
                 && (!Float.isFinite(data.spawnAngle) || !Float.isFinite(data.spawnPitch)))
-            //?}
+        //?}
             throw new IOException("Spawn angle is not finite");
         if (config.playerSnapshot.experienceProgress
                 && (data.experienceProgress < 0.0F || data.experienceProgress > 1.0F))

@@ -90,10 +90,10 @@ public final class ScheduledTickSnapshot {
 
     //? if (>=1.18 && <=1.21.10) {
     /*public ResourceLocation typeIdentifier() {
-        *///?}
+    *///?}
     //? if (>=1.21.11 && <=26.3) {
     public Identifier typeIdentifier() {
-        //?}
+    //?}
         //? if (>=1.18 && <=1.21.10) {
         /*return ResourceLocation.tryParse(type);
         *///?}

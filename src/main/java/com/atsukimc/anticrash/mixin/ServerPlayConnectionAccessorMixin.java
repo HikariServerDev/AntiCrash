@@ -22,16 +22,16 @@ public interface ServerPlayConnectionAccessorMixin {
 public interface ServerPlayConnectionAccessorMixin {
 
 *///?}
-//? if (>=1.19.4 && <=1.21.11) {
-/*@Accessor("connection")
+    //? if (>=1.19.4 && <=1.21.11) {
+    /*@Accessor("connection")
     Connection anticrash$getConnection();
-*///?}
+    *///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(ServerCommonPacketListenerImpl.class)
 public interface ServerPlayConnectionAccessorMixin {
     @Accessor("connection")
     Connection anticrash$getConnection();
-    //?}
+//?}
 
 }
 //?}

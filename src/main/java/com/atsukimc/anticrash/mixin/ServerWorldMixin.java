@@ -31,7 +31,6 @@ public abstract class ServerWorldMixin {
      * Nothing has changed since, so the save inside the cut's MinecraftServer#save is skipped. A
      * wrap rather than a redirect, so another mod may hook the same call.
      */
-
     @WrapOperation(
             method = "save",
             at =

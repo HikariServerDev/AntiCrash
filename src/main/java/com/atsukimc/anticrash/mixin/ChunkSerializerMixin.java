@@ -31,7 +31,7 @@ public abstract class ChunkSerializerMixin {
     @WrapMethod(method = "write")
     private static CompoundTag anticrash$scopeChunkSave(
             ServerLevel world, ChunkAccess chunk, Operation<CompoundTag> original) {
-        *///?} else {
+*///?} else {
 @Mixin(SerializableChunkData.class)
 public abstract class ChunkSerializerMixin {
     /**
@@ -41,7 +41,7 @@ public abstract class ChunkSerializerMixin {
     @WrapMethod(method = "copyOf")
     private static SerializableChunkData anticrash$scopeChunkSave(
             ServerLevel world, ChunkAccess chunk, Operation<SerializableChunkData> original) {
-        //?}
+//?}
 
         LevelChunk worldChunk = chunk instanceof LevelChunk loaded ? loaded : null;
         boolean staysLoaded =

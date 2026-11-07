@@ -46,61 +46,60 @@ public abstract class CarpetFakePlayerProfileMixin {
             at = @At("HEAD"),
             cancellable = true,
             require = 0,
-            remap = false
-    )
+            remap = false)
     private static void anticrash$savedProfile(
             String name,
-            CallbackInfoReturnable<CompletableFuture<Optional<GameProfile>>> callback
-    ) {
+            CallbackInfoReturnable<CompletableFuture<Optional<GameProfile>>> callback) {
 
         GameProfile saved = FakePlayerProfileScope.creationProfileForName(name);
-        if (saved != null) callback.setReturnValue(CompletableFuture.completedFuture(Optional.of(saved)));
+        if (saved != null)
+            callback.setReturnValue(CompletableFuture.completedFuture(Optional.of(saved)));
     }
 
     @Redirect(
             method = "createFake",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ljava/util/concurrent/CompletableFuture;whenCompleteAsync(Ljava/util/function/BiConsumer;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"),
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Ljava/util/concurrent/CompletableFuture;whenCompleteAsync(Ljava/util/function/BiConsumer;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"),
             require = 0,
-            remap = false
-    )
+            remap = false)
     private static CompletableFuture<Optional<GameProfile>> anticrash$finishSavedProfile(
             CompletableFuture<Optional<GameProfile>> profile,
             BiConsumer<? super Optional<GameProfile>, ? super Throwable> action,
-            Executor executor
-    ) {
+            Executor executor) {
         return FakePlayerProfileScope.completeCreation(profile, action, executor);
     }
 
     @Redirect(
             method = "createFake",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ljava/util/concurrent/CompletableFuture;thenAcceptAsync(Ljava/util/function/Consumer;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"),
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Ljava/util/concurrent/CompletableFuture;thenAcceptAsync(Ljava/util/function/Consumer;Ljava/util/concurrent/Executor;)Ljava/util/concurrent/CompletableFuture;"),
             require = 0,
-            remap = false
-    )
+            remap = false)
     private static CompletableFuture<Void> anticrash$acceptSavedProfile(
             CompletableFuture<Optional<GameProfile>> profile,
             Consumer<? super Optional<GameProfile>> action,
-            Executor executor
-    ) {
+            Executor executor) {
         return FakePlayerProfileScope.acceptCreation(profile, action, executor);
     }
 
     @Redirect(
             method = "createFake",
-            at = @At(
-                    value = "INVOKE",
-                    target = "Ljava/util/concurrent/CompletableFuture;thenAccept(Ljava/util/function/Consumer;)Ljava/util/concurrent/CompletableFuture;"),
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target =
+                                    "Ljava/util/concurrent/CompletableFuture;thenAccept(Ljava/util/function/Consumer;)Ljava/util/concurrent/CompletableFuture;"),
             require = 0,
-            remap = false
-    )
+            remap = false)
     private static CompletableFuture<Void> anticrash$acceptSavedProfileImmediately(
             CompletableFuture<Optional<GameProfile>> profile,
-            Consumer<? super Optional<GameProfile>> action
-    ) {
+            Consumer<? super Optional<GameProfile>> action) {
         return FakePlayerProfileScope.acceptCreation(profile, action);
     }
 

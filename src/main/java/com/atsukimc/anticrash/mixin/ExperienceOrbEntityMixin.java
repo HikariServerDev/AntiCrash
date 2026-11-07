@@ -17,7 +17,6 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
      * id's remainder at the time the orb first existed is kept and used for that comparison only;
      * the real network id is never touched.
      */
-
     @Unique private int anticrash$idPhase = -1;
 
     @Override

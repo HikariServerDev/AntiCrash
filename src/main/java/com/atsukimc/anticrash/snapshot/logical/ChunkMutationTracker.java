@@ -45,16 +45,15 @@ public final class ChunkMutationTracker {
     }
 
     /** Mixin entry point; it does no allocation when the tracker is not being inspected. */
-
     public static void record(Level world, ChunkPos position, String reason) {
 
         //? if (>=1.18 && <=1.21.8) {
         /*if (!LogicalTracking.enabled() || world == null || position == null || world.isClientSide)
 
-            *///?}
+        *///?}
         //? if (>=1.21.9 && <=26.3) {
         if (!LogicalTracking.enabled() || world == null || position == null || world.isClientSide())
-            //?}
+        //?}
             return;
 
         //? if (>=1.18 && <=1.21.11) {
@@ -132,9 +131,9 @@ public final class ChunkMutationTracker {
         /*return dimensionNames.computeIfAbsent(
                 //? if (>=1.18 && <=1.21.10) {
                 /^world.dimension(), key -> key.location().toString());
-        ^///?}
-        //? if 1.21.11 {
-        /^world.dimension(), key -> key.identifier().toString());
+                ^///?}
+                //? if 1.21.11 {
+                /^world.dimension(), key -> key.identifier().toString());
                 ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {

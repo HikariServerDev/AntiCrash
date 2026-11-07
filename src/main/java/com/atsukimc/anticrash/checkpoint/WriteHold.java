@@ -33,7 +33,6 @@ public final class WriteHold {
     }
 
     /** Called by a worker about to write one queued result; true means skip it for now. */
-
     public static boolean defer(IOWorker worker) {
         if (!held()) return false;
         DEFERRED.add(worker);

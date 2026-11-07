@@ -31,19 +31,19 @@ public abstract class VersionedChunkStorageMixin {
     // NBT argument explicitly instead of relying on Mixin's single-candidate discriminator.
     @ModifyVariable(method = "upgradeChunkTag", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private CompoundTag anticrash$copySealedChunk(CompoundTag nbt)
-                *///?}
+*///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(SimpleRegionStorage.class)
 public abstract class VersionedChunkStorageMixin {
     /**
-                     * A chunk read while its save is still queued gets the queued CompoundTag itself, and this
-                     * method writes a "__context" key into it. Vanilla races its own IO thread there; a sealed
-                     * checkpoint also writes that object into its generation, so it gets a private copy instead.
-                     */
+     * A chunk read while its save is still queued gets the queued CompoundTag itself, and this
+     * method writes a "__context" key into it. Vanilla races its own IO thread there; a sealed
+     * checkpoint also writes that object into its generation, so it gets a private copy instead.
+     */
     // The first CompoundTag is chunkTag (slot 1); a later tag is data-fix context, not data.
     @ModifyVariable(method = "upgradeChunkTag", at = @At("HEAD"), argsOnly = true, ordinal = 0)
     private CompoundTag anticrash$copySealedChunk(CompoundTag nbt)
-                //?}
+//?}
             {
         return SealedNbt.isSealed(nbt) ? nbt.copy() : nbt;
     }

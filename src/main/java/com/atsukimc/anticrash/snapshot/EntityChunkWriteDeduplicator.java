@@ -32,7 +32,6 @@ public final class EntityChunkWriteDeduplicator {
     /**
      * @return the digest to submit with, or null when an identical write was already submitted
      */
-
     public byte[] digestIfChanged(long chunk, CompoundTag nbt) {
         byte[] digest = digest(nbt);
         if (digest == null) {

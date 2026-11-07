@@ -281,17 +281,17 @@ public final class CarpetIntegration {
             //? if (>=1.18 && <=1.21.8) {
             /*//? if (>=1.18 && <=1.19.4) {
             /^data.dimension = player.getLevel().dimension().location().toString();
-        ^///?}
-        //? if (>=1.20 && <=1.21.8) {
-        /^data.dimension = player.level().dimension().location().toString();
             ^///?}
-        *///?}
+            //? if (>=1.20 && <=1.21.8) {
+            /^data.dimension = player.level().dimension().location().toString();
+            ^///?}
+            *///?}
             //? if (>=1.21.9 && <=1.21.10) {
             /*data.dimension = player.level().dimension().location().toString();
-        *///?}
+            *///?}
             //? if (>=1.21.11 && <=26.3) {
             data.dimension = player.level().dimension().identifier().toString();
-        //?}
+            //?}
 
         if (config.fakePlayer.snapshot.position) {
             data.x = player.getX();
@@ -308,10 +308,10 @@ public final class CarpetIntegration {
 
             //? if (>=1.18 && <=1.21.4) {
             /*data.gamemode = player.gameMode.getGameModeForPlayer().getName();
-        *///?}
+            *///?}
             //? if (>=1.21.5 && <=26.3) {
             data.gamemode = player.gameMode.getGameModeForPlayer().getSerializedName();
-        //?}
+            //?}
 
         if (config.fakePlayer.snapshot.flying) data.flying = player.getAbilities().flying;
         if (config.fakePlayer.snapshot.sneaking) data.sneaking = player.isShiftKeyDown();
@@ -358,21 +358,21 @@ public final class CarpetIntegration {
             //? if (>=1.18 && <=1.21.11) {
             /*for (MobEffectInstance effect : player.getActiveEffects())
 
-                *///?}
-            //? if (>=1.18 && <=1.20.4) {
-            /*data.effectsNbt.add(
+            *///?}
+                //? if (>=1.18 && <=1.20.4) {
+                /*data.effectsNbt.add(
                         NbtCodec.encode(effect.save(new net.minecraft.nbt.CompoundTag())));
-        *///?}
-            //? if (>=1.20.5 && <=1.21.4) {
-            /*data.effectsNbt.add(NbtCodec.encode(effect.save()));
-*///?}
+                *///?}
+                //? if (>=1.20.5 && <=1.21.4) {
+                /*data.effectsNbt.add(NbtCodec.encode(effect.save()));
+                *///?}
             //? if (>=26.1 && <=26.3) {
             for (MobEffectInstance effect : player.getActiveEffects())
-                //?}
+            //?}
                 //? if (>=1.21.5 && <=26.3) {
                 data.effectsNbt.add(
                         NbtCodec.encode(com.atsukimc.anticrash.runtime.VersionNbt.effect(effect)));
-        //?}
+                //?}
 
         if (player.isPassenger()) {
 
@@ -521,9 +521,9 @@ public final class CarpetIntegration {
             //? if (>=1.18 && <=1.21.8) {
             /*if (isFakePlayer(player)
                     && player.getGameProfile().getName().equalsIgnoreCase(data.name))
-                *///?} else {
+            *///?} else {
             if (isFakePlayer(player) && player.getGameProfile().name().equalsIgnoreCase(data.name))
-                //?}
+            //?}
                 return player;
         return null;
     }
@@ -794,15 +794,15 @@ public final class CarpetIntegration {
 
             //? if (>=1.18 && <=1.19.4) {
             /*if (config.fakePlayer.snapshot.dimension && player.getLevel() != world)
-                *///?} else {
+            *///?} else {
             if (config.fakePlayer.snapshot.dimension && player.level() != world)
-                //?}
+            //?}
 
                 //? if (>=1.18 && <=1.21.1) {
                 /*player.teleportTo(world, x, y, z, yaw, pitch);
-            *///?} else {
+                *///?} else {
                 player.teleportTo(world, x, y, z, java.util.Set.of(), yaw, pitch, false);
-            //?}
+                //?}
 
             else {
                 //? if (>=1.18 && <=1.21.4) {
@@ -911,11 +911,11 @@ public final class CarpetIntegration {
 
             //? if (>=1.18 && <=1.19.4) {
             /*if (vehicle.getLevel() != player.getLevel() || !player.startRiding(vehicle, true))
-                *///?} else if <=1.21.8 {
+            *///?} else if <=1.21.8 {
             /*if (vehicle.level() != player.level() || !player.startRiding(vehicle, true))
             *///?} else {
             if (vehicle.level() != player.level() || !player.startRiding(vehicle, true, false))
-                //?}
+            //?}
                 throw new IOException("FakePlayer riding state could not be restored");
         }
     }
@@ -924,7 +924,6 @@ public final class CarpetIntegration {
      * The root vehicle with every non-player passenger, written the way an entity chunk save writes
      * it, so the state AntiCrash adds to entity data is included.
      */
-
     private static String captureRootVehicle(ServerPlayer player) throws IOException {
 
         net.minecraft.world.entity.Entity root = player.getRootVehicle();
@@ -958,7 +957,6 @@ public final class CarpetIntegration {
     }
 
     /** Removes the vehicle (and its non-player passengers) the player currently rides. */
-
     private static void discardStaleVehicle(ServerPlayer player) {
 
         net.minecraft.world.entity.Entity root = player.getRootVehicle();
@@ -986,16 +984,15 @@ public final class CarpetIntegration {
         for (int i = 0; i < passengers.size(); i++)
             //? if (>=1.18 && <=1.21.4) {
             /*collectUuids(passengers.getCompound(i), uuids);
-        *///?} else {
+            *///?} else {
             collectUuids(passengers.getCompound(i).orElseThrow(), uuids);
-        //?}
+            //?}
     }
 
     /**
      * Puts the checkpoint's vehicle into the world in place of the one Vanilla loaded from the
      * player data file when the FakePlayer joined.
      */
-
     private static net.minecraft.world.entity.Entity restoreRootVehicle(
             MinecraftServer server,
             ServerLevel world,
@@ -1028,11 +1025,11 @@ public final class CarpetIntegration {
                         nbt, world, entity -> world.addWithUUID(entity) ? entity : null);
         *///?} else if <=26.1 {
         /*net.minecraft.world.entity.Entity root =
-                        net.minecraft.world.entity.EntityType.loadEntityRecursive(
-                                nbt,
-                                world,
-                                net.minecraft.world.entity.EntitySpawnReason.LOAD,
-                                entity -> world.addWithUUID(entity) ? entity : null);
+                net.minecraft.world.entity.EntityType.loadEntityRecursive(
+                        nbt,
+                        world,
+                        net.minecraft.world.entity.EntitySpawnReason.LOAD,
+                        entity -> world.addWithUUID(entity) ? entity : null);
         *///?} else {
         net.minecraft.world.entity.Entity root =
                 net.minecraft.world.entity.EntityType.loadEntityRecursive(
@@ -1054,10 +1051,10 @@ public final class CarpetIntegration {
 
     //? if (>=1.18 && <=1.21.10) {
     /*private static void captureUseState(ServerPlayer player, FakePlayerSnapshot data) {
-        *///?} else {
+    *///?} else {
     private static void captureUseState(ServerPlayer player, FakePlayerSnapshot data)
             throws IOException {
-        //?}
+    //?}
 
         //? if (>=26.1 && <=26.3) {
         var fluids = new net.minecraft.nbt.CompoundTag();
@@ -1094,11 +1091,11 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.1) {
         /*for (java.util.Map.Entry<net.minecraft.world.item.Item, Object> entry :
-                *///?} else if <=1.21.10 {
+        *///?} else if <=1.21.10 {
         /*for (java.util.Map.Entry<net.minecraft.resources.ResourceLocation, Object> entry :
         *///?} else {
         for (java.util.Map.Entry<net.minecraft.resources.Identifier, Object> entry :
-                //?}
+        //?}
                 manager.anticrash$getEntries().entrySet()) {
             int remaining =
                     ((com.atsukimc.anticrash.mixin.ItemCooldownEntryAccessorMixin) entry.getValue())
@@ -1110,7 +1107,10 @@ public final class CarpetIntegration {
             //? if (>=1.18 && <=1.19.2) {
             /*cooldown.item = net.minecraft.core.Registry.ITEM.getKey(entry.getKey()).toString();
             *///?} else if <=1.21.1 {
-            /*cooldown.item = net.minecraft.core.registries.BuiltInRegistries.ITEM.getKey(entry.getKey()).toString();
+            /*cooldown.item =
+                    net.minecraft.core.registries.BuiltInRegistries.ITEM
+                            .getKey(entry.getKey())
+                            .toString();
             *///?} else {
             cooldown.item = entry.getKey().toString();
             //?}
@@ -1123,7 +1123,6 @@ public final class CarpetIntegration {
     }
 
     /** Runs after the inventory is back, so the hand holds the item that was being used. */
-
     private static void restoreUseState(ServerPlayer player, FakePlayerSnapshot data)
             throws IOException {
 
@@ -1197,16 +1196,17 @@ public final class CarpetIntegration {
 
                 //? if (>=1.18 && <=1.19.2) {
                 /*if (id == null || !net.minecraft.core.Registry.ITEM.containsKey(id))
-                    *///?} else if <=1.21.1 {
-                /*if (id == null || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id))
+                *///?} else if <=1.21.1 {
+                /*if (id == null
+                        || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id))
                 *///?} else if (>=1.21.2 && <=26.3) {
                 if (id == null)
-                    //?}
+                //?}
                     //? if <=1.21.1 {
                     /*throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
                     *///?} else {
                     throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                //?}
+                    //?}
 
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.
@@ -1253,9 +1253,9 @@ public final class CarpetIntegration {
             for (ServerLevel world : server.getAllLevels())
                 //? if (>=1.18 && <=1.21.10) {
                 /*if (world.dimension().location().toString().equals(id))
-                    *///?} else {
+                *///?} else {
                 if (world.dimension().identifier().toString().equals(id))
-                    //?}
+                //?}
                     return world;
         return null;
     }
@@ -1340,10 +1340,10 @@ public final class CarpetIntegration {
                 //? if (>=1.18 && <=1.21.4) {
                 /*if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
                         || MobEffectInstance.load(compound) == null)
-                    *///?} else {
+                *///?} else {
                 if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
                         || com.atsukimc.anticrash.runtime.VersionNbt.effect(compound) == null)
-                    //?}
+                //?}
                     throw new IOException("FakePlayer effect snapshot is invalid");
             }
         boolean inventoryEnabled =

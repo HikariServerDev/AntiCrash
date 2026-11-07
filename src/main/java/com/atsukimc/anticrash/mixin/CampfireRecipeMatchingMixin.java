@@ -28,13 +28,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /*@Mixin(CampfireBlockEntity.class)
 public abstract class CampfireRecipeMatchingMixin {
     @Shadow @Final private RecipeManager.CachedCheck quickCheck;
+
 *///?} else {
 @Mixin(CampfireBlockEntity.class)
 public abstract class CampfireRecipeMatchingMixin
         implements com.atsukimc.anticrash.runtime.CampfireRecipeState {
     @org.spongepowered.asm.mixin.Unique private RecipeMatchGetterAccessorMixin anticrash$getter;
 
-    //?}
+//?}
 
     //? if (>=1.21.2 && <=26.3) {
     @org.spongepowered.asm.mixin.Unique
@@ -76,14 +77,12 @@ public abstract class CampfireRecipeMatchingMixin
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
     *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipeMatch(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
-                //?}
+    //?}
             {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
@@ -107,7 +106,7 @@ public abstract class CampfireRecipeMatchingMixin
                         /*extension.putString("RecipeMatch", id.location().toString());
                         *///?} else {
                         extension.putString("RecipeMatch", id.identifier().toString());
-                    //?}
+                        //?}
                 });
     }
 
@@ -117,14 +116,12 @@ public abstract class CampfireRecipeMatchingMixin
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
-            CompoundTag nbt,
-            net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
     *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadRecipeMatch(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
-                //?}
+    //?}
             {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         if (extension == null) return;
@@ -147,7 +144,8 @@ public abstract class CampfireRecipeMatchingMixin
                 com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                ResourceLocation.parse(extension.getString("RecipeMatch").orElseThrow()))
+                                ResourceLocation.parse(
+                                        extension.getString("RecipeMatch").orElseThrow()))
                         : null;
         *///?} else {
         anticrash$savedId =

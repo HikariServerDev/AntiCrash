@@ -24,11 +24,11 @@ public interface ChunkTicketManagerAccessorMixin {
 
     @Accessor("ticketTickCounter")
     long anticrash$getAge();
-    *///?} else {
+*///?} else {
 @Mixin(TicketStorage.class)
 public interface ChunkTicketManagerAccessorMixin {
 
     @Accessor("tickets")
     Long2ObjectOpenHashMap<java.util.List<Ticket>> anticrash$getTicketsByPosition();
-    //?}
+//?}
 }

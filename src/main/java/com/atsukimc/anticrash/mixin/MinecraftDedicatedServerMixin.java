@@ -35,7 +35,6 @@ public abstract class MinecraftDedicatedServerMixin {
      * so Commands had to refuse it and the operator had to type it again. The queue is left
      * intact instead and runs on the first tick after the checkpoint, in its original order.
      */
-
     @Inject(method = "handleConsoleInputs", at = @At("HEAD"), cancellable = true)
     private void anticrash$holdConsoleCommands(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();

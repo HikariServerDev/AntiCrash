@@ -389,15 +389,15 @@ public final class RuntimeCapsuleManager {
                         *///?}
                         //? if (>=1.20.5 && <=1.21.11) {
                         /*result.addAll(
-                                                        ScheduledTickSnapshot.capture(
-                                                                //? if (>=1.20.5 && <=1.21.10) {
-                                                                /^world.dimension().location().toString(),
-                                                                ^///?}
-                                                                //? if 1.21.11 {
-                                                                /^world.dimension().identifier().toString(),
-                                                                ^///?}
-                                                                value.orElse(null)));
-*///?}
+                                ScheduledTickSnapshot.capture(
+                                        //? if (>=1.20.5 && <=1.21.10) {
+                                        /^world.dimension().location().toString(),
+                                        ^///?}
+                                        //? if 1.21.11 {
+                                        /^world.dimension().identifier().toString(),
+                                        ^///?}
+                                        value.orElse(null)));
+                        *///?}
                         //? if (>=26.1 && <=26.3) {
                         result.addAll(
                                 ScheduledTickSnapshot.capture(
@@ -629,13 +629,13 @@ public final class RuntimeCapsuleManager {
                             (Object) world.getChunkSource())
                     .anticrash$setLastMobSpawningTime(world.getGameTime());
         }
-        *///?}
+            *///?}
             //? if 26.3 {
 
             // 26.3 incrementInhabitedTime() increments once per spawning tick. There is no
             // lastInhabitedUpdate field or elapsed-world-time accumulator to reset anymore.
         }
-        //?}
+            //?}
 
     }
 
@@ -1367,9 +1367,9 @@ public final class RuntimeCapsuleManager {
                                 + " BlockEntity ticker in "
                                 //? if (>=1.18 && <=1.21.10) {
                                 /^+ world.dimension().location());
-                ^///?}
-                //? if 1.21.11 {
-                /^+ world.dimension().identifier());
+                                ^///?}
+                                //? if 1.21.11 {
+                                /^+ world.dimension().identifier());
                                 ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
@@ -2121,7 +2121,7 @@ public final class RuntimeCapsuleManager {
             for (ClockSnapshot clock : capsule.clockStates) {
                 if (clock == null || !ids.add(clock.id()))
                     throw new IllegalStateException("Duplicate/invalid clock");
-                //?}
+        //?}
 
                 // Validate deserialized state too; the Gson version need not invoke a constructor.
 
@@ -2134,7 +2134,7 @@ public final class RuntimeCapsuleManager {
                         clock.paused());
             }
         }
-        //?}
+                //?}
 
         Set<String> dimensions = new HashSet<>();
         Map<String, ChunkStateSnapshot> chunksByDimension = new HashMap<>();

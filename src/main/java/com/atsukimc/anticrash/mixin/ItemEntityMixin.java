@@ -93,7 +93,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                     "player",
                     new BlockPos(item.position()),
                     pickedStack);
-        *///?} else {
+            *///?} else {
             controller.recordTransaction(
                     "ITEM_PICKUP",
                     serverPlayer,
@@ -101,6 +101,6 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                     "player",
                     BlockPos.containing(item.position()),
                     pickedStack);
-        //?}
+            //?}
     }
 }

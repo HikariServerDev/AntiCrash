@@ -18,7 +18,6 @@ public abstract class BeehiveBlockEntityMixin {
      * "TicksInHive" is saved by Vanilla, but the count advances every tick without the chunk being
      * marked for saving. A checkpoint therefore kept an old count and the bees left late.
      */
-
     @Inject(method = "tickOccupants", at = @At("TAIL"))
     private static void anticrash$markChunkDirty(
             Level world,

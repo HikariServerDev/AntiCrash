@@ -31,41 +31,41 @@ public abstract class SculkCatalystMutationMixin {
 
         //? if (>=1.19 && <=1.21.8) {
         /*if (!world.isClientSide)
-*///?}
+        *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*if (!world.isClientSide())
-*///?}
-        //? if (>=1.19 && <=1.21.11) {
-        /*world.blockEntityChanged(pos);
-*///?}
-        //? if (>=1.19 && <=1.21.8) {
+        *///?}
+            //? if (>=1.19 && <=1.21.11) {
+            /*world.blockEntityChanged(pos);
+            *///?}
+    //? if (>=1.19 && <=1.21.8) {
 
-        /*}
+    /*}
     *///?}
 
-        //? if (>=1.19 && <=1.19.2) {
-        /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
+    //? if (>=1.19 && <=1.19.2) {
+    /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$markNewCursor(
             ServerLevel world, GameEvent.Message message, CallbackInfoReturnable<Boolean> ci)
-*///?}
-        //? if (>=1.19.3 && <=1.19.4) {
-        /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
+    *///?}
+    //? if (>=1.19.3 && <=1.19.4) {
+    /*@Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$markNewCursor(
             ServerLevel world,
             GameEvent event,
             GameEvent.Context emitter,
             net.minecraft.world.phys.Vec3 origin,
             CallbackInfoReturnable<Boolean> ci)
-*///?}
-        //? if (>=1.19 && <=1.19.4) {
-        /*{
+    *///?}
+            //? if (>=1.19 && <=1.19.4) {
+            /*{
         if (ci.getReturnValueZ())
             world.blockEntityChanged(((SculkCatalystBlockEntity) (Object) this).getBlockPos());
-*///?}
+            *///?}
         //? if (>=26.1 && <=26.3) {
         if (!world.isClientSide()) world.blockEntityChanged(pos);
         //?}
-        //? if (>=1.19 && <=1.19.4) || (>=1.21.9 && <=26.3) {
+    //? if (>=1.19 && <=1.19.4) || (>=1.21.9 && <=26.3) {
 
     }
     //?}

@@ -28,12 +28,12 @@ public abstract class ComparatorBlockEntityMixin {
                 && self.hasLevel()
                 && self.getLevel() != null
                 && !self.getLevel().isClientSide) {
-            *///?} else {
+        *///?} else {
         if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
                 && !self.getLevel().isClientSide()) {
-            //?}
+        //?}
             self.getLevel().blockEntityChanged(self.getBlockPos());
         }
     }

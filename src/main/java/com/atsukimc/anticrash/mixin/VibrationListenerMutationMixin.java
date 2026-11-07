@@ -31,7 +31,7 @@ public abstract class VibrationListenerMutationMixin {
             GameEvent.Context emitter,
             Vec3 origin,
             CallbackInfoReturnable<Boolean> ci)
-*///?}
+    *///?}
     //? if (>=1.20.5 && <=26.3) {
     @Inject(
             method =
@@ -43,7 +43,7 @@ public abstract class VibrationListenerMutationMixin {
             GameEvent.Context emitter,
             Vec3 origin,
             CallbackInfoReturnable<Boolean> ci)
-                //?}
+    //?}
             {
         if (ci.getReturnValueZ())
             getListenerSource()
@@ -59,7 +59,7 @@ public abstract class VibrationListenerMutationMixin {
             GameEvent.Context emitter,
             Vec3 origin,
             CallbackInfo ci)
-*///?}
+    *///?}
     //? if (>=1.20.5 && <=26.3) {
     @Inject(method = "forceScheduleVibration", at = @At("TAIL"))
     private void anticrash$dirtyForcedListen(
@@ -68,7 +68,7 @@ public abstract class VibrationListenerMutationMixin {
             GameEvent.Context emitter,
             Vec3 origin,
             CallbackInfo ci)
-                //?}
+    //?}
             {
 
         getListenerSource()
