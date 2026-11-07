@@ -72,7 +72,9 @@ Minecraft 1.18.2を対象にする例です。
 
 `qualityCheck`は整形の確認、ソース配置・ビルド入力の検査、補助スクリプトのテストを実行します。Javaの単体テストは各版の`test`または`build`で実行してください。`formatApply`はソースを書き換えるため、実行後に差分を確認します。
 
-整形にはgoogle-java-formatを使い、Pythonの前後処理でStonecutterの条件コメントと非アクティブなコードを保護しています。版専用のimportも保持します。
+整形にはgoogle-java-format（AOSP、字下げ4スペース）を使います。`scripts/StonecutterFormat.java`がStonecutter本体の処理系で全対象版へ展開し、非アクティブな枝も、その枝が有効になる版での形に整えます。どの版に切り替えても字下げが揃い、条件コメントは開く枝の最初の行と同じ列、`//?}`は対応する`//? if`と同じ列に置かれます。どの版がactiveでも整形結果は同じです。
+
+整形は字下げと改行だけを変えます。importの削除・並べ替え、修飾子の並べ替え、長い文字列の分割は行わず、版専用のimportも保持します。整形のたびに、全対象版で選ばれるJavaトークンが整形前と一致すること、結果をactive版へ切り替えてもStonecutterが書き換えないことを検査します。実行にはGradleキャッシュ内のStonecutterとKotlin標準ライブラリを使うため、未取得の場合は先に一度Gradleを実行してください。
 
 ## Stonecutterの版切り替えと条件分岐
 
