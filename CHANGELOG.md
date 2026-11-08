@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.5 — consistent formatting and identifier compatibility
+
+- Integrate PR #8: format active and inactive Stonecutter branches consistently across Minecraft versions.
+- Integrate PR #9: centralize identifier, dimension-name and registry API differences in `VersionIds`.
+- Add cross-version tests for identifier parsing, persisted dimension keys, six registry adapters and rejection of malformed or unknown identifiers.
+- Preserve checkpoint formats and recovery validation.
+
 ## 1.0.4 — build and source maintenance
 
 - Use the latest supported Minecraft version as the Stonecutter VCS baseline.
