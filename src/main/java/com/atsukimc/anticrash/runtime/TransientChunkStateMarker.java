@@ -80,13 +80,13 @@ public final class TransientChunkStateMarker {
 
                 //? if 26.2 {
                 /*boolean sulfur =
-                                        chunk.getBlockEntities().values().stream()
-                                                .anyMatch(entity ->
-                                                        entity
-                                                                instanceof
-                                                                net.minecraft.world.level.block.entity
-                                                                        .PotentSulfurBlockEntity);
-*///?}
+                        chunk.getBlockEntities().values().stream()
+                                .anyMatch(entity ->
+                                        entity
+                                                instanceof
+                                                net.minecraft.world.level.block.entity
+                                                        .PotentSulfurBlockEntity);
+                *///?}
                 //? if 26.3 {
                 boolean sulfur =
                         chunk.getBlockEntities().values().stream()
@@ -119,9 +119,9 @@ public final class TransientChunkStateMarker {
                                 : ScheduledTickSnapshot.capture(
                                         //? if (>=1.18 && <=1.21.10) {
                                         /^world.dimension().location().toString(), chunk);
-                ^///?}
-                //? if 1.21.11 {
-                /^world.dimension().identifier().toString(), chunk);
+                                        ^///?}
+                                        //? if 1.21.11 {
+                                        /^world.dimension().identifier().toString(), chunk);
                                         ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
@@ -142,10 +142,10 @@ public final class TransientChunkStateMarker {
 
                 //? if (>=1.18 && <=26.1) {
                 /*if (!needsTransientSave(pistonsInChunk > 0, blockTicks, fluidTicks))
-                    *///?}
+                *///?}
                 //? if (>=26.2 && <=26.3) {
                 if (!needsTransientSave(pistonsInChunk > 0 || sulfur, blockTicks, fluidTicks))
-                    //?}
+                //?}
                     continue;
 
                 //? if (>=1.18 && <=1.21.11) {

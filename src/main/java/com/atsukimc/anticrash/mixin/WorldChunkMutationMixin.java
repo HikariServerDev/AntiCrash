@@ -18,19 +18,19 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /*@Mixin(LevelChunk.class)
 public abstract class WorldChunkMutationMixin {
 
-    *///?}
-//? if (>=1.18 && <=1.21.4) {
-/*@Inject(method = "setBlockState", at = @At("TAIL"))
+*///?}
+    //? if (>=1.18 && <=1.21.4) {
+    /*@Inject(method = "setBlockState", at = @At("TAIL"))
     private void anticrash$blockStateMutation(
             BlockPos pos,
             BlockState state,
             boolean moved,
             CallbackInfoReturnable<BlockState> callbackInfo)
-                *///?}
+    *///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(LevelChunk.class)
 public abstract class WorldChunkMutationMixin {
-    //?}
+//?}
     //? if (>=1.21.5 && <=26.3) {
     @Inject(method = "setBlockState", at = @At("TAIL"))
     private void anticrash$blockStateMutation(
@@ -38,7 +38,7 @@ public abstract class WorldChunkMutationMixin {
             BlockState state,
             int flags,
             CallbackInfoReturnable<BlockState> callbackInfo)
-                //?}
+    //?}
             {
 
         LevelChunk chunk = (LevelChunk) (Object) this;

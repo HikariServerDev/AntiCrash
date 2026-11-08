@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(LevelChunk.class)
 public interface WorldChunkAccessorMixin {
     /** False once ChunkMap has started unloading the chunk. */
-
     @Accessor("loaded")
     boolean anticrash$isLoadedToWorld();
 }

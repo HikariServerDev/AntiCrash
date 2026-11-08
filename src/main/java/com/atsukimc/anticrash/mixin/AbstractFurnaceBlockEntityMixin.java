@@ -29,7 +29,7 @@ public abstract class AbstractFurnaceBlockEntityMixin {
             BlockState state,
             AbstractFurnaceBlockEntity furnace,
             CallbackInfo callbackInfo)
-                *///?} else {
+    *///?} else {
     @Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markProgressDirty(
             net.minecraft.server.level.ServerLevel world,
@@ -37,7 +37,7 @@ public abstract class AbstractFurnaceBlockEntityMixin {
             BlockState state,
             AbstractFurnaceBlockEntity furnace,
             CallbackInfo callbackInfo)
-                //?}
+    //?}
             {
         AbstractFurnaceBlockEntityTimerAccessor timer =
                 (AbstractFurnaceBlockEntityTimerAccessor) furnace;

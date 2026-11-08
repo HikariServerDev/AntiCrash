@@ -25,16 +25,17 @@ import java.util.function.Supplier;
 public interface StorageIoWorkerAccessorMixin {
     /^* Queued writes not yet on disk. Only the worker's own actor thread may touch this map. ^/
 
-    *///?}
-//? if (>=1.18 && <=1.21.1) {
-/*@Accessor("pendingWrites")
+*///?}
+    //? if (>=1.18 && <=1.21.1) {
+    /*@Accessor("pendingWrites")
     Map<ChunkPos, Object> anticrash$getResults();
 
     *///?}
-//? if (>=1.21.2 && <=1.21.11) {
-/*@Accessor("pendingWrites")
-        java.util.SequencedMap<ChunkPos, Object> anticrash$getResults();
-*///?}
+    //? if (>=1.21.2 && <=1.21.11) {
+    /*@Accessor("pendingWrites")
+    java.util.SequencedMap<ChunkPos, Object> anticrash$getResults();
+
+    *///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(IOWorker.class)
 public interface StorageIoWorkerAccessorMixin {
@@ -42,7 +43,7 @@ public interface StorageIoWorkerAccessorMixin {
     @Accessor("pendingWrites")
     java.util.SequencedMap<ChunkPos, Object> anticrash$getResults();
 
-    //?}
+//?}
 
     @Accessor("storage")
     RegionFileStorage anticrash$getStorage();
@@ -50,7 +51,6 @@ public interface StorageIoWorkerAccessorMixin {
     /**
      * Runs a task on the worker's actor at foreground priority, after every task queued before it.
      */
-
     @Invoker("tellStorePending")
     void anticrash$writeRemainingResults();
 

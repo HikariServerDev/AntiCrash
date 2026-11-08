@@ -325,11 +325,11 @@ public final class LogicalDeltaMaterializer {
 
             //? if (>=1.18 && <=1.21.4) {
             /*if (root == null || !root.contains("Entities", 9))
-                *///?}
+            *///?}
             //? if (>=1.21.5 && <=26.3) {
             if (root == null
                     || !com.atsukimc.anticrash.runtime.VersionNbt.contains(root, "Entities", 9))
-                //?}
+            //?}
                 return file;
 
             //? if (>=1.18 && <=1.21.4) {
@@ -382,10 +382,10 @@ public final class LogicalDeltaMaterializer {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (uuidText == null || !entity.hasUUID("UUID"))
-            *///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         if (uuidText == null || entity.read("UUID", net.minecraft.core.UUIDUtil.CODEC).isEmpty())
-            //?}
+        //?}
             return false;
         try {
 

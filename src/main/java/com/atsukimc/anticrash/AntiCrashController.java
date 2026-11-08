@@ -1086,11 +1086,11 @@ public final class AntiCrashController {
 
                         //? if (>=1.18 && <=1.21.11) {
                         /*player.displayClientMessage(chat(notice, null), false);
-                    *///?}
+                        *///?}
                         //? if (>=26.1 && <=26.3) {
                         com.atsukimc.anticrash.runtime.VersionMessages.send(
                                 player, chat(notice, null), false);
-                    //?}
+                        //?}
 
                 }
                 restoreRuntimeOrderBeforeFirstTick();
@@ -1159,12 +1159,12 @@ public final class AntiCrashController {
     /*public void deferCustomPayload(
             net.minecraft.server.network.ServerGamePacketListenerImpl handler,
             net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket packet)
-                *///?}
+    *///?}
     //? if (>=1.20.2 && <=26.3) {
     public void deferCustomPayload(
             net.minecraft.server.network.ServerGamePacketListenerImpl handler,
             net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet)
-                //?}
+    //?}
             {
         payloadDelivery().defer(handler, packet);
     }
@@ -1189,13 +1189,13 @@ public final class AntiCrashController {
                     net.minecraft.server.network.ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket>
             payloadDelivery()
-                *///?}
+    *///?}
     //? if (>=1.20.2 && <=26.3) {
     private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
                     net.minecraft.server.network.ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
             payloadDelivery()
-                //?}
+    //?}
             {
         if (deferredPayloads == null)
             deferredPayloads =
@@ -1268,15 +1268,15 @@ public final class AntiCrashController {
         {
             // No chunk is ticked (second argument); this only advances tickets and chunk loading.
 
-            //?}
+        //?}
             //? if (>=1.18.2 && <=1.21.11) {
             /*world.getChunkSource().tick(() -> true, false);
             *///?}
-            //? if (>=1.18 && <=1.18.1) {
-            /*{
-                        // 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
-                        com.atsukimc.anticrash.recovery.VersionChunkLifecycle.advance(world.getChunkSource());
-*///?}
+        //? if (>=1.18 && <=1.18.1) {
+        /*{
+            // 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
+            com.atsukimc.anticrash.recovery.VersionChunkLifecycle.advance(world.getChunkSource());
+        *///?}
             //? if (>=26.1 && <=26.3) {
             world.getChunkSource().tick(() -> true, false);
             //?}
@@ -1711,7 +1711,6 @@ public final class AntiCrashController {
     }
 
     /** Compares every moving piston with the progress the checkpoint recorded for it. */
-
     private void verifyPistonRuntime(
             com.atsukimc.anticrash.runtime.RuntimeCapsule capsule,
             java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds) {
@@ -1772,7 +1771,6 @@ public final class AntiCrashController {
     }
 
     /** A chat message coloured by {@link com.atsukimc.anticrash.logging.ChatStyle}. */
-
     public Component chat(String message, ChatFormatting base) {
         return com.atsukimc.anticrash.logging.ChatStyle.text(
                 message, base, config.logging.chatColor);
@@ -1865,7 +1863,6 @@ public final class AntiCrashController {
     }
 
     /** Sends the ASK question to one player who is allowed to answer it. */
-
     private void sendAskPrompt(ServerPlayer player) {
 
         //? if (>=1.18 && <=1.21.10) {
@@ -1968,7 +1965,6 @@ public final class AntiCrashController {
      * Cheap, thread-safe pre-check used by the network thread. The answer itself is applied by
      * {@link #answerRecoveryFromChat} on the server thread.
      */
-
     public boolean isRecoveryAnswerCandidate(ServerPlayer player, String message) {
         if (player == null || message == null) return false;
         String answer = message.trim();
@@ -1988,7 +1984,6 @@ public final class AntiCrashController {
     }
 
     /** Accepts a plain Y/N chat message from an operator during an ASK prompt. */
-
     public boolean answerRecoveryFromChat(ServerPlayer player, String message) {
         if (player == null || message == null) return false;
         String answer = message.trim();
@@ -1996,11 +1991,11 @@ public final class AntiCrashController {
 
         //? if (>=1.18 && <=1.21.10) {
         /*if (!player.createCommandSourceStack().hasPermission(config.commands.recovery))
-            *///?}
+        *///?}
         //? if (>=1.21.11 && <=26.3) {
         if (!com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
                 player.createCommandSourceStack(), config.commands.recovery))
-            //?}
+        //?}
             return false;
         boolean restore = answer.equalsIgnoreCase("Y");
         String checkpointId = selectedCheckpointId;

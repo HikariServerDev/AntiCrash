@@ -32,7 +32,8 @@ public abstract class SculkSensorListenerMixin {
     ^///?}
     //? if (>=1.19 && <=1.19.2) {
     /^@Shadow protected VibrationListener.ReceivingEvent receivingEvent;
-^///?}
+
+    ^///?}
 
     /^*
      * The pending vibration counts down without the chunk being told its data changed, so the chunk
@@ -41,32 +42,36 @@ public abstract class SculkSensorListenerMixin {
      ^/
     @Inject(method = "tick", at = @At("HEAD"))
     private void anticrash$markPendingVibrationDirty(Level world, CallbackInfo callbackInfo)
-                //? if (>=1.18 && <=1.19.2) {
+            //? if (>=1.18 && <=1.19.2) {
             /^{
 
-        ^///?}
+            ^///?}
         //? if (>=1.18 && <=1.18.2) {
         /^if (world.isClientSide || receivingEvent.isEmpty())
-            ^///?}
-            //? if (>=1.19 && <=1.19.2) {
-            /^if (world.isClientSide || receivingEvent == null)
-^///?}
+        ^///?}
+        //? if (>=1.19 && <=1.19.2) {
+        /^if (world.isClientSide || receivingEvent == null)
+        ^///?}
             //? if (>=1.19.3 && <=1.19.4) {
             /^{
-                    // The selector may hold a same-tick candidate while the current vibration is still null.
-                    if (world.isClientSide)
-^///?}
+        // The selector may hold a same-tick candidate while the current vibration is still null.
+        if (world.isClientSide)
+            ^///?}
             return;
 
         //? if (>=1.18 && <=1.18.2) {
         /^listenerSource.getPosition(world).ifPresent(world::blockEntityChanged);
         ^///?}
         //? if (>=1.19 && <=1.19.3) {
-        /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
-^///?}
+        /^listenerSource
+                .getPosition(world)
+                .ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
+        ^///?}
         //? if 1.19.4 {
-        /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
-^///?}
+        /^listenerSource
+                .getPosition(world)
+                .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
+        ^///?}
 
     }
 
@@ -79,7 +84,7 @@ public abstract class SculkSensorListenerMixin {
     /^@Inject(
             method =
                     "sendSignal(Lnet/minecraft/world/level/Level;Lnet/minecraft/world/level/gameevent/GameEvent;"
-                        + "Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)V",
+                            + "Lnet/minecraft/core/BlockPos;Lnet/minecraft/core/BlockPos;)V",
             at = @At("TAIL"))
     private void anticrash$markHeardVibrationDirty(
             Level world,
@@ -87,27 +92,27 @@ public abstract class SculkSensorListenerMixin {
             net.minecraft.core.BlockPos pos,
             net.minecraft.core.BlockPos sourcePos,
             CallbackInfo callbackInfo)
-                ^///?}
-                //? if (>=1.19 && <=1.19.2) {
-                /^@Inject(
-                            method =
-                                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent$Message;)Z",
-                            at = @At("RETURN"))
-                    private void anticrash$markHeardVibrationDirty(
-                            ServerLevel world, GameEvent.Message event, CallbackInfoReturnable<Boolean> ci)
-^///?}
-                //? if (>=1.19.3 && <=1.19.4) {
-                /^@Inject(
-                            method =
-                                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
-                            at = @At("RETURN"))
-                    private void anticrash$markHeardVibrationDirty(
-                            ServerLevel world,
-                            GameEvent event,
-                            GameEvent.Context emitter,
-                            net.minecraft.world.phys.Vec3 origin,
-                            CallbackInfoReturnable<Boolean> ci)
-^///?}
+    ^///?}
+    //? if (>=1.19 && <=1.19.2) {
+    /^@Inject(
+            method =
+                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent$Message;)Z",
+            at = @At("RETURN"))
+    private void anticrash$markHeardVibrationDirty(
+            ServerLevel world, GameEvent.Message event, CallbackInfoReturnable<Boolean> ci)
+    ^///?}
+    //? if (>=1.19.3 && <=1.19.4) {
+    /^@Inject(
+            method =
+                    "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
+            at = @At("RETURN"))
+    private void anticrash$markHeardVibrationDirty(
+            ServerLevel world,
+            GameEvent event,
+            GameEvent.Context emitter,
+            net.minecraft.world.phys.Vec3 origin,
+            CallbackInfoReturnable<Boolean> ci)
+    ^///?}
             {
 
         //? if (>=1.18 && <=1.18.2) {
@@ -115,17 +120,21 @@ public abstract class SculkSensorListenerMixin {
         ^///?}
         //? if (>=1.19 && <=1.19.4) {
         /^if (ci.getReturnValueZ()) {
-^///?}
-        //? if (>=1.19 && <=1.19.3) {
-        /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
-^///?}
-        //? if 1.19.4 {
-        /^listenerSource.getPosition(world).ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
-^///?}
+        ^///?}
+            //? if (>=1.19 && <=1.19.3) {
+            /^listenerSource
+                    .getPosition(world)
+                    .ifPresent(pos -> world.blockEntityChanged(new BlockPos(pos)));
+            ^///?}
+            //? if 1.19.4 {
+            /^listenerSource
+                    .getPosition(world)
+                    .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
+            ^///?}
         //? if (>=1.19 && <=1.19.4) {
 
         /^}
-^///?}
+        ^///?}
 
     }
 }

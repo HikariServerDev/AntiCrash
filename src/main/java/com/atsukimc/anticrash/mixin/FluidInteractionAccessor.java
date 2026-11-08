@@ -11,7 +11,7 @@ public interface FluidInteractionAccessor {
     /*@Accessor("trackerByFluid")
     java.util.Map<net.minecraft.tags.TagKey<net.minecraft.world.level.material.Fluid>, ?>
             anticrash$trackers();
-*///?}
+    *///?}
     //? if 26.3 {
     @Accessor("fluidTrackers")
     java.util.List<?> anticrash$trackers();

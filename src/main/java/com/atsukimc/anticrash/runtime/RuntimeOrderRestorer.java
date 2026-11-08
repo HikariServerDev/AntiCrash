@@ -59,7 +59,6 @@ public final class RuntimeOrderRestorer {
     /**
      * @return null when the live lists are not in a state that can be reordered safely
      */
-
     public static Result blockEntityTickers(
             ServerLevel world, List<BlockEntityTickerSnapshot> expected) {
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;
@@ -119,7 +118,6 @@ public final class RuntimeOrderRestorer {
     /**
      * @return null while the entity list is being iterated
      */
-
     public static Result entities(ServerLevel world, List<EntityRuntimeSnapshot> expected) {
         EntityListAccessorMixin accessor =
                 (EntityListAccessorMixin)
@@ -222,7 +220,6 @@ public final class RuntimeOrderRestorer {
      *
      * @return the number of tickets removed
      */
-
     public static int removeStrayExpiringTickets(
             Map<String, ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
         java.util.Set<String> expected = expiringKeys(ledger);
@@ -271,12 +268,12 @@ public final class RuntimeOrderRestorer {
                     /*if (type != TicketType.UNKNOWN
                             && type != TicketType.POST_TELEPORT
                             && type != TicketType.PORTAL)
-                        *///?}
+                    *///?}
                     //? if (>=1.21.4 && <=26.3) {
                     if (type != TicketType.UNKNOWN
                             && type != TicketType.ENDER_PEARL
                             && type != TicketType.PORTAL)
-                        //?}
+                    //?}
                         continue;
 
                     //? if (>=1.18 && <=1.21.4) {
@@ -302,14 +299,14 @@ public final class RuntimeOrderRestorer {
                     *///?}
                     //? if (>=1.21.5 && <=1.21.11) {
                     /*if (!expected.contains(
-                                                expiringKey(
-                                                        world.getKey(),
-                                                        chunk.x,
-                                                        chunk.z,
-                                                        name,
-                                                        ticket.getTicketLevel(),
-                                                        "-")))
-*///?}
+                            expiringKey(
+                                    world.getKey(),
+                                    chunk.x,
+                                    chunk.z,
+                                    name,
+                                    ticket.getTicketLevel(),
+                                    "-")))
+                    *///?}
                     //? if (>=26.1 && <=26.3) {
                     if (!expected.contains(
                             expiringKey(
@@ -350,7 +347,7 @@ public final class RuntimeOrderRestorer {
             }
         }
         return removed;
-        //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
+    //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
 
     }
 
@@ -365,7 +362,7 @@ public final class RuntimeOrderRestorer {
             int level,
             Object argument) {
         manager.removeTicket((TicketType<T>) type, chunk, level, (T) argument);
-        *///?}
+    *///?}
     //? if (>=1.18 && <=1.21.11) {
 
     /*}
@@ -421,14 +418,14 @@ public final class RuntimeOrderRestorer {
                     Matcher matcher = BLOCK_POS.matcher(entry.argument);
 
                     if (!matcher.find() || entry.level > 33)
-                        *///?}
+            *///?}
             //? if (>=1.21.5 && <=26.3) {
             if (type == null)
-                //?}
+            //?}
                 continue;
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*BlockPos portal =
+                    //? if (>=1.18 && <=1.21.4) {
+                    /*BlockPos portal =
                             new BlockPos(
                                     Integer.parseInt(matcher.group(1)),
                                     Integer.parseInt(matcher.group(2)),
@@ -440,65 +437,64 @@ public final class RuntimeOrderRestorer {
 
                     argument = portal;
                 }
+                    *///?}
+
+                //? if (>=1.18 && <=1.21.3) {
+                /*case "post_teleport" -> {
+                    Integer id;
+                *///?}
+                //? if 1.21.4 {
+                /*case "ender_pearl" -> {
+                    // POST_TELEPORT no longer exists. This is a distinct 40-tick ticket whose
+                    // argument is ChunkPos, not the old teleporting entity's network id.
+                    Matcher matcher = CHUNK_POS.matcher(entry.argument);
                 *///?}
 
-            //? if (>=1.18 && <=1.21.3) {
-            /*case "post_teleport" -> {
-                    Integer id;
-                    *///?}
-            //? if 1.21.4 {
-            /*case "ender_pearl" -> {
-                                        // POST_TELEPORT no longer exists. This is a distinct 40-tick ticket whose
-                                        // argument is ChunkPos, not the old teleporting entity's network id.
-                                        Matcher matcher = CHUNK_POS.matcher(entry.argument);
-*///?}
-
-            //? if (>=1.18 && <=1.21.3) {
-            /*try {
+                    //? if (>=1.18 && <=1.21.3) {
+                    /*try {
                         id = Integer.valueOf(entry.argument.trim());
                     } catch (NumberFormatException invalid) {
                         continue;
                     }
                     *///?}
-            //? if 1.21.4 {
-            /*if (!matcher.matches())
-                                            throw new IllegalArgumentException("Invalid ender-pearl ticket argument");
-*///?}
-
-            //? if (>=1.18 && <=1.21.3) {
-            /*if (entry.level > 33) continue;
+                    //? if 1.21.4 {
+                    /*if (!matcher.matches())
+                        throw new IllegalArgumentException("Invalid ender-pearl ticket argument");
                     *///?}
-            //? if 1.21.4 {
-            /*ChunkPos pearl =
-                                                new ChunkPos(
-                                                        Integer.parseInt(matcher.group(1)),
-                                                        Integer.parseInt(matcher.group(2)));
-*///?}
 
-            //? if (>=1.18 && <=1.21.3) {
-            /*manager.addRegionTicket(TicketType.POST_TELEPORT, chunk, 33 - entry.level, id);
+                    //? if (>=1.18 && <=1.21.3) {
+                    /*if (entry.level > 33) continue;
                     *///?}
-            //? if 1.21.4 {
-            /*manager.addTicket(
-                                                TicketType.ENDER_PEARL, chunk, entry.level, pearl);
-*///?}
-
-            //? if (>=1.18 && <=1.21.3) {
-            /*type = TicketType.POST_TELEPORT;
+                    //? if 1.21.4 {
+                    /*ChunkPos pearl =
+                            new ChunkPos(
+                                    Integer.parseInt(matcher.group(1)),
+                                    Integer.parseInt(matcher.group(2)));
                     *///?}
-            //? if 1.21.4 {
-            /*type = TicketType.ENDER_PEARL;
-*///?}
 
-            //? if (>=1.18 && <=1.21.3) {
-            /*argument = id;
+                    //? if (>=1.18 && <=1.21.3) {
+                    /*manager.addRegionTicket(TicketType.POST_TELEPORT, chunk, 33 - entry.level, id);
                     *///?}
-            //? if 1.21.4 {
-            /*argument = pearl;
-*///?}
-            //? if (>=1.18 && <=1.21.4) {
+                    //? if 1.21.4 {
+                    /*manager.addTicket(TicketType.ENDER_PEARL, chunk, entry.level, pearl);
+                    *///?}
 
-            /*}
+                    //? if (>=1.18 && <=1.21.3) {
+                    /*type = TicketType.POST_TELEPORT;
+                    *///?}
+                    //? if 1.21.4 {
+                    /*type = TicketType.ENDER_PEARL;
+                    *///?}
+
+                    //? if (>=1.18 && <=1.21.3) {
+                    /*argument = id;
+                    *///?}
+                    //? if 1.21.4 {
+                    /*argument = pearl;
+                    *///?}
+                //? if (>=1.18 && <=1.21.4) {
+
+                /*}
 
                 case "unknown" -> {
                     manager.addTicket(TicketType.UNKNOWN, chunk, entry.level, chunk);
@@ -512,7 +508,7 @@ public final class RuntimeOrderRestorer {
                     continue;
                 }
             }
-            *///?}
+                *///?}
 
             // Public addition deduplicates by type identity + level. PORTAL is now persisted by
             // Vanilla; refresh the existing ticket, rather than introducing a second ledger entry.
@@ -528,9 +524,8 @@ public final class RuntimeOrderRestorer {
                     accessor.anticrash$getTicketsByPosition().get(chunk.toLong());
             *///?}
             //? if (>=1.21.5 && <=1.21.11) {
-            /*List<Ticket> tickets =
-                                accessor.anticrash$getTicketsByPosition().get(chunk.toLong());
-*///?}
+            /*List<Ticket> tickets = accessor.anticrash$getTicketsByPosition().get(chunk.toLong());
+            *///?}
             //? if (>=26.1 && <=26.3) {
             List<Ticket> tickets = accessor.anticrash$getTicketsByPosition().get(chunk.pack());
             //?}
@@ -577,7 +572,7 @@ public final class RuntimeOrderRestorer {
             }
         }
         return restored;
-        //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
+    //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
 
     }
 
@@ -591,7 +586,7 @@ public final class RuntimeOrderRestorer {
     //? if (>=1.18 && <=1.21.4) {
     /*static long tickCreatedFor(long age, long expiry, long remaining) {
         return age - (expiry - Math.min(expiry, Math.max(0L, remaining)));
-        *///?}
+    *///?}
     //? if (>=1.18 && <=1.21.11) {
 
     /*}
@@ -604,7 +599,6 @@ public final class RuntimeOrderRestorer {
      * held by the same tickets as before and AntiCrash's own recovery tickets can go before the
      * first tick, instead of keeping chunks loaded that were about to unload.
      */
-
     public static boolean permanentTicketsCovered(
             Iterable<ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
         return permanentTicketsCovered(TicketLedgerSnapshot.capture(worlds), ledger);
@@ -651,9 +645,9 @@ public final class RuntimeOrderRestorer {
         /*for (ServerLevel world : worlds)
             //? if (>=1.18 && <=1.21.10) {
             /^byId.put(world.dimension().location().toString(), world);
-        ^///?}
-        //? if 1.21.11 {
-        /^byId.put(world.dimension().identifier().toString(), world);
+            ^///?}
+            //? if 1.21.11 {
+            /^byId.put(world.dimension().identifier().toString(), world);
             ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {

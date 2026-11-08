@@ -29,15 +29,15 @@ public interface FluidTrackerAccessor {
     /*@Accessor("accumulatedCurrent")
     net.minecraft.world.phys.Vec3 anticrash$current();
 
-@Accessor("accumulatedCurrent")
+    @Accessor("accumulatedCurrent")
     void anticrash$current(net.minecraft.world.phys.Vec3 value);
 
-@Accessor("currentCount")
+    @Accessor("currentCount")
     int anticrash$count();
 
-@Accessor("currentCount")
+    @Accessor("currentCount")
     void anticrash$count(int value);
-*///?}
+    *///?}
 
 }
 //?}

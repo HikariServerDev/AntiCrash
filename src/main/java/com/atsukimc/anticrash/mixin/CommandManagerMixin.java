@@ -41,20 +41,19 @@ public abstract class CommandManagerMixin {
             CommandSourceStack source,
             String command,
             CallbackInfoReturnable<Integer> callbackInfo) {
-        *///?} else if <=1.20.2 {
+    *///?} else if <=1.20.2 {
     /*@Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
     private void anticrash$blockCommandsDuringCheckpoint(
             com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
             String command,
-            CallbackInfoReturnable<Integer> callbackInfo
-    ) {
+            CallbackInfoReturnable<Integer> callbackInfo) {
     *///?} else {
     @Inject(method = "performCommand", at = @At("HEAD"), cancellable = true)
     private void anticrash$blockCommandsDuringCheckpoint(
             com.mojang.brigadier.ParseResults<CommandSourceStack> parse,
             String command,
             CallbackInfo callbackInfo) {
-        //?}
+    //?}
         //? if (>=1.19.1 && <=26.3) {
         CommandSourceStack source = parse.getContext().getSource();
         //?}

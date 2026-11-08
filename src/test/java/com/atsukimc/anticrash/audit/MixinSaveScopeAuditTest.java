@@ -31,10 +31,10 @@ class MixinSaveScopeAuditTest {
                 1,
                 audit(
                         "/* @Inject(method=\"writeNbt\") void inactive() { mutate(); } */\n"
-                            + "class Example { @Inject(\n"
-                            + " method={\"writeNbt\", \"other\"}, at=@At(\"TAIL\")) void save() {"
-                            + " if ((!RuntimeExtensionNbt.savingLoadedChunk())) { return; }"
-                            + " write(); } }"));
+                                + "class Example { @Inject(\n"
+                                + " method={\"writeNbt\", \"other\"}, at=@At(\"TAIL\")) void save() {"
+                                + " if ((!RuntimeExtensionNbt.savingLoadedChunk())) { return; }"
+                                + " write(); } }"));
     }
 
     @Test

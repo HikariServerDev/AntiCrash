@@ -27,7 +27,7 @@ public record EntityMotionFrame(Vec3 movement, Vec3 lastPosition, boolean knocke
         //? if (>=1.21.11 && <=26.2) {
         /*return new EntityMotionFrame(
                 accessor.anticrash$movement(), accessor.anticrash$lastPos(), entity.hurtMarked);
-*///?}
+        *///?}
         //? if 26.3 {
         return new EntityMotionFrame(
                 accessor.anticrash$movement(), accessor.anticrash$lastPos(), entity.syncVelocity);
@@ -65,7 +65,7 @@ public record EntityMotionFrame(Vec3 movement, Vec3 lastPosition, boolean knocke
 
         //? if (>=1.21.11 && <=26.2) {
         /*entity.hurtMarked = knockedBack;
-*///?}
+        *///?}
         //? if 26.3 {
         entity.syncVelocity = knockedBack;
         //?}

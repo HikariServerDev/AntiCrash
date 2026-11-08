@@ -100,7 +100,8 @@ public final class ConsistencyManager implements AutoCloseable {
         /*transaction.dimension =
                 player == null ? null : player.getLevel().dimension().location().toString();
         *///?}else if <=1.21.10 {
-        /*transaction.dimension = player == null ? null : player.level().dimension().location().toString();
+        /*transaction.dimension =
+                player == null ? null : player.level().dimension().location().toString();
         *///?} else {
         transaction.dimension =
                 player == null ? null : player.level().dimension().identifier().toString();
@@ -125,7 +126,12 @@ public final class ConsistencyManager implements AutoCloseable {
                 //? if (>=1.18 && <=1.20.4) {
                 /*transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
                 *///?} else if <=1.21.4 {
-                /*transaction.nbt = NbtCodec.encode(stack.saveOptional(player != null ? player.registryAccess() : server.registryAccess()));
+                /*transaction.nbt =
+                        NbtCodec.encode(
+                                stack.saveOptional(
+                                        player != null
+                                                ? player.registryAccess()
+                                                : server.registryAccess()));
                 *///?} else {
                 transaction.nbt =
                         NbtCodec.encode(

@@ -14,6 +14,7 @@ import net.minecraft.world.entity.PortalProcessor;
 *///?}
 //? if (>=1.21 && <=1.21.10) {
 /*import net.minecraft.resources.ResourceLocation;
+
 *///?} else {
 import net.minecraft.resources.Identifier;
 
@@ -41,7 +42,7 @@ public final class PortalRuntime {
 
         //? if (>=1.21 && <=1.21.4) {
         /*nbt.put("Pos", NbtUtils.writeBlockPos(manager.getEntryPosition()));
-*///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         nbt.store("Pos", net.minecraft.core.BlockPos.CODEC, manager.getEntryPosition());
         //?}
@@ -57,10 +58,10 @@ public final class PortalRuntime {
 
         //? if (>=1.21 && <=1.21.4) {
         /*ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
-*///?}
+        *///?}
         //? if (>=1.21.5 && <=1.21.10) {
         /*ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type").orElseThrow());
-*///?}
+        *///?}
         //? if (>=1.21.11 && <=26.3) {
         Identifier id = Identifier.tryParse(nbt.getString("Type").orElseThrow());
         //?}
@@ -68,19 +69,19 @@ public final class PortalRuntime {
         //? if (>=1.21 && <=1.21.11) {
         /*if (id == null
                 || !BuiltInRegistries.BLOCK.containsKey(id)
-*///?}
-        //? if (>=1.21 && <=1.21.1) {
-        /*|| !(BuiltInRegistries.BLOCK.get(id) instanceof Portal portal))
-*///?}
-        //? if (>=1.21.2 && <=1.21.11) {
-        /*|| !(BuiltInRegistries.BLOCK.getValue(id) instanceof Portal portal))
-*///?}
+        *///?}
+                //? if (>=1.21 && <=1.21.1) {
+                /*|| !(BuiltInRegistries.BLOCK.get(id) instanceof Portal portal))
+                *///?}
+                //? if (>=1.21.2 && <=1.21.11) {
+                /*|| !(BuiltInRegistries.BLOCK.getValue(id) instanceof Portal portal))
+                *///?}
         //? if (>=26.1 && <=26.3) {
         if (id == null
                 || !BuiltInRegistries.BLOCK.containsKey(id)
                 || !(BuiltInRegistries.BLOCK.getValue(id) instanceof Portal portal))
 
-            //?}
+        //?}
             throw new IllegalArgumentException("Invalid saved Portal type");
 
         //? if (>=1.21 && <=1.21.4) {
@@ -88,7 +89,7 @@ public final class PortalRuntime {
                 NbtUtils.readBlockPos(nbt, "Pos")
                         .orElseThrow(() ->
                                 new IllegalArgumentException("Missing saved Portal position"));
-*///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         var pos =
                 nbt.read("Pos", net.minecraft.core.BlockPos.CODEC)
@@ -98,7 +99,7 @@ public final class PortalRuntime {
 
         //? if (>=1.21 && <=1.21.4) {
         /*int ticks = nbt.getInt("Time");
-*///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         int ticks = nbt.getInt("Time").orElseThrow();
         //?}
@@ -109,7 +110,7 @@ public final class PortalRuntime {
 
         //? if (>=1.21 && <=1.21.4) {
         /*manager.setAsInsidePortalThisTick(nbt.getBoolean("In"));
-*///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         manager.setAsInsidePortalThisTick(nbt.getBoolean("In").orElseThrow());
         //?}

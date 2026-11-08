@@ -48,25 +48,25 @@ class FakePlayerCreationArgumentsTest {
         *///?}
         //? if 1.20.2 {
         /*Object[] args =
-                        (Object[])
-                                method.invoke(
-                                        null,
-                                        new Class<?>[] {
-                                            String.class,
-                                            net.minecraft.server.MinecraftServer.class,
-                                            net.minecraft.world.phys.Vec3.class,
-                                            double.class,
-                                            double.class,
-                                            dimensionKeyType(),
-                                            modeType(),
-                                            boolean.class,
-                                            Runnable.class
-                                        },
-                                        null,
-                                        null,
-                                        data,
-                                        null);
-*///?}
+                (Object[])
+                        method.invoke(
+                                null,
+                                new Class<?>[] {
+                                    String.class,
+                                    net.minecraft.server.MinecraftServer.class,
+                                    net.minecraft.world.phys.Vec3.class,
+                                    double.class,
+                                    double.class,
+                                    dimensionKeyType(),
+                                    modeType(),
+                                    boolean.class,
+                                    Runnable.class
+                                },
+                                null,
+                                null,
+                                data,
+                                null);
+        *///?}
         //? if (>=26.1 && <=26.3) {
         Object[] args =
                 (Object[])
@@ -98,7 +98,7 @@ class FakePlayerCreationArgumentsTest {
 
         //? if 1.20.2 {
         /*assertThrows(IllegalStateException.class, ((Runnable) args[8])::run);
-*///?}
+        *///?}
 
     }
 

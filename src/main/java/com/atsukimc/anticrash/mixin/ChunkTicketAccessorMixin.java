@@ -13,6 +13,7 @@ public interface ChunkTicketAccessorMixin {
     @Accessor("type")
     //? if <=1.21.4 {
     /*TicketType<?> anticrash$getType();
+
     *///?} else {
     TicketType anticrash$getType();
 

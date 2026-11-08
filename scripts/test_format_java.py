@@ -1,22 +1,17 @@
-import unittest
-from format_java import preserve_directives, java_sources
+import os
 from pathlib import Path
+import subprocess
 import tempfile
+import unittest
+from unittest.mock import patch
+
+import format_java
+from format_java import FORMATTER, active_version, command, java_sources
+
+ROOT = Path(__file__).resolve().parents[1]
 
 
-class StonecutterFormattingTest(unittest.TestCase):
-    def test_restore_only_real_comment_markers(self):
-        source = '  // ? if >=26.1 {\nString value = "// ?";\nString block = """\n// ?}\n""";\n/*inactive();\n*/// ?}\n'
-        expected = '  //? if >=26.1 {\nString value = "// ?";\nString block = """\n// ?}\n""";\n/*inactive();\n*///?}\n'
-        self.assertEqual(expected, preserve_directives(source))
-        self.assertEqual(expected, preserve_directives(expected))
-
-    def test_ghost_terminators_do_not_accumulate_blank_lines(self):
-        source = '/*inactive();\n\n */\n  // ?} else {\n'
-        compact = '/*inactive();\n\n *///?} else {\n'
-        self.assertEqual(compact, preserve_directives(source))
-        self.assertEqual(compact, preserve_directives(compact))
-
+class SourceSelectionTest(unittest.TestCase):
     def test_all_canonical_source_sets_are_checked(self):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
@@ -32,30 +27,44 @@ class StonecutterFormattingTest(unittest.TestCase):
             generated.write_text('')
             self.assertEqual(set(names), {p.relative_to(root).as_posix() for p in java_sources(root)})
 
-
-class BlockCommentPreservationTest(unittest.TestCase):
-    def test_ghost_body_is_restored_verbatim(self):
-        from format_java import mask_block_comments, restore_block_comments
-        source = '//? if >1.18.2 {\n/*call(\n                nested());\n/^ nested comment ^/\n/*inactive();\n*///?}\n'
-        masked, blocks = mask_block_comments(source)
-        self.assertNotIn('nested()', masked)
-        self.assertEqual(source, restore_block_comments(masked, blocks))
-
-    def test_strings_characters_text_blocks_and_line_comments_are_not_masked(self):
-        from format_java import mask_block_comments, restore_block_comments
-        source = 'String a = "/* literal */"; char c = \'"\';\nString b = """\n/* text block */\n""";\n// /* line comment */\n/* real */'
-        masked, blocks = mask_block_comments(source)
-        self.assertEqual(['/* real */'], blocks)
-        self.assertEqual(source, restore_block_comments(masked, blocks))
-
-    def test_missing_duplicate_or_unknown_placeholder_is_rejected(self):
-        from format_java import mask_block_comments, restore_block_comments
-        masked, blocks = mask_block_comments('/* saved */')
-        for invalid in ['', masked + masked, masked.replace('_0__', '_99__')]:
-            with self.subTest(text=invalid), self.assertRaises(ValueError):
-                restore_block_comments(invalid, blocks)
+    def test_active_version_is_read_from_the_stonecutter_build(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            build = root / 'stonecutter.gradle.kts'
+            build.write_text('plugins { id("dev.kikugie.stonecutter") }\nstonecutter active "1.21.5"\n')
+            self.assertEqual('1.21.5', active_version(root))
+            build.write_text('plugins { id("dev.kikugie.stonecutter") }\n')
+            with self.assertRaisesRegex(ValueError, 'active version'):
+                active_version(root)
 
 
-    def test_javadoc_before_scope_end_keeps_its_separation(self):
-        source = '/** Documentation. */\n\n//?}\n'
-        self.assertEqual(source, preserve_directives(source))
+class CommandTest(unittest.TestCase):
+    def test_formatter_and_processor_share_one_jvm_with_javac_exports(self):
+        jars = [Path('formatter.jar'), Path('stonecutter.jar'), Path('kotlin.jar')]
+        with patch.object(format_java, 'formatter_jar', return_value=jars[0]), \
+                patch.object(format_java, 'cached_libraries', return_value=([jars[1]], [jars[2]])), \
+                patch.object(format_java, 'java_home', return_value=None):
+            line = command(ROOT, '--self-test')
+        self.assertEqual('java', line[0])
+        self.assertEqual(os.pathsep.join(map(str, jars)), line[line.index('--class-path') + 1])
+        for name in ['api', 'code', 'file', 'parser', 'tree', 'util']:
+            self.assertIn(f'--add-exports=jdk.compiler/com.sun.tools.javac.{name}=ALL-UNNAMED', line)
+        self.assertEqual([str(ROOT / 'scripts/StonecutterFormat.java'), '--self-test'], line[-2:])
+
+
+class StonecutterFormatSelfTest(unittest.TestCase):
+    def test_processor_self_test(self):
+        jar = ROOT / f'.toolchains/formatters/google-java-format-{FORMATTER}-all-deps.jar'
+        if not jar.exists():
+            self.skipTest('google-java-format is not cached yet; formatCheck downloads it')
+        try:
+            line = command(ROOT, '--self-test')
+        except ValueError as missing:
+            self.skipTest(f'Stonecutter is not in the Gradle cache: {missing}')
+        result = subprocess.run(line, cwd=ROOT, capture_output=True, text=True)
+        self.assertEqual(0, result.returncode, result.stdout + result.stderr)
+        self.assertIn('self-tests passed', result.stdout)
+
+
+if __name__ == '__main__':
+    unittest.main()

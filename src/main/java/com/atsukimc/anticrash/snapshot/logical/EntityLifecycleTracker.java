@@ -41,17 +41,17 @@ public final class EntityLifecycleTracker {
         *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
-                        "ENTITY_REMOVED",
-                        //? if (>=1.21.9 && <=1.21.10) {
-                        /^entity.level().dimension().location().toString(),
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^entity.level().dimension().identifier().toString(),
-                        ^///?}
-                        entity.chunkPosition().toLong(),
-                        entity.getStringUUID(),
-                        reason);
-*///?}
+                "ENTITY_REMOVED",
+                //? if (>=1.21.9 && <=1.21.10) {
+                /^entity.level().dimension().location().toString(),
+                ^///?}
+                //? if 1.21.11 {
+                /^entity.level().dimension().identifier().toString(),
+                ^///?}
+                entity.chunkPosition().toLong(),
+                entity.getStringUUID(),
+                reason);
+        *///?}
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_REMOVED",
@@ -81,17 +81,17 @@ public final class EntityLifecycleTracker {
         *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
-                        "ENTITY_MOVED_FROM",
-                        //? if (>=1.21.9 && <=1.21.10) {
-                        /^entity.level().dimension().location().toString(),
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^entity.level().dimension().identifier().toString(),
-                        ^///?}
-                        oldChunk,
-                        entity.getStringUUID(),
-                        Long.toString(newChunk));
-*///?}
+                "ENTITY_MOVED_FROM",
+                //? if (>=1.21.9 && <=1.21.10) {
+                /^entity.level().dimension().location().toString(),
+                ^///?}
+                //? if 1.21.11 {
+                /^entity.level().dimension().identifier().toString(),
+                ^///?}
+                oldChunk,
+                entity.getStringUUID(),
+                Long.toString(newChunk));
+        *///?}
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_MOVED_FROM",
@@ -127,17 +127,17 @@ public final class EntityLifecycleTracker {
         *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*GLOBAL.record(
-                        "ENTITY_UNLOADED",
-                        //? if (>=1.21.9 && <=1.21.10) {
-                        /^entity.level().dimension().location().toString(),
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^entity.level().dimension().identifier().toString(),
-                        ^///?}
-                        entity.chunkPosition().toLong(),
-                        entity.getStringUUID(),
-                        "server_entity_manager_unload");
-*///?}
+                "ENTITY_UNLOADED",
+                //? if (>=1.21.9 && <=1.21.10) {
+                /^entity.level().dimension().location().toString(),
+                ^///?}
+                //? if 1.21.11 {
+                /^entity.level().dimension().identifier().toString(),
+                ^///?}
+                entity.chunkPosition().toLong(),
+                entity.getStringUUID(),
+                "server_entity_manager_unload");
+        *///?}
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_UNLOADED",

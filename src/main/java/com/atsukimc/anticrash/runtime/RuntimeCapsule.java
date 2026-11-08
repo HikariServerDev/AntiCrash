@@ -12,6 +12,7 @@ public final class RuntimeCapsule {
     *///?}
     //? if (>=26.1 && <=26.3) {
     public static final int CURRENT_FORMAT_VERSION = 8;
+
     //?}
 
     /**
@@ -34,12 +35,14 @@ public final class RuntimeCapsule {
 
     //? if (>=1.20.3 && <=26.3) {
     public NativeTickState nativeTickState;
+
     //?}
 
     /** v8/26.1: null means missing, NOT an equivalent empty set. */
 
     //? if (>=26.1 && <=26.3) {
     public List<ClockSnapshot> clockStates;
+
     //?}
 
     public long capturedAtEpochMs;

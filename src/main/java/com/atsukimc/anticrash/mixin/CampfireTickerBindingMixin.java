@@ -40,9 +40,9 @@ public abstract class CampfireTickerBindingMixin {
 
             //? if <=1.21.8 {
             /*return ticker == null || world.isClientSide
-        *///?} else {
+            *///?} else {
             return ticker == null || world.isClientSide()
-                    //?}
+            //?}
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
 

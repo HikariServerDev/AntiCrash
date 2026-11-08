@@ -16,7 +16,7 @@ class FluidInteractionSnapshotTest {
         /*var state =
                 new FluidInteractionSnapshot.State(
                         "minecraft:water", 0.875, true, new Vec3(0.5, -1, 2), 17);
-*///?}
+        *///?}
         //? if 26.3 {
         var state =
                 new FluidInteractionSnapshot.State(
@@ -50,16 +50,16 @@ class FluidInteractionSnapshotTest {
     //? if (>=26.1 && <=26.2) {
     /*@Test
     void decodedOrderingIsStableWithoutMutatingInput()
-*///?}
+    *///?}
     //? if 26.3 {
     @Test
     void decodedOrderingPreservesNativeFirstMatchingTagWithoutMutatingInput()
-                //?}
+    //?}
             {
 
         //? if (>=26.1 && <=26.2) {
         /*var water = new FluidInteractionSnapshot.State("minecraft:water", 1, true, Vec3.ZERO, 0);
-*///?}
+        *///?}
         //? if 26.3 {
         var water = new FluidInteractionSnapshot.State("minecraft:water", 1, false, Vec3.ZERO, 0);
         //?}
@@ -71,7 +71,7 @@ class FluidInteractionSnapshotTest {
 
         //? if (>=26.1 && <=26.2) {
         /*assertEquals(java.util.List.of(lava, water), FluidInteractionSnapshot.decode(n));
-*///?}
+        *///?}
         //? if 26.3 {
         assertEquals(java.util.List.of(water, lava), FluidInteractionSnapshot.decode(n));
         //?}

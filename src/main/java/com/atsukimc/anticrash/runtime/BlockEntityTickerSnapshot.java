@@ -76,7 +76,6 @@ public final class BlockEntityTickerSnapshot {
      * left two identical rows, which the capsule validator rejected as a duplicate and failed the
      * whole checkpoint. A removed ticker never runs again, so it carries no order.
      */
-
     public static boolean removed(TickingBlockEntity ticker) {
         return ticker == null || ticker.isRemoved();
     }
@@ -142,7 +141,6 @@ public final class BlockEntityTickerSnapshot {
      * as pending NBT. A capture that runs inside the checkpoint barrier must not mutate the world,
      * and the plain map lookup is also several times cheaper for thousands of tickers.
      */
-
     public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position) {
 
         LevelChunk chunk =

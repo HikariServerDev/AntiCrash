@@ -56,7 +56,6 @@ final class IoSeal implements AutoCloseable {
      * before this call, so a write submitted before the seal is either on disk or in {@link
      * #writes}.
      */
-
     static IoSeal seal(List<IOWorker> workers, long timeoutNanos) throws IOException {
         IoSeal seal = new IoSeal();
         List<CompletableFuture<List<PendingRegionWrite>>> captured =

@@ -28,7 +28,6 @@ public interface ServerWorldAccessorMixin {
     EntityTickList anticrash$getEntityList();
 
     /** Ticks this dimension has had neither a player nor a forced chunk; entities stop at 300. */
-
     @Accessor("emptyTime")
     int anticrash$getIdleTimeout();
 

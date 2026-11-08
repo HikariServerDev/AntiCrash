@@ -169,11 +169,11 @@ public final class TicketLedgerSnapshot {
                         entry.remainingTicks =
                                 entry.expiryTicks
                                         - (accessor.anticrash$getAge() - entry.tickCreated);
-                        *///?}
+                    *///?}
                     //? if (>=1.21.5 && <=26.3) {
                     {
                         entry.remainingTicks = ticketAccessor.anticrash$getTicksLeft();
-                        //?}
+                    //?}
 
                     }
                     result.add(entry);

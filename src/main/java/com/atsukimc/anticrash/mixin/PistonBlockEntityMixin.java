@@ -27,7 +27,6 @@ public abstract class PistonBlockEntityMixin {
      * Vanilla advances piston progress without notifying the owning chunk that its block entity
      * data changed. Keep ordinary saves and AntiCrash checkpoints from retaining stale progress.
      */
-
     @Inject(method = "tick", at = @At("TAIL"))
     private static void anticrash$markChunkDirty(
             Level world,
@@ -53,19 +52,19 @@ public abstract class PistonBlockEntityMixin {
     //? if (>=1.18 && <=1.20.4) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveExactProgress(CompoundTag nbt, CallbackInfo callbackInfo)
-                *///?}
+    *///?}
     //? if (>=1.20.5 && <=1.21.5) {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-                    private void anticrash$saveExactProgress(
-                            CompoundTag nbt,
-                            net.minecraft.core.HolderLookup.Provider registries,
-                            CallbackInfo callbackInfo)
-*///?}
+    private void anticrash$saveExactProgress(
+            CompoundTag nbt,
+            net.minecraft.core.HolderLookup.Provider registries,
+            CallbackInfo callbackInfo)
+    *///?}
     //? if (>=1.21.6 && <=26.3) {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveExactProgress(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo)
-                //?}
+    //?}
             {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         RuntimeExtensionNbt.write(
@@ -80,30 +79,30 @@ public abstract class PistonBlockEntityMixin {
     //? if (>=1.18 && <=1.20.4) {
     /*@Inject(method = "load", at = @At("TAIL"))
     private void anticrash$loadExactProgress(CompoundTag nbt, CallbackInfo callbackInfo)
-                *///?}
+    *///?}
     //? if (>=1.20.5 && <=1.21.5) {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
-                    private void anticrash$loadExactProgress(
-                            CompoundTag nbt,
-                            net.minecraft.core.HolderLookup.Provider registries,
-                            CallbackInfo callbackInfo)
-*///?}
+    private void anticrash$loadExactProgress(
+            CompoundTag nbt,
+            net.minecraft.core.HolderLookup.Provider registries,
+            CallbackInfo callbackInfo)
+    *///?}
     //? if (>=1.21.6 && <=26.3) {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadExactProgress(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo)
-                //?}
+    //?}
             {
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (extension == null || !extension.contains("Progress", 99))
-            *///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         if (extension == null
                 || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "Progress", 99))
-            //?}
+        //?}
             return;
 
         //? if (>=1.18 && <=1.21.4) {

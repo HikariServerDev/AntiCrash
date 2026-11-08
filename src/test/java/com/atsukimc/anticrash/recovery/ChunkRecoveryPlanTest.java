@@ -416,11 +416,11 @@ class ChunkRecoveryPlanTest {
     //? if (>=1.18 && <=1.21.4) {
     /*@Test
     void convertsVanillaTicketLevelsToServerChunkManagerRadii()
-                *///?}
+    *///?}
     //? if (>=1.21.5 && <=26.3) {
     @Test
     void passesVanillaTicketLevelsDirectlyIn1215()
-                //?}
+    //?}
             {
 
         //? if (>=1.18 && <=1.21.4) {

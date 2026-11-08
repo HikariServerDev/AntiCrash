@@ -27,34 +27,33 @@ public final class SculkRuntimeFingerprint {
         //? if (>=1.19 && <=1.19.4) {
         /*VibrationListener listener;
 
-
-if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getListener();
+        if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getListener();
         else if (entity instanceof SculkShriekerBlockEntity shrieker)
             listener = shrieker.getListener();
         else
-*///?}
+        *///?}
         if (entity instanceof SculkCatalystBlockEntity catalyst) {
 
             //? if (>=1.19 && <=1.21.5) {
             /*CompoundTag cursors = new CompoundTag();
-*///?}
+            *///?}
             //? if (>=1.21.6 && <=26.3) {
             var view = VersionStorage.writer(entity.getLevel().registryAccess());
             //?}
 
             //? if (>=1.19 && <=1.19.4) {
             /*catalyst.getSculkSpreader().save(cursors);
-*///?}
+            *///?}
             //? if (>=1.20 && <=1.21.5) {
             /*catalyst.getListener().getSculkSpreader().save(cursors);
-*///?}
+            *///?}
             //? if (>=1.21.6 && <=26.3) {
             catalyst.getListener().getSculkSpreader().save(view);
             //?}
 
             //? if (>=1.19 && <=1.21.5) {
             /*return "catalyst|" + cursors;
-*///?}
+            *///?}
             //? if (>=1.21.6 && <=26.3) {
             return "catalyst|" + view.buildResult();
             //?}
@@ -62,7 +61,7 @@ if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getListen
         } else
         //? if (>=1.20 && <=26.3) {
         if (!(entity instanceof VibrationSystem))
-            //?}
+        //?}
             return null;
 
         //? if (>=1.19 && <=1.19.4) {
@@ -72,7 +71,7 @@ if (entity instanceof SculkSensorBlockEntity sensor) listener = sensor.getListen
                         .result()
                         .orElseThrow(
                                 () -> new IllegalStateException("Sculk listener capture failed"));
-*///?}
+        *///?}
         //? if (>=1.20 && <=26.3) {
         return "listener|"
                 + VibrationSystem.Data.CODEC

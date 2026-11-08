@@ -35,7 +35,7 @@ class CheckpointStoreTest {
         Files.writeString(directory.resolve("READY"), "unverified");
         String payload =
                 "{\"checkpointId\":\"cp-000001\",\"utcTimestamp\":\"2026-10-04T00:00:00Z\",\"worldFiles\":["
-                    + "{\"path\":\"region/r.0.0.mca\",\"sha256\":\""
+                        + "{\"path\":\"region/r.0.0.mca\",\"sha256\":\""
                         + "0".repeat(64)
                         + "\"},";
         Files.writeString(

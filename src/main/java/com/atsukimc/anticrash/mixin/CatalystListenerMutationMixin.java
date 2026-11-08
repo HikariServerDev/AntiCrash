@@ -26,8 +26,7 @@ public abstract class CatalystListenerMutationMixin {
             GameEvent event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci
-    ) {
+            CallbackInfoReturnable<Boolean> ci) {
     *///?} else {
     @Inject(method = "handleGameEvent", at = @At("RETURN"))
     private void anticrash$dirtyCursor(
@@ -36,7 +35,7 @@ public abstract class CatalystListenerMutationMixin {
             GameEvent.Context emitter,
             Vec3 origin,
             CallbackInfoReturnable<Boolean> ci) {
-        //?}
+    //?}
         if (ci.getReturnValueZ())
             getListenerSource()
                     .getPosition(world)

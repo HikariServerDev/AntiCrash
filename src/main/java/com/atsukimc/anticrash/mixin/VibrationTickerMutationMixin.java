@@ -23,16 +23,16 @@ public interface VibrationTickerMutationMixin {
         //? if (>=1.20 && <=1.21.8) {
         /*if (!world.isClientSide)
 
-*///?}
+        *///?}
         //? if (>=1.21.9 && <=1.21.11) {
         /*if (!world.isClientSide())
 
-*///?}
-        //? if (>=1.20 && <=1.21.11) {
-        /*callback.getPositionSource()
+        *///?}
+            //? if (>=1.20 && <=1.21.11) {
+            /*callback.getPositionSource()
                     .getPosition(world)
                     .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
-*///?}
+            *///?}
         //? if (>=26.1 && <=26.3) {
         if (!world.isClientSide())
             callback.getPositionSource()

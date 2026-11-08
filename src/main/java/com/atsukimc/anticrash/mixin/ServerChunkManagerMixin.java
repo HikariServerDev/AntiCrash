@@ -34,26 +34,26 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 /*@Mixin(ServerChunkCache.class)
 public abstract class ServerChunkManagerMixin {
 
-    *///?}
-//? if (>=1.18 && <=1.18.1) {
-/*@WrapOperation(
-                method = "tick(Ljava/util/function/BooleanSupplier;)V",
-                at =
-                        @At(
-                                value = "INVOKE",
-                                target =
-                                        "Lnet/minecraft/server/level/ServerChunkCache;tickChunks()V"))
-        private void anticrash$skipSimulationInLifecycleScope(
-                ServerChunkCache manager, Operation<Void> original) {
-            if (!com.atsukimc.anticrash.recovery.VersionChunkLifecycle.simulationDisabled()) {
-                original.call(manager);
-            }
-        }
 *///?}
+    //? if (>=1.18 && <=1.18.1) {
+    /*@WrapOperation(
+            method = "tick(Ljava/util/function/BooleanSupplier;)V",
+            at =
+                    @At(
+                            value = "INVOKE",
+                            target = "Lnet/minecraft/server/level/ServerChunkCache;tickChunks()V"))
+    private void anticrash$skipSimulationInLifecycleScope(
+            ServerChunkCache manager, Operation<Void> original) {
+        if (!com.atsukimc.anticrash.recovery.VersionChunkLifecycle.simulationDisabled()) {
+            original.call(manager);
+        }
+    }
+
+    *///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(ServerChunkCache.class)
 public abstract class ServerChunkManagerMixin {
-    //?}
+//?}
     //? if 26.3 {
     @org.spongepowered.asm.mixin.Shadow @org.spongepowered.asm.mixin.Final
     private net.minecraft.server.level.ServerLevel level;
@@ -80,14 +80,14 @@ public abstract class ServerChunkManagerMixin {
                             0,
                             List.<Entity>of(),
                             (chunkPos, consumer) ->
-                            *///?}
+            *///?}
             //? if 26.3 {
             anticrash$emptySpawnInfo =
                     NaturalSpawner.createState(
                             0,
                             level,
                             (chunkPos, consumer) ->
-                            //?}
+            //?}
                             {},
                             new LocalMobCapCalculator(manager.chunkMap));
         }
@@ -99,7 +99,6 @@ public abstract class ServerChunkManagerMixin {
      * demotes chunks. At a checkpoint cut that would change the world after its Runtime Capsule was
      * taken; the changes are applied by the next tick exactly as they would have been.
      */
-
     @WrapOperation(
             method = "save",
             at =

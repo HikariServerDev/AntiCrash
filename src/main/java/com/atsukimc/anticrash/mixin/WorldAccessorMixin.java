@@ -17,7 +17,6 @@ public interface WorldAccessorMixin {
     List<TickingBlockEntity> anticrash$getPendingBlockEntityTickers();
 
     /** Next global sub-tick sequence value. Calling World#getTickOrder would increment it. */
-
     @Accessor("subTickCount")
     long anticrash$getNextTickOrder();
 
@@ -25,7 +24,6 @@ public interface WorldAccessorMixin {
     void anticrash$setNextTickOrder(long nextTickOrder);
 
     /** Mapped Minecraft 1.18.2 field; unlike java.util.Random internals this is safe to expose. */
-
     @Accessor("randValue")
     int anticrash$getLcgBlockSeed();
 

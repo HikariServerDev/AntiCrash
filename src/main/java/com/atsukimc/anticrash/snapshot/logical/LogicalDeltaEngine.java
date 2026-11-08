@@ -530,8 +530,10 @@ public final class LogicalDeltaEngine {
             /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
             *///?}
             //? if (>=1.19.4 && <=1.21.5) {
-            /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-*///?}
+            /*root.putInt(
+                    "DataVersion",
+                    SharedConstants.getCurrentVersion().getDataVersion().getVersion());
+            *///?}
             //? if (>=1.21.6 && <=26.3) {
             root.putInt("DataVersion", SharedConstants.getCurrentVersion().dataVersion().version());
             //?}
@@ -555,10 +557,10 @@ public final class LogicalDeltaEngine {
 
                 //? if (>=1.18 && <=1.21.5) {
                 /*if (!entity.save(nbt))
-                    *///?}
+                *///?}
                 //? if (>=1.21.6 && <=26.3) {
                 if (nbt == null)
-                    //?}
+                //?}
                     continue;
                 entities.add(nbt);
                 saved.add(entity);
@@ -659,29 +661,28 @@ public final class LogicalDeltaEngine {
         // Semantic SavedData capture remains unsupported by the logical engine.
 
         //? if (>=1.20.5 && <=1.21.11) {
-        /*properties.setCustomBossEvents(
-                        server.getCustomBossEvents().save(server.registryAccess()));
-*///?}
+        /*properties.setCustomBossEvents(server.getCustomBossEvents().save(server.registryAccess()));
+        *///?}
 
         //? if (>=1.18 && <=1.21.11) {
         /*for (ServerLevel world : server.getAllLevels()) {
             //? if (>=1.18 && <=1.19.4) {
             /^if (world.dragonFight() != null) {
-                ^///?}
-                //? if (>=1.20 && <=1.21.11) {
-                /^if (world.getDragonFight() != null) {
+            ^///?}
+            //? if (>=1.20 && <=1.21.11) {
+            /^if (world.getDragonFight() != null) {
             ^///?}
 
+        *///?}
+                //? if (>=1.18 && <=1.19.4) {
+                /*properties.setEndDragonFightData(world.dragonFight().saveData());
                 *///?}
-        //? if (>=1.18 && <=1.19.4) {
-        /*properties.setEndDragonFightData(world.dragonFight().saveData());
+                //? if (>=1.20 && <=1.21.11) {
+                /*properties.setEndDragonFightData(world.getDragonFight().saveData());
                 *///?}
-        //? if (>=1.20 && <=1.21.11) {
-        /*properties.setEndDragonFightData(world.getDragonFight().saveData());
-*///?}
-        //? if (>=1.18 && <=1.21.11) {
+            //? if (>=1.18 && <=1.21.11) {
 
-        /*}
+            /*}
         }
 
         CompoundTag player = server.getPlayerList().getSingleplayerData();
@@ -689,7 +690,7 @@ public final class LogicalDeltaEngine {
         CompoundTag data =
                 properties.createTag(
                         server.registryAccess(), player == null ? null : player.copy());
-        *///?}
+            *///?}
         //? if (>=26.1 && <=26.3) {
         CompoundTag data = properties.createTag(profile == null ? null : profile.id());
         //?}

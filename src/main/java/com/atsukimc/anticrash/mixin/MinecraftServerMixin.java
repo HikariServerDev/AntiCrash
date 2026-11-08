@@ -49,7 +49,6 @@ public abstract class MinecraftServerMixin {
      * runTasks(BooleanSupplier)}; the latter never consults {@code canExecute}, so that is not a
      * usable gate. Returning false makes the tick loop wait for the next tick as usual.
      */
-
     @Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)
     private void anticrash$holdTasksDuringCheckpoint(CallbackInfoReturnable<Boolean> callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();

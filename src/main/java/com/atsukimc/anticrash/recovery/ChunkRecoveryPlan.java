@@ -42,13 +42,13 @@ public final class ChunkRecoveryPlan {
 
     //? if (>=1.18 && <=1.21.4) {
     /*public static int ticketRadiusForLevel(int ticketLevel)
-                *///?}
+    *///?}
 
     /** Minecraft 1.21.5 ServerChunkCache.addTicket accepts the level directly, not radius. */
 
     //? if (>=1.21.5 && <=26.3) {
     public static int ticketArgumentForLevel(int ticketLevel)
-                //?}
+    //?}
             {
         if (ticketLevel < 0 || ticketLevel > FULL_TICKET_LEVEL) {
             throw new IllegalArgumentException(

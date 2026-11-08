@@ -21,23 +21,24 @@ import org.spongepowered.asm.mixin.gen.Invoker;
 /*@Mixin(SectionStorage.class)
 public interface SerializingRegionBasedStorageAccessorMixin {
 
-    *///?}
-//? if (>=1.18 && <=1.20.4) {
-/*@Accessor("worker")
+*///?}
+    //? if (>=1.18 && <=1.20.4) {
+    /*@Accessor("worker")
     IOWorker anticrash$getWorker();
 
     *///?}
-//? if (>=1.20.5 && <=1.21.11) {
-/*@Accessor("simpleRegionStorage")
-        net.minecraft.world.level.chunk.storage.SimpleRegionStorage anticrash$getStorageAccess();
-*///?}
+    //? if (>=1.20.5 && <=1.21.11) {
+    /*@Accessor("simpleRegionStorage")
+    net.minecraft.world.level.chunk.storage.SimpleRegionStorage anticrash$getStorageAccess();
+
+    *///?}
 //? if (>=26.1 && <=26.3) {
 @Mixin(SectionStorage.class)
 public interface SerializingRegionBasedStorageAccessorMixin {
     @Accessor("simpleRegionStorage")
     net.minecraft.world.level.chunk.storage.SimpleRegionStorage anticrash$getStorageAccess();
 
-    //?}
+//?}
 
     //? if (>=1.18 && <=1.21.11) {
     /*//? if (>=1.18 && <=1.21.1) {

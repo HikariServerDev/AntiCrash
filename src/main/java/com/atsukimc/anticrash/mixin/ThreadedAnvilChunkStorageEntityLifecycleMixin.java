@@ -29,7 +29,6 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
      * further than Vanilla puts it). The unload therefore rewrites such a chunk, which this time is
      * serialised without the extension.
      */
-
     @Inject(method = "save(Lnet/minecraft/world/level/chunk/ChunkAccess;)Z", at = @At("HEAD"))
     private void anticrash$rewriteExtensionOnUnload(
             net.minecraft.world.level.chunk.ChunkAccess chunk,

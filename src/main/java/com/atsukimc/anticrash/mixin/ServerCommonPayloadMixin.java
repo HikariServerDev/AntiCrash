@@ -28,10 +28,10 @@ public abstract class ServerCommonPayloadMixin {
 
         //? if (>=1.20.2 && <=1.20.4) {
         /*if (DeferredPayloads.immediate(String.valueOf(packet.payload().id())))
-*///?}
+        *///?}
         //? if (>=1.20.5 && <=26.3) {
         if (DeferredPayloads.immediate(String.valueOf(packet.payload().type().id())))
-            //?}
+        //?}
             return;
         controller.deferCustomPayload(play, packet);
         ci.cancel();

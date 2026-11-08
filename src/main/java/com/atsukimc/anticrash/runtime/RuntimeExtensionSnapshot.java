@@ -59,6 +59,7 @@ public final class RuntimeExtensionSnapshot {
 
     //? if (>=26.2 && <=26.3) {
     public static final String SULFUR = "SULFUR_RUNTIME";
+
     //?}
 
     /** Every id-dependent rule AntiCrash keeps exact uses the id modulo 4 or modulo 40. */
@@ -81,19 +82,20 @@ public final class RuntimeExtensionSnapshot {
     *///?}
     //? if (>=1.20.3 && <=26.1) {
     /*public static final List<String> CATEGORIES =
-                List.of(
-                        BREWING,
-                        END_GATEWAY,
-                        SCULK,
-                        PORTAL,
-                        ENTITY_TRANSIENT,
-                        TICKETS,
-                        DIMENSION,
-                        WEATHER,
-                        CHUNK,
-                        ENTITY_ID,
-                        NATIVE_TICK);
-*///?}
+            List.of(
+                    BREWING,
+                    END_GATEWAY,
+                    SCULK,
+                    PORTAL,
+                    ENTITY_TRANSIENT,
+                    TICKETS,
+                    DIMENSION,
+                    WEATHER,
+                    CHUNK,
+                    ENTITY_ID,
+                    NATIVE_TICK);
+
+    *///?}
     //? if (>=26.2 && <=26.3) {
     public static final List<String> CATEGORIES =
             List.of(
@@ -205,19 +207,19 @@ public final class RuntimeExtensionSnapshot {
             String dimension,
             Map<String, List<String>> lines,
             RuntimeCapsule capsule)
-                *///?}
-    //? if (>=1.18 && <=1.20.2) {
-    /*{
+    *///?}
+            //? if (>=1.18 && <=1.20.2) {
+            /*{
 
-        *///?}
+            *///?}
     //? if (>=26.1 && <=26.3) {
     private static void captureBlockRuntime(
             ServerLevel world,
             String dimension,
             Map<String, List<String>> lines,
             RuntimeCapsule capsule)
-                //?}
-                //? if (>=1.20.3 && <=26.3) {
+    //?}
+            //? if (>=1.20.3 && <=26.3) {
             {
         // Experimental trial-spawner logic has non-codec detector/force-activation state.
         // Do not claim exact runtime support merely because its ordinary data has a codec.
@@ -230,7 +232,7 @@ public final class RuntimeExtensionSnapshot {
             //?}
             //? if (>=1.20.3 && <=1.20.6) {
             /*LevelChunk loaded = holder.getTickingChunk();
-*///?}
+            *///?}
             //? if (>=1.21 && <=26.3) {
             LevelChunk loaded = VersionChunkView.worldChunk(holder);
             //?}
@@ -239,14 +241,15 @@ public final class RuntimeExtensionSnapshot {
             if (loaded == null) continue;
 
             for (BlockEntity entity : loaded.getBlockEntities().values()) {
-                //?}
+            //?}
                 //? if (>=1.21.5 && <=1.21.11) {
                 /*if ((entity instanceof net.minecraft.world.level.block.entity.TestBlockEntity
-                                        || entity
-                                                instanceof
-                                                net.minecraft.world.level.block.entity.TestInstanceBlockEntity)
-                                && !capsule.unsupportedRuntimeState.contains("GAMETEST_RUNTIME"))
-*///?}
+                                || entity
+                                        instanceof
+                                        net.minecraft.world.level.block.entity
+                                                .TestInstanceBlockEntity)
+                        && !capsule.unsupportedRuntimeState.contains("GAMETEST_RUNTIME"))
+                *///?}
                 //? if 26.3 {
                 if (entity instanceof BrewingStandBlockEntity) {
                     var stand = (BrewingStandBlockEntityTimerAccessor) entity;
@@ -319,10 +322,10 @@ public final class RuntimeExtensionSnapshot {
                                         net.minecraft.world.level.block.entity
                                                 .TestInstanceBlockEntity)
                         && !capsule.unsupportedRuntimeState.contains("GAMETEST_RUNTIME"))
-                    //?}
+                //?}
                     //? if (>=1.21.5 && <=26.3) {
                     capsule.unsupportedRuntimeState.add("GAMETEST_RUNTIME");
-                //?}
+                    //?}
 
                 //? if (>=1.21.2 && <=26.3) {
                 if (entity
@@ -336,21 +339,21 @@ public final class RuntimeExtensionSnapshot {
                 if (entity instanceof net.minecraft.world.level.block.entity.TrialSpawnerBlockEntity
                         && !capsule.unsupportedRuntimeState.contains("TRIAL_SPAWNER_RUNTIME")) {
                     capsule.unsupportedRuntimeState.add("TRIAL_SPAWNER_RUNTIME");
-                    //?}
-                    //? if (>=1.20.5 && <=26.3) {
+                //?}
+                //? if (>=1.20.5 && <=26.3) {
 
                 }
 
                 if (entity instanceof net.minecraft.world.level.block.entity.vault.VaultBlockEntity
                         && !capsule.unsupportedRuntimeState.contains("VAULT_RUNTIME")) {
                     capsule.unsupportedRuntimeState.add("VAULT_RUNTIME");
-                    //?}
-                    //? if (>=1.20.3 && <=26.3) {
+                //?}
+                //? if (>=1.20.3 && <=26.3) {
 
                 }
             }
         }
-        //?}
+                //?}
 
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;
 
@@ -376,9 +379,9 @@ public final class RuntimeExtensionSnapshot {
 
                     if (stand.anticrash$getBrewTime() > 0) {
 
-                        *///?}
-                //? if (>=1.18 && <=1.19.2) {
-                /*lines.get(BREWING)
+                *///?}
+                        //? if (>=1.18 && <=1.19.2) {
+                        /*lines.get(BREWING)
                                 .add(
                                         where
                                                 + "|"
@@ -389,34 +392,34 @@ public final class RuntimeExtensionSnapshot {
                                                         : Registry.ITEM.getKey(
                                                                 stand.anticrash$getItemBrewing())));
                         *///?}
-                //? if (>=1.19.3 && <=26.2) {
-                /*lines.get(BREWING)
-                                                        .add(
-                                                                where
-                                                                        + "|"
-                                                                        + stand.anticrash$getBrewTime()
-                                                                        + "|"
-                                                                        + (stand.anticrash$getItemBrewing() == null
-                                                                                ? "null"
-                                                                                : BuiltInRegistries.ITEM.getKey(
-                                                                                        stand.anticrash$getItemBrewing())));
-*///?}
-                //? if (>=1.18 && <=26.2) {
+                        //? if (>=1.19.3 && <=26.2) {
+                        /*lines.get(BREWING)
+                                .add(
+                                        where
+                                                + "|"
+                                                + stand.anticrash$getBrewTime()
+                                                + "|"
+                                                + (stand.anticrash$getItemBrewing() == null
+                                                        ? "null"
+                                                        : BuiltInRegistries.ITEM.getKey(
+                                                                stand.anticrash$getItemBrewing())));
+                        *///?}
+                    //? if (>=1.18 && <=26.2) {
 
-                /*}
+                    /*}
                 } else
-                *///?}
+                    *///?}
                 if (blockEntity instanceof TheEndGatewayBlockEntity) {
                     int cooldown =
                             ((EndGatewayBlockEntityAccessorMixin) blockEntity)
                                     .anticrash$getTeleportCooldown();
                     if (cooldown > 0) lines.get(END_GATEWAY).add(where + "|" + cooldown);
-                    //? if (>=1.18 && <=1.19.2) {
+                //? if (>=1.18 && <=1.19.2) {
 
-                    /*}
+                /*}
                 *///?}
-                    //? if (>=1.18 && <=1.18.2) {
-                    /*else if (blockEntity instanceof SculkSensorBlockEntity sensor) {
+                //? if (>=1.18 && <=1.18.2) {
+                /*else if (blockEntity instanceof SculkSensorBlockEntity sensor) {
                     SculkSensorListenerAccessorMixin listener =
                             (SculkSensorListenerAccessorMixin) sensor.getListener();
 
@@ -433,8 +436,8 @@ public final class RuntimeExtensionSnapshot {
                                                 + "|"
                                                 + listener.anticrash$getDelay());
                     }
-                    *///?}
-                    //? if (>=1.18 && <=1.18.2) || (>=1.19.3 && <=26.3) {
+                *///?}
+                //? if (>=1.18 && <=1.18.2) || (>=1.19.3 && <=26.3) {
 
                 }
                 //?}
@@ -450,7 +453,6 @@ public final class RuntimeExtensionSnapshot {
     }
 
     /** One entity's canonical fields and unsupported markers, without changing traversal order. */
-
     private static void captureEntityRuntime(
             MinecraftServer server,
             ServerLevel world,
@@ -500,12 +502,12 @@ public final class RuntimeExtensionSnapshot {
         //? if 1.21.11 {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.minecart.MinecartTNT
         *///?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*&& ((com.atsukimc.anticrash.mixin.TntMinecartRuntimeAccessorMixin) entity)
-                                        .anticrash$getDamageSource()
-                                != null
-                        && !capsule.unsupportedRuntimeState.contains("TNT_MINECART_DAMAGE_SOURCE"))
-*///?}
+                //? if (>=1.21.5 && <=1.21.11) {
+                /*&& ((com.atsukimc.anticrash.mixin.TntMinecartRuntimeAccessorMixin) entity)
+                                .anticrash$getDamageSource()
+                        != null
+                && !capsule.unsupportedRuntimeState.contains("TNT_MINECART_DAMAGE_SOURCE"))
+                *///?}
         //? if (>=26.1 && <=26.3) {
         line.append("|fluidTrackers=").append(FluidInteractionSnapshot.capture(entity));
 
@@ -514,10 +516,10 @@ public final class RuntimeExtensionSnapshot {
                                 .anticrash$getDamageSource()
                         != null
                 && !capsule.unsupportedRuntimeState.contains("TNT_MINECART_DAMAGE_SOURCE"))
-            //?}
+        //?}
             //? if (>=1.21.5 && <=26.3) {
             capsule.unsupportedRuntimeState.add("TNT_MINECART_DAMAGE_SOURCE");
-        //?}
+            //?}
 
         //? if (>=1.21.2 && <=1.21.10) {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.AbstractMinecart cart
@@ -525,25 +527,25 @@ public final class RuntimeExtensionSnapshot {
         //? if 1.21.11 {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.minecart.AbstractMinecart cart
         *///?}
-        //? if (>=1.21.2 && <=1.21.11) {
-        /*&& cart.getBehavior()
-                                //? if (>=1.21.2 && <=1.21.10) {
-                                /^instanceof net.minecraft.world.entity.vehicle.NewMinecartBehavior
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^instanceof net.minecraft.world.entity.vehicle.minecart.NewMinecartBehavior
-                                ^///?}
-                        && !capsule.unsupportedRuntimeState.contains("EXPERIMENTAL_MINECART_RUNTIME"))
-*///?}
+                //? if (>=1.21.2 && <=1.21.11) {
+                /*&& cart.getBehavior()
+                        //? if (>=1.21.2 && <=1.21.10) {
+                        /^instanceof net.minecraft.world.entity.vehicle.NewMinecartBehavior
+                        ^///?}
+                        //? if 1.21.11 {
+                        /^instanceof net.minecraft.world.entity.vehicle.minecart.NewMinecartBehavior
+                        ^///?}
+                && !capsule.unsupportedRuntimeState.contains("EXPERIMENTAL_MINECART_RUNTIME"))
+                *///?}
         //? if (>=26.1 && <=26.3) {
         if (entity instanceof net.minecraft.world.entity.vehicle.minecart.AbstractMinecart cart
                 && cart.getBehavior()
                         instanceof net.minecraft.world.entity.vehicle.minecart.NewMinecartBehavior
                 && !capsule.unsupportedRuntimeState.contains("EXPERIMENTAL_MINECART_RUNTIME"))
-            //?}
+        //?}
             //? if (>=1.21.2 && <=26.3) {
             capsule.unsupportedRuntimeState.add("EXPERIMENTAL_MINECART_RUNTIME");
-        //?}
+            //?}
 
         //? if (>=1.21.2 && <=1.21.10) {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.MinecartHopper
@@ -551,16 +553,16 @@ public final class RuntimeExtensionSnapshot {
         //? if 1.21.11 {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.minecart.MinecartHopper
         *///?}
-        //? if (>=1.21.2 && <=1.21.11) {
-        /*&& !capsule.unsupportedRuntimeState.contains("HOPPER_MINECART_RUNTIME"))
-*///?}
+                //? if (>=1.21.2 && <=1.21.11) {
+                /*&& !capsule.unsupportedRuntimeState.contains("HOPPER_MINECART_RUNTIME"))
+                *///?}
         //? if (>=26.1 && <=26.3) {
         if (entity instanceof net.minecraft.world.entity.vehicle.minecart.MinecartHopper
                 && !capsule.unsupportedRuntimeState.contains("HOPPER_MINECART_RUNTIME"))
-            //?}
+        //?}
             //? if (>=1.21.2 && <=26.3) {
             capsule.unsupportedRuntimeState.add("HOPPER_MINECART_RUNTIME");
-        //?}
+            //?}
 
         //? if (>=1.21.2 && <=1.21.10) {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.AbstractBoat
@@ -568,13 +570,13 @@ public final class RuntimeExtensionSnapshot {
         //? if 1.21.11 {
         /*if (entity instanceof net.minecraft.world.entity.vehicle.boat.AbstractBoat
         *///?}
-        //? if (>=1.21.2 && <=1.21.11) {
-        /*&& !capsule.unsupportedRuntimeState.contains("BOAT_TURN_UNDERWATER_RUNTIME"))
-*///?}
+                //? if (>=1.21.2 && <=1.21.11) {
+                /*&& !capsule.unsupportedRuntimeState.contains("BOAT_TURN_UNDERWATER_RUNTIME"))
+                *///?}
         //? if (>=26.1 && <=26.3) {
         if (entity instanceof net.minecraft.world.entity.vehicle.boat.AbstractBoat
                 && !capsule.unsupportedRuntimeState.contains("BOAT_TURN_UNDERWATER_RUNTIME"))
-            //?}
+        //?}
             //? if (>=1.21.2 && <=26.3) {
             capsule.unsupportedRuntimeState.add("BOAT_TURN_UNDERWATER_RUNTIME");
 
@@ -589,7 +591,7 @@ public final class RuntimeExtensionSnapshot {
             if (!capsule.unsupportedRuntimeState.contains("ENTITY_COLLISION_QUEUE"))
                 capsule.unsupportedRuntimeState.add("ENTITY_COLLISION_QUEUE");
         }
-        //?}
+            //?}
 
         //? if (>=1.21 && <=26.3) {
         if (entity instanceof net.minecraft.world.entity.item.PrimedTnt)
@@ -602,7 +604,7 @@ public final class RuntimeExtensionSnapshot {
             line.append("|shouldDupe=").append(falling.forceTickAfterTeleportToDuplicate);
 
         if (entity instanceof net.minecraft.world.entity.projectile.Projectile) {
-            //?}
+        //?}
             //? if (>=1.21.9 && <=26.3) {
             line.append("|checkedOwner=")
                     .append(
@@ -622,16 +624,16 @@ public final class RuntimeExtensionSnapshot {
                     capsule.unsupportedRuntimeState.add("PROJECTILE_DEFLECTION_RUNTIME");
             }
         }
-        //?}
+            //?}
 
         //? if (>=1.20 && <=1.21.10) {
         /*line.append("|groundCollision=")
-                        .append(entity.verticalCollisionBelow)
-                        .append("|support=")
-                        .append(entity.mainSupportingBlockPos)
-                        .append("|forceSupport=")
-                        .append(runtime.anticrash$forceSupportUpdate());
-*///?}
+                .append(entity.verticalCollisionBelow)
+                .append("|support=")
+                .append(entity.mainSupportingBlockPos)
+                .append("|forceSupport=")
+                .append(runtime.anticrash$forceSupportUpdate());
+        *///?}
         //? if (>=1.21.11 && <=26.3) {
         line.append("|groundCollision=")
                 .append(entity.verticalCollisionBelow)

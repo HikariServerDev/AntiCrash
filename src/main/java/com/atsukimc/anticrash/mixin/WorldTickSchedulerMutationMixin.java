@@ -71,7 +71,6 @@ public abstract class WorldTickSchedulerMutationMixin {
     }
 
     /** Box-wide command APIs can mutate many scheduler entries without exposing exact positions. */
-
     @Inject(method = "clearArea", at = @At("HEAD"))
     private void anticrash$clearNextTicks(BoundingBox box, CallbackInfo callbackInfo) {
         if (ScheduledTickMutationTracer.isActive()) {
@@ -88,14 +87,14 @@ public abstract class WorldTickSchedulerMutationMixin {
     //? if (>=1.18 && <=1.19.3) {
     /*@Inject(method = "copyArea", at = @At("HEAD"))
     private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo)
-                *///?}
+    *///?}
     //? if (>=1.19.4 && <=26.3) {
     @Inject(
             method =
                     "copyArea(Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/core/Vec3i;)V",
             at = @At("HEAD"))
     private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo)
-                //?}
+    //?}
             {
         if (ScheduledTickMutationTracer.isActive()) {
             ScheduledTickMutationTracer.record(

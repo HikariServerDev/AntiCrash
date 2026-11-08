@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 @Mixin(Connection.class)
 public interface ClientConnectionAccessorMixin {
     /** Null for a connection that never had a network channel (a Carpet FakePlayer). */
-
     @Accessor("channel")
     Channel anticrash$getChannel();
 }

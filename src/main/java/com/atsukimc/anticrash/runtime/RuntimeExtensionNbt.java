@@ -90,7 +90,6 @@ public final class RuntimeExtensionNbt {
     }
 
     /** Adds the extension to {@code nbt} when {@code writer} stored anything in it. */
-
     public static void write(CompoundTag nbt, Consumer<CompoundTag> writer) {
 
         //? if (>=1.18 && <=1.21.4) {
@@ -116,15 +115,14 @@ public final class RuntimeExtensionNbt {
     }
 
     /** The extension, or null when absent or written by a newer format this build cannot read. */
-
     public static CompoundTag read(CompoundTag nbt) {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (nbt == null || !nbt.contains(KEY, 10))
-            *///?}
+        *///?}
         //? if (>=1.21.5 && <=26.3) {
         if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
-            //?}
+        //?}
             return null;
 
         //? if (>=1.18 && <=1.21.4) {
@@ -150,7 +148,7 @@ public final class RuntimeExtensionNbt {
     public static void write(
             net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer) {
         Scope scope = SCOPE.get();
-        //?}
+    //?}
 
         // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
         // and subclass extension contributions in one bounded save scope, then discard references.
@@ -183,6 +181,6 @@ public final class RuntimeExtensionNbt {
                 })
                 .orElse(null);
     }
-    //?}
+        //?}
 
 }
