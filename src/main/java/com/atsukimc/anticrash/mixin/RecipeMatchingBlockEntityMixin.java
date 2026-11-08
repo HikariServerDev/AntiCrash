@@ -4,13 +4,9 @@ package com.atsukimc.anticrash.mixin;
 //? if (>=1.19 && <=1.21.1) {
 /*import net.minecraft.world.item.crafting.RecipeManager;
 *///?}
-//? if (>=1.19 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -52,12 +48,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
             {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
-        //? if (>=1.19 && <=1.21.1) {
-        /*ResourceLocation id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-        *///?}
-        //? if (>=1.21.2 && <=26.3) {
         var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-        //?}
 
         RuntimeExtensionNbt.write(
                 nbt,
@@ -67,11 +58,8 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
                         *///?}
-                        //? if (>=1.21.2 && <=1.21.10) {
-                        /*extension.putString("RecipeMatch", id.location().toString());
-                        *///?}
-                        //? if (>=1.21.11 && <=26.3) {
-                        extension.putString("RecipeMatch", id.identifier().toString());
+                        //? if (>=1.21.2 && <=26.3) {
+                        extension.putString("RecipeMatch", VersionIds.key(id));
                         //?}
 
                 });
@@ -101,7 +89,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         extension.contains("RecipeMatch", 8)
-                                ? ResourceLocation.tryParse(extension.getString("RecipeMatch"))
+                                ? VersionIds.tryParse(extension.getString("RecipeMatch"))
                                 : null);
         *///?}
         //? if (>=1.21.2 && <=1.21.4) {
@@ -110,35 +98,17 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         extension.contains("RecipeMatch", 8)
                                 ? net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.RECIPE,
-                                        ResourceLocation.parse(extension.getString("RecipeMatch")))
+                                        VersionIds.parse(extension.getString("RecipeMatch")))
                                 : null);
         *///?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*((RecipeMatchGetterAccessorMixin) quickCheck)
-                .anticrash$setRecipeId(
-                        com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                                        extension, "RecipeMatch", 8)
-                                ? net.minecraft.resources.ResourceKey.create(
-                                        net.minecraft.core.registries.Registries.RECIPE,
-        *///?}
-                                        //? if (>=1.21.5 && <=1.21.10) {
-                                        /*ResourceLocation.parse(
-                                        *///?}
-                                        //? if 1.21.11 {
-                                        /*Identifier.parse(
-                                        *///?}
-                                                //? if (>=1.21.5 && <=1.21.11) {
-                                                /*extension.getString("RecipeMatch").orElseThrow()))
-                                : null);
-                                                *///?}
-        //? if (>=26.1 && <=26.3) {
+        //? if (>=1.21.5 && <=26.3) {
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         com.atsukimc.anticrash.runtime.VersionNbt.contains(
                                         extension, "RecipeMatch", 8)
                                 ? net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.RECIPE,
-                                        Identifier.parse(
+                                        VersionIds.parse(
                                                 extension.getString("RecipeMatch").orElseThrow()))
                                 : null);
         //?}

@@ -8,6 +8,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 *///?}
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ChunkMap;
@@ -45,18 +46,7 @@ public final class ChunkStateSnapshot {
 
     public static ChunkStateSnapshot capture(ServerLevel world, Set<Long> transientStateChunks) {
         ChunkStateSnapshot snapshot = new ChunkStateSnapshot();
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^snapshot.dimension = world.dimension().location().toString();
-        ^///?}
-        //? if 1.21.11 {
-        /^snapshot.dimension = world.dimension().identifier().toString();
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        snapshot.dimension = world.dimension().identifier().toString();
-        //?}
+        snapshot.dimension = VersionIds.dimension(world);
 
         Set<Long> loaded = new LinkedHashSet<>();
 

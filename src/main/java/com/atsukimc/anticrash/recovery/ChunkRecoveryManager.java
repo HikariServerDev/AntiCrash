@@ -5,6 +5,7 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
@@ -171,19 +172,7 @@ public final class ChunkRecoveryManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
-            //?}
-
+            worlds.put(VersionIds.dimension(world), world);
         }
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
 

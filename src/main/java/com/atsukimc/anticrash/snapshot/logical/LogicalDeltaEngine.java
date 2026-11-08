@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.world.entity.Entity;
@@ -455,18 +456,7 @@ public final class LogicalDeltaEngine {
         Map<String, ServerLevel> owners = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
-            //?}
+            String dimension = VersionIds.dimension(world);
 
             for (Entity entity : world.getAllEntities()) {
                 // Mirror PersistentEntitySectionManager#trySave: players, passengers (saved inside
@@ -723,18 +713,7 @@ public final class LogicalDeltaEngine {
         List<WorldChunkRef> result = new ArrayList<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
-            //?}
+            String dimension = VersionIds.dimension(world);
 
             var storage =
                     (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
@@ -793,18 +772,7 @@ public final class LogicalDeltaEngine {
     private static void registerSchedulers(MinecraftServer server) {
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
-            //?}
+            String dimension = VersionIds.dimension(world);
 
             ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);
 

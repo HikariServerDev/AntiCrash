@@ -2,6 +2,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.*;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.*;
 import net.minecraft.world.entity.Entity;
@@ -41,7 +42,7 @@ public final class FluidInteractionSnapshot {
         //?}
 
         public State {
-            net.minecraft.resources.Identifier.parse(tag);
+            VersionIds.parse(tag);
 
             //? if (>=26.1 && <=26.2) {
             /*if (!Double.isFinite(height)
@@ -327,13 +328,9 @@ public final class FluidInteractionSnapshot {
                 var key =
                         net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.FLUID,
-                                net.minecraft.resources.Identifier.parse(s.tag()));
+                                VersionIds.parse(s.tag()));
 
-                holders.put(
-                        s.tag(),
-                        net.minecraft.core.registries.BuiltInRegistries.FLUID
-                                .get(key)
-                                .orElseThrow());
+                holders.put(s.tag(), VersionIds.fluids().get(key).orElseThrow());
             }
         //?}
 

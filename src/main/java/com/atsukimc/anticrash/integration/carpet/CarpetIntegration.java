@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.ReflectionUtil;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -271,27 +272,11 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.8) {
         /*data.name = player.getGameProfile().getName();
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
+        *///?} else {
         data.name = player.getGameProfile().name();
         //?}
 
-        if (config.fakePlayer.snapshot.dimension)
-
-            //? if (>=1.18 && <=1.21.8) {
-            /*//? if (>=1.18 && <=1.19.4) {
-            /^data.dimension = player.getLevel().dimension().location().toString();
-            ^///?}
-            //? if (>=1.20 && <=1.21.8) {
-            /^data.dimension = player.level().dimension().location().toString();
-            ^///?}
-            *///?}
-            //? if (>=1.21.9 && <=1.21.10) {
-            /*data.dimension = player.level().dimension().location().toString();
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
-            data.dimension = player.level().dimension().identifier().toString();
-            //?}
+        if (config.fakePlayer.snapshot.dimension) data.dimension = VersionIds.dimension(player);
 
         if (config.fakePlayer.snapshot.position) {
             data.x = player.getX();
@@ -1091,10 +1076,8 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.1) {
         /*for (java.util.Map.Entry<net.minecraft.world.item.Item, Object> entry :
-        *///?} else if <=1.21.10 {
-        /*for (java.util.Map.Entry<net.minecraft.resources.ResourceLocation, Object> entry :
         *///?} else {
-        for (java.util.Map.Entry<net.minecraft.resources.Identifier, Object> entry :
+        for (java.util.Map.Entry<?, Object> entry :
         //?}
                 manager.anticrash$getEntries().entrySet()) {
             int remaining =
@@ -1104,13 +1087,8 @@ public final class CarpetIntegration {
             if (remaining <= 0) continue;
             FakePlayerSnapshot.ItemCooldown cooldown = new FakePlayerSnapshot.ItemCooldown();
 
-            //? if (>=1.18 && <=1.19.2) {
-            /*cooldown.item = net.minecraft.core.Registry.ITEM.getKey(entry.getKey()).toString();
-            *///?} else if <=1.21.1 {
-            /*cooldown.item =
-                    net.minecraft.core.registries.BuiltInRegistries.ITEM
-                            .getKey(entry.getKey())
-                            .toString();
+            //? if (>=1.18 && <=1.21.1) {
+            /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
             *///?} else {
             cooldown.item = entry.getKey().toString();
             //?}
@@ -1186,40 +1164,23 @@ public final class CarpetIntegration {
                 if (cooldown == null || cooldown.item == null || cooldown.remainingTicks <= 0)
                     continue;
 
-                //? if (>=1.18 && <=1.21.10) {
-                /*net.minecraft.resources.ResourceLocation id =
-                        net.minecraft.resources.ResourceLocation.tryParse(cooldown.item);
-                *///?} else {
-                net.minecraft.resources.Identifier id =
-                        net.minecraft.resources.Identifier.tryParse(cooldown.item);
-                //?}
+                var id = VersionIds.tryParse(cooldown.item);
 
-                //? if (>=1.18 && <=1.19.2) {
-                /*if (id == null || !net.minecraft.core.Registry.ITEM.containsKey(id))
-                *///?} else if <=1.21.1 {
-                /*if (id == null
-                        || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id))
+                //? if (>=1.18 && <=1.21.1) {
+                /*if (id == null || !VersionIds.items().containsKey(id))
+                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
                 *///?} else if (>=1.21.2 && <=26.3) {
                 if (id == null)
-                //?}
-                    //? if <=1.21.1 {
-                    /*throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
-                    *///?} else {
                     throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                    //?}
+                //?}
 
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.
 
-                //? if (>=1.18 && <=1.19.2) {
+                //? if (>=1.18 && <=1.21.1) {
                 /*player.getCooldowns()
                         .addCooldown(
-                                net.minecraft.core.Registry.ITEM.get(id), cooldown.remainingTicks);
-                *///?} else if <= 1.21.1 {
-                /*player.getCooldowns()
-                        .addCooldown(
-                                net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id),
-                                cooldown.remainingTicks);
+                                VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
                 *///?} else {
                 player.getCooldowns().addCooldown(id, cooldown.remainingTicks);
                 //?}
@@ -1251,12 +1212,7 @@ public final class CarpetIntegration {
     private static ServerLevel findWorld(MinecraftServer server, String id) {
         if (id != null)
             for (ServerLevel world : server.getAllLevels())
-                //? if (>=1.18 && <=1.21.10) {
-                /*if (world.dimension().location().toString().equals(id))
-                *///?} else {
-                if (world.dimension().identifier().toString().equals(id))
-                //?}
-                    return world;
+                if (VersionIds.dimension(world).equals(id)) return world;
         return null;
     }
 

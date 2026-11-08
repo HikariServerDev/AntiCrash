@@ -1,6 +1,8 @@
 //? if (>=26.1 && <=26.3) {
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.world.clock.ClockState;
 
@@ -23,7 +25,7 @@ public record ClockSnapshot(
                 || partialTick >= 1
                 || !Float.isFinite(rate)
                 || rate <= 0) throw new IllegalArgumentException("Invalid world clock state");
-        net.minecraft.resources.Identifier.parse(id);
+        VersionIds.parse(id);
     }
 
     public static ClockSnapshot from(String id, ClockState state) {

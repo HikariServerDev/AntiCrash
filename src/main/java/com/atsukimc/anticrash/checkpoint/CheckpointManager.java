@@ -36,6 +36,7 @@ import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaEngine;
 import com.atsukimc.anticrash.snapshot.logical.LogicalDeltaMaterializer;
 import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.AtomicFiles;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.core.SectionPos;
@@ -1179,21 +1180,8 @@ public final class CheckpointManager {
             }
         }
         if (!unsaved.isEmpty()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*throw new IllegalStateException(
-                    //? if (>=1.18 && <=1.21.10) {
-                    /^"POI sections could not be saved in " + world.dimension().location());
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"POI sections could not be saved in " + world.dimension().identifier());
-                    ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             throw new IllegalStateException(
-                    "POI sections could not be saved in " + world.dimension().identifier());
-            //?}
-
+                    "POI sections could not be saved in " + VersionIds.dimension(world));
         }
     }
 
@@ -1206,20 +1194,8 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : worlds) {
             ServerLevel world = barrierWorld.world;
             if (!(world.getChunkSource().chunkScanner() instanceof IOWorker chunks)) {
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        //? if (>=1.18 && <=1.21.10) {
-                        /^"Unsupported chunk IO worker for " + world.dimension().location());
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^"Unsupported chunk IO worker for " + world.dimension().identifier());
-                        ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
-                        "Unsupported chunk IO worker for " + world.dimension().identifier());
-                //?}
-
+                        "Unsupported chunk IO worker for " + VersionIds.dimension(world));
             }
             workers.add(chunks);
             Object entities =
@@ -1231,21 +1207,8 @@ public final class CheckpointManager {
             if (!(entities
                     instanceof
                     net.minecraft.world.level.chunk.storage.EntityStorage entityAccess)) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        //? if (>=1.18 && <=1.21.10) {
-                        /^"Unsupported entity storage for " + world.dimension().location());
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^"Unsupported entity storage for " + world.dimension().identifier());
-                        ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
-                        "Unsupported entity storage for " + world.dimension().identifier());
-                //?}
-
+                        "Unsupported entity storage for " + VersionIds.dimension(world));
             }
 
             //? if (>=1.18 && <=1.20.4) {
@@ -1424,22 +1387,9 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : worlds) {
             Object worker = barrierWorld.world.getChunkSource().chunkScanner();
             if (!(worker instanceof IOWorker storageIoWorker)) {
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        "Unsupported chunk IO worker for "
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^+ barrierWorld.world.dimension().location());
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^+ barrierWorld.world.dimension().identifier());
-                                ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported chunk IO worker for "
-                                + barrierWorld.world.dimension().identifier());
-                //?}
-
+                                + VersionIds.dimension(barrierWorld.world));
             }
 
             futures.add(storageIoWorker.synchronize(false));
@@ -1488,23 +1438,9 @@ public final class CheckpointManager {
     }
 
     private List<String> captureDimensions(MinecraftServer server) {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
-                //? if (>=1.18 && <=1.21.10) {
-                /^.map(world -> world.dimension().location().toString())
-                ^///?}
-                //? if 1.21.11 {
-                /^.map(world -> world.dimension().identifier().toString())
-                ^///?}
-                .toList();
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
-                .map(world -> world.dimension().identifier().toString())
+                .map(world -> VersionIds.dimension(world))
                 .toList();
-        //?}
-
     }
 
     private CaptureResult runCapture(CaptureContext context) {

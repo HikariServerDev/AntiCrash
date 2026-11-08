@@ -2,23 +2,17 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.PortalManagerAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.Block;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.world.level.block.Portal;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.entity.PortalProcessor;
 
 //? if (>=1.21 && <=1.21.4) {
 /*import net.minecraft.nbt.NbtUtils;
+
 *///?}
-//? if (>=1.21 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-
-*///?} else {
-import net.minecraft.resources.Identifier;
-
-//?}
 
 public final class PortalRuntime {
     private PortalRuntime() {}
@@ -26,9 +20,7 @@ public final class PortalRuntime {
     public static String type(PortalProcessor manager) {
         Portal portal = ((PortalManagerAccessorMixin) manager).anticrash$getPortal();
 
-        return portal instanceof Block block
-                ? BuiltInRegistries.BLOCK.getKey(block).toString()
-                : null;
+        return portal instanceof Block block ? VersionIds.id(VersionIds.blocks(), block) : null;
     }
 
     public static CompoundTag write(PortalProcessor manager) {
@@ -57,31 +49,15 @@ public final class PortalRuntime {
     public static PortalProcessor read(CompoundTag nbt) {
 
         //? if (>=1.21 && <=1.21.4) {
-        /*ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type"));
+        /*var id = VersionIds.tryParse(nbt.getString("Type"));
         *///?}
-        //? if (>=1.21.5 && <=1.21.10) {
-        /*ResourceLocation id = ResourceLocation.tryParse(nbt.getString("Type").orElseThrow());
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
-        Identifier id = Identifier.tryParse(nbt.getString("Type").orElseThrow());
+        //? if (>=1.21.5 && <=26.3) {
+        var id = VersionIds.tryParse(nbt.getString("Type").orElseThrow());
         //?}
 
-        //? if (>=1.21 && <=1.21.11) {
-        /*if (id == null
-                || !BuiltInRegistries.BLOCK.containsKey(id)
-        *///?}
-                //? if (>=1.21 && <=1.21.1) {
-                /*|| !(BuiltInRegistries.BLOCK.get(id) instanceof Portal portal))
-                *///?}
-                //? if (>=1.21.2 && <=1.21.11) {
-                /*|| !(BuiltInRegistries.BLOCK.getValue(id) instanceof Portal portal))
-                *///?}
-        //? if (>=26.1 && <=26.3) {
         if (id == null
-                || !BuiltInRegistries.BLOCK.containsKey(id)
-                || !(BuiltInRegistries.BLOCK.getValue(id) instanceof Portal portal))
-
-        //?}
+                || !VersionIds.blocks().containsKey(id)
+                || !(VersionIds.value(VersionIds.blocks(), id) instanceof Portal portal))
             throw new IllegalArgumentException("Invalid saved Portal type");
 
         //? if (>=1.21 && <=1.21.4) {

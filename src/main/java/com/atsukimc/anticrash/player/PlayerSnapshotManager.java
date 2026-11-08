@@ -4,6 +4,7 @@ import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.runtime.CheckpointPlayerSnapshot;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.core.BlockPos;
@@ -83,20 +84,7 @@ public final class PlayerSnapshotManager {
                 snapshot.name = player.getGameProfile().name();
                 //?}
 
-                //? if (>=1.18 && <=1.21.8) {
-                /*//? if (>=1.18 && <=1.19.4) {
-                /^snapshot.dimension = player.getLevel().dimension().location().toString();
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^snapshot.dimension = player.level().dimension().location().toString();
-                ^///?}
-                *///?}
-                //? if (>=1.21.9 && <=1.21.10) {
-                /*snapshot.dimension = player.level().dimension().location().toString();
-                *///?}
-                //? if (>=1.21.11 && <=26.3) {
-                snapshot.dimension = player.level().dimension().identifier().toString();
-                //?}
+                snapshot.dimension = VersionIds.dimension(player);
 
                 result.add(snapshot);
             }
@@ -120,22 +108,7 @@ public final class PlayerSnapshotManager {
         data.name = player.getGameProfile().name();
         //?}
 
-        if (config.playerSnapshot.dimension)
-
-            //? if (>=1.18 && <=1.21.8) {
-            /*//? if (>=1.18 && <=1.19.4) {
-            /^data.dimension = player.getLevel().dimension().location().toString();
-            ^///?}
-            //? if (>=1.20 && <=1.21.8) {
-            /^data.dimension = player.level().dimension().location().toString();
-            ^///?}
-            *///?}
-            //? if (>=1.21.9 && <=1.21.10) {
-            /*data.dimension = player.level().dimension().location().toString();
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
-            data.dimension = player.level().dimension().identifier().toString();
-            //?}
+        if (config.playerSnapshot.dimension) data.dimension = VersionIds.dimension(player);
 
         if (config.playerSnapshot.position) {
             data.x = player.getX();
@@ -307,28 +280,14 @@ public final class PlayerSnapshotManager {
 
             //? if (>=1.18 && <=1.21.4) {
             /*ResourceKey<Level> key = player.getRespawnDimension();
-            *///?}
 
-            //? if (>=1.18 && <=1.19.4) {
-            /*data.spawnDimension =
-                    key == null
-                            ? player.getLevel().dimension().location().toString()
-                            : key.location().toString();
-            *///?}
-            //? if (>=1.20 && <=1.21.4) {
-            /*data.spawnDimension =
-                    key == null
-                            ? player.level().dimension().location().toString()
-                            : key.location().toString();
+            data.spawnDimension = key == null ? VersionIds.dimension(player) : VersionIds.key(key);
             *///?}
             //? if (>=1.21.5 && <=1.21.8) {
-            /*data.spawnDimension = respawn.dimension().location().toString();
+            /*data.spawnDimension = VersionIds.key(respawn.dimension());
             *///?}
-            //? if (>=1.21.9 && <=1.21.10) {
-            /*data.spawnDimension = spawn.dimension().location().toString();
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
-            data.spawnDimension = spawn.dimension().identifier().toString();
+            //? if (>=1.21.9 && <=26.3) {
+            data.spawnDimension = VersionIds.key(spawn.dimension());
             //?}
 
         }
@@ -725,20 +684,8 @@ public final class PlayerSnapshotManager {
     private static ServerLevel findWorld(MinecraftServer server, String id) {
         if (id == null) return null;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : server.getAllLevels())
-            //? if (>=1.18 && <=1.21.10) {
-            /^if (world.dimension().location().toString().equals(id))
-            ^///?}
-            //? if 1.21.11 {
-            /^if (world.dimension().identifier().toString().equals(id))
-            ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         for (ServerLevel world : server.getAllLevels())
-            if (world.dimension().identifier().toString().equals(id))
-        //?}
-                return world;
+            if (VersionIds.dimension(world).equals(id)) return world;
         return null;
     }
 

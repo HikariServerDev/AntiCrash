@@ -1,22 +1,13 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
-
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.core.Registry;
-*///?} else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-//? if (>=1.18 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 import java.util.ArrayList;
 import java.util.IdentityHashMap;
@@ -97,19 +88,7 @@ public final class BlockEntityTickerSnapshot {
             String queue,
             List<TickingBlockEntity> tickers,
             Map<BlockEntityType<?>, String> typeIds) {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = world.dimension().location().toString();
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = world.dimension().identifier().toString();
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        String dimension = world.dimension().identifier().toString();
-        //?}
-
+        String dimension = VersionIds.dimension(world);
         int order = 0;
 
         for (TickingBlockEntity ticker : tickers) {
@@ -157,17 +136,9 @@ public final class BlockEntityTickerSnapshot {
             if (cached != null) return cached;
         }
 
-        //? if (>=1.18 && <=1.19.2) {
-        /*ResourceLocation id = Registry.BLOCK_ENTITY_TYPE.getKey(type);
-        *///?}
-        //? if (>=1.19.3 && <=1.21.10) {
-        /*ResourceLocation id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
-        Identifier id = BuiltInRegistries.BLOCK_ENTITY_TYPE.getKey(type);
-        //?}
+        String id = VersionIds.id(VersionIds.blockEntityTypes(), type);
 
-        String value = id == null ? "<unknown>" : id.toString();
+        String value = id == null ? "<unknown>" : id;
         if (cache != null) cache.put(type, value);
         return value;
     }

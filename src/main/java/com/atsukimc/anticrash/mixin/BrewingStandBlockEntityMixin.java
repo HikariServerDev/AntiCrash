@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 //? if (>=1.18 && <=26.2) {
 /*import net.minecraft.world.level.Level;
 *///?}
@@ -72,17 +74,8 @@ public abstract class BrewingStandBlockEntityMixin {
                 extension -> {
                     extension.remove("ItemBrewing");
                     if (brewTime > 0 && ingredient != null) {
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*extension.putString(
-                                "ItemBrewing",
-                                net.minecraft.core.Registry.ITEM.getKey(ingredient).toString());
-                        *///?} else {
                         extension.putString(
-                                "ItemBrewing",
-                                net.minecraft.core.registries.BuiltInRegistries.ITEM
-                                        .getKey(ingredient)
-                                        .toString());
-                        //?}
+                                "ItemBrewing", VersionIds.id(VersionIds.items(), ingredient));
                     }
                 });
     }
@@ -108,39 +101,18 @@ public abstract class BrewingStandBlockEntityMixin {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (extension == null || !extension.contains("ItemBrewing", 8) || brewTime <= 0) return;
+
+        var id = VersionIds.tryParse(extension.getString("ItemBrewing"));
         *///?} else {
         if (extension == null
                 || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ItemBrewing", 8)
                 || brewTime <= 0) return;
+
+        var id = VersionIds.tryParse(extension.getString("ItemBrewing").orElseThrow());
         //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*net.minecraft.resources.ResourceLocation id =
-                net.minecraft.resources.ResourceLocation.tryParse(
-                        extension.getString("ItemBrewing"));
-        *///?} else if <=1.21.10 {
-        /*net.minecraft.resources.ResourceLocation id =
-                net.minecraft.resources.ResourceLocation.tryParse(
-                        extension.getString("ItemBrewing").orElseThrow());
-        *///?} else {
-        net.minecraft.resources.Identifier id =
-                net.minecraft.resources.Identifier.tryParse(
-                        extension.getString("ItemBrewing").orElseThrow());
-        //?}
-
-        //? if (>=1.18 && <=1.19.2) {
-        /*if (id != null && net.minecraft.core.Registry.ITEM.containsKey(id))
-        *///?} else {
-        if (id != null && net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id))
-        //?}
-        {
-            //? if (>=1.18 && <=1.19.2) {
-            /*ingredient = net.minecraft.core.Registry.ITEM.get(id);
-            *///?} else if <= 1.21.1 {
-            /*ingredient = net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id);
-            *///?} else {
-            ingredient = net.minecraft.core.registries.BuiltInRegistries.ITEM.getValue(id);
-            //?}
+        if (id != null && VersionIds.items().containsKey(id)) {
+            ingredient = VersionIds.value(VersionIds.items(), id);
         }
     }
 }

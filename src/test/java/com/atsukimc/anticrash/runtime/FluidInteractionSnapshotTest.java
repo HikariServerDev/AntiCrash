@@ -1,6 +1,8 @@
 //? if (>=26.1 && <=26.3) {
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 import net.minecraft.nbt.*;
@@ -140,12 +142,11 @@ class FluidInteractionSnapshotTest {
         var interaction = new net.minecraft.world.entity.EntityFluidInteraction(java.util.Set.of());
 
         var fluid =
-                net.minecraft.core.registries.BuiltInRegistries.FLUID
+                VersionIds.fluids()
                         .get(
                                 net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.FLUID,
-                                        net.minecraft.resources.Identifier.parse(
-                                                "minecraft:water")))
+                                        VersionIds.parse("minecraft:water")))
                         .orElseThrow();
 
         var first = FluidInteractionSnapshot.createTracker(interaction, fluid);

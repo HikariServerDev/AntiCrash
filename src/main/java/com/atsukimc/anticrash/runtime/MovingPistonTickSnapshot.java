@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -33,17 +34,7 @@ public final class MovingPistonTickSnapshot {
         List<MovingPistonTickSnapshot> result = new ArrayList<>();
         if (protectedChunks == null || protectedChunks.isEmpty()) return result;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = world.dimension().location().toString();
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = world.dimension().identifier().toString();
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        String dimension = world.dimension().identifier().toString();
-        //?}
+        String dimension = VersionIds.dimension(world);
 
         Set<BlockPos> seen = new HashSet<>();
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;

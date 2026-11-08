@@ -2,6 +2,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
@@ -27,8 +28,7 @@ public abstract class BrewingRecipeBindingMixin {
                 output,
                 extension -> {
                     extension.remove("BrewingRecipeMatch");
-                    if (key != null)
-                        extension.putString("BrewingRecipeMatch", key.identifier().toString());
+                    if (key != null) extension.putString("BrewingRecipeMatch", VersionIds.key(key));
                 });
     }
 
@@ -38,8 +38,7 @@ public abstract class BrewingRecipeBindingMixin {
         if (extension == null) return;
         var id =
                 extension.contains("BrewingRecipeMatch")
-                        ? net.minecraft.resources.Identifier.parse(
-                                extension.getString("BrewingRecipeMatch").orElseThrow())
+                        ? VersionIds.parse(extension.getString("BrewingRecipeMatch").orElseThrow())
                         : null;
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(

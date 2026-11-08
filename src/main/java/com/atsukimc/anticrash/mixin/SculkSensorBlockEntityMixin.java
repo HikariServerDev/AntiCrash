@@ -2,11 +2,10 @@
 /*package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 import net.minecraft.nbt.CompoundTag;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.core.Registry;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 
@@ -40,7 +39,7 @@ public abstract class SculkSensorBlockEntityMixin {
                     extension.remove("Vibration");
                     if (event == null || event.isEmpty()) return;
                     CompoundTag state = new CompoundTag();
-                    state.putString("Event", Registry.GAME_EVENT.getKey(event.get()).toString());
+                    state.putString("Event", VersionIds.id(VersionIds.gameEvents(), event.get()));
                     state.putInt("Distance", accessor.anticrash$getDistance());
                     state.putInt("Delay", accessor.anticrash$getDelay());
                     extension.put("Vibration", state);
@@ -52,10 +51,10 @@ public abstract class SculkSensorBlockEntityMixin {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
         if (extension == null || !extension.contains("Vibration", 10)) return;
         CompoundTag state = extension.getCompound("Vibration");
-        ResourceLocation id = ResourceLocation.tryParse(state.getString("Event"));
-        if (id == null || !Registry.GAME_EVENT.containsKey(id)) return;
+        var id = VersionIds.tryParse(state.getString("Event"));
+        if (id == null || !VersionIds.gameEvents().containsKey(id)) return;
         SculkSensorListenerAccessorMixin accessor = (SculkSensorListenerAccessorMixin) listener;
-        accessor.anticrash$setEvent(Optional.of(Registry.GAME_EVENT.get(id)));
+        accessor.anticrash$setEvent(Optional.of(VersionIds.value(VersionIds.gameEvents(), id)));
         accessor.anticrash$setDistance(Math.max(0, state.getInt("Distance")));
         accessor.anticrash$setDelay(Math.max(0, state.getInt("Delay")));
     }

@@ -4,11 +4,6 @@ package com.atsukimc.anticrash.runtime;
 /*import com.atsukimc.anticrash.mixin.SculkSensorListenerAccessorMixin;
 import net.minecraft.world.level.block.entity.SculkSensorBlockEntity;
 *///?}
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.core.Registry;
-*///?} else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
 
 import com.atsukimc.anticrash.mixin.BrewingStandBlockEntityTimerAccessor;
 import com.atsukimc.anticrash.mixin.EndGatewayBlockEntityAccessorMixin;
@@ -16,6 +11,7 @@ import com.atsukimc.anticrash.mixin.EntityRuntimeAccessorMixin;
 import com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin;
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
@@ -126,18 +122,7 @@ public final class RuntimeExtensionSnapshot {
         //?}
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
-            //?}
+            String dimension = VersionIds.dimension(world);
 
             captureBlockRuntime(world, dimension, lines, capsule);
             ((ServerWorldAccessorMixin) world)
@@ -285,10 +270,12 @@ public final class RuntimeExtensionSnapshot {
                                                             || stand.anticrash$getItemBrewing()
                                                                     == null
                                                     ? "null"
-                                                    : BuiltInRegistries.ITEM.getKey(
-                                                            stand.anticrash$getItemBrewing()))
+                                                    : VersionIds.items()
+                                                            .getKey(
+                                                                    stand
+                                                                            .anticrash$getItemBrewing()))
                                             + "|recipe="
-                                            + (recipe == null ? "null" : recipe.identifier()));
+                                            + (recipe == null ? "null" : VersionIds.key(recipe)));
                 }
                 //?}
 
@@ -378,10 +365,7 @@ public final class RuntimeExtensionSnapshot {
                             (BrewingStandBlockEntityTimerAccessor) blockEntity;
 
                     if (stand.anticrash$getBrewTime() > 0) {
-
-                *///?}
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*lines.get(BREWING)
+                        lines.get(BREWING)
                                 .add(
                                         where
                                                 + "|"
@@ -389,26 +373,13 @@ public final class RuntimeExtensionSnapshot {
                                                 + "|"
                                                 + (stand.anticrash$getItemBrewing() == null
                                                         ? "null"
-                                                        : Registry.ITEM.getKey(
-                                                                stand.anticrash$getItemBrewing())));
-                        *///?}
-                        //? if (>=1.19.3 && <=26.2) {
-                        /*lines.get(BREWING)
-                                .add(
-                                        where
-                                                + "|"
-                                                + stand.anticrash$getBrewTime()
-                                                + "|"
-                                                + (stand.anticrash$getItemBrewing() == null
-                                                        ? "null"
-                                                        : BuiltInRegistries.ITEM.getKey(
-                                                                stand.anticrash$getItemBrewing())));
-                        *///?}
-                    //? if (>=1.18 && <=26.2) {
-
-                    /*}
+                                                        : VersionIds.items()
+                                                                .getKey(
+                                                                        stand
+                                                                                .anticrash$getItemBrewing())));
+                    }
                 } else
-                    *///?}
+                *///?}
                 if (blockEntity instanceof TheEndGatewayBlockEntity) {
                     int cooldown =
                             ((EndGatewayBlockEntityAccessorMixin) blockEntity)
@@ -429,8 +400,8 @@ public final class RuntimeExtensionSnapshot {
                                 .add(
                                         where
                                                 + "|"
-                                                + Registry.GAME_EVENT.getKey(
-                                                        listener.anticrash$getEvent().get())
+                                                + VersionIds.gameEvents()
+                                                        .getKey(listener.anticrash$getEvent().get())
                                                 + "|"
                                                 + listener.anticrash$getDistance()
                                                 + "|"
