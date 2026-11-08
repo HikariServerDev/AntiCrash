@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -136,11 +137,13 @@ public final class TransientChunkStateMarker {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*criticalChunks.add(
-                        new ChunkReference(VersionIds.dimension(world), chunk.getPos().toLong()));
+                        new ChunkReference(
+                                VersionIds.dimension(world), VersionChunkPos.pack(chunk.getPos())));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
-                        new ChunkReference(VersionIds.dimension(world), chunk.getPos().pack()));
+                        new ChunkReference(
+                                VersionIds.dimension(world), VersionChunkPos.pack(chunk.getPos())));
                 //?}
 
                 if (pistonsInChunk > 0) {
@@ -176,12 +179,14 @@ public final class TransientChunkStateMarker {
                 //? if (>=1.18 && <=1.21.11) {
                 /*criticalChunks.add(
                         new ChunkReference(
-                                VersionIds.dimension(world), entity.chunkPosition().toLong()));
+                                VersionIds.dimension(world),
+                                VersionChunkPos.pack(entity.chunkPosition())));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
-                                VersionIds.dimension(world), entity.chunkPosition().pack()));
+                                VersionIds.dimension(world),
+                                VersionChunkPos.pack(entity.chunkPosition())));
                 //?}
 
             }

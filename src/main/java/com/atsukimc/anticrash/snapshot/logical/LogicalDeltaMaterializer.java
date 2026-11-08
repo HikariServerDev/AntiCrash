@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
@@ -149,10 +150,10 @@ public final class LogicalDeltaMaterializer {
             throws IOException {
 
         //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
+        /*ChunkPos chunk = VersionChunkPos.unpack(packed);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
         //?}
 
         Path dimensionRoot = dimensionRoot(world, dimension);
@@ -160,10 +161,22 @@ public final class LogicalDeltaMaterializer {
         Files.createDirectories(directory);
 
         //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
+        /*Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         *///?}
         //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         //?}
 
         copyOnWrite(file);
@@ -212,19 +225,31 @@ public final class LogicalDeltaMaterializer {
             Path world, String dimension, long packed, String directoryName) throws IOException {
 
         //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
+        /*ChunkPos chunk = VersionChunkPos.unpack(packed);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
         //?}
 
         Path directory = dimensionRoot(world, dimension).resolve(directoryName);
 
         //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
+        /*Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         *///?}
         //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         //?}
 
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)) {
@@ -270,19 +295,31 @@ public final class LogicalDeltaMaterializer {
             throws IOException {
 
         //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
+        /*ChunkPos chunk = VersionChunkPos.unpack(packed);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
         //?}
 
         Path directory = dimensionRoot(world, dimension).resolve("entities");
 
         //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
+        /*Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         *///?}
         //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
         //?}
 
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)) {

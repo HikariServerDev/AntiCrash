@@ -1,10 +1,10 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
-import net.minecraft.world.level.ChunkPos;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -50,16 +50,16 @@ public abstract class EntityLifecycleMixin {
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long oldChunk = entity.chunkPosition().toLong();
+        /*long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
 
         long newChunk =
-                ChunkPos.asLong(
+                VersionChunkPos.pack(
                         net.minecraft.util.Mth.floor(x) >> 4, net.minecraft.util.Mth.floor(z) >> 4);
         *///?} else {
-        long oldChunk = entity.chunkPosition().pack();
+        long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
 
         long newChunk =
-                ChunkPos.pack(
+                VersionChunkPos.pack(
                         net.minecraft.util.Mth.floor(x) >> 4, net.minecraft.util.Mth.floor(z) >> 4);
         //?}
 

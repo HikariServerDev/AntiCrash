@@ -1,12 +1,12 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 import java.util.ArrayList;
@@ -70,13 +70,15 @@ public final class MovingPistonTickSnapshot {
             BlockPos position = ticker.getPos();
 
             //? if (>=1.18 && <=1.21.11) {
-            /*if (!protectedChunks.contains(new ChunkPos(position).toLong())
+            /*if (!protectedChunks.contains(
+                            VersionChunkPos.pack(VersionChunkPos.containing(position)))
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                             instanceof PistonMovingBlockEntity)
                     || !seen.add(position))
             *///?}
             //? if (>=26.1 && <=26.3) {
-            if (!protectedChunks.contains(ChunkPos.containing(position).pack())
+            if (!protectedChunks.contains(
+                            VersionChunkPos.pack(VersionChunkPos.containing(position)))
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                             instanceof PistonMovingBlockEntity)
                     || !seen.add(position))

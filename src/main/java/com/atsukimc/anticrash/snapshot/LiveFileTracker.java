@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.util.VersionChunkPos;
+
 import net.minecraft.world.level.ChunkPos;
 
 import java.nio.file.Path;
@@ -46,10 +48,22 @@ public final class LiveFileTracker {
             // or deletes it inside the same write.
 
             //? if (>=1.18 && <=1.21.11) {
-            /*target.add(normalized.resolve("c." + position.x + "." + position.z + ".mcc"));
+            /*target.add(
+                    normalized.resolve(
+                            "c."
+                                    + VersionChunkPos.x(position)
+                                    + "."
+                                    + VersionChunkPos.z(position)
+                                    + ".mcc"));
             *///?}
             //? if (>=26.1 && <=26.3) {
-            target.add(normalized.resolve("c." + position.x() + "." + position.z() + ".mcc"));
+            target.add(
+                    normalized.resolve(
+                            "c."
+                                    + VersionChunkPos.x(position)
+                                    + "."
+                                    + VersionChunkPos.z(position)
+                                    + ".mcc"));
             //?}
 
         } finally {

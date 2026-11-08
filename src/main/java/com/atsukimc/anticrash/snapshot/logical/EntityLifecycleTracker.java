@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.entity.Entity;
@@ -32,7 +33,7 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_REMOVED",
                 VersionIds.dimension(entity),
-                entity.chunkPosition().toLong(),
+                VersionChunkPos.pack(entity.chunkPosition()),
                 entity.getStringUUID(),
                 reason);
         *///?}
@@ -40,7 +41,7 @@ public final class EntityLifecycleTracker {
         GLOBAL.record(
                 "ENTITY_REMOVED",
                 VersionIds.dimension(entity),
-                entity.chunkPosition().pack(),
+                VersionChunkPos.pack(entity.chunkPosition()),
                 entity.getStringUUID(),
                 reason);
         //?}
@@ -71,7 +72,7 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_UNLOADED",
                 VersionIds.dimension(entity),
-                entity.chunkPosition().toLong(),
+                VersionChunkPos.pack(entity.chunkPosition()),
                 entity.getStringUUID(),
                 "server_entity_manager_unload");
         *///?}
@@ -79,7 +80,7 @@ public final class EntityLifecycleTracker {
         GLOBAL.record(
                 "ENTITY_UNLOADED",
                 VersionIds.dimension(entity),
-                entity.chunkPosition().pack(),
+                VersionChunkPos.pack(entity.chunkPosition()),
                 entity.getStringUUID(),
                 "server_entity_manager_unload");
         //?}

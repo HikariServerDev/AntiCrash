@@ -8,6 +8,7 @@ import net.minecraft.world.level.chunk.ChunkStatus;
 *///?}
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.level.ChunkHolder;
@@ -75,10 +76,10 @@ public final class ChunkStateSnapshot {
                                 .anticrash$isLoadedToWorld())
         //?}
                     //? if (>=1.21 && <=1.21.11) {
-                    /*loaded.add(holder.getPos().toLong());
+                    /*loaded.add(VersionChunkPos.pack(holder.getPos()));
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    loaded.add(holder.getPos().pack());
+                    loaded.add(VersionChunkPos.pack(holder.getPos()));
                     //?}
             //? if (>=1.21 && <=26.3) {
 
@@ -108,10 +109,10 @@ public final class ChunkStateSnapshot {
             if (holder == null) continue;
 
             //? if (>=1.18 && <=1.21.11) {
-            /*long packed = holder.getPos().toLong();
+            /*long packed = VersionChunkPos.pack(holder.getPos());
             *///?}
             //? if (>=26.1 && <=26.3) {
-            long packed = holder.getPos().pack();
+            long packed = VersionChunkPos.pack(holder.getPos());
             //?}
 
             //? if (>=1.18 && <=1.20.6) {
@@ -315,7 +316,7 @@ public final class ChunkStateSnapshot {
             //? if (>=1.18 && <=1.21.11) {
             /*ChunkReadiness result =
                     simple(
-                            holder.getPos().toLong(),
+                            VersionChunkPos.pack(holder.getPos()),
                             loaded,
                             full,
                             blockTicking,
@@ -326,7 +327,7 @@ public final class ChunkStateSnapshot {
             //? if (>=26.1 && <=26.3) {
             ChunkReadiness result =
                     simple(
-                            holder.getPos().pack(),
+                            VersionChunkPos.pack(holder.getPos()),
                             loaded,
                             full,
                             blockTicking,
@@ -370,9 +371,9 @@ public final class ChunkStateSnapshot {
         public String canonical() {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*return new ChunkPos(packedPosition).x
+            /*return ChunkPos.getX(packedPosition)
                     + ","
-                    + new ChunkPos(packedPosition).z
+                    + ChunkPos.getZ(packedPosition)
                     + "|loaded="
                     + loaded
                     + "|full="
@@ -427,9 +428,9 @@ public final class ChunkStateSnapshot {
         public String executionCanonical() {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*return new ChunkPos(packedPosition).x
+            /*return ChunkPos.getX(packedPosition)
                     + ","
-                    + new ChunkPos(packedPosition).z
+                    + ChunkPos.getZ(packedPosition)
                     + "|loaded="
                     + loaded
                     + "|full="

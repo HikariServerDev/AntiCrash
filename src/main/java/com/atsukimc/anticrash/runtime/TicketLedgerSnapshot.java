@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ChunkTicketAccessorMixin;
 import com.atsukimc.anticrash.mixin.ChunkTicketManagerAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -70,10 +71,10 @@ public final class TicketLedgerSnapshot {
             {
 
                 //? if (>=1.18 && <=1.21.11) {
-                /*ChunkPos pos = new ChunkPos(positionEntry.getLongKey());
+                /*ChunkPos pos = VersionChunkPos.unpack(positionEntry.getLongKey());
                 *///?}
                 //? if (>=26.1 && <=26.3) {
-                ChunkPos pos = ChunkPos.unpack(positionEntry.getLongKey());
+                ChunkPos pos = VersionChunkPos.unpack(positionEntry.getLongKey());
                 //?}
 
                 //? if (>=1.18 && <=1.21.4) {
@@ -115,17 +116,17 @@ public final class TicketLedgerSnapshot {
                     entry.dimension = VersionIds.dimension(world);
 
                     //? if (>=1.18 && <=1.21.11) {
-                    /*entry.x = pos.x;
+                    /*entry.x = VersionChunkPos.x(pos);
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    entry.x = pos.x();
+                    entry.x = VersionChunkPos.x(pos);
                     //?}
 
                     //? if (>=1.18 && <=1.21.11) {
-                    /*entry.z = pos.z;
+                    /*entry.z = VersionChunkPos.z(pos);
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    entry.z = pos.z();
+                    entry.z = VersionChunkPos.z(pos);
                     //?}
 
                     entry.type = type;

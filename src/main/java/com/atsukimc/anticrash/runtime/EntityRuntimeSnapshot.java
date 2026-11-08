@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.level.ServerLevel;
@@ -75,17 +76,17 @@ public final class EntityRuntimeSnapshot {
                     ChunkPos chunk = entity.chunkPosition();
 
                     //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkX = chunk.x;
+                    /*snapshot.chunkX = VersionChunkPos.x(chunk);
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    snapshot.chunkX = chunk.x();
+                    snapshot.chunkX = VersionChunkPos.x(chunk);
                     //?}
 
                     //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkZ = chunk.z;
+                    /*snapshot.chunkZ = VersionChunkPos.z(chunk);
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    snapshot.chunkZ = chunk.z();
+                    snapshot.chunkZ = VersionChunkPos.z(chunk);
                     //?}
 
                     snapshot.order = result.size();

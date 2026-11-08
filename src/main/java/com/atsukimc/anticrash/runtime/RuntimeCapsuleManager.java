@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.Block;
@@ -638,10 +639,10 @@ public final class RuntimeCapsuleManager {
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            /*long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
+            long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
             //?}
 
             queueChunks.add(new QueueChunkKey(tick.dimension, packed));
@@ -687,10 +688,10 @@ public final class RuntimeCapsuleManager {
             ServerLevel world = worlds.get(key.dimension);
 
             //? if (>=1.18 && <=1.21.11) {
-            /*ChunkPos pos = new ChunkPos(key.packedChunkPosition);
+            /*ChunkPos pos = VersionChunkPos.unpack(key.packedChunkPosition);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            ChunkPos pos = ChunkPos.unpack(key.packedChunkPosition);
+            ChunkPos pos = VersionChunkPos.unpack(key.packedChunkPosition);
             //?}
 
             if (world == null) {
@@ -741,11 +742,11 @@ public final class RuntimeCapsuleManager {
 
         //? if (>=1.18 && <=1.21.11) {
         /*net.minecraft.server.level.ChunkHolder holder =
-                storage.anticrash$getCurrentChunkHolders().get(position.toLong());
+                storage.anticrash$getCurrentChunkHolders().get(VersionChunkPos.pack(position));
         *///?}
         //? if (>=26.1 && <=26.3) {
         net.minecraft.server.level.ChunkHolder holder =
-                storage.anticrash$getCurrentChunkHolders().get(position.pack());
+                storage.anticrash$getCurrentChunkHolders().get(VersionChunkPos.pack(position));
         //?}
 
         if (holder == null) return null;
@@ -2037,10 +2038,10 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(entity.chunkX, entity.chunkZ).toLong();
+            /*long packed = VersionChunkPos.pack(entity.chunkX, entity.chunkZ);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(entity.chunkX, entity.chunkZ).pack();
+            long packed = VersionChunkPos.pack(entity.chunkX, entity.chunkZ);
             //?}
 
             ChunkStateSnapshot chunks = chunksByDimension.get(entity.dimension);
@@ -2089,10 +2090,10 @@ public final class RuntimeCapsuleManager {
             }
 
             //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).toLong();
+            /*long packed = VersionChunkPos.pack(piston.x >> 4, piston.z >> 4);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).pack();
+            long packed = VersionChunkPos.pack(piston.x >> 4, piston.z >> 4);
             //?}
 
             ChunkStateSnapshot chunks = chunksByDimension.get(piston.dimension);
@@ -2141,10 +2142,10 @@ public final class RuntimeCapsuleManager {
             ChunkStateSnapshot chunks = chunksByDimension.get(tick.dimension);
 
             //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
+            /*long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
+            long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
             //?}
 
             boolean recoveryReady =

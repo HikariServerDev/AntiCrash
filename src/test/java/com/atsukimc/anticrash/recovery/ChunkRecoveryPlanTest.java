@@ -9,8 +9,7 @@ import com.atsukimc.anticrash.runtime.ChunkStateSnapshot;
 import com.atsukimc.anticrash.runtime.MovingPistonTickSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
-
-import net.minecraft.world.level.ChunkPos;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import org.junit.jupiter.api.Test;
 
@@ -30,24 +29,24 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long loadedOnly = new ChunkPos(1, 2).toLong();
+        /*long loadedOnly = VersionChunkPos.pack(1, 2);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long loadedOnly = new ChunkPos(1, 2).pack();
+        long loadedOnly = VersionChunkPos.pack(1, 2);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long entity = new ChunkPos(3, 4).toLong();
+        /*long entity = VersionChunkPos.pack(3, 4);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long entity = new ChunkPos(3, 4).pack();
+        long entity = VersionChunkPos.pack(3, 4);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long forced = new ChunkPos(5, 6).toLong();
+        /*long forced = VersionChunkPos.pack(5, 6);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long forced = new ChunkPos(5, 6).pack();
+        long forced = VersionChunkPos.pack(5, 6);
         //?}
 
         chunks.loadedChunks.addAll(List.of(loadedOnly, entity, forced));
@@ -78,31 +77,31 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long loadedOnly = new ChunkPos(1, 2).toLong();
+        /*long loadedOnly = VersionChunkPos.pack(1, 2);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long loadedOnly = new ChunkPos(1, 2).pack();
+        long loadedOnly = VersionChunkPos.pack(1, 2);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long entity = new ChunkPos(3, 4).toLong();
+        /*long entity = VersionChunkPos.pack(3, 4);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long entity = new ChunkPos(3, 4).pack();
+        long entity = VersionChunkPos.pack(3, 4);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long forced = new ChunkPos(5, 6).toLong();
+        /*long forced = VersionChunkPos.pack(5, 6);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long forced = new ChunkPos(5, 6).pack();
+        long forced = VersionChunkPos.pack(5, 6);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long anchor = new ChunkPos(7, 8).toLong();
+        /*long anchor = VersionChunkPos.pack(7, 8);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long anchor = new ChunkPos(7, 8).pack();
+        long anchor = VersionChunkPos.pack(7, 8);
         //?}
 
         chunks.loadedChunks.addAll(List.of(loadedOnly, entity, forced));
@@ -147,10 +146,10 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long transientChunk = new ChunkPos(-328, 123).toLong();
+        /*long transientChunk = VersionChunkPos.pack(-328, 123);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long transientChunk = new ChunkPos(-328, 123).pack();
+        long transientChunk = VersionChunkPos.pack(-328, 123);
         //?}
 
         chunks.loadedChunks.add(transientChunk);
@@ -185,24 +184,24 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long entityTicking = new ChunkPos(1, 1).toLong();
+        /*long entityTicking = VersionChunkPos.pack(1, 1);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long entityTicking = new ChunkPos(1, 1).pack();
+        long entityTicking = VersionChunkPos.pack(1, 1);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long blockTicking = new ChunkPos(2, 2).toLong();
+        /*long blockTicking = VersionChunkPos.pack(2, 2);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long blockTicking = new ChunkPos(2, 2).pack();
+        long blockTicking = VersionChunkPos.pack(2, 2);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long fullOnly = new ChunkPos(3, 3).toLong();
+        /*long fullOnly = VersionChunkPos.pack(3, 3);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long fullOnly = new ChunkPos(3, 3).pack();
+        long fullOnly = VersionChunkPos.pack(3, 3);
         //?}
 
         chunks.loadedChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
@@ -217,17 +216,17 @@ class ChunkRecoveryPlanTest {
             tick.type = "minecraft:repeater";
 
             //? if (>=1.18 && <=1.21.11) {
-            /*tick.x = new ChunkPos(packed).getMinBlockX();
+            /*tick.x = VersionChunkPos.unpack(packed).getMinBlockX();
             *///?}
             //? if (>=26.1 && <=26.3) {
-            tick.x = ChunkPos.unpack(packed).getMinBlockX();
+            tick.x = VersionChunkPos.unpack(packed).getMinBlockX();
             //?}
 
             //? if (>=1.18 && <=1.21.11) {
-            /*tick.z = new ChunkPos(packed).getMinBlockZ();
+            /*tick.z = VersionChunkPos.unpack(packed).getMinBlockZ();
             *///?}
             //? if (>=26.1 && <=26.3) {
-            tick.z = ChunkPos.unpack(packed).getMinBlockZ();
+            tick.z = VersionChunkPos.unpack(packed).getMinBlockZ();
             //?}
 
             capsule.scheduledTicks.add(tick);
@@ -258,24 +257,24 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long entityTicking = new ChunkPos(1, 1).toLong();
+        /*long entityTicking = VersionChunkPos.pack(1, 1);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long entityTicking = new ChunkPos(1, 1).pack();
+        long entityTicking = VersionChunkPos.pack(1, 1);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long blockTicking = new ChunkPos(2, 2).toLong();
+        /*long blockTicking = VersionChunkPos.pack(2, 2);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long blockTicking = new ChunkPos(2, 2).pack();
+        long blockTicking = VersionChunkPos.pack(2, 2);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long fullOnly = new ChunkPos(3, 3).toLong();
+        /*long fullOnly = VersionChunkPos.pack(3, 3);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long fullOnly = new ChunkPos(3, 3).pack();
+        long fullOnly = VersionChunkPos.pack(3, 3);
         //?}
 
         chunks.loadedChunks.addAll(List.of(entityTicking, blockTicking, fullOnly));
@@ -317,10 +316,10 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*chunks.transientStateChunks.add(new ChunkPos(10, 10).toLong());
+        /*chunks.transientStateChunks.add(VersionChunkPos.pack(10, 10));
         *///?}
         //? if (>=26.1 && <=26.3) {
-        chunks.transientStateChunks.add(new ChunkPos(10, 10).pack());
+        chunks.transientStateChunks.add(VersionChunkPos.pack(10, 10));
         //?}
 
         capsule.chunks.add(chunks);
@@ -344,10 +343,10 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long dormant = new ChunkPos(20, 20).toLong();
+        /*long dormant = VersionChunkPos.pack(20, 20);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long dormant = new ChunkPos(20, 20).pack();
+        long dormant = VersionChunkPos.pack(20, 20);
         //?}
 
         chunks.loadedChunks.add(dormant);
@@ -374,10 +373,10 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*chunks.forcedChunks.add(new ChunkPos(1, 1).toLong());
+        /*chunks.forcedChunks.add(VersionChunkPos.pack(1, 1));
         *///?}
         //? if (>=26.1 && <=26.3) {
-        chunks.forcedChunks.add(new ChunkPos(1, 1).pack());
+        chunks.forcedChunks.add(VersionChunkPos.pack(1, 1));
         //?}
 
         capsule.chunks.add(chunks);
@@ -391,8 +390,7 @@ class ChunkRecoveryPlanTest {
                                 ChunkRecoveryPlan.PreloadMode.CRITICAL,
                                 Set.of(
                                         new ChunkRecoveryPlan.Anchor(
-                                                "minecraft:overworld",
-                                                new ChunkPos(2, 2).toLong())),
+                                                "minecraft:overworld", VersionChunkPos.pack(2, 2))),
                                 1));
         *///?}
         //? if (>=26.1 && <=26.3) {
@@ -404,7 +402,7 @@ class ChunkRecoveryPlanTest {
                                 ChunkRecoveryPlan.PreloadMode.CRITICAL,
                                 Set.of(
                                         new ChunkRecoveryPlan.Anchor(
-                                                "minecraft:overworld", new ChunkPos(2, 2).pack())),
+                                                "minecraft:overworld", VersionChunkPos.pack(2, 2))),
                                 1));
         //?}
 
@@ -505,7 +503,7 @@ class ChunkRecoveryPlanTest {
         /*assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
-                                entry.packedPosition() == new ChunkPos(2, 3).toLong()
+                                entry.packedPosition() == VersionChunkPos.pack(2, 3)
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
         *///?}
@@ -513,7 +511,7 @@ class ChunkRecoveryPlanTest {
         assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
-                                entry.packedPosition() == new ChunkPos(2, 3).pack()
+                                entry.packedPosition() == VersionChunkPos.pack(2, 3)
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.FULL_TICKET_LEVEL));
         //?}
@@ -522,7 +520,7 @@ class ChunkRecoveryPlanTest {
         /*assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
-                                entry.packedPosition() == new ChunkPos(-2, -1).toLong()
+                                entry.packedPosition() == VersionChunkPos.pack(-2, -1)
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
         *///?}
@@ -530,7 +528,7 @@ class ChunkRecoveryPlanTest {
         assertTrue(
                 selection.entries().stream()
                         .anyMatch(entry ->
-                                entry.packedPosition() == new ChunkPos(-2, -1).pack()
+                                entry.packedPosition() == VersionChunkPos.pack(-2, -1)
                                         && entry.ticketLevel()
                                                 == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL));
         //?}
@@ -550,29 +548,29 @@ class ChunkRecoveryPlanTest {
         for (int index = 0; index < 2_489; index++) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*chunks.loadedChunks.add(new ChunkPos(index, 0).toLong());
+            /*chunks.loadedChunks.add(VersionChunkPos.pack(index, 0));
             *///?}
             //? if (>=26.1 && <=26.3) {
-            chunks.loadedChunks.add(new ChunkPos(index, 0).pack());
+            chunks.loadedChunks.add(VersionChunkPos.pack(index, 0));
             //?}
 
         }
         for (int index = 0; index < 821; index++) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*chunks.entityTickingChunks.add(new ChunkPos(index, 100).toLong());
+            /*chunks.entityTickingChunks.add(VersionChunkPos.pack(index, 100));
             *///?}
             //? if (>=26.1 && <=26.3) {
-            chunks.entityTickingChunks.add(new ChunkPos(index, 100).pack());
+            chunks.entityTickingChunks.add(VersionChunkPos.pack(index, 100));
             //?}
 
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long forced = new ChunkPos(0, 200).toLong();
+        /*long forced = VersionChunkPos.pack(0, 200);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long forced = new ChunkPos(0, 200).pack();
+        long forced = VersionChunkPos.pack(0, 200);
         //?}
 
         chunks.forcedChunks.add(forced);
@@ -585,9 +583,9 @@ class ChunkRecoveryPlanTest {
                         ChunkRecoveryPlan.PreloadMode.CRITICAL,
                         Set.of(
                                 new ChunkRecoveryPlan.Anchor(
-                                        "minecraft:overworld", new ChunkPos(0, 201).toLong()),
+                                        "minecraft:overworld", VersionChunkPos.pack(0, 201)),
                                 new ChunkRecoveryPlan.Anchor(
-                                        "minecraft:overworld", new ChunkPos(1, 201).toLong())),
+                                        "minecraft:overworld", VersionChunkPos.pack(1, 201))),
                         256);
         *///?}
         //? if (>=26.1 && <=26.3) {
@@ -597,9 +595,9 @@ class ChunkRecoveryPlanTest {
                         ChunkRecoveryPlan.PreloadMode.CRITICAL,
                         Set.of(
                                 new ChunkRecoveryPlan.Anchor(
-                                        "minecraft:overworld", new ChunkPos(0, 201).pack()),
+                                        "minecraft:overworld", VersionChunkPos.pack(0, 201)),
                                 new ChunkRecoveryPlan.Anchor(
-                                        "minecraft:overworld", new ChunkPos(1, 201).pack())),
+                                        "minecraft:overworld", VersionChunkPos.pack(1, 201))),
                         256);
         //?}
 
@@ -636,24 +634,24 @@ class ChunkRecoveryPlanTest {
         chunks.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long entity = new ChunkPos(-330, 122).toLong();
+        /*long entity = VersionChunkPos.pack(-330, 122);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long entity = new ChunkPos(-330, 122).pack();
+        long entity = VersionChunkPos.pack(-330, 122);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long full = new ChunkPos(-330, 123).toLong();
+        /*long full = VersionChunkPos.pack(-330, 123);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long full = new ChunkPos(-330, 123).pack();
+        long full = VersionChunkPos.pack(-330, 123);
         //?}
 
         //? if (>=1.18 && <=1.21.11) {
-        /*long forced = new ChunkPos(-330, 124).toLong();
+        /*long forced = VersionChunkPos.pack(-330, 124);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        long forced = new ChunkPos(-330, 124).pack();
+        long forced = VersionChunkPos.pack(-330, 124);
         //?}
 
         chunks.loadedChunks.addAll(List.of(entity, full));

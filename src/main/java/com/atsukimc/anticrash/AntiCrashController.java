@@ -18,6 +18,7 @@ import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.atsukimc.anticrash.snapshot.CrashRawManager;
 import com.atsukimc.anticrash.snapshot.WorldLocator;
 import com.atsukimc.anticrash.util.AtomicFiles;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 import com.google.gson.reflect.TypeToken;
 
@@ -26,7 +27,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.world.level.ChunkPos;
 
 //? if (>=1.18 && <=1.18.2) {
 /*import net.minecraft.network.chat.TextComponent;
@@ -880,12 +880,12 @@ public final class AntiCrashController {
         //? if (>=1.18 && <=1.21.11) {
         /*ChunkRecoveryPlan.Anchor anchor =
                 new ChunkRecoveryPlan.Anchor(
-                        dimension, new ChunkPos((int) chunkX, (int) chunkZ).toLong());
+                        dimension, VersionChunkPos.pack((int) chunkX, (int) chunkZ));
         *///?}
         //? if (>=26.1 && <=26.3) {
         ChunkRecoveryPlan.Anchor anchor =
                 new ChunkRecoveryPlan.Anchor(
-                        dimension, new ChunkPos((int) chunkX, (int) chunkZ).pack());
+                        dimension, VersionChunkPos.pack((int) chunkX, (int) chunkZ));
         //?}
 
         if (!anchors.contains(anchor) && anchors.size() >= maxAnchors) {

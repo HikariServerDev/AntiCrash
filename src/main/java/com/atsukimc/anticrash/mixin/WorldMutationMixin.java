@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
@@ -19,15 +20,11 @@ public abstract class WorldMutationMixin {
 
         //? if (>=1.18 && <=1.21.11) {
         /*ChunkMutationTracker.record(
-                (Level) (Object) this,
-                new net.minecraft.world.level.ChunkPos(pos),
-                "world.markDirty");
+                (Level) (Object) this, VersionChunkPos.containing(pos), "world.markDirty");
         *///?}
         //? if (>=26.1 && <=26.3) {
         ChunkMutationTracker.record(
-                (Level) (Object) this,
-                net.minecraft.world.level.ChunkPos.containing(pos),
-                "world.markDirty");
+                (Level) (Object) this, VersionChunkPos.containing(pos), "world.markDirty");
         //?}
 
     }

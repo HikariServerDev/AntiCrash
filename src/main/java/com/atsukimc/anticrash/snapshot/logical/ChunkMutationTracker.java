@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
@@ -59,10 +60,10 @@ public final class ChunkMutationTracker {
             return;
 
         //? if (>=1.18 && <=1.21.11) {
-        /*GLOBAL.record(GLOBAL.dimensionName(world), position.toLong(), reason);
+        /*GLOBAL.record(GLOBAL.dimensionName(world), VersionChunkPos.pack(position), reason);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        GLOBAL.record(GLOBAL.dimensionName(world), position.pack(), reason);
+        GLOBAL.record(GLOBAL.dimensionName(world), VersionChunkPos.pack(position), reason);
         //?}
 
     }
@@ -92,10 +93,10 @@ public final class ChunkMutationTracker {
         }
 
         //? if (>=1.18 && <=1.21.11) {
-        /*GLOBAL.record(dimension, position.toLong(), reason);
+        /*GLOBAL.record(dimension, VersionChunkPos.pack(position), reason);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        GLOBAL.record(dimension, position.pack(), reason);
+        GLOBAL.record(dimension, VersionChunkPos.pack(position), reason);
         //?}
 
     }

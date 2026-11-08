@@ -9,6 +9,7 @@ import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -62,10 +63,10 @@ class LogicalDeltaMaterializerTest {
         changed.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*changed.packedPosition = new ChunkPos(0, 0).toLong();
+        /*changed.packedPosition = VersionChunkPos.pack(0, 0);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        changed.packedPosition = new ChunkPos(0, 0).pack();
+        changed.packedPosition = VersionChunkPos.pack(0, 0);
         //?}
 
         changed.payloadBase64 = NbtCodec.encode(marker("after"));
@@ -80,7 +81,7 @@ class LogicalDeltaMaterializerTest {
                         removed.toString(),
                         1L,
                         "test",
-                        new ChunkPos(0, 0).toLong()));
+                        VersionChunkPos.pack(0, 0)));
         *///?}
         //? if (>=26.1 && <=26.3) {
         delta.addTombstone(
@@ -90,7 +91,7 @@ class LogicalDeltaMaterializerTest {
                         removed.toString(),
                         1L,
                         "test",
-                        new ChunkPos(0, 0).pack()));
+                        VersionChunkPos.pack(0, 0)));
         //?}
 
         Path destination = temp.resolve("materialized");
@@ -176,10 +177,10 @@ class LogicalDeltaMaterializerTest {
         emptied.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*emptied.packedPosition = new ChunkPos(0, 0).toLong();
+        /*emptied.packedPosition = VersionChunkPos.pack(0, 0);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        emptied.packedPosition = new ChunkPos(0, 0).pack();
+        emptied.packedPosition = VersionChunkPos.pack(0, 0);
         //?}
 
         emptied.payloadBase64 = NbtCodec.encode(entityChunk());
@@ -190,10 +191,10 @@ class LogicalDeltaMaterializerTest {
         rewritten.dimension = "minecraft:overworld";
 
         //? if (>=1.18 && <=1.21.11) {
-        /*rewritten.packedPosition = new ChunkPos(1, 0).toLong();
+        /*rewritten.packedPosition = VersionChunkPos.pack(1, 0);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        rewritten.packedPosition = new ChunkPos(1, 0).pack();
+        rewritten.packedPosition = VersionChunkPos.pack(1, 0);
         //?}
 
         rewritten.payloadBase64 = NbtCodec.encode(entityChunk(returned));
@@ -207,7 +208,7 @@ class LogicalDeltaMaterializerTest {
                         returned.toString(),
                         1L,
                         "test",
-                        new ChunkPos(1, 0).toLong()));
+                        VersionChunkPos.pack(1, 0)));
         *///?}
         //? if (>=26.1 && <=26.3) {
         delta.addTombstone(
@@ -217,7 +218,7 @@ class LogicalDeltaMaterializerTest {
                         returned.toString(),
                         1L,
                         "test",
-                        new ChunkPos(1, 0).pack()));
+                        VersionChunkPos.pack(1, 0)));
         //?}
 
         Path destination = temp.resolve("materialized2");
@@ -311,10 +312,22 @@ class LogicalDeltaMaterializerTest {
         Files.createDirectories(directory);
 
         //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (pos.x >> 5) + "." + (pos.z >> 5) + ".mca");
+        /*Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(pos) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(pos) >> 5)
+                                + ".mca");
         *///?}
         //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (pos.x() >> 5) + "." + (pos.z() >> 5) + ".mca");
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(pos) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(pos) >> 5)
+                                + ".mca");
         //?}
 
         //? if (>=1.18 && <=1.20.4) {
@@ -358,10 +371,22 @@ class LogicalDeltaMaterializerTest {
         Path directory = world.resolve(directoryName);
 
         //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (pos.x >> 5) + "." + (pos.z >> 5) + ".mca");
+        /*Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(pos) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(pos) >> 5)
+                                + ".mca");
         *///?}
         //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (pos.x() >> 5) + "." + (pos.z() >> 5) + ".mca");
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(pos) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(pos) >> 5)
+                                + ".mca");
         //?}
 
         //? if (>=1.18 && <=1.20.4) {

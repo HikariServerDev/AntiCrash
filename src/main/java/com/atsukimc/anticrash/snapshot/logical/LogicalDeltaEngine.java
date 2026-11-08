@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.SharedConstants;
@@ -120,11 +121,15 @@ public final class LogicalDeltaEngine {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*committedChunkGenerations.put(
-                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().toLong()));
+                        key,
+                        mutations.generation(
+                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos())));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 committedChunkGenerations.put(
-                        key, mutations.generation(ref.dimension(), ref.chunk().getPos().pack()));
+                        key,
+                        mutations.generation(
+                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos())));
                 //?}
 
                 committedChunkHashes.put(key, "INHERITED");
@@ -161,11 +166,13 @@ public final class LogicalDeltaEngine {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*long generation =
-                        mutations.generation(ref.dimension(), ref.chunk().getPos().toLong());
+                        mutations.generation(
+                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 long generation =
-                        mutations.generation(ref.dimension(), ref.chunk().getPos().pack());
+                        mutations.generation(
+                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
                 //?}
 
                 if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
@@ -307,10 +314,10 @@ public final class LogicalDeltaEngine {
             for (WorldChunkRef ref : refs) {
 
                 //? if (>=1.18 && <=1.21.11) {
-                /*long packed = ref.chunk().getPos().toLong();
+                /*long packed = VersionChunkPos.pack(ref.chunk().getPos());
                 *///?}
                 //? if (>=26.1 && <=26.3) {
-                long packed = ref.chunk().getPos().pack();
+                long packed = VersionChunkPos.pack(ref.chunk().getPos());
                 //?}
 
                 long generation = mutations.generation(ref.dimension(), packed);
@@ -467,10 +474,14 @@ public final class LogicalDeltaEngine {
                 if (entity == null || entity.isRemoved() || !entity.shouldBeSaved()) continue;
 
                 //? if (>=1.18 && <=1.21.11) {
-                /*String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().toLong());
+                /*String key =
+                        ChunkMutationTracker.key(
+                                dimension, VersionChunkPos.pack(entity.chunkPosition()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
-                String key = ChunkMutationTracker.key(dimension, entity.chunkPosition().pack());
+                String key =
+                        ChunkMutationTracker.key(
+                                dimension, VersionChunkPos.pack(entity.chunkPosition()));
                 //?}
 
                 grouped.computeIfAbsent(key, ignored -> new ArrayList<>()).add(entity);
@@ -482,10 +493,14 @@ public final class LogicalDeltaEngine {
         for (WorldChunkRef ref : accessibleChunks(server)) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().toLong());
+            /*String key =
+                    ChunkMutationTracker.key(
+                            ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
             *///?}
             //? if (>=26.1 && <=26.3) {
-            String key = ChunkMutationTracker.key(ref.dimension(), ref.chunk().getPos().pack());
+            String key =
+                    ChunkMutationTracker.key(
+                            ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
             //?}
 
             grouped.putIfAbsent(key, List.of());
@@ -559,17 +574,19 @@ public final class LogicalDeltaEngine {
             root.put("Entities", entities);
 
             //? if (>=1.18 && <=1.21.11) {
-            /*ChunkPos pos = new ChunkPos(packed);
+            /*ChunkPos pos = VersionChunkPos.unpack(packed);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            ChunkPos pos = ChunkPos.unpack(packed);
+            ChunkPos pos = VersionChunkPos.unpack(packed);
             //?}
 
             //? if (>=1.18 && <=1.21.11) {
-            /*root.putIntArray("Position", new int[] {pos.x, pos.z});
+            /*root.putIntArray(
+                    "Position", new int[] {VersionChunkPos.x(pos), VersionChunkPos.z(pos)});
             *///?}
             //? if (>=26.1 && <=26.3) {
-            root.putIntArray("Position", new int[] {pos.x(), pos.z()});
+            root.putIntArray(
+                    "Position", new int[] {VersionChunkPos.x(pos), VersionChunkPos.z(pos)});
             //?}
 
             String encoded = NbtCodec.encode(root);
@@ -591,10 +608,10 @@ public final class LogicalDeltaEngine {
                 snapshot.networkId = entity.getId();
 
                 //? if (>=1.18 && <=1.21.11) {
-                /*snapshot.packedChunkPosition = entity.chunkPosition().toLong();
+                /*snapshot.packedChunkPosition = VersionChunkPos.pack(entity.chunkPosition());
                 *///?}
                 //? if (>=26.1 && <=26.3) {
-                snapshot.packedChunkPosition = entity.chunkPosition().pack();
+                snapshot.packedChunkPosition = VersionChunkPos.pack(entity.chunkPosition());
                 //?}
 
                 snapshot.captureEpoch = epoch;
@@ -745,7 +762,7 @@ public final class LogicalDeltaEngine {
                                         dimension,
                                         chunk,
                                         ChunkMutationTracker.key(
-                                                dimension, chunk.getPos().toLong())));
+                                                dimension, VersionChunkPos.pack(chunk.getPos()))));
                         *///?}
                         //? if (>=26.1 && <=26.3) {
                         result.add(
@@ -754,7 +771,7 @@ public final class LogicalDeltaEngine {
                                         dimension,
                                         chunk,
                                         ChunkMutationTracker.key(
-                                                dimension, chunk.getPos().pack())));
+                                                dimension, VersionChunkPos.pack(chunk.getPos()))));
                         //?}
 
                     }

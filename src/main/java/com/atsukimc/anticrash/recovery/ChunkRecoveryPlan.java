@@ -4,6 +4,7 @@ import com.atsukimc.anticrash.runtime.ChunkStateSnapshot;
 import com.atsukimc.anticrash.runtime.MovingPistonTickSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
@@ -125,17 +126,11 @@ public final class ChunkRecoveryPlan {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*scheduledTickChunks.add(
-                        new Key(
-                                tick.dimension,
-                                new net.minecraft.world.level.ChunkPos(tick.x >> 4, tick.z >> 4)
-                                        .toLong()));
+                        new Key(tick.dimension, VersionChunkPos.pack(tick.x >> 4, tick.z >> 4)));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 scheduledTickChunks.add(
-                        new Key(
-                                tick.dimension,
-                                new net.minecraft.world.level.ChunkPos(tick.x >> 4, tick.z >> 4)
-                                        .pack()));
+                        new Key(tick.dimension, VersionChunkPos.pack(tick.x >> 4, tick.z >> 4)));
                 //?}
 
             }
@@ -150,15 +145,13 @@ public final class ChunkRecoveryPlan {
                 /*movingPistonChunks.add(
                         new Key(
                                 piston.dimension,
-                                new net.minecraft.world.level.ChunkPos(piston.x >> 4, piston.z >> 4)
-                                        .toLong()));
+                                VersionChunkPos.pack(piston.x >> 4, piston.z >> 4)));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 movingPistonChunks.add(
                         new Key(
                                 piston.dimension,
-                                new net.minecraft.world.level.ChunkPos(piston.x >> 4, piston.z >> 4)
-                                        .pack()));
+                                VersionChunkPos.pack(piston.x >> 4, piston.z >> 4)));
                 //?}
 
             }
