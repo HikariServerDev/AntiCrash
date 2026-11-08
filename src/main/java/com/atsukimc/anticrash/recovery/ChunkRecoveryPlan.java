@@ -124,15 +124,8 @@ public final class ChunkRecoveryPlan {
                     throw new IllegalArgumentException("Invalid scheduled-tick recovery state");
                 }
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*scheduledTickChunks.add(
-                        new Key(tick.dimension, VersionChunkPos.pack(tick.x >> 4, tick.z >> 4)));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 scheduledTickChunks.add(
                         new Key(tick.dimension, VersionChunkPos.pack(tick.x >> 4, tick.z >> 4)));
-                //?}
-
             }
         }
         if (capsule.movingPistonTickOrder != null) {
@@ -141,19 +134,10 @@ public final class ChunkRecoveryPlan {
                     throw new IllegalArgumentException("Invalid moving-piston recovery state");
                 }
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*movingPistonChunks.add(
-                        new Key(
-                                piston.dimension,
-                                VersionChunkPos.pack(piston.x >> 4, piston.z >> 4)));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 movingPistonChunks.add(
                         new Key(
                                 piston.dimension,
                                 VersionChunkPos.pack(piston.x >> 4, piston.z >> 4)));
-                //?}
-
             }
         }
         transientState.retainAll(entityTicking);

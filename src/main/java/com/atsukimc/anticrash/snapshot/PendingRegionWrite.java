@@ -19,15 +19,7 @@ public record PendingRegionWrite(Path directory, ChunkPos pos, CompoundTag nbt) 
     }
 
     public Path externalChunkFile() {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*return directory.resolve(
-                "c." + VersionChunkPos.x(pos) + "." + VersionChunkPos.z(pos) + ".mcc");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         return directory.resolve(
                 "c." + VersionChunkPos.x(pos) + "." + VersionChunkPos.z(pos) + ".mcc");
-        //?}
-
     }
 }

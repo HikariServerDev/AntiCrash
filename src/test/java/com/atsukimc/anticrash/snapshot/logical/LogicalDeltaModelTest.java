@@ -47,12 +47,7 @@ class LogicalDeltaModelTest {
         ChunkMutationTracker.registerScheduler(scheduler, "minecraft:overworld");
         ChunkMutationTracker.recordScheduler(scheduler, new ChunkPos(3, -2), "schedule");
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*assertEquals(1L, tracker.generation("minecraft:overworld", VersionChunkPos.pack(3, -2)));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         assertEquals(1L, tracker.generation("minecraft:overworld", VersionChunkPos.pack(3, -2)));
-        //?}
 
         assertFalse(tracker.isUncertain());
         tracker.resetForTests();
@@ -67,12 +62,7 @@ class LogicalDeltaModelTest {
 
         assertTrue(tracker.isUncertain());
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*assertEquals(0L, tracker.generation("minecraft:overworld", VersionChunkPos.pack(3, -2)));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         assertEquals(0L, tracker.generation("minecraft:overworld", VersionChunkPos.pack(3, -2)));
-        //?}
 
         tracker.resetForTests();
     }

@@ -32,16 +32,8 @@ public abstract class WorldTickSchedulerMutationMixin {
                             + tick);
         }
         if (com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*ChunkMutationTracker.recordScheduler(
-                    this, VersionChunkPos.containing(tick.pos()), "world.schedule");
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             ChunkMutationTracker.recordScheduler(
                     this, VersionChunkPos.containing(tick.pos()), "world.schedule");
-            //?}
-
         }
     }
 

@@ -72,20 +72,8 @@ public final class TransientEntityTickSnapshot {
                     snapshot.uuid = entity.getStringUUID();
 
                     snapshot.kind = kind;
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkX = VersionChunkPos.x(entity.chunkPosition());
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkX = VersionChunkPos.x(entity.chunkPosition());
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkZ = VersionChunkPos.z(entity.chunkPosition());
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkZ = VersionChunkPos.z(entity.chunkPosition());
-                    //?}
 
                     result.add(snapshot);
                 });

@@ -47,16 +47,6 @@ public final class LiveFileTracker {
             // An oversized chunk lives in c.<x>.<z>.mcc beside the region file; RegionFile creates
             // or deletes it inside the same write.
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*target.add(
-                    normalized.resolve(
-                            "c."
-                                    + VersionChunkPos.x(position)
-                                    + "."
-                                    + VersionChunkPos.z(position)
-                                    + ".mcc"));
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             target.add(
                     normalized.resolve(
                             "c."
@@ -64,8 +54,6 @@ public final class LiveFileTracker {
                                     + "."
                                     + VersionChunkPos.z(position)
                                     + ".mcc"));
-            //?}
-
         } finally {
             lock.readLock().unlock();
         }

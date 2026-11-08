@@ -243,13 +243,7 @@ public final class RuntimeOrderRestorer {
             ChunkTicketManagerAccessorMixin accessor = (ChunkTicketManagerAccessorMixin) manager;
             List<Object[]> stray = new ArrayList<>();
             for (var position : accessor.anticrash$getTicketsByPosition().long2ObjectEntrySet()) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*ChunkPos chunk = VersionChunkPos.unpack(position.getLongKey());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 ChunkPos chunk = VersionChunkPos.unpack(position.getLongKey());
-                //?}
 
                 //? if (>=1.18 && <=1.21.4) {
                 /*for (Ticket<?> ticket : position.getValue())
@@ -281,16 +275,8 @@ public final class RuntimeOrderRestorer {
                     //? if (>=1.18 && <=1.21.4) {
                     /*Object argument =
                             ((ChunkTicketAccessorMixin) (Object) ticket).anticrash$getArgument();
-                    *///?}
-                    //? if (>=1.21.5 && <=26.3) {
-                    String name =
-                            net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE
-                                    .getKey(type)
-                                    .getPath();
-                    //?}
 
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*if (!expected.contains(
+                    if (!expected.contains(
                             expiringKey(
                                     world.getKey(),
                                     VersionChunkPos.x(chunk),
@@ -299,17 +285,12 @@ public final class RuntimeOrderRestorer {
                                     ticket.getTicketLevel(),
                                     String.valueOf(argument))))
                     *///?}
-                    //? if (>=1.21.5 && <=1.21.11) {
-                    /*if (!expected.contains(
-                            expiringKey(
-                                    world.getKey(),
-                                    VersionChunkPos.x(chunk),
-                                    VersionChunkPos.z(chunk),
-                                    name,
-                                    ticket.getTicketLevel(),
-                                    "-")))
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
+                    //? if (>=1.21.5 && <=26.3) {
+                    String name =
+                            net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE
+                                    .getKey(type)
+                                    .getPath();
+
                     if (!expected.contains(
                             expiringKey(
                                     world.getKey(),
@@ -388,18 +369,23 @@ public final class RuntimeOrderRestorer {
 
             //? if (>=1.18 && <=1.21.4) {
             /*DistanceManager manager = world.getChunkSource().chunkMap.getDistanceManager();
+
+            TicketType<?> type;
+
+            Object argument;
+
+            switch (entry.type) {
+                case "portal" -> {
+                    Matcher matcher = BLOCK_POS.matcher(entry.argument);
+
+                    if (!matcher.find() || entry.level > 33)
             *///?}
             //? if (>=1.21.5 && <=26.3) {
             TicketStorage manager =
                     ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
                                     world.getChunkSource())
                             .anticrash$getTicketManager();
-            //?}
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*TicketType<?> type;
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
             TicketType type =
                     switch (entry.type) {
                         case "portal" -> TicketType.PORTAL;
@@ -410,18 +396,7 @@ public final class RuntimeOrderRestorer {
 
                         default -> null;
                     };
-            //?}
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*Object argument;
-
-            switch (entry.type) {
-                case "portal" -> {
-                    Matcher matcher = BLOCK_POS.matcher(entry.argument);
-
-                    if (!matcher.find() || entry.level > 33)
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
             if (type == null)
             //?}
                 continue;
@@ -444,56 +419,41 @@ public final class RuntimeOrderRestorer {
                 //? if (>=1.18 && <=1.21.3) {
                 /*case "post_teleport" -> {
                     Integer id;
+
+                    try {
+                        id = Integer.valueOf(entry.argument.trim());
+                    } catch (NumberFormatException invalid) {
+                        continue;
+                    }
+
+                    if (entry.level > 33) continue;
+
+                    manager.addRegionTicket(TicketType.POST_TELEPORT, chunk, 33 - entry.level, id);
+
+                    type = TicketType.POST_TELEPORT;
+
+                    argument = id;
                 *///?}
                 //? if 1.21.4 {
                 /*case "ender_pearl" -> {
                     // POST_TELEPORT no longer exists. This is a distinct 40-tick ticket whose
                     // argument is ChunkPos, not the old teleporting entity's network id.
                     Matcher matcher = CHUNK_POS.matcher(entry.argument);
-                *///?}
 
-                    //? if (>=1.18 && <=1.21.3) {
-                    /*try {
-                        id = Integer.valueOf(entry.argument.trim());
-                    } catch (NumberFormatException invalid) {
-                        continue;
-                    }
-                    *///?}
-                    //? if 1.21.4 {
-                    /*if (!matcher.matches())
+                    if (!matcher.matches())
                         throw new IllegalArgumentException("Invalid ender-pearl ticket argument");
-                    *///?}
 
-                    //? if (>=1.18 && <=1.21.3) {
-                    /*if (entry.level > 33) continue;
-                    *///?}
-                    //? if 1.21.4 {
-                    /*ChunkPos pearl =
+                    ChunkPos pearl =
                             new ChunkPos(
                                     Integer.parseInt(matcher.group(1)),
                                     Integer.parseInt(matcher.group(2)));
-                    *///?}
 
-                    //? if (>=1.18 && <=1.21.3) {
-                    /*manager.addRegionTicket(TicketType.POST_TELEPORT, chunk, 33 - entry.level, id);
-                    *///?}
-                    //? if 1.21.4 {
-                    /*manager.addTicket(TicketType.ENDER_PEARL, chunk, entry.level, pearl);
-                    *///?}
+                    manager.addTicket(TicketType.ENDER_PEARL, chunk, entry.level, pearl);
 
-                    //? if (>=1.18 && <=1.21.3) {
-                    /*type = TicketType.POST_TELEPORT;
-                    *///?}
-                    //? if 1.21.4 {
-                    /*type = TicketType.ENDER_PEARL;
-                    *///?}
+                    type = TicketType.ENDER_PEARL;
 
-                    //? if (>=1.18 && <=1.21.3) {
-                    /*argument = id;
-                    *///?}
-                    //? if 1.21.4 {
-                    /*argument = pearl;
-                    *///?}
+                    argument = pearl;
+                *///?}
                 //? if (>=1.18 && <=1.21.4) {
 
                 /*}
@@ -525,11 +485,7 @@ public final class RuntimeOrderRestorer {
             /*SortedArraySet<Ticket<?>> tickets =
                     accessor.anticrash$getTicketsByPosition().get(VersionChunkPos.pack(chunk));
             *///?}
-            //? if (>=1.21.5 && <=1.21.11) {
-            /*List<Ticket> tickets =
-                    accessor.anticrash$getTicketsByPosition().get(VersionChunkPos.pack(chunk));
-            *///?}
-            //? if (>=26.1 && <=26.3) {
+            //? if (>=1.21.5 && <=26.3) {
             List<Ticket> tickets =
                     accessor.anticrash$getTicketsByPosition().get(VersionChunkPos.pack(chunk));
             //?}

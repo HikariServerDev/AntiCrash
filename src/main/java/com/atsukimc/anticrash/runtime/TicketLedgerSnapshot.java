@@ -55,27 +55,19 @@ public final class TicketLedgerSnapshot {
             //? if (>=1.18 && <=1.21.4) {
             /*Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets =
                     accessor.anticrash$getTicketsByPosition();
+
+            for (Long2ObjectMap.Entry<SortedArraySet<Ticket<?>>> positionEntry :
+                    tickets.long2ObjectEntrySet())
             *///?}
             //? if (>=1.21.5 && <=26.3) {
             Long2ObjectOpenHashMap<List<Ticket>> tickets =
                     accessor.anticrash$getTicketsByPosition();
-            //?}
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*for (Long2ObjectMap.Entry<SortedArraySet<Ticket<?>>> positionEntry :
-                    tickets.long2ObjectEntrySet())
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
             for (Long2ObjectMap.Entry<List<Ticket>> positionEntry : tickets.long2ObjectEntrySet())
             //?}
             {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*ChunkPos pos = VersionChunkPos.unpack(positionEntry.getLongKey());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 ChunkPos pos = VersionChunkPos.unpack(positionEntry.getLongKey());
-                //?}
 
                 //? if (>=1.18 && <=1.21.4) {
                 /*for (Ticket<?> ticket : positionEntry.getValue())
@@ -114,21 +106,8 @@ public final class TicketLedgerSnapshot {
                     Entry entry = new Entry();
 
                     entry.dimension = VersionIds.dimension(world);
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*entry.x = VersionChunkPos.x(pos);
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     entry.x = VersionChunkPos.x(pos);
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*entry.z = VersionChunkPos.z(pos);
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     entry.z = VersionChunkPos.z(pos);
-                    //?}
-
                     entry.type = type;
 
                     entry.level = ticket.getTicketLevel();

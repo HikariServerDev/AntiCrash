@@ -119,18 +119,10 @@ public final class LogicalDeltaEngine {
                 String key = ref.key();
                 committedAccessibleChunks.add(key);
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*committedChunkGenerations.put(
-                        key,
-                        mutations.generation(
-                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos())));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 committedChunkGenerations.put(
                         key,
                         mutations.generation(
                                 ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos())));
-                //?}
 
                 committedChunkHashes.put(key, "INHERITED");
             }
@@ -164,16 +156,9 @@ public final class LogicalDeltaEngine {
                 WorldChunkRef ref = refs.get((start + offset) % refs.size());
                 inspected++;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*long generation =
-                        mutations.generation(
-                                ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 long generation =
                         mutations.generation(
                                 ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
-                //?}
 
                 if (candidates.getIfValid(ref.key(), server.getTickCount(), generation) != null)
                     continue;
@@ -312,13 +297,7 @@ public final class LogicalDeltaEngine {
             }
             phaseStart = System.nanoTime();
             for (WorldChunkRef ref : refs) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*long packed = VersionChunkPos.pack(ref.chunk().getPos());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 long packed = VersionChunkPos.pack(ref.chunk().getPos());
-                //?}
 
                 long generation = mutations.generation(ref.dimension(), packed);
                 String key = ref.key();
@@ -473,16 +452,9 @@ public final class LogicalDeltaEngine {
 
                 if (entity == null || entity.isRemoved() || !entity.shouldBeSaved()) continue;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*String key =
-                        ChunkMutationTracker.key(
-                                dimension, VersionChunkPos.pack(entity.chunkPosition()));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 String key =
                         ChunkMutationTracker.key(
                                 dimension, VersionChunkPos.pack(entity.chunkPosition()));
-                //?}
 
                 grouped.computeIfAbsent(key, ignored -> new ArrayList<>()).add(entity);
                 owners.putIfAbsent(key, world);
@@ -491,17 +463,9 @@ public final class LogicalDeltaEngine {
         // An empty captured chunk is meaningful: it removes an entity that existed in the parent.
         // We include every currently accessible chunk, not just chunks containing an entity.
         for (WorldChunkRef ref : accessibleChunks(server)) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*String key =
-                    ChunkMutationTracker.key(
-                            ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String key =
                     ChunkMutationTracker.key(
                             ref.dimension(), VersionChunkPos.pack(ref.chunk().getPos()));
-            //?}
 
             grouped.putIfAbsent(key, List.of());
             owners.putIfAbsent(key, ref.world());
@@ -555,15 +519,12 @@ public final class LogicalDeltaEngine {
 
                 //? if (>=1.18 && <=1.21.5) {
                 /*CompoundTag nbt = new CompoundTag();
+
+                if (!entity.save(nbt))
                 *///?}
                 //? if (>=1.21.6 && <=26.3) {
                 CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
-                //?}
 
-                //? if (>=1.18 && <=1.21.5) {
-                /*if (!entity.save(nbt))
-                *///?}
-                //? if (>=1.21.6 && <=26.3) {
                 if (nbt == null)
                 //?}
                     continue;
@@ -573,21 +534,10 @@ public final class LogicalDeltaEngine {
             }
             root.put("Entities", entities);
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*ChunkPos pos = VersionChunkPos.unpack(packed);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             ChunkPos pos = VersionChunkPos.unpack(packed);
-            //?}
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*root.putIntArray(
-                    "Position", new int[] {VersionChunkPos.x(pos), VersionChunkPos.z(pos)});
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             root.putIntArray(
                     "Position", new int[] {VersionChunkPos.x(pos), VersionChunkPos.z(pos)});
-            //?}
 
             String encoded = NbtCodec.encode(root);
             String hash = Hashing.sha256(Base64.getDecoder().decode(encoded));
@@ -606,13 +556,7 @@ public final class LogicalDeltaEngine {
 
                 snapshot.entityType = String.valueOf(entity.getType());
                 snapshot.networkId = entity.getId();
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*snapshot.packedChunkPosition = VersionChunkPos.pack(entity.chunkPosition());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 snapshot.packedChunkPosition = VersionChunkPos.pack(entity.chunkPosition());
-                //?}
 
                 snapshot.captureEpoch = epoch;
                 String encodedEntity = NbtCodec.encode(savedNbt.get(index));
@@ -754,17 +698,6 @@ public final class LogicalDeltaEngine {
                     //?}
 
                     if (chunk != null) {
-
-                        //? if (>=1.18 && <=1.21.11) {
-                        /*result.add(
-                                new WorldChunkRef(
-                                        world,
-                                        dimension,
-                                        chunk,
-                                        ChunkMutationTracker.key(
-                                                dimension, VersionChunkPos.pack(chunk.getPos()))));
-                        *///?}
-                        //? if (>=26.1 && <=26.3) {
                         result.add(
                                 new WorldChunkRef(
                                         world,
@@ -772,8 +705,6 @@ public final class LogicalDeltaEngine {
                                         chunk,
                                         ChunkMutationTracker.key(
                                                 dimension, VersionChunkPos.pack(chunk.getPos()))));
-                        //?}
-
                     }
                 } catch (RuntimeException ignored) {
                     // A retiring holder is not an exact candidate for this epoch.

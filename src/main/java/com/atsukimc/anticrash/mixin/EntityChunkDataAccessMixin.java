@@ -71,12 +71,7 @@ public abstract class EntityChunkDataAccessMixin {
             CompoundTag nbt,
             Operation<CompletableFuture<Void>> original) {
     //?}
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*long chunk = VersionChunkPos.pack(pos);
-        *///?} else {
         long chunk = VersionChunkPos.pack(pos);
-        //?}
 
         if (nbt == null) {
             anticrash$deduplicator.forget(chunk);
@@ -108,11 +103,7 @@ public abstract class EntityChunkDataAccessMixin {
             ChunkPos pos,
             java.util.function.Supplier<CompoundTag> value,
             Operation<CompletableFuture<Void>> original) {
-        //? if 1.21.11 {
-        /*anticrash$deduplicator.forget(VersionChunkPos.pack(pos));
-        *///?} else {
         anticrash$deduplicator.forget(VersionChunkPos.pack(pos));
-        //?}
 
         return original.call(storage, pos, value);
     }

@@ -62,28 +62,12 @@ class LogicalDeltaMaterializerTest {
         LogicalChunkDelta changed = new LogicalChunkDelta();
         changed.dimension = "minecraft:overworld";
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*changed.packedPosition = VersionChunkPos.pack(0, 0);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         changed.packedPosition = VersionChunkPos.pack(0, 0);
-        //?}
 
         changed.payloadBase64 = NbtCodec.encode(marker("after"));
         changed.sha256 = "unused-in-test";
         delta.addChunk(changed);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*delta.addTombstone(
-                new LogicalTombstone(
-                        "ENTITY_REMOVED",
-                        "minecraft:overworld",
-                        removed.toString(),
-                        1L,
-                        "test",
-                        VersionChunkPos.pack(0, 0)));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         delta.addTombstone(
                 new LogicalTombstone(
                         "ENTITY_REMOVED",
@@ -92,7 +76,6 @@ class LogicalDeltaMaterializerTest {
                         1L,
                         "test",
                         VersionChunkPos.pack(0, 0)));
-        //?}
 
         Path destination = temp.resolve("materialized");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
@@ -101,6 +84,9 @@ class LogicalDeltaMaterializerTest {
         /*assertEquals(
                 "before",
                 readRegion(parentWorld, "region", new ChunkPos(0, 0)).getString("marker"));
+
+        assertEquals(
+                "after", readRegion(destination, "region", new ChunkPos(0, 0)).getString("marker"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         assertEquals(
@@ -108,13 +94,7 @@ class LogicalDeltaMaterializerTest {
                 readRegion(parentWorld, "region", new ChunkPos(0, 0))
                         .getString("marker")
                         .orElseThrow());
-        //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                "after", readRegion(destination, "region", new ChunkPos(0, 0)).getString("marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 "after",
                 readRegion(destination, "region", new ChunkPos(0, 0))
@@ -132,6 +112,12 @@ class LogicalDeltaMaterializerTest {
                 readRegion(destination, "entities", new ChunkPos(0, 0))
                         .getList("Entities", 10)
                         .size());
+
+        assertEquals(
+                1,
+                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
+                        .getList("Entities", 10)
+                        .size());
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         assertEquals(
@@ -139,16 +125,7 @@ class LogicalDeltaMaterializerTest {
                 readRegion(destination, "entities", new ChunkPos(0, 0))
                         .getListOrEmpty("Entities")
                         .size());
-        //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getList("Entities", 10)
-                        .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 1,
                 readRegion(parentWorld, "entities", new ChunkPos(0, 0))
@@ -175,42 +152,17 @@ class LogicalDeltaMaterializerTest {
         delta.exact = true;
         LogicalEntityChunkDelta emptied = new LogicalEntityChunkDelta();
         emptied.dimension = "minecraft:overworld";
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*emptied.packedPosition = VersionChunkPos.pack(0, 0);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         emptied.packedPosition = VersionChunkPos.pack(0, 0);
-        //?}
-
         emptied.payloadBase64 = NbtCodec.encode(entityChunk());
         delta.addEntityChunk(emptied);
         // The entity left chunk (1,0) and came back before the cut: the replacement list is
         // authoritative and the stale move tombstone must not delete it again.
         LogicalEntityChunkDelta rewritten = new LogicalEntityChunkDelta();
         rewritten.dimension = "minecraft:overworld";
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*rewritten.packedPosition = VersionChunkPos.pack(1, 0);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         rewritten.packedPosition = VersionChunkPos.pack(1, 0);
-        //?}
-
         rewritten.payloadBase64 = NbtCodec.encode(entityChunk(returned));
         delta.addEntityChunk(rewritten);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*delta.addTombstone(
-                new LogicalTombstone(
-                        "ENTITY_MOVED_FROM",
-                        "minecraft:overworld",
-                        returned.toString(),
-                        1L,
-                        "test",
-                        VersionChunkPos.pack(1, 0)));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         delta.addTombstone(
                 new LogicalTombstone(
                         "ENTITY_MOVED_FROM",
@@ -219,7 +171,6 @@ class LogicalDeltaMaterializerTest {
                         1L,
                         "test",
                         VersionChunkPos.pack(1, 0)));
-        //?}
 
         Path destination = temp.resolve("materialized2");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
@@ -247,6 +198,12 @@ class LogicalDeltaMaterializerTest {
                 readRegion(destination, "entities", new ChunkPos(1, 0))
                         .getList("Entities", 10)
                         .size());
+
+        assertEquals(
+                1,
+                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
+                        .getList("Entities", 10)
+                        .size());
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         assertEquals(
@@ -254,16 +211,7 @@ class LogicalDeltaMaterializerTest {
                 readRegion(destination, "entities", new ChunkPos(1, 0))
                         .getListOrEmpty("Entities")
                         .size());
-        //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getList("Entities", 10)
-                        .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 1,
                 readRegion(parentWorld, "entities", new ChunkPos(0, 0))
@@ -311,16 +259,6 @@ class LogicalDeltaMaterializerTest {
         Path directory = world.resolve(directoryName);
         Files.createDirectories(directory);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Path file =
-                directory.resolve(
-                        "r."
-                                + (VersionChunkPos.x(pos) >> 5)
-                                + "."
-                                + (VersionChunkPos.z(pos) >> 5)
-                                + ".mca");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         Path file =
                 directory.resolve(
                         "r."
@@ -328,7 +266,6 @@ class LogicalDeltaMaterializerTest {
                                 + "."
                                 + (VersionChunkPos.z(pos) >> 5)
                                 + ".mca");
-        //?}
 
         //? if (>=1.18 && <=1.20.4) {
         /*try (RegionFile region = new RegionFile(file, directory, false))
@@ -345,18 +282,13 @@ class LogicalDeltaMaterializerTest {
 
             try (DataOutputStream output = region.getChunkDataOutputStream(pos)) {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*//? if (>=1.18 && <=1.20.1) {
-                /^NbtIo.write(root, output);
-                ^///?}
-                //? if 1.20.2 {
-                /^NbtIo.writeUnnamedTag(root, output);
-                ^///?}
-                //? if (>=1.20.3 && <=1.21.11) {
-                /^NbtIo.writeUnnamedTagWithFallback(root, output);
-                ^///?}
+                //? if (>=1.18 && <=1.20.1) {
+                /*NbtIo.write(root, output);
                 *///?}
-                //? if (>=26.1 && <=26.3) {
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(root, output);
+                *///?}
+                //? if (>=1.20.3 && <=26.3) {
                 NbtIo.writeUnnamedTagWithFallback(root, output);
                 //?}
 
@@ -370,16 +302,6 @@ class LogicalDeltaMaterializerTest {
             throws Exception {
         Path directory = world.resolve(directoryName);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Path file =
-                directory.resolve(
-                        "r."
-                                + (VersionChunkPos.x(pos) >> 5)
-                                + "."
-                                + (VersionChunkPos.z(pos) >> 5)
-                                + ".mca");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         Path file =
                 directory.resolve(
                         "r."
@@ -387,7 +309,6 @@ class LogicalDeltaMaterializerTest {
                                 + "."
                                 + (VersionChunkPos.z(pos) >> 5)
                                 + ".mca");
-        //?}
 
         //? if (>=1.18 && <=1.20.4) {
         /*try (RegionFile region = new RegionFile(file, directory, false);

@@ -75,20 +75,8 @@ public final class EntityRuntimeSnapshot {
 
                     ChunkPos chunk = entity.chunkPosition();
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkX = VersionChunkPos.x(chunk);
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkX = VersionChunkPos.x(chunk);
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkZ = VersionChunkPos.z(chunk);
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     snapshot.chunkZ = VersionChunkPos.z(chunk);
-                    //?}
-
                     snapshot.order = result.size();
                     snapshot.removed = entity.isRemoved();
                     result.add(snapshot);

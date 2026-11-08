@@ -135,16 +135,9 @@ public final class TransientChunkStateMarker {
                 //?}
                     continue;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*criticalChunks.add(
-                        new ChunkReference(
-                                VersionIds.dimension(world), VersionChunkPos.pack(chunk.getPos())));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
                                 VersionIds.dimension(world), VersionChunkPos.pack(chunk.getPos())));
-                //?}
 
                 if (pistonsInChunk > 0) {
                     movingPistonChunks++;
@@ -176,19 +169,10 @@ public final class TransientChunkStateMarker {
                 if (!isCheckpointCriticalEntity(entity)) continue;
                 transientPhysicsEntities++;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*criticalChunks.add(
-                        new ChunkReference(
-                                VersionIds.dimension(world),
-                                VersionChunkPos.pack(entity.chunkPosition())));
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
                                 VersionIds.dimension(world),
                                 VersionChunkPos.pack(entity.chunkPosition())));
-                //?}
-
             }
         }
 

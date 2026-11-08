@@ -69,21 +69,11 @@ public final class MovingPistonTickSnapshot {
             if (BlockEntityTickerSnapshot.removed(ticker)) continue;
             BlockPos position = ticker.getPos();
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!protectedChunks.contains(
-                            VersionChunkPos.pack(VersionChunkPos.containing(position)))
-                    || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
-                            instanceof PistonMovingBlockEntity)
-                    || !seen.add(position))
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             if (!protectedChunks.contains(
                             VersionChunkPos.pack(VersionChunkPos.containing(position)))
                     || !(BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                             instanceof PistonMovingBlockEntity)
-                    || !seen.add(position))
-            //?}
-            {
+                    || !seen.add(position)) {
                 continue;
             }
             MovingPistonTickSnapshot snapshot = new MovingPistonTickSnapshot();

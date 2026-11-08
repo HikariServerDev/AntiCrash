@@ -877,16 +877,9 @@ public final class AntiCrashController {
                     "Recovery chunk anchor is outside the Minecraft coordinate range");
         }
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkRecoveryPlan.Anchor anchor =
-                new ChunkRecoveryPlan.Anchor(
-                        dimension, VersionChunkPos.pack((int) chunkX, (int) chunkZ));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         ChunkRecoveryPlan.Anchor anchor =
                 new ChunkRecoveryPlan.Anchor(
                         dimension, VersionChunkPos.pack((int) chunkX, (int) chunkZ));
-        //?}
 
         if (!anchors.contains(anchor) && anchors.size() >= maxAnchors) {
             throw new IOException(
@@ -1265,22 +1258,17 @@ public final class AntiCrashController {
         }
 
         for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        //? if (>=1.18.2 && <=26.3) {
-        {
-            // No chunk is ticked (second argument); this only advances tickets and chunk loading.
-
-        //?}
-            //? if (>=1.18.2 && <=1.21.11) {
-            /*world.getChunkSource().tick(() -> true, false);
-            *///?}
         //? if (>=1.18 && <=1.18.1) {
         /*{
             // 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
             com.atsukimc.anticrash.recovery.VersionChunkLifecycle.advance(world.getChunkSource());
         *///?}
-            //? if (>=26.1 && <=26.3) {
+        //? if (>=1.18.2 && <=26.3) {
+        {
+            // No chunk is ticked (second argument); this only advances tickets and chunk loading.
+
             world.getChunkSource().tick(() -> true, false);
-            //?}
+        //?}
 
         }
         return true;

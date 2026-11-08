@@ -27,16 +27,9 @@ public abstract class BlockEntityMutationMixin {
                 || blockEntity.getLevel() == null
                 || blockEntity.getBlockPos() == null) return;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkMutationTracker.record(
-                blockEntity.getLevel(),
-                VersionChunkPos.containing(blockEntity.getBlockPos()),
-                "blockEntity.markDirty");
-        *///?} else {
         ChunkMutationTracker.record(
                 blockEntity.getLevel(),
                 VersionChunkPos.containing(blockEntity.getBlockPos()),
                 "blockEntity.markDirty");
-        //?}
     }
 }

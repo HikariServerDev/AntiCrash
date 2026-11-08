@@ -59,13 +59,7 @@ public final class ChunkMutationTracker {
         //?}
             return;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*GLOBAL.record(GLOBAL.dimensionName(world), VersionChunkPos.pack(position), reason);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         GLOBAL.record(GLOBAL.dimensionName(world), VersionChunkPos.pack(position), reason);
-        //?}
-
     }
 
     /** Registers a scheduler object without touching its private queue or ticket state. */
@@ -92,13 +86,7 @@ public final class ChunkMutationTracker {
             return;
         }
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*GLOBAL.record(dimension, VersionChunkPos.pack(position), reason);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         GLOBAL.record(dimension, VersionChunkPos.pack(position), reason);
-        //?}
-
     }
 
     /** Returns the observed owner dimension for diagnostics without exposing scheduler state. */

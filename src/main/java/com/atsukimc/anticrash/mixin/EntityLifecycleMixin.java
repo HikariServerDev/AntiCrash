@@ -49,19 +49,10 @@ public abstract class EntityLifecycleMixin {
         if (entity.level() == null) return;
         //?}
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
-
-        long newChunk =
-                VersionChunkPos.pack(
-                        net.minecraft.util.Mth.floor(x) >> 4, net.minecraft.util.Mth.floor(z) >> 4);
-        *///?} else {
         long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
-
         long newChunk =
                 VersionChunkPos.pack(
                         net.minecraft.util.Mth.floor(x) >> 4, net.minecraft.util.Mth.floor(z) >> 4);
-        //?}
 
         EntityLifecycleTracker.recordMove(entity, oldChunk, newChunk);
     }

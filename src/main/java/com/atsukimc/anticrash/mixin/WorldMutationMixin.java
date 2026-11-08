@@ -18,14 +18,7 @@ public abstract class WorldMutationMixin {
     private void anticrash$worldDirty(BlockPos pos, CallbackInfo callbackInfo) {
         if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkMutationTracker.record(
-                (Level) (Object) this, VersionChunkPos.containing(pos), "world.markDirty");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         ChunkMutationTracker.record(
                 (Level) (Object) this, VersionChunkPos.containing(pos), "world.markDirty");
-        //?}
-
     }
 }
