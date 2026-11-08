@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.BlockEventData;
@@ -42,18 +43,7 @@ public final class BlockEventSnapshot {
 
         Map<String, ServerLevel> byDimension = new LinkedHashMap<>();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : worlds)
-            //? if (>=1.18 && <=1.21.10) {
-            /^byDimension.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^byDimension.put(VersionIds.dimension(world), world);
-            ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         for (ServerLevel world : worlds) byDimension.put(VersionIds.dimension(world), world);
-        //?}
 
         List<PreparedEntry> prepared = new ArrayList<>(entries.size());
         for (Entry entry : entries) {
@@ -67,34 +57,12 @@ public final class BlockEventSnapshot {
                 if (world == null)
                     throw new IllegalArgumentException("unknown block event dimension");
 
-                //? if (>=1.18 && <=1.20.6) {
-                /*var blockId = VersionIds.parse(entry.block);
-                *///?}
-                //? if (>=1.21 && <=1.21.10) {
-                /*var blockId = VersionIds.parse(entry.block);
-                *///?}
-                //? if (>=1.21.11 && <=26.3) {
                 var blockId = VersionIds.parse(entry.block);
-                //?}
 
-                //? if (>=1.18 && <=1.19.2) {
-                /*if (!VersionIds.blocks().containsKey(blockId))
-
-                *///?}
-                //? if (>=1.19.3 && <=26.3) {
                 if (!VersionIds.blocks().containsKey(blockId))
-                //?}
                     throw new IllegalArgumentException("unknown block id");
 
-                //? if (>=1.18 && <=1.19.2) {
-                /*Block block = VersionIds.value(VersionIds.blocks(), blockId);
-                *///?}
-                //? if (>=1.19.3 && <=1.21.1) {
-                /*Block block = VersionIds.value(VersionIds.blocks(), blockId);
-                *///?}
-                //? if (>=1.21.2 && <=26.3) {
                 Block block = VersionIds.value(VersionIds.blocks(), blockId);
-                //?}
 
                 BlockEventData event =
                         new BlockEventData(
@@ -140,28 +108,13 @@ public final class BlockEventSnapshot {
             Entry entry = new Entry();
             entry.queue = queue;
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^entry.dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^entry.dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             entry.dimension = VersionIds.dimension(world);
-            //?}
 
             entry.x = event.pos().getX();
             entry.y = event.pos().getY();
             entry.z = event.pos().getZ();
 
-            //? if (>=1.18 && <=1.19.2) {
-            /*entry.block = VersionIds.id(VersionIds.blocks(), event.block());
-            *///?}
-            //? if (>=1.19.3 && <=26.3) {
             entry.block = VersionIds.id(VersionIds.blocks(), event.block());
-            //?}
 
             entry.type = event.paramA();
 

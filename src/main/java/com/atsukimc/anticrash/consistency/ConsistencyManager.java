@@ -91,13 +91,7 @@ public final class ConsistencyManager implements AutoCloseable {
         transaction.source = source;
         transaction.destination = destination;
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*transaction.dimension = player == null ? null : VersionIds.dimension(player);
-        *///?}else if <=1.21.10 {
-        /*transaction.dimension = player == null ? null : VersionIds.dimension(player);
-        *///?} else {
         transaction.dimension = player == null ? null : VersionIds.dimension(player);
-        //?}
 
         if (pos != null) {
             transaction.x = pos.getX();
@@ -105,13 +99,7 @@ public final class ConsistencyManager implements AutoCloseable {
             transaction.z = pos.getZ();
         }
         if (stack != null) {
-
-            //? if (>=1.18 && <=1.19.2) {
-            /*transaction.itemStackId = VersionIds.id(VersionIds.items(), stack.getItem());
-            *///?} else {
             transaction.itemStackId = VersionIds.id(VersionIds.items(), stack.getItem());
-            //?}
-
             transaction.count = stack.getCount();
             try {
 

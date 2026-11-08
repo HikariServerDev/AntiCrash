@@ -59,19 +59,8 @@ public final class ScheduledTickSnapshot {
     public static List<ScheduledTickSnapshot> capture(String dimension, LevelChunk chunk) {
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
-        //? if (>=1.18 && <=1.19.2) {
-        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), VersionIds.blocks());
-        *///?}
-        //? if (>=1.19.3 && <=26.3) {
         captureQueue(result, dimension, BLOCK, blockScheduler(chunk), VersionIds.blocks());
-        //?}
-
-        //? if (>=1.18 && <=1.19.2) {
-        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), VersionIds.fluids());
-        *///?}
-        //? if (>=1.19.3 && <=26.3) {
         captureQueue(result, dimension, FLUID, fluidScheduler(chunk), VersionIds.fluids());
-        //?}
 
         result.sort(STABLE_ORDER);
         return result;
@@ -108,18 +97,7 @@ public final class ScheduledTickSnapshot {
         scheduler
                 .getAll()
                 .forEach(ordered -> {
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*//? if (>=1.18 && <=1.21.10) {
-                    /^String identifier = VersionIds.id(registry, ordered.type());
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^String identifier = VersionIds.id(registry, ordered.type());
-                    ^///?}
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     String identifier = VersionIds.id(registry, ordered.type());
-                    //?}
 
                     if (identifier == null) {
                         throw new IllegalStateException("Scheduled tick type is not registered");

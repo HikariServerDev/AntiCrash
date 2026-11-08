@@ -22,17 +22,7 @@ public final class RedstoneTorchBurnoutSnapshot {
     public static RedstoneTorchBurnoutSnapshot capture(ServerLevel world) {
         RedstoneTorchBurnoutSnapshot snapshot = new RedstoneTorchBurnoutSnapshot();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^snapshot.dimension = VersionIds.dimension(world);
-        ^///?}
-        //? if 1.21.11 {
-        /^snapshot.dimension = VersionIds.dimension(world);
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         snapshot.dimension = VersionIds.dimension(world);
-        //?}
 
         Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> map =
                 RedstoneTorchBlockAccessorMixin.anticrash$getBurnoutMap();

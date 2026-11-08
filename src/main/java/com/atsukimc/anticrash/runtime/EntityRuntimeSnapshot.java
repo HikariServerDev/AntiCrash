@@ -56,17 +56,7 @@ public final class EntityRuntimeSnapshot {
     public static List<EntityRuntimeSnapshot> capture(ServerLevel world) {
         List<EntityRuntimeSnapshot> result = new ArrayList<>();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         String dimension = VersionIds.dimension(world);
-        //?}
 
         ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
                 .anticrash$getEntityList()
@@ -77,15 +67,7 @@ public final class EntityRuntimeSnapshot {
 
                     snapshot.uuid = entity.getStringUUID();
 
-                    //? if (>=1.18 && <=1.19.2) {
-                    /*String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
-                    *///?}
-                    //? if (>=1.19.3 && <=1.21.10) {
-                    /*String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
-                    *///?}
-                    //? if (>=1.21.11 && <=26.3) {
                     String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
-                    //?}
 
                     snapshot.type = id == null ? entity.getType().toString() : id.toString();
                     snapshot.networkEntityId = entity.getId();

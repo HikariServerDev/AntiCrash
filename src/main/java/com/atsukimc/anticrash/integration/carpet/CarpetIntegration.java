@@ -272,27 +272,11 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.8) {
         /*data.name = player.getGameProfile().getName();
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
+        *///?} else {
         data.name = player.getGameProfile().name();
         //?}
 
-        if (config.fakePlayer.snapshot.dimension)
-
-            //? if (>=1.18 && <=1.21.8) {
-            /*//? if (>=1.18 && <=1.19.4) {
-            /^data.dimension = VersionIds.dimension(player);
-            ^///?}
-            //? if (>=1.20 && <=1.21.8) {
-            /^data.dimension = VersionIds.dimension(player);
-            ^///?}
-            *///?}
-            //? if (>=1.21.9 && <=1.21.10) {
-            /*data.dimension = VersionIds.dimension(player);
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
-            data.dimension = VersionIds.dimension(player);
-            //?}
+        if (config.fakePlayer.snapshot.dimension) data.dimension = VersionIds.dimension(player);
 
         if (config.fakePlayer.snapshot.position) {
             data.x = player.getX();
@@ -1103,9 +1087,7 @@ public final class CarpetIntegration {
             if (remaining <= 0) continue;
             FakePlayerSnapshot.ItemCooldown cooldown = new FakePlayerSnapshot.ItemCooldown();
 
-            //? if (>=1.18 && <=1.19.2) {
-            /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
-            *///?} else if <=1.21.1 {
+            //? if (>=1.18 && <=1.21.1) {
             /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
             *///?} else {
             cooldown.item = entry.getKey().toString();
@@ -1182,33 +1164,20 @@ public final class CarpetIntegration {
                 if (cooldown == null || cooldown.item == null || cooldown.remainingTicks <= 0)
                     continue;
 
-                //? if (>=1.18 && <=1.21.10) {
-                /*var id = VersionIds.tryParse(cooldown.item);
-                *///?} else {
                 var id = VersionIds.tryParse(cooldown.item);
-                //?}
 
-                //? if (>=1.18 && <=1.19.2) {
+                //? if (>=1.18 && <=1.21.1) {
                 /*if (id == null || !VersionIds.items().containsKey(id))
-                *///?} else if <=1.21.1 {
-                /*if (id == null || !VersionIds.items().containsKey(id))
+                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
                 *///?} else if (>=1.21.2 && <=26.3) {
                 if (id == null)
-                //?}
-                    //? if <=1.21.1 {
-                    /*throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
-                    *///?} else {
                     throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                    //?}
+                //?}
 
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.
 
-                //? if (>=1.18 && <=1.19.2) {
-                /*player.getCooldowns()
-                        .addCooldown(
-                                VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
-                *///?} else if <= 1.21.1 {
+                //? if (>=1.18 && <=1.21.1) {
                 /*player.getCooldowns()
                         .addCooldown(
                                 VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
@@ -1243,12 +1212,7 @@ public final class CarpetIntegration {
     private static ServerLevel findWorld(MinecraftServer server, String id) {
         if (id != null)
             for (ServerLevel world : server.getAllLevels())
-                //? if (>=1.18 && <=1.21.10) {
-                /*if (VersionIds.dimension(world).equals(id))
-                *///?} else {
-                if (VersionIds.dimension(world).equals(id))
-                //?}
-                    return world;
+                if (VersionIds.dimension(world).equals(id)) return world;
         return null;
     }
 

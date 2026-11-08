@@ -128,20 +128,7 @@ public final class ChunkMutationTracker {
 
     private synchronized String dimensionName(Level world) {
         // ResourceKey instances are interned, so identity lookup avoids Identifier#toString.
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*return dimensionNames.computeIfAbsent(
-                //? if (>=1.18 && <=1.21.10) {
-                /^world.dimension(), VersionIds::key);
-                ^///?}
-                //? if 1.21.11 {
-                /^world.dimension(), VersionIds::key);
-                ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         return dimensionNames.computeIfAbsent(world.dimension(), VersionIds::key);
-        //?}
-
     }
 
     /** Marks a component as unsafe when a mutation path was observed but not classifiable. */

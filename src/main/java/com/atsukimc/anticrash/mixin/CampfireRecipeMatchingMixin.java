@@ -97,8 +97,6 @@ public abstract class CampfireRecipeMatchingMixin
                     if (id != null)
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
-                        *///?} else if <= 1.21.10 {
-                        /*extension.putString("RecipeMatch", VersionIds.key(id));
                         *///?} else {
                         extension.putString("RecipeMatch", VersionIds.key(id));
                         //?}
@@ -133,13 +131,6 @@ public abstract class CampfireRecipeMatchingMixin
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
                                 VersionIds.parse(extension.getString("RecipeMatch")))
-                        : null;
-        *///?} else if <= 1.21.10 {
-        /*anticrash$savedId =
-                com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
-                        ? net.minecraft.resources.ResourceKey.create(
-                                net.minecraft.core.registries.Registries.RECIPE,
-                                VersionIds.parse(extension.getString("RecipeMatch").orElseThrow()))
                         : null;
         *///?} else {
         anticrash$savedId =

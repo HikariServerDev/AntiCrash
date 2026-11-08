@@ -28,28 +28,10 @@ public final class EntityLifecycleTracker {
     public static void recordRemoval(Entity entity, String reason) {
         if (!persisted(entity)) return;
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if (>=1.18 && <=1.21.11) {
         /*GLOBAL.record(
                 "ENTITY_REMOVED",
-                //? if (>=1.18 && <=1.19.4) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                entity.chunkPosition().toLong(),
-                entity.getStringUUID(),
-                reason);
-        *///?}
-        //? if (>=1.21.9 && <=1.21.11) {
-        /*GLOBAL.record(
-                "ENTITY_REMOVED",
-                //? if (>=1.21.9 && <=1.21.10) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if 1.21.11 {
-                /^VersionIds.dimension(entity),
-                ^///?}
+                VersionIds.dimension(entity),
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
                 reason);
@@ -68,41 +50,12 @@ public final class EntityLifecycleTracker {
     public static void recordMove(Entity entity, long oldChunk, long newChunk) {
         if (oldChunk == newChunk || !persisted(entity)) return;
 
-        //? if (>=1.18 && <=1.21.8) {
-        /*GLOBAL.record(
-                "ENTITY_MOVED_FROM",
-                //? if (>=1.18 && <=1.19.4) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                oldChunk,
-                entity.getStringUUID(),
-                Long.toString(newChunk));
-        *///?}
-        //? if (>=1.21.9 && <=1.21.11) {
-        /*GLOBAL.record(
-                "ENTITY_MOVED_FROM",
-                //? if (>=1.21.9 && <=1.21.10) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if 1.21.11 {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                oldChunk,
-                entity.getStringUUID(),
-                Long.toString(newChunk));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_MOVED_FROM",
                 VersionIds.dimension(entity),
                 oldChunk,
                 entity.getStringUUID(),
                 Long.toString(newChunk));
-        //?}
-
     }
 
     /**
@@ -114,28 +67,10 @@ public final class EntityLifecycleTracker {
     public static void recordUnload(Entity entity) {
         if (!persisted(entity)) return;
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if (>=1.18 && <=1.21.11) {
         /*GLOBAL.record(
                 "ENTITY_UNLOADED",
-                //? if (>=1.18 && <=1.19.4) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                entity.chunkPosition().toLong(),
-                entity.getStringUUID(),
-                "server_entity_manager_unload");
-        *///?}
-        //? if (>=1.21.9 && <=1.21.11) {
-        /*GLOBAL.record(
-                "ENTITY_UNLOADED",
-                //? if (>=1.21.9 && <=1.21.10) {
-                /^VersionIds.dimension(entity),
-                ^///?}
-                //? if 1.21.11 {
-                /^VersionIds.dimension(entity),
-                ^///?}
+                VersionIds.dimension(entity),
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
                 "server_entity_manager_unload");

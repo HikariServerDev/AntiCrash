@@ -456,18 +456,7 @@ public final class LogicalDeltaEngine {
         Map<String, ServerLevel> owners = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String dimension = VersionIds.dimension(world);
-            //?}
 
             for (Entity entity : world.getAllEntities()) {
                 // Mirror PersistentEntitySectionManager#trySave: players, passengers (saved inside
@@ -724,18 +713,7 @@ public final class LogicalDeltaEngine {
         List<WorldChunkRef> result = new ArrayList<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String dimension = VersionIds.dimension(world);
-            //?}
 
             var storage =
                     (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
@@ -794,18 +772,7 @@ public final class LogicalDeltaEngine {
     private static void registerSchedulers(MinecraftServer server) {
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String dimension = VersionIds.dimension(world);
-            //?}
 
             ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);
 

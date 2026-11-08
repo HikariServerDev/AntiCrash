@@ -74,13 +74,8 @@ public abstract class BrewingStandBlockEntityMixin {
                 extension -> {
                     extension.remove("ItemBrewing");
                     if (brewTime > 0 && ingredient != null) {
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*extension.putString(
-                                "ItemBrewing", VersionIds.id(VersionIds.items(), ingredient));
-                        *///?} else {
                         extension.putString(
                                 "ItemBrewing", VersionIds.id(VersionIds.items(), ingredient));
-                        //?}
                     }
                 });
     }
@@ -106,33 +101,18 @@ public abstract class BrewingStandBlockEntityMixin {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (extension == null || !extension.contains("ItemBrewing", 8) || brewTime <= 0) return;
+
+        var id = VersionIds.tryParse(extension.getString("ItemBrewing"));
         *///?} else {
         if (extension == null
                 || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ItemBrewing", 8)
                 || brewTime <= 0) return;
-        //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*var id = VersionIds.tryParse(extension.getString("ItemBrewing"));
-        *///?} else if <=1.21.10 {
-        /*var id = VersionIds.tryParse(extension.getString("ItemBrewing").orElseThrow());
-        *///?} else {
         var id = VersionIds.tryParse(extension.getString("ItemBrewing").orElseThrow());
         //?}
 
-        //? if (>=1.18 && <=1.19.2) {
-        /*if (id != null && VersionIds.items().containsKey(id))
-        *///?} else {
-        if (id != null && VersionIds.items().containsKey(id))
-        //?}
-        {
-            //? if (>=1.18 && <=1.19.2) {
-            /*ingredient = VersionIds.value(VersionIds.items(), id);
-            *///?} else if <= 1.21.1 {
-            /*ingredient = VersionIds.value(VersionIds.items(), id);
-            *///?} else {
+        if (id != null && VersionIds.items().containsKey(id)) {
             ingredient = VersionIds.value(VersionIds.items(), id);
-            //?}
         }
     }
 }

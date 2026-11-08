@@ -17,8 +17,7 @@ public interface ItemCooldownManagerAccessorMixin {
     /*@Accessor("cooldowns")
     Map<Item, Object> anticrash$getEntries();
 
-    *///?}
-    //? if (>=1.21.2 && <=26.3) {
+    *///?} else {
     @Accessor("cooldowns")
     Map<?, Object> anticrash$getEntries();
 

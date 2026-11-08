@@ -403,12 +403,7 @@ public final class LogicalDeltaMaterializer {
         if ("minecraft:overworld".equals(dimension)) return world;
         if ("minecraft:the_nether".equals(dimension)) return world.resolve("DIM-1");
         if ("minecraft:the_end".equals(dimension)) return world.resolve("DIM1");
-        //? if (>=1.18 && <=1.21.10) {
-        /*var identifier = VersionIds.tryParse(dimension);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         var identifier = VersionIds.tryParse(dimension);
-        //?}
         if (identifier == null
                 || identifier.getNamespace().contains("..")
                 || identifier.getPath().contains("..")) {

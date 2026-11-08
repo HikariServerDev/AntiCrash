@@ -172,19 +172,7 @@ public final class ChunkRecoveryManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
 

@@ -345,22 +345,7 @@ public final class InventorySnapshot {
                                 || !compound.contains("count", 99)
                                 || compound.getInt("count") < 1))
                 *///?}
-                //? if (>=1.21.5 && <=1.21.11) {
-                /*if (!compound.isEmpty()
-                        && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
-                                //? if (>=1.21.5 && <=1.21.10) {
-                                /^|| VersionIds.tryParse(
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^|| VersionIds.tryParse(
-                                ^///?}
-                                                compound.getString("id").orElseThrow())
-                                        == null
-                                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                                        compound, "count", 99)
-                                || compound.getInt("count").orElseThrow() < 1))
-                *///?}
-                //? if (>=26.1 && <=26.3) {
+                //? if (>=1.21.5 && <=26.3) {
                 if (!compound.isEmpty()
                         && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
                                 || VersionIds.tryParse(compound.getString("id").orElseThrow())

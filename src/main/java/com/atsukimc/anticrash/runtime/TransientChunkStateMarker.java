@@ -113,24 +113,10 @@ public final class TransientChunkStateMarker {
 
                 long advertisedScheduledTicks = (long) blockTicks + fluidTicks;
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*List<ScheduledTickSnapshot> exactTicks =
-                        advertisedScheduledTicks == 0L
-                                ? List.of()
-                                : ScheduledTickSnapshot.capture(
-                                        //? if (>=1.18 && <=1.21.10) {
-                                        /^VersionIds.dimension(world), chunk);
-                                        ^///?}
-                                        //? if 1.21.11 {
-                                        /^VersionIds.dimension(world), chunk);
-                                        ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 List<ScheduledTickSnapshot> exactTicks =
                         advertisedScheduledTicks == 0L
                                 ? List.of()
                                 : ScheduledTickSnapshot.capture(VersionIds.dimension(world), chunk);
-                //?}
 
                 long chunkScheduledTicks = exactTicks.size();
                 // LevelTicks is driven by the block-ticking predicate, not by the
@@ -150,14 +136,7 @@ public final class TransientChunkStateMarker {
 
                 //? if (>=1.18 && <=1.21.11) {
                 /*criticalChunks.add(
-                        new ChunkReference(
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^VersionIds.dimension(world),
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^VersionIds.dimension(world),
-                                ^///?}
-                                chunk.getPos().toLong()));
+                        new ChunkReference(VersionIds.dimension(world), chunk.getPos().toLong()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
@@ -197,13 +176,7 @@ public final class TransientChunkStateMarker {
                 //? if (>=1.18 && <=1.21.11) {
                 /*criticalChunks.add(
                         new ChunkReference(
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^VersionIds.dimension(world),
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^VersionIds.dimension(world),
-                                ^///?}
-                                entity.chunkPosition().toLong()));
+                                VersionIds.dimension(world), entity.chunkPosition().toLong()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(

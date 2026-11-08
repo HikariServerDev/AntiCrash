@@ -127,18 +127,7 @@ public final class RuntimeCapsuleManager {
         capsule.capturedAtEpochMs = System.currentTimeMillis();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String dimension = VersionIds.dimension(world);
-            //?}
 
             long phaseStart = System.nanoTime();
             ChunkStateSnapshot chunks =
@@ -328,19 +317,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
@@ -376,18 +353,7 @@ public final class RuntimeCapsuleManager {
                                 ScheduledTickSnapshot.capture(
                                         VersionIds.dimension(world), value.left().get()));
                         *///?}
-                        //? if (>=1.20.5 && <=1.21.11) {
-                        /*result.addAll(
-                                ScheduledTickSnapshot.capture(
-                                        //? if (>=1.20.5 && <=1.21.10) {
-                                        /^VersionIds.dimension(world),
-                                        ^///?}
-                                        //? if 1.21.11 {
-                                        /^VersionIds.dimension(world),
-                                        ^///?}
-                                        value.orElse(null)));
-                        *///?}
-                        //? if (>=26.1 && <=26.3) {
+                        //? if (>=1.20.5 && <=26.3) {
                         result.addAll(
                                 ScheduledTickSnapshot.capture(
                                         VersionIds.dimension(world), value.orElse(null)));
@@ -475,19 +441,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
             Long maximum = maximumRestoredOrder.get(snapshot.dimension);
@@ -572,19 +526,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
 
@@ -641,19 +583,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         int restored = 0;
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
@@ -684,42 +614,17 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         // Registry resolution belongs to runtime preflight (Minecraft is bootstrapped here), not
         // the format-only validator used by offline tests and checkpoint inspection.
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
-            //? if (>=1.18 && <=1.21.10) {
-            /*var id = VersionIds.tryParse(tick.type);
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
             var id = VersionIds.tryParse(tick.type);
-            //?}
 
-            //? if (>=1.18 && <=1.19.2) {
-            /*boolean registered =
-                    ScheduledTickSnapshot.BLOCK.equals(tick.kind)
-                            ? VersionIds.blocks().containsKey(id)
-                            : VersionIds.fluids().containsKey(id);
-            *///?}
-            //? if (>=1.19.3 && <=26.3) {
             boolean registered =
                     ScheduledTickSnapshot.BLOCK.equals(tick.kind)
                             ? VersionIds.blocks().containsKey(id)
                             : VersionIds.fluids().containsKey(id);
-            //?}
 
             if (!registered) {
                 throw new IllegalStateException("Unknown scheduled-tick type: " + tick.type);
@@ -876,19 +781,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (RuntimeCapsule.InhabitedTimes inhabited : capsule.inhabitedTimes) {
 
@@ -932,19 +825,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         Map<String, List<MovingPistonTickSnapshot>> byDimension = new LinkedHashMap<>();
         for (MovingPistonTickSnapshot snapshot : capsule.movingPistonTickOrder) {
@@ -1041,19 +922,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         Map<PistonPositionKey, String> expectedQueues = new HashMap<>();
         for (BlockEntityTickerSnapshot ticker : capsule.blockEntityTickerOrder) {
@@ -1189,19 +1058,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (MovingPistonTickSnapshot snapshot : capsule.movingPistonTickOrder) {
 
@@ -1268,19 +1125,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         Map<String, Map<String, List<BlockEntityTickerSnapshot>>> expected = new LinkedHashMap<>();
         for (RuntimeCapsule.WorldRuntime world : capsule.worlds) {
@@ -1347,27 +1192,11 @@ public final class RuntimeCapsuleManager {
             liveCount++;
             String key = BlockEntityTickerSnapshot.keyFor(world, queue, ticker);
             if (key == null || byKey.put(key, ticker) != null) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        "Duplicate or invalid "
-                                + queue
-                                + " BlockEntity ticker in "
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^+ VersionIds.dimension(world));
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^+ VersionIds.dimension(world));
-                                ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Duplicate or invalid "
                                 + queue
                                 + " BlockEntity ticker in "
                                 + VersionIds.dimension(world));
-                //?}
-
             }
         }
 
@@ -1380,49 +1209,15 @@ public final class RuntimeCapsuleManager {
             TickingBlockEntity ticker = byKey.get(key);
 
             if (ticker == null || !seen.add(key)) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        "BlockEntity ticker is missing or duplicated: "
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^+ VersionIds.dimension(world)
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^+ VersionIds.dimension(world)
-                                ^///?}
-                                + " "
-                                + key);
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "BlockEntity ticker is missing or duplicated: "
                                 + VersionIds.dimension(world)
                                 + " "
                                 + key);
-                //?}
-
             }
             ordered.add(ticker);
         }
         if (ordered.size() != liveCount) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*throw new IllegalStateException(
-                    "BlockEntity ticker set changed in "
-                            //? if (>=1.18 && <=1.21.10) {
-                            /^+ VersionIds.dimension(world)
-                            ^///?}
-                            //? if 1.21.11 {
-                            /^+ VersionIds.dimension(world)
-                            ^///?}
-                            + " "
-                            + queue
-                            + " expected="
-                            + ordered.size()
-                            + " actual="
-                            + liveCount);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             throw new IllegalStateException(
                     "BlockEntity ticker set changed in "
                             + VersionIds.dimension(world)
@@ -1432,8 +1227,6 @@ public final class RuntimeCapsuleManager {
                             + ordered.size()
                             + " actual="
                             + liveCount);
-            //?}
-
         }
         output.add(new PreparedTickerOrder(live, ordered));
     }
@@ -1446,19 +1239,7 @@ public final class RuntimeCapsuleManager {
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             worlds.put(VersionIds.dimension(world), world);
-            //?}
-
         }
         for (RedstoneTorchBurnoutSnapshot snapshot : capsule.redstoneTorchBurnout) {
 
@@ -2351,12 +2132,7 @@ public final class RuntimeCapsuleManager {
                             && !ScheduledTickSnapshot.FLUID.equals(tick.kind))
                     || tick.type == null
                     || tick.type.length() > 512
-                    //? if (>=1.18 && <=1.21.10) {
-                    /*|| VersionIds.tryParse(tick.type) == null
-                    *///?}
-                    //? if (>=1.21.11 && <=26.3) {
                     || VersionIds.tryParse(tick.type) == null
-                    //?}
                     || tick.priority < TickPriorityBounds.MIN
                     || tick.priority > TickPriorityBounds.MAX) {
                 throw new IllegalStateException(
@@ -2399,16 +2175,7 @@ public final class RuntimeCapsuleManager {
         scheduler.removeIf(ignored -> true);
 
         for (ScheduledTickSnapshot tick : ticks) {
-
-            //? if (>=1.18 && <=1.19.2) {
-            /*Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
-            *///?}
-            //? if (>=1.19.3 && <=1.21.1) {
-            /*Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
-            *///?}
-            //? if (>=1.21.2 && <=26.3) {
             Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
-            //?}
 
             scheduler.schedule(
                     new ScheduledTick<>(
@@ -2433,16 +2200,7 @@ public final class RuntimeCapsuleManager {
         scheduler.removeIf(ignored -> true);
 
         for (ScheduledTickSnapshot tick : ticks) {
-
-            //? if (>=1.18 && <=1.19.2) {
-            /*Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
-            *///?}
-            //? if (>=1.19.3 && <=1.21.1) {
-            /*Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
-            *///?}
-            //? if (>=1.21.2 && <=26.3) {
             Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
-            //?}
 
             scheduler.schedule(
                     new ScheduledTick<>(

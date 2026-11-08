@@ -642,18 +642,7 @@ public final class RuntimeOrderRestorer {
 
         Map<String, ServerLevel> byId = new HashMap<>();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*for (ServerLevel world : worlds)
-            //? if (>=1.18 && <=1.21.10) {
-            /^byId.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^byId.put(VersionIds.dimension(world), world);
-            ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         for (ServerLevel world : worlds) byId.put(VersionIds.dimension(world), world);
-        //?}
 
         return byId;
     }

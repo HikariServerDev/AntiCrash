@@ -88,19 +88,7 @@ public final class BlockEntityTickerSnapshot {
             String queue,
             List<TickingBlockEntity> tickers,
             Map<BlockEntityType<?>, String> typeIds) {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         String dimension = VersionIds.dimension(world);
-        //?}
-
         int order = 0;
 
         for (TickingBlockEntity ticker : tickers) {
@@ -148,15 +136,7 @@ public final class BlockEntityTickerSnapshot {
             if (cached != null) return cached;
         }
 
-        //? if (>=1.18 && <=1.19.2) {
-        /*String id = VersionIds.id(VersionIds.blockEntityTypes(), type);
-        *///?}
-        //? if (>=1.19.3 && <=1.21.10) {
-        /*String id = VersionIds.id(VersionIds.blockEntityTypes(), type);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         String id = VersionIds.id(VersionIds.blockEntityTypes(), type);
-        //?}
 
         String value = id == null ? "<unknown>" : id;
         if (cache != null) cache.put(type, value);

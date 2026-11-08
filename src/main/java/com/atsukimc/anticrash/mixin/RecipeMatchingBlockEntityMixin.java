@@ -48,12 +48,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
             {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
-        //? if (>=1.19 && <=1.21.1) {
-        /*var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-        *///?}
-        //? if (>=1.21.2 && <=26.3) {
         var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
-        //?}
 
         RuntimeExtensionNbt.write(
                 nbt,
@@ -63,10 +58,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
                         *///?}
-                        //? if (>=1.21.2 && <=1.21.10) {
-                        /*extension.putString("RecipeMatch", VersionIds.key(id));
-                        *///?}
-                        //? if (>=1.21.11 && <=26.3) {
+                        //? if (>=1.21.2 && <=26.3) {
                         extension.putString("RecipeMatch", VersionIds.key(id));
                         //?}
 
@@ -109,25 +101,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
                                         VersionIds.parse(extension.getString("RecipeMatch")))
                                 : null);
         *///?}
-        //? if (>=1.21.5 && <=1.21.11) {
-        /*((RecipeMatchGetterAccessorMixin) quickCheck)
-                .anticrash$setRecipeId(
-                        com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                                        extension, "RecipeMatch", 8)
-                                ? net.minecraft.resources.ResourceKey.create(
-                                        net.minecraft.core.registries.Registries.RECIPE,
-        *///?}
-                                        //? if (>=1.21.5 && <=1.21.10) {
-                                        /*VersionIds.parse(
-                                        *///?}
-                                        //? if 1.21.11 {
-                                        /*VersionIds.parse(
-                                        *///?}
-                                                //? if (>=1.21.5 && <=1.21.11) {
-                                                /*extension.getString("RecipeMatch").orElseThrow()))
-                                : null);
-                                                *///?}
-        //? if (>=26.1 && <=26.3) {
+        //? if (>=1.21.5 && <=26.3) {
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         com.atsukimc.anticrash.runtime.VersionNbt.contains(

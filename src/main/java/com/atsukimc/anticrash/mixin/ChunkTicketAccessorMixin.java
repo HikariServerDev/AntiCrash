@@ -14,13 +14,7 @@ public interface ChunkTicketAccessorMixin {
     //? if <=1.21.4 {
     /*TicketType<?> anticrash$getType();
 
-    *///?} else {
-    TicketType anticrash$getType();
-
-    //?}
-
-    //? if (>=1.18 && <=1.21.4) {
-    /*@Accessor("key")
+    @Accessor("key")
     Object anticrash$getArgument();
 
     @Accessor("createdTick")
@@ -30,6 +24,8 @@ public interface ChunkTicketAccessorMixin {
     void anticrash$setTickCreated(long tickCreated);
 
     *///?} else {
+    TicketType anticrash$getType();
+
     @Accessor("ticksLeft")
     long anticrash$getTicksLeft();
 

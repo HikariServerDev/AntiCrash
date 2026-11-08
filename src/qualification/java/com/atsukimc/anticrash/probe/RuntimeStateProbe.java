@@ -591,12 +591,7 @@ public final class RuntimeStateProbe implements ModInitializer {
         out.append("time ").append(time).append('\n');
         Map<String, ServerLevel> worlds = new TreeMap<>();
         for (ServerLevel world : server.getAllLevels())
-            //? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
-            //? if 1.21.11 {
-            /^worlds.put(VersionIds.dimension(world), world);
-            ^///?}
+            worlds.put(VersionIds.dimension(world), world);
         for (Map.Entry<String, ServerLevel> entry : worlds.entrySet())
             world(out, entry.getKey(), entry.getValue());
         capsule(out, server);
@@ -776,12 +771,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                 .forEach(entity -> {
                     if (entity instanceof ServerPlayer || !inBoxes(dimension, entity)) return;
 
-                    //? if (>=1.18 && <=1.19.2) {
-                    /^String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
-                    ^///?}
-                    //? if (>=1.19.3 && <=1.21.11) {
-                    /^String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
-                    ^///?}
+                    String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
 
                     String where =
                             String.format(

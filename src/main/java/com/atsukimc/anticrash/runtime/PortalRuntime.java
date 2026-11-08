@@ -51,29 +51,13 @@ public final class PortalRuntime {
         //? if (>=1.21 && <=1.21.4) {
         /*var id = VersionIds.tryParse(nbt.getString("Type"));
         *///?}
-        //? if (>=1.21.5 && <=1.21.10) {
-        /*var id = VersionIds.tryParse(nbt.getString("Type").orElseThrow());
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
+        //? if (>=1.21.5 && <=26.3) {
         var id = VersionIds.tryParse(nbt.getString("Type").orElseThrow());
         //?}
 
-        //? if (>=1.21 && <=1.21.11) {
-        /*if (id == null
-                || !VersionIds.blocks().containsKey(id)
-        *///?}
-                //? if (>=1.21 && <=1.21.1) {
-                /*|| !(VersionIds.value(VersionIds.blocks(), id) instanceof Portal portal))
-                *///?}
-                //? if (>=1.21.2 && <=1.21.11) {
-                /*|| !(VersionIds.value(VersionIds.blocks(), id) instanceof Portal portal))
-                *///?}
-        //? if (>=26.1 && <=26.3) {
         if (id == null
                 || !VersionIds.blocks().containsKey(id)
                 || !(VersionIds.value(VersionIds.blocks(), id) instanceof Portal portal))
-
-        //?}
             throw new IllegalArgumentException("Invalid saved Portal type");
 
         //? if (>=1.21 && <=1.21.4) {

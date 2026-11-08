@@ -331,27 +331,9 @@ public final class RuntimeFingerprint {
                             + "|"
                             + player.getGameProfile().getName()
                             + "|"
-                            //? if (>=1.18 && <=1.19.4) {
-                            /^+ VersionIds.dimension(player));
-                            ^///?}
-                            //? if (>=1.20 && <=1.21.8) {
-                            /^+ VersionIds.dimension(player));
-                            ^///?}
+                            + VersionIds.dimension(player));
             *///?}
-            //? if (>=1.21.9 && <=1.21.11) {
-            /*lines.add(
-                    player.getStringUUID()
-                            + "|"
-                            + player.getGameProfile().name()
-                            + "|"
-                            //? if (>=1.21.9 && <=1.21.10) {
-                            /^+ VersionIds.dimension(player));
-                            ^///?}
-                            //? if 1.21.11 {
-                            /^+ VersionIds.dimension(player));
-                            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
+            //? if (>=1.21.9 && <=26.3) {
             lines.add(
                     player.getStringUUID()
                             + "|"

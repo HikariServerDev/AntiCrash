@@ -1180,21 +1180,8 @@ public final class CheckpointManager {
             }
         }
         if (!unsaved.isEmpty()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*throw new IllegalStateException(
-                    //? if (>=1.18 && <=1.21.10) {
-                    /^"POI sections could not be saved in " + VersionIds.dimension(world));
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"POI sections could not be saved in " + VersionIds.dimension(world));
-                    ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             throw new IllegalStateException(
                     "POI sections could not be saved in " + VersionIds.dimension(world));
-            //?}
-
         }
     }
 
@@ -1207,20 +1194,8 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : worlds) {
             ServerLevel world = barrierWorld.world;
             if (!(world.getChunkSource().chunkScanner() instanceof IOWorker chunks)) {
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        //? if (>=1.18 && <=1.21.10) {
-                        /^"Unsupported chunk IO worker for " + VersionIds.dimension(world));
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^"Unsupported chunk IO worker for " + VersionIds.dimension(world));
-                        ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported chunk IO worker for " + VersionIds.dimension(world));
-                //?}
-
             }
             workers.add(chunks);
             Object entities =
@@ -1232,21 +1207,8 @@ public final class CheckpointManager {
             if (!(entities
                     instanceof
                     net.minecraft.world.level.chunk.storage.EntityStorage entityAccess)) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        //? if (>=1.18 && <=1.21.10) {
-                        /^"Unsupported entity storage for " + VersionIds.dimension(world));
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^"Unsupported entity storage for " + VersionIds.dimension(world));
-                        ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported entity storage for " + VersionIds.dimension(world));
-                //?}
-
             }
 
             //? if (>=1.18 && <=1.20.4) {
@@ -1425,22 +1387,9 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : worlds) {
             Object worker = barrierWorld.world.getChunkSource().chunkScanner();
             if (!(worker instanceof IOWorker storageIoWorker)) {
-                //? if (>=1.18 && <=1.21.11) {
-                /*throw new IllegalStateException(
-                        "Unsupported chunk IO worker for "
-                                //? if (>=1.18 && <=1.21.10) {
-                                /^+ VersionIds.dimension(barrierWorld.world));
-                                ^///?}
-                                //? if 1.21.11 {
-                                /^+ VersionIds.dimension(barrierWorld.world));
-                                ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "Unsupported chunk IO worker for "
                                 + VersionIds.dimension(barrierWorld.world));
-                //?}
-
             }
 
             futures.add(storageIoWorker.synchronize(false));
@@ -1489,23 +1438,9 @@ public final class CheckpointManager {
     }
 
     private List<String> captureDimensions(MinecraftServer server) {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
-                //? if (>=1.18 && <=1.21.10) {
-                /^.map(world -> VersionIds.dimension(world))
-                ^///?}
-                //? if 1.21.11 {
-                /^.map(world -> VersionIds.dimension(world))
-                ^///?}
-                .toList();
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 .map(world -> VersionIds.dimension(world))
                 .toList();
-        //?}
-
     }
 
     private CaptureResult runCapture(CaptureContext context) {

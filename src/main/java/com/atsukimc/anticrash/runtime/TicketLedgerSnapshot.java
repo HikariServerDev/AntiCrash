@@ -112,17 +112,7 @@ public final class TicketLedgerSnapshot {
                     if ("anticrash_recovery".equals(type)) continue;
                     Entry entry = new Entry();
 
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*//? if (>=1.18 && <=1.21.10) {
-                    /^entry.dimension = VersionIds.dimension(world);
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^entry.dimension = VersionIds.dimension(world);
-                    ^///?}
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
                     entry.dimension = VersionIds.dimension(world);
-                    //?}
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*entry.x = pos.x;

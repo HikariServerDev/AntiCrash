@@ -1294,25 +1294,10 @@ public final class AntiCrashController {
                         .anticrash$getEntityManager()
                         .tick();
             } catch (RuntimeException exception) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*logger.verboseKey(
-                        "recovery.entity_load_pump_failed",
-                        //? if (>=1.18 && <=1.21.10) {
-                        /^VersionIds.dimension(world),
-                        ^///?}
-                        //? if 1.21.11 {
-                        /^VersionIds.dimension(world),
-                        ^///?}
-                        exception.getMessage());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
                 logger.verboseKey(
                         "recovery.entity_load_pump_failed",
                         VersionIds.dimension(world),
                         exception.getMessage());
-                //?}
-
             }
         }
     }

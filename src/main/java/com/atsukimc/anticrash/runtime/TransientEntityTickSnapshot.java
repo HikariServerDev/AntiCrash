@@ -55,17 +55,7 @@ public final class TransientEntityTickSnapshot {
     public static List<TransientEntityTickSnapshot> capture(ServerLevel world) {
         List<TransientEntityTickSnapshot> result = new ArrayList<>();
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         String dimension = VersionIds.dimension(world);
-        //?}
 
         ((ServerWorldAccessorMixin) world)
                 .anticrash$getEntityList()

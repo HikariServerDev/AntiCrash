@@ -34,17 +34,7 @@ public final class MovingPistonTickSnapshot {
         List<MovingPistonTickSnapshot> result = new ArrayList<>();
         if (protectedChunks == null || protectedChunks.isEmpty()) return result;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        //? if 1.21.11 {
-        /^String dimension = VersionIds.dimension(world);
-        ^///?}
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         String dimension = VersionIds.dimension(world);
-        //?}
 
         Set<BlockPos> seen = new HashSet<>();
         WorldAccessorMixin accessor = (WorldAccessorMixin) world;

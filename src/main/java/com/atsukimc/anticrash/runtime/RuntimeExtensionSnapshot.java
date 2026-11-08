@@ -122,18 +122,7 @@ public final class RuntimeExtensionSnapshot {
         //?}
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            //? if 1.21.11 {
-            /^String dimension = VersionIds.dimension(world);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             String dimension = VersionIds.dimension(world);
-            //?}
 
             captureBlockRuntime(world, dimension, lines, capsule);
             ((ServerWorldAccessorMixin) world)
@@ -376,10 +365,7 @@ public final class RuntimeExtensionSnapshot {
                             (BrewingStandBlockEntityTimerAccessor) blockEntity;
 
                     if (stand.anticrash$getBrewTime() > 0) {
-
-                *///?}
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*lines.get(BREWING)
+                        lines.get(BREWING)
                                 .add(
                                         where
                                                 + "|"
@@ -391,26 +377,9 @@ public final class RuntimeExtensionSnapshot {
                                                                 .getKey(
                                                                         stand
                                                                                 .anticrash$getItemBrewing())));
-                        *///?}
-                        //? if (>=1.19.3 && <=26.2) {
-                        /*lines.get(BREWING)
-                                .add(
-                                        where
-                                                + "|"
-                                                + stand.anticrash$getBrewTime()
-                                                + "|"
-                                                + (stand.anticrash$getItemBrewing() == null
-                                                        ? "null"
-                                                        : VersionIds.items()
-                                                                .getKey(
-                                                                        stand
-                                                                                .anticrash$getItemBrewing())));
-                        *///?}
-                    //? if (>=1.18 && <=26.2) {
-
-                    /*}
+                    }
                 } else
-                    *///?}
+                *///?}
                 if (blockEntity instanceof TheEndGatewayBlockEntity) {
                     int cooldown =
                             ((EndGatewayBlockEntityAccessorMixin) blockEntity)
