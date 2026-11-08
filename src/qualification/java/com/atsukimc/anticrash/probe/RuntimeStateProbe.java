@@ -1,12 +1,6 @@
 //? if (>=1.18 && <=1.21.11) {
 /*package com.atsukimc.anticrash.probe;
 
-//? if (>=1.18 && <=1.19.2) {
-/^import net.minecraft.core.Registry;
-^///?} else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin;
@@ -20,6 +14,7 @@ import com.atsukimc.anticrash.runtime.RedstoneTorchBurnoutSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 import com.atsukimc.anticrash.runtime.TicketLedgerSnapshot;
+import com.atsukimc.anticrash.util.VersionIds;
 import com.google.gson.Gson;
 
 import net.fabricmc.api.ModInitializer;
@@ -93,30 +88,12 @@ public final class RuntimeStateProbe implements ModInitializer {
     //? if 1.21.11 {
     /^private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
     ^///?}
-            identifier("anticrash_probe", "echo");
+            VersionIds.of("anticrash_probe", "echo");
     private final java.util.concurrent.atomic.AtomicInteger echoReceived =
             new java.util.concurrent.atomic.AtomicInteger();
     private int payloadPhase;
     private int payloadWait;
     private String payloadFrozenResult;
-
-    //? if (>=1.18 && <=1.21.10) {
-    /^private static net.minecraft.resources.ResourceLocation identifier(
-            String namespace, String path) {
-    ^///?}
-    //? if 1.21.11 {
-    /^private static net.minecraft.resources.Identifier identifier(String namespace, String path) {
-    ^///?}
-        //? if <=1.20.6 {
-        /^return new net.minecraft.resources.ResourceLocation(namespace, path);
-        ^///?}
-        //? if (>=1.21 && <=1.21.10) {
-        /^return net.minecraft.resources.ResourceLocation.fromNamespaceAndPath(namespace, path);
-        ^///?}
-        //? if 1.21.11 {
-        /^return net.minecraft.resources.Identifier.fromNamespaceAndPath(namespace, path);
-        ^///?}
-    }
 
     // Use the actual wire decoder once payload packets become typed records.
     // This preserves channel data and lets installed mods decode their own payloads.
@@ -269,7 +246,7 @@ public final class RuntimeStateProbe implements ModInitializer {
 
             var packets =
                     List.of(
-                            payload(identifier("minecraft", "register"), register),
+                            payload(VersionIds.of("minecraft", "register"), register),
                             payload(
                                     //? if (>=1.18 && <=1.21.10) {
                                     /^(net.minecraft.resources.ResourceLocation)
@@ -285,7 +262,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                                             io.netty.buffer.Unpooled.buffer())),
                             // No Fabric receiver: exercises a mod's own packet-handler hook.
                             payload(
-                                    identifier("anticrash_probe", "own_hook"),
+                                    VersionIds.of("anticrash_probe", "own_hook"),
                                     new net.minecraft.network.FriendlyByteBuf(
                                             io.netty.buffer.Unpooled.buffer())));
 
@@ -615,10 +592,10 @@ public final class RuntimeStateProbe implements ModInitializer {
         Map<String, ServerLevel> worlds = new TreeMap<>();
         for (ServerLevel world : server.getAllLevels())
             //? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
         for (Map.Entry<String, ServerLevel> entry : worlds.entrySet())
             world(out, entry.getKey(), entry.getValue());
@@ -800,10 +777,10 @@ public final class RuntimeStateProbe implements ModInitializer {
                     if (entity instanceof ServerPlayer || !inBoxes(dimension, entity)) return;
 
                     //? if (>=1.18 && <=1.19.2) {
-                    /^String id = Registry.ENTITY_TYPE.getKey(entity.getType()).toString();
+                    /^String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
                     ^///?}
                     //? if (>=1.19.3 && <=1.21.11) {
-                    /^String id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType()).toString();
+                    /^String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
                     ^///?}
 
                     String where =

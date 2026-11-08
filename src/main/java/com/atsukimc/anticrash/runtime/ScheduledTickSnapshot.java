@@ -1,13 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
-//? if (>=1.18 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
-//? if (>=1.19.3 && <=26.3) {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.core.BlockPos;
@@ -67,17 +60,17 @@ public final class ScheduledTickSnapshot {
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
         //? if (>=1.18 && <=1.19.2) {
-        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), Registry.BLOCK);
+        /*captureQueue(result, dimension, BLOCK, blockScheduler(chunk), VersionIds.blocks());
         *///?}
         //? if (>=1.19.3 && <=26.3) {
-        captureQueue(result, dimension, BLOCK, blockScheduler(chunk), BuiltInRegistries.BLOCK);
+        captureQueue(result, dimension, BLOCK, blockScheduler(chunk), VersionIds.blocks());
         //?}
 
         //? if (>=1.18 && <=1.19.2) {
-        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), Registry.FLUID);
+        /*captureQueue(result, dimension, FLUID, fluidScheduler(chunk), VersionIds.fluids());
         *///?}
         //? if (>=1.19.3 && <=26.3) {
-        captureQueue(result, dimension, FLUID, fluidScheduler(chunk), BuiltInRegistries.FLUID);
+        captureQueue(result, dimension, FLUID, fluidScheduler(chunk), VersionIds.fluids());
         //?}
 
         result.sort(STABLE_ORDER);
@@ -86,20 +79,6 @@ public final class ScheduledTickSnapshot {
 
     public BlockPos position() {
         return new BlockPos(x, y, z);
-    }
-
-    //? if (>=1.18 && <=1.21.10) {
-    /*public ResourceLocation typeIdentifier() {
-    *///?}
-    //? if (>=1.21.11 && <=26.3) {
-    public Identifier typeIdentifier() {
-    //?}
-        //? if (>=1.18 && <=1.21.10) {
-        /*return ResourceLocation.tryParse(type);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
-        return Identifier.tryParse(type);
-        //?}
     }
 
     public TickPriority tickPriority() {
@@ -132,14 +111,14 @@ public final class ScheduledTickSnapshot {
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*//? if (>=1.18 && <=1.21.10) {
-                    /^ResourceLocation identifier = registry.getKey(ordered.type());
+                    /^String identifier = VersionIds.id(registry, ordered.type());
                     ^///?}
                     //? if 1.21.11 {
-                    /^Identifier identifier = registry.getKey(ordered.type());
+                    /^String identifier = VersionIds.id(registry, ordered.type());
                     ^///?}
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    Identifier identifier = registry.getKey(ordered.type());
+                    String identifier = VersionIds.id(registry, ordered.type());
                     //?}
 
                     if (identifier == null) {

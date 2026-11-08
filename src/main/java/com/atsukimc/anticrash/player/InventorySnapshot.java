@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.player;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -339,9 +341,7 @@ public final class InventorySnapshot {
                 //? if (>=1.20.5 && <=1.21.4) {
                 /*if (!compound.isEmpty()
                         && (!compound.contains("id", 8)
-                                || net.minecraft.resources.ResourceLocation.tryParse(
-                                                compound.getString("id"))
-                                        == null
+                                || VersionIds.tryParse(compound.getString("id")) == null
                                 || !compound.contains("count", 99)
                                 || compound.getInt("count") < 1))
                 *///?}
@@ -349,10 +349,10 @@ public final class InventorySnapshot {
                 /*if (!compound.isEmpty()
                         && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
                                 //? if (>=1.21.5 && <=1.21.10) {
-                                /^|| net.minecraft.resources.ResourceLocation.tryParse(
+                                /^|| VersionIds.tryParse(
                                 ^///?}
                                 //? if 1.21.11 {
-                                /^|| net.minecraft.resources.Identifier.tryParse(
+                                /^|| VersionIds.tryParse(
                                 ^///?}
                                                 compound.getString("id").orElseThrow())
                                         == null
@@ -363,8 +363,7 @@ public final class InventorySnapshot {
                 //? if (>=26.1 && <=26.3) {
                 if (!compound.isEmpty()
                         && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
-                                || net.minecraft.resources.Identifier.tryParse(
-                                                compound.getString("id").orElseThrow())
+                                || VersionIds.tryParse(compound.getString("id").orElseThrow())
                                         == null
                                 || !com.atsukimc.anticrash.runtime.VersionNbt.contains(
                                         compound, "count", 99)

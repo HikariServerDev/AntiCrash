@@ -1,11 +1,7 @@
 //? if (>=1.20.5 && <=26.3) {
 package com.atsukimc.anticrash.snapshot;
 
-//? if (>=1.20.5 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.core.registries.Registries;
@@ -18,8 +14,7 @@ public final class RegionStorageAdapter {
     /*public static final RegionStorageInfo KEY =
             new RegionStorageInfo(
                     "anticrash-checkpoint",
-                    ResourceKey.create(
-                            Registries.DIMENSION, new ResourceLocation("anticrash", "offline")),
+                    ResourceKey.create(Registries.DIMENSION, VersionIds.of("anticrash", "offline")),
                     "checkpoint-overlay");
 
     *///?}
@@ -29,14 +24,10 @@ public final class RegionStorageAdapter {
                     "anticrash-checkpoint",
     *///?}
                     //? if (>=1.21 && <=1.21.10) {
-                    /*ResourceKey.create(
-                            Registries.DIMENSION,
-                            ResourceLocation.fromNamespaceAndPath("anticrash", "offline")),
+                    /*ResourceKey.create(Registries.DIMENSION, VersionIds.of("anticrash", "offline")),
                     *///?}
                     //? if 1.21.11 {
-                    /*ResourceKey.create(
-                            Registries.DIMENSION,
-                            Identifier.fromNamespaceAndPath("anticrash", "offline")),
+                    /*ResourceKey.create(Registries.DIMENSION, VersionIds.of("anticrash", "offline")),
                     *///?}
                     //? if (>=1.21 && <=1.21.11) {
                     /*"checkpoint-overlay");
@@ -46,9 +37,7 @@ public final class RegionStorageAdapter {
     public static final RegionStorageInfo KEY =
             new RegionStorageInfo(
                     "anticrash-checkpoint",
-                    ResourceKey.create(
-                            Registries.DIMENSION,
-                            Identifier.fromNamespaceAndPath("anticrash", "offline")),
+                    ResourceKey.create(Registries.DIMENSION, VersionIds.of("anticrash", "offline")),
                     "checkpoint-overlay");
 
     //?}

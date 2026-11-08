@@ -18,6 +18,7 @@ import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.atsukimc.anticrash.snapshot.CrashRawManager;
 import com.atsukimc.anticrash.snapshot.WorldLocator;
 import com.atsukimc.anticrash.util.AtomicFiles;
+import com.atsukimc.anticrash.util.VersionIds;
 import com.google.gson.reflect.TypeToken;
 
 import net.fabricmc.loader.api.FabricLoader;
@@ -1298,17 +1299,17 @@ public final class AntiCrashController {
                 /*logger.verboseKey(
                         "recovery.entity_load_pump_failed",
                         //? if (>=1.18 && <=1.21.10) {
-                        /^world.dimension().location(),
+                        /^VersionIds.dimension(world),
                         ^///?}
                         //? if 1.21.11 {
-                        /^world.dimension().identifier(),
+                        /^VersionIds.dimension(world),
                         ^///?}
                         exception.getMessage());
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 logger.verboseKey(
                         "recovery.entity_load_pump_failed",
-                        world.dimension().identifier(),
+                        VersionIds.dimension(world),
                         exception.getMessage());
                 //?}
 

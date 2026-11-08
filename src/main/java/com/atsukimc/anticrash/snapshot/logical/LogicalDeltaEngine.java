@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.SharedConstants;
 import net.minecraft.world.entity.Entity;
@@ -458,14 +459,14 @@ public final class LogicalDeltaEngine {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
+            String dimension = VersionIds.dimension(world);
             //?}
 
             for (Entity entity : world.getAllEntities()) {
@@ -726,14 +727,14 @@ public final class LogicalDeltaEngine {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
+            String dimension = VersionIds.dimension(world);
             //?}
 
             var storage =
@@ -796,14 +797,14 @@ public final class LogicalDeltaEngine {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
+            String dimension = VersionIds.dimension(world);
             //?}
 
             ChunkMutationTracker.registerScheduler(world.getBlockTicks(), dimension);

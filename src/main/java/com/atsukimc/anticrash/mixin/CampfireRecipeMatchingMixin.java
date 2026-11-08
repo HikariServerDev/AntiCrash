@@ -2,15 +2,10 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
-
-//? if (>=1.19 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 //? if (>=1.19 && <=1.21.1) {
 /*import net.minecraft.world.item.crafting.RecipeManager;
@@ -87,7 +82,7 @@ public abstract class CampfireRecipeMatchingMixin
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
         //? if (>=1.19 && <=1.21.1) {
-        /*ResourceLocation id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
+        /*var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
         *///?} else {
         var id =
                 anticrash$getter == null
@@ -103,9 +98,9 @@ public abstract class CampfireRecipeMatchingMixin
                         //? if (>=1.19 && <=1.21.1) {
                         /*extension.putString("RecipeMatch", id.toString());
                         *///?} else if <= 1.21.10 {
-                        /*extension.putString("RecipeMatch", id.location().toString());
+                        /*extension.putString("RecipeMatch", VersionIds.key(id));
                         *///?} else {
-                        extension.putString("RecipeMatch", id.identifier().toString());
+                        extension.putString("RecipeMatch", VersionIds.key(id));
                         //?}
                 });
     }
@@ -130,29 +125,28 @@ public abstract class CampfireRecipeMatchingMixin
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         extension.contains("RecipeMatch", 8)
-                                ? ResourceLocation.tryParse(extension.getString("RecipeMatch"))
+                                ? VersionIds.tryParse(extension.getString("RecipeMatch"))
                                 : null);
         *///?} else if <= 1.21.4 {
         /*anticrash$savedId =
                 extension.contains("RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                ResourceLocation.parse(extension.getString("RecipeMatch")))
+                                VersionIds.parse(extension.getString("RecipeMatch")))
                         : null;
         *///?} else if <= 1.21.10 {
         /*anticrash$savedId =
                 com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                ResourceLocation.parse(
-                                        extension.getString("RecipeMatch").orElseThrow()))
+                                VersionIds.parse(extension.getString("RecipeMatch").orElseThrow()))
                         : null;
         *///?} else {
         anticrash$savedId =
                 com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                Identifier.parse(extension.getString("RecipeMatch").orElseThrow()))
+                                VersionIds.parse(extension.getString("RecipeMatch").orElseThrow()))
                         : null;
         //?}
 

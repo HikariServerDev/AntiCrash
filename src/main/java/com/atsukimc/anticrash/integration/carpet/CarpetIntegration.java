@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.util.ReflectionUtil;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -280,17 +281,17 @@ public final class CarpetIntegration {
 
             //? if (>=1.18 && <=1.21.8) {
             /*//? if (>=1.18 && <=1.19.4) {
-            /^data.dimension = player.getLevel().dimension().location().toString();
+            /^data.dimension = VersionIds.dimension(player);
             ^///?}
             //? if (>=1.20 && <=1.21.8) {
-            /^data.dimension = player.level().dimension().location().toString();
+            /^data.dimension = VersionIds.dimension(player);
             ^///?}
             *///?}
             //? if (>=1.21.9 && <=1.21.10) {
-            /*data.dimension = player.level().dimension().location().toString();
+            /*data.dimension = VersionIds.dimension(player);
             *///?}
             //? if (>=1.21.11 && <=26.3) {
-            data.dimension = player.level().dimension().identifier().toString();
+            data.dimension = VersionIds.dimension(player);
             //?}
 
         if (config.fakePlayer.snapshot.position) {
@@ -1091,10 +1092,8 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.1) {
         /*for (java.util.Map.Entry<net.minecraft.world.item.Item, Object> entry :
-        *///?} else if <=1.21.10 {
-        /*for (java.util.Map.Entry<net.minecraft.resources.ResourceLocation, Object> entry :
         *///?} else {
-        for (java.util.Map.Entry<net.minecraft.resources.Identifier, Object> entry :
+        for (java.util.Map.Entry<?, Object> entry :
         //?}
                 manager.anticrash$getEntries().entrySet()) {
             int remaining =
@@ -1105,12 +1104,9 @@ public final class CarpetIntegration {
             FakePlayerSnapshot.ItemCooldown cooldown = new FakePlayerSnapshot.ItemCooldown();
 
             //? if (>=1.18 && <=1.19.2) {
-            /*cooldown.item = net.minecraft.core.Registry.ITEM.getKey(entry.getKey()).toString();
+            /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
             *///?} else if <=1.21.1 {
-            /*cooldown.item =
-                    net.minecraft.core.registries.BuiltInRegistries.ITEM
-                            .getKey(entry.getKey())
-                            .toString();
+            /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
             *///?} else {
             cooldown.item = entry.getKey().toString();
             //?}
@@ -1187,18 +1183,15 @@ public final class CarpetIntegration {
                     continue;
 
                 //? if (>=1.18 && <=1.21.10) {
-                /*net.minecraft.resources.ResourceLocation id =
-                        net.minecraft.resources.ResourceLocation.tryParse(cooldown.item);
+                /*var id = VersionIds.tryParse(cooldown.item);
                 *///?} else {
-                net.minecraft.resources.Identifier id =
-                        net.minecraft.resources.Identifier.tryParse(cooldown.item);
+                var id = VersionIds.tryParse(cooldown.item);
                 //?}
 
                 //? if (>=1.18 && <=1.19.2) {
-                /*if (id == null || !net.minecraft.core.Registry.ITEM.containsKey(id))
+                /*if (id == null || !VersionIds.items().containsKey(id))
                 *///?} else if <=1.21.1 {
-                /*if (id == null
-                        || !net.minecraft.core.registries.BuiltInRegistries.ITEM.containsKey(id))
+                /*if (id == null || !VersionIds.items().containsKey(id))
                 *///?} else if (>=1.21.2 && <=26.3) {
                 if (id == null)
                 //?}
@@ -1214,12 +1207,11 @@ public final class CarpetIntegration {
                 //? if (>=1.18 && <=1.19.2) {
                 /*player.getCooldowns()
                         .addCooldown(
-                                net.minecraft.core.Registry.ITEM.get(id), cooldown.remainingTicks);
+                                VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
                 *///?} else if <= 1.21.1 {
                 /*player.getCooldowns()
                         .addCooldown(
-                                net.minecraft.core.registries.BuiltInRegistries.ITEM.get(id),
-                                cooldown.remainingTicks);
+                                VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
                 *///?} else {
                 player.getCooldowns().addCooldown(id, cooldown.remainingTicks);
                 //?}
@@ -1252,9 +1244,9 @@ public final class CarpetIntegration {
         if (id != null)
             for (ServerLevel world : server.getAllLevels())
                 //? if (>=1.18 && <=1.21.10) {
-                /*if (world.dimension().location().toString().equals(id))
+                /*if (VersionIds.dimension(world).equals(id))
                 *///?} else {
-                if (world.dimension().identifier().toString().equals(id))
+                if (VersionIds.dimension(world).equals(id))
                 //?}
                     return world;
         return null;

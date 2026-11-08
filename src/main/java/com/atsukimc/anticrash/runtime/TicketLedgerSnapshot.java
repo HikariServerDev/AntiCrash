@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ChunkTicketAccessorMixin;
 import com.atsukimc.anticrash.mixin.ChunkTicketManagerAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
 import it.unimi.dsi.fastutil.longs.Long2ObjectOpenHashMap;
@@ -113,14 +114,14 @@ public final class TicketLedgerSnapshot {
 
                     //? if (>=1.18 && <=1.21.11) {
                     /*//? if (>=1.18 && <=1.21.10) {
-                    /^entry.dimension = world.dimension().location().toString();
+                    /^entry.dimension = VersionIds.dimension(world);
                     ^///?}
                     //? if 1.21.11 {
-                    /^entry.dimension = world.dimension().identifier().toString();
+                    /^entry.dimension = VersionIds.dimension(world);
                     ^///?}
                     *///?}
                     //? if (>=26.1 && <=26.3) {
-                    entry.dimension = world.dimension().identifier().toString();
+                    entry.dimension = VersionIds.dimension(world);
                     //?}
 
                     //? if (>=1.18 && <=1.21.11) {

@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.core.BlockPos;
@@ -56,14 +57,14 @@ public final class TransientEntityTickSnapshot {
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = world.dimension().location().toString();
+        /^String dimension = VersionIds.dimension(world);
         ^///?}
         //? if 1.21.11 {
-        /^String dimension = world.dimension().identifier().toString();
+        /^String dimension = VersionIds.dimension(world);
         ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
-        String dimension = world.dimension().identifier().toString();
+        String dimension = VersionIds.dimension(world);
         //?}
 
         ((ServerWorldAccessorMixin) world)

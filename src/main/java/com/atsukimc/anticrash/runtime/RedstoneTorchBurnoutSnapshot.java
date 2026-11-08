@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.RedstoneTorchBlockAccessorMixin;
 import com.atsukimc.anticrash.mixin.RedstoneTorchBurnoutEntryAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -23,14 +24,14 @@ public final class RedstoneTorchBurnoutSnapshot {
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
-        /^snapshot.dimension = world.dimension().location().toString();
+        /^snapshot.dimension = VersionIds.dimension(world);
         ^///?}
         //? if 1.21.11 {
-        /^snapshot.dimension = world.dimension().identifier().toString();
+        /^snapshot.dimension = VersionIds.dimension(world);
         ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
-        snapshot.dimension = world.dimension().identifier().toString();
+        snapshot.dimension = VersionIds.dimension(world);
         //?}
 
         Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> map =

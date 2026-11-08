@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import it.unimi.dsi.fastutil.longs.Long2LongMap;
 import it.unimi.dsi.fastutil.longs.Long2LongOpenHashMap;
 
@@ -130,15 +132,14 @@ public final class ChunkMutationTracker {
         //? if (>=1.18 && <=1.21.11) {
         /*return dimensionNames.computeIfAbsent(
                 //? if (>=1.18 && <=1.21.10) {
-                /^world.dimension(), key -> key.location().toString());
+                /^world.dimension(), VersionIds::key);
                 ^///?}
                 //? if 1.21.11 {
-                /^world.dimension(), key -> key.identifier().toString());
+                /^world.dimension(), VersionIds::key);
                 ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
-        return dimensionNames.computeIfAbsent(
-                world.dimension(), key -> key.identifier().toString());
+        return dimensionNames.computeIfAbsent(world.dimension(), VersionIds::key);
         //?}
 
     }

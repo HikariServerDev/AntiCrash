@@ -13,6 +13,7 @@ import com.atsukimc.anticrash.mixin.ChunkTicketManagerAccessorMixin;
 import com.atsukimc.anticrash.mixin.EntityListAccessorMixin;
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import it.unimi.dsi.fastutil.ints.Int2ObjectMap;
 
@@ -644,14 +645,14 @@ public final class RuntimeOrderRestorer {
         //? if (>=1.18 && <=1.21.11) {
         /*for (ServerLevel world : worlds)
             //? if (>=1.18 && <=1.21.10) {
-            /^byId.put(world.dimension().location().toString(), world);
+            /^byId.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^byId.put(world.dimension().identifier().toString(), world);
+            /^byId.put(VersionIds.dimension(world), world);
             ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
-        for (ServerLevel world : worlds) byId.put(world.dimension().identifier().toString(), world);
+        for (ServerLevel world : worlds) byId.put(VersionIds.dimension(world), world);
         //?}
 
         return byId;

@@ -4,13 +4,9 @@ package com.atsukimc.anticrash.mixin;
 //? if (>=1.19 && <=1.21.1) {
 /*import net.minecraft.world.item.crafting.RecipeManager;
 *///?}
-//? if (>=1.19 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 import net.minecraft.nbt.CompoundTag;
@@ -53,7 +49,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
 
         //? if (>=1.19 && <=1.21.1) {
-        /*ResourceLocation id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
+        /*var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
         *///?}
         //? if (>=1.21.2 && <=26.3) {
         var id = ((RecipeMatchGetterAccessorMixin) quickCheck).anticrash$getRecipeId();
@@ -68,10 +64,10 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         /*extension.putString("RecipeMatch", id.toString());
                         *///?}
                         //? if (>=1.21.2 && <=1.21.10) {
-                        /*extension.putString("RecipeMatch", id.location().toString());
+                        /*extension.putString("RecipeMatch", VersionIds.key(id));
                         *///?}
                         //? if (>=1.21.11 && <=26.3) {
-                        extension.putString("RecipeMatch", id.identifier().toString());
+                        extension.putString("RecipeMatch", VersionIds.key(id));
                         //?}
 
                 });
@@ -101,7 +97,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         extension.contains("RecipeMatch", 8)
-                                ? ResourceLocation.tryParse(extension.getString("RecipeMatch"))
+                                ? VersionIds.tryParse(extension.getString("RecipeMatch"))
                                 : null);
         *///?}
         //? if (>=1.21.2 && <=1.21.4) {
@@ -110,7 +106,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
                         extension.contains("RecipeMatch", 8)
                                 ? net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.RECIPE,
-                                        ResourceLocation.parse(extension.getString("RecipeMatch")))
+                                        VersionIds.parse(extension.getString("RecipeMatch")))
                                 : null);
         *///?}
         //? if (>=1.21.5 && <=1.21.11) {
@@ -122,10 +118,10 @@ public abstract class RecipeMatchingBlockEntityMixin {
                                         net.minecraft.core.registries.Registries.RECIPE,
         *///?}
                                         //? if (>=1.21.5 && <=1.21.10) {
-                                        /*ResourceLocation.parse(
+                                        /*VersionIds.parse(
                                         *///?}
                                         //? if 1.21.11 {
-                                        /*Identifier.parse(
+                                        /*VersionIds.parse(
                                         *///?}
                                                 //? if (>=1.21.5 && <=1.21.11) {
                                                 /*extension.getString("RecipeMatch").orElseThrow()))
@@ -138,7 +134,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
                                         extension, "RecipeMatch", 8)
                                 ? net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.RECIPE,
-                                        Identifier.parse(
+                                        VersionIds.parse(
                                                 extension.getString("RecipeMatch").orElseThrow()))
                                 : null);
         //?}

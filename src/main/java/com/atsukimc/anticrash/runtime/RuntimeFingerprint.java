@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
@@ -331,10 +332,10 @@ public final class RuntimeFingerprint {
                             + player.getGameProfile().getName()
                             + "|"
                             //? if (>=1.18 && <=1.19.4) {
-                            /^+ player.getLevel().dimension().location());
+                            /^+ VersionIds.dimension(player));
                             ^///?}
                             //? if (>=1.20 && <=1.21.8) {
-                            /^+ player.level().dimension().location());
+                            /^+ VersionIds.dimension(player));
                             ^///?}
             *///?}
             //? if (>=1.21.9 && <=1.21.11) {
@@ -344,10 +345,10 @@ public final class RuntimeFingerprint {
                             + player.getGameProfile().name()
                             + "|"
                             //? if (>=1.21.9 && <=1.21.10) {
-                            /^+ player.level().dimension().location());
+                            /^+ VersionIds.dimension(player));
                             ^///?}
                             //? if 1.21.11 {
-                            /^+ player.level().dimension().identifier());
+                            /^+ VersionIds.dimension(player));
                             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
@@ -356,7 +357,7 @@ public final class RuntimeFingerprint {
                             + "|"
                             + player.getGameProfile().name()
                             + "|"
-                            + player.level().dimension().identifier());
+                            + VersionIds.dimension(player));
             //?}
 
         }

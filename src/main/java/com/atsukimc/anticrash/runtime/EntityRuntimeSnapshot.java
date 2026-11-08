@@ -1,18 +1,9 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.ChunkPos;
-
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.core.Registry;
-*///?} else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-//? if (>=1.18 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,14 +58,14 @@ public final class EntityRuntimeSnapshot {
 
         //? if (>=1.18 && <=1.21.11) {
         /*//? if (>=1.18 && <=1.21.10) {
-        /^String dimension = world.dimension().location().toString();
+        /^String dimension = VersionIds.dimension(world);
         ^///?}
         //? if 1.21.11 {
-        /^String dimension = world.dimension().identifier().toString();
+        /^String dimension = VersionIds.dimension(world);
         ^///?}
         *///?}
         //? if (>=26.1 && <=26.3) {
-        String dimension = world.dimension().identifier().toString();
+        String dimension = VersionIds.dimension(world);
         //?}
 
         ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
@@ -87,13 +78,13 @@ public final class EntityRuntimeSnapshot {
                     snapshot.uuid = entity.getStringUUID();
 
                     //? if (>=1.18 && <=1.19.2) {
-                    /*ResourceLocation id = Registry.ENTITY_TYPE.getKey(entity.getType());
+                    /*String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
                     *///?}
                     //? if (>=1.19.3 && <=1.21.10) {
-                    /*ResourceLocation id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                    /*String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
                     *///?}
                     //? if (>=1.21.11 && <=26.3) {
-                    Identifier id = BuiltInRegistries.ENTITY_TYPE.getKey(entity.getType());
+                    String id = VersionIds.id(VersionIds.entityTypes(), entity.getType());
                     //?}
 
                     snapshot.type = id == null ? entity.getType().toString() : id.toString();

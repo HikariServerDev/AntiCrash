@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.core.BlockPos;
@@ -18,17 +19,6 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.ScheduledTick;
-
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.core.Registry;
-*///?} else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
-//? if (>=1.18 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -140,14 +130,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^String dimension = world.dimension().location().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             //? if 1.21.11 {
-            /^String dimension = world.dimension().identifier().toString();
+            /^String dimension = VersionIds.dimension(world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            String dimension = world.dimension().identifier().toString();
+            String dimension = VersionIds.dimension(world);
             //?}
 
             long phaseStart = System.nanoTime();
@@ -341,14 +331,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -384,25 +374,23 @@ public final class RuntimeCapsuleManager {
                         //? if (>=1.18 && <=1.20.4) {
                         /*result.addAll(
                                 ScheduledTickSnapshot.capture(
-                                        world.dimension().location().toString(),
-                                        value.left().get()));
+                                        VersionIds.dimension(world), value.left().get()));
                         *///?}
                         //? if (>=1.20.5 && <=1.21.11) {
                         /*result.addAll(
                                 ScheduledTickSnapshot.capture(
                                         //? if (>=1.20.5 && <=1.21.10) {
-                                        /^world.dimension().location().toString(),
+                                        /^VersionIds.dimension(world),
                                         ^///?}
                                         //? if 1.21.11 {
-                                        /^world.dimension().identifier().toString(),
+                                        /^VersionIds.dimension(world),
                                         ^///?}
                                         value.orElse(null)));
                         *///?}
                         //? if (>=26.1 && <=26.3) {
                         result.addAll(
                                 ScheduledTickSnapshot.capture(
-                                        world.dimension().identifier().toString(),
-                                        value.orElse(null)));
+                                        VersionIds.dimension(world), value.orElse(null)));
                         //?}
 
                     }
@@ -490,14 +478,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -587,14 +575,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -656,14 +644,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -699,14 +687,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -714,23 +702,23 @@ public final class RuntimeCapsuleManager {
         // the format-only validator used by offline tests and checkpoint inspection.
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
             //? if (>=1.18 && <=1.21.10) {
-            /*ResourceLocation id = tick.typeIdentifier();
+            /*var id = VersionIds.tryParse(tick.type);
             *///?}
             //? if (>=1.21.11 && <=26.3) {
-            Identifier id = tick.typeIdentifier();
+            var id = VersionIds.tryParse(tick.type);
             //?}
 
             //? if (>=1.18 && <=1.19.2) {
             /*boolean registered =
                     ScheduledTickSnapshot.BLOCK.equals(tick.kind)
-                            ? Registry.BLOCK.containsKey(id)
-                            : Registry.FLUID.containsKey(id);
+                            ? VersionIds.blocks().containsKey(id)
+                            : VersionIds.fluids().containsKey(id);
             *///?}
             //? if (>=1.19.3 && <=26.3) {
             boolean registered =
                     ScheduledTickSnapshot.BLOCK.equals(tick.kind)
-                            ? BuiltInRegistries.BLOCK.containsKey(id)
-                            : BuiltInRegistries.FLUID.containsKey(id);
+                            ? VersionIds.blocks().containsKey(id)
+                            : VersionIds.fluids().containsKey(id);
             //?}
 
             if (!registered) {
@@ -891,14 +879,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -947,14 +935,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -1056,14 +1044,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -1204,14 +1192,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -1283,14 +1271,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -1366,10 +1354,10 @@ public final class RuntimeCapsuleManager {
                                 + queue
                                 + " BlockEntity ticker in "
                                 //? if (>=1.18 && <=1.21.10) {
-                                /^+ world.dimension().location());
+                                /^+ VersionIds.dimension(world));
                                 ^///?}
                                 //? if 1.21.11 {
-                                /^+ world.dimension().identifier());
+                                /^+ VersionIds.dimension(world));
                                 ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
@@ -1377,7 +1365,7 @@ public final class RuntimeCapsuleManager {
                         "Duplicate or invalid "
                                 + queue
                                 + " BlockEntity ticker in "
-                                + world.dimension().identifier());
+                                + VersionIds.dimension(world));
                 //?}
 
             }
@@ -1397,10 +1385,10 @@ public final class RuntimeCapsuleManager {
                 /*throw new IllegalStateException(
                         "BlockEntity ticker is missing or duplicated: "
                                 //? if (>=1.18 && <=1.21.10) {
-                                /^+ world.dimension().location()
+                                /^+ VersionIds.dimension(world)
                                 ^///?}
                                 //? if 1.21.11 {
-                                /^+ world.dimension().identifier()
+                                /^+ VersionIds.dimension(world)
                                 ^///?}
                                 + " "
                                 + key);
@@ -1408,7 +1396,7 @@ public final class RuntimeCapsuleManager {
                 //? if (>=26.1 && <=26.3) {
                 throw new IllegalStateException(
                         "BlockEntity ticker is missing or duplicated: "
-                                + world.dimension().identifier()
+                                + VersionIds.dimension(world)
                                 + " "
                                 + key);
                 //?}
@@ -1422,10 +1410,10 @@ public final class RuntimeCapsuleManager {
             /*throw new IllegalStateException(
                     "BlockEntity ticker set changed in "
                             //? if (>=1.18 && <=1.21.10) {
-                            /^+ world.dimension().location()
+                            /^+ VersionIds.dimension(world)
                             ^///?}
                             //? if 1.21.11 {
-                            /^+ world.dimension().identifier()
+                            /^+ VersionIds.dimension(world)
                             ^///?}
                             + " "
                             + queue
@@ -1437,7 +1425,7 @@ public final class RuntimeCapsuleManager {
             //? if (>=26.1 && <=26.3) {
             throw new IllegalStateException(
                     "BlockEntity ticker set changed in "
-                            + world.dimension().identifier()
+                            + VersionIds.dimension(world)
                             + " "
                             + queue
                             + " expected="
@@ -1461,14 +1449,14 @@ public final class RuntimeCapsuleManager {
 
             //? if (>=1.18 && <=1.21.11) {
             /*//? if (>=1.18 && <=1.21.10) {
-            /^worlds.put(world.dimension().location().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             //? if 1.21.11 {
-            /^worlds.put(world.dimension().identifier().toString(), world);
+            /^worlds.put(VersionIds.dimension(world), world);
             ^///?}
             *///?}
             //? if (>=26.1 && <=26.3) {
-            worlds.put(world.dimension().identifier().toString(), world);
+            worlds.put(VersionIds.dimension(world), world);
             //?}
 
         }
@@ -2356,12 +2344,6 @@ public final class RuntimeCapsuleManager {
         }
         Set<ScheduledTickKey> unique = new HashSet<>();
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
-            //? if (>=1.18 && <=1.21.10) {
-            /*ResourceLocation id;
-            *///?}
-            //? if (>=1.21.11 && <=26.3) {
-            Identifier id;
-            //?}
             if (tick == null
                     || tick.dimension == null
                     || !dimensions.contains(tick.dimension)
@@ -2370,10 +2352,10 @@ public final class RuntimeCapsuleManager {
                     || tick.type == null
                     || tick.type.length() > 512
                     //? if (>=1.18 && <=1.21.10) {
-                    /*|| (id = ResourceLocation.tryParse(tick.type)) == null
+                    /*|| VersionIds.tryParse(tick.type) == null
                     *///?}
                     //? if (>=1.21.11 && <=26.3) {
-                    || (id = Identifier.tryParse(tick.type)) == null
+                    || VersionIds.tryParse(tick.type) == null
                     //?}
                     || tick.priority < TickPriorityBounds.MIN
                     || tick.priority > TickPriorityBounds.MAX) {
@@ -2419,13 +2401,13 @@ public final class RuntimeCapsuleManager {
         for (ScheduledTickSnapshot tick : ticks) {
 
             //? if (>=1.18 && <=1.19.2) {
-            /*Block type = Registry.BLOCK.get(tick.typeIdentifier());
+            /*Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
             *///?}
             //? if (>=1.19.3 && <=1.21.1) {
-            /*Block type = BuiltInRegistries.BLOCK.get(tick.typeIdentifier());
+            /*Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
             *///?}
             //? if (>=1.21.2 && <=26.3) {
-            Block type = BuiltInRegistries.BLOCK.getValue(tick.typeIdentifier());
+            Block type = VersionIds.value(VersionIds.blocks(), VersionIds.tryParse(tick.type));
             //?}
 
             scheduler.schedule(
@@ -2453,13 +2435,13 @@ public final class RuntimeCapsuleManager {
         for (ScheduledTickSnapshot tick : ticks) {
 
             //? if (>=1.18 && <=1.19.2) {
-            /*Fluid type = Registry.FLUID.get(tick.typeIdentifier());
+            /*Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
             *///?}
             //? if (>=1.19.3 && <=1.21.1) {
-            /*Fluid type = BuiltInRegistries.FLUID.get(tick.typeIdentifier());
+            /*Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
             *///?}
             //? if (>=1.21.2 && <=26.3) {
-            Fluid type = BuiltInRegistries.FLUID.getValue(tick.typeIdentifier());
+            Fluid type = VersionIds.value(VersionIds.fluids(), VersionIds.tryParse(tick.type));
             //?}
 
             scheduler.schedule(

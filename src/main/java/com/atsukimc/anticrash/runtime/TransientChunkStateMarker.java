@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
@@ -118,18 +119,17 @@ public final class TransientChunkStateMarker {
                                 ? List.of()
                                 : ScheduledTickSnapshot.capture(
                                         //? if (>=1.18 && <=1.21.10) {
-                                        /^world.dimension().location().toString(), chunk);
+                                        /^VersionIds.dimension(world), chunk);
                                         ^///?}
                                         //? if 1.21.11 {
-                                        /^world.dimension().identifier().toString(), chunk);
+                                        /^VersionIds.dimension(world), chunk);
                                         ^///?}
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 List<ScheduledTickSnapshot> exactTicks =
                         advertisedScheduledTicks == 0L
                                 ? List.of()
-                                : ScheduledTickSnapshot.capture(
-                                        world.dimension().identifier().toString(), chunk);
+                                : ScheduledTickSnapshot.capture(VersionIds.dimension(world), chunk);
                 //?}
 
                 long chunkScheduledTicks = exactTicks.size();
@@ -152,17 +152,16 @@ public final class TransientChunkStateMarker {
                 /*criticalChunks.add(
                         new ChunkReference(
                                 //? if (>=1.18 && <=1.21.10) {
-                                /^world.dimension().location().toString(),
+                                /^VersionIds.dimension(world),
                                 ^///?}
                                 //? if 1.21.11 {
-                                /^world.dimension().identifier().toString(),
+                                /^VersionIds.dimension(world),
                                 ^///?}
                                 chunk.getPos().toLong()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
-                        new ChunkReference(
-                                world.dimension().identifier().toString(), chunk.getPos().pack()));
+                        new ChunkReference(VersionIds.dimension(world), chunk.getPos().pack()));
                 //?}
 
                 if (pistonsInChunk > 0) {
@@ -199,18 +198,17 @@ public final class TransientChunkStateMarker {
                 /*criticalChunks.add(
                         new ChunkReference(
                                 //? if (>=1.18 && <=1.21.10) {
-                                /^world.dimension().location().toString(),
+                                /^VersionIds.dimension(world),
                                 ^///?}
                                 //? if 1.21.11 {
-                                /^world.dimension().identifier().toString(),
+                                /^VersionIds.dimension(world),
                                 ^///?}
                                 entity.chunkPosition().toLong()));
                 *///?}
                 //? if (>=26.1 && <=26.3) {
                 criticalChunks.add(
                         new ChunkReference(
-                                world.dimension().identifier().toString(),
-                                entity.chunkPosition().pack()));
+                                VersionIds.dimension(world), entity.chunkPosition().pack()));
                 //?}
 
             }

@@ -4,17 +4,12 @@ import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.core.InternalStateManager;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
-
-//? if (>=1.18 && <=1.19.2) {
-/*import net.minecraft.core.Registry;
-*///?}else {
-import net.minecraft.core.registries.BuiltInRegistries;
-//?}
 
 import java.util.List;
 import java.util.Locale;
@@ -97,14 +92,11 @@ public final class ConsistencyManager implements AutoCloseable {
         transaction.destination = destination;
 
         //? if (>=1.18 && <=1.19.4) {
-        /*transaction.dimension =
-                player == null ? null : player.getLevel().dimension().location().toString();
+        /*transaction.dimension = player == null ? null : VersionIds.dimension(player);
         *///?}else if <=1.21.10 {
-        /*transaction.dimension =
-                player == null ? null : player.level().dimension().location().toString();
+        /*transaction.dimension = player == null ? null : VersionIds.dimension(player);
         *///?} else {
-        transaction.dimension =
-                player == null ? null : player.level().dimension().identifier().toString();
+        transaction.dimension = player == null ? null : VersionIds.dimension(player);
         //?}
 
         if (pos != null) {
@@ -115,9 +107,9 @@ public final class ConsistencyManager implements AutoCloseable {
         if (stack != null) {
 
             //? if (>=1.18 && <=1.19.2) {
-            /*transaction.itemStackId = Registry.ITEM.getKey(stack.getItem()).toString();
+            /*transaction.itemStackId = VersionIds.id(VersionIds.items(), stack.getItem());
             *///?} else {
-            transaction.itemStackId = BuiltInRegistries.ITEM.getKey(stack.getItem()).toString();
+            transaction.itemStackId = VersionIds.id(VersionIds.items(), stack.getItem());
             //?}
 
             transaction.count = stack.getCount();

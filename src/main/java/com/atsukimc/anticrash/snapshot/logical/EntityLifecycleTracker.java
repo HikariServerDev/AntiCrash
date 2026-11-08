@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
+import com.atsukimc.anticrash.util.VersionIds;
+
 import net.minecraft.world.entity.Entity;
 
 import java.util.ArrayList;
@@ -30,10 +32,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_REMOVED",
                 //? if (>=1.18 && <=1.19.4) {
-                /^entity.getLevel().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if (>=1.20 && <=1.21.8) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
@@ -43,10 +45,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_REMOVED",
                 //? if (>=1.21.9 && <=1.21.10) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if 1.21.11 {
-                /^entity.level().dimension().identifier().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
@@ -55,7 +57,7 @@ public final class EntityLifecycleTracker {
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_REMOVED",
-                entity.level().dimension().identifier().toString(),
+                VersionIds.dimension(entity),
                 entity.chunkPosition().pack(),
                 entity.getStringUUID(),
                 reason);
@@ -70,10 +72,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_MOVED_FROM",
                 //? if (>=1.18 && <=1.19.4) {
-                /^entity.getLevel().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if (>=1.20 && <=1.21.8) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 oldChunk,
                 entity.getStringUUID(),
@@ -83,10 +85,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_MOVED_FROM",
                 //? if (>=1.21.9 && <=1.21.10) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if 1.21.11 {
-                /^entity.level().dimension().identifier().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 oldChunk,
                 entity.getStringUUID(),
@@ -95,7 +97,7 @@ public final class EntityLifecycleTracker {
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_MOVED_FROM",
-                entity.level().dimension().identifier().toString(),
+                VersionIds.dimension(entity),
                 oldChunk,
                 entity.getStringUUID(),
                 Long.toString(newChunk));
@@ -116,10 +118,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_UNLOADED",
                 //? if (>=1.18 && <=1.19.4) {
-                /^entity.getLevel().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if (>=1.20 && <=1.21.8) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
@@ -129,10 +131,10 @@ public final class EntityLifecycleTracker {
         /*GLOBAL.record(
                 "ENTITY_UNLOADED",
                 //? if (>=1.21.9 && <=1.21.10) {
-                /^entity.level().dimension().location().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 //? if 1.21.11 {
-                /^entity.level().dimension().identifier().toString(),
+                /^VersionIds.dimension(entity),
                 ^///?}
                 entity.chunkPosition().toLong(),
                 entity.getStringUUID(),
@@ -141,7 +143,7 @@ public final class EntityLifecycleTracker {
         //? if (>=26.1 && <=26.3) {
         GLOBAL.record(
                 "ENTITY_UNLOADED",
-                entity.level().dimension().identifier().toString(),
+                VersionIds.dimension(entity),
                 entity.chunkPosition().pack(),
                 entity.getStringUUID(),
                 "server_entity_manager_unload");

@@ -1,17 +1,12 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
-//? if (>=1.18 && <=1.21.10) {
-/*import net.minecraft.resources.ResourceLocation;
-*///?} else {
-import net.minecraft.resources.Identifier;
-//?}
-
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.snapshot.FileFacts;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -409,10 +404,10 @@ public final class LogicalDeltaMaterializer {
         if ("minecraft:the_nether".equals(dimension)) return world.resolve("DIM-1");
         if ("minecraft:the_end".equals(dimension)) return world.resolve("DIM1");
         //? if (>=1.18 && <=1.21.10) {
-        /*ResourceLocation identifier = ResourceLocation.tryParse(dimension);
+        /*var identifier = VersionIds.tryParse(dimension);
         *///?}
         //? if (>=1.21.11 && <=26.3) {
-        Identifier identifier = Identifier.tryParse(dimension);
+        var identifier = VersionIds.tryParse(dimension);
         //?}
         if (identifier == null
                 || identifier.getNamespace().contains("..")
