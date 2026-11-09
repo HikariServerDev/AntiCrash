@@ -1079,11 +1079,10 @@ public final class AntiCrashController {
                     if (!CarpetIntegration.isFakePlayer(player))
 
                         //? if (>=1.18 && <=1.21.11) {
-                        /*player.displayClientMessage(chat(notice, null), false);
+                        /*VersionMessages.send(player, chat(notice, null), false);
                         *///?}
                         //? if (>=26.1 && <=26.3) {
-                        com.atsukimc.anticrash.runtime.VersionMessages.send(
-                                player, chat(notice, null), false);
+                        VersionMessages.send(player, chat(notice, null), false);
                         //?}
 
                 }
@@ -1307,10 +1306,10 @@ public final class AntiCrashController {
                 actionBarVisible = false;
 
                 //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(new TextComponent(""));
+                /*broadcastActionBar(VersionMessages.literal(""));
                 *///?}
                 //? if (>=1.19 && <=26.3) {
-                broadcastActionBar(Component.literal(""));
+                broadcastActionBar(VersionMessages.literal(""));
                 //?}
 
             }
@@ -1330,10 +1329,10 @@ public final class AntiCrashController {
                 actionBarVisible = false;
 
                 //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(new TextComponent(""));
+                /*broadcastActionBar(VersionMessages.literal(""));
                 *///?}
                 //? if (>=1.19 && <=26.3) {
-                broadcastActionBar(Component.literal(""));
+                broadcastActionBar(VersionMessages.literal(""));
                 //?}
 
             }
@@ -1757,11 +1756,11 @@ public final class AntiCrashController {
     private Component actionBar(ChatFormatting color, String key, Object... arguments) {
 
         //? if (>=1.18 && <=1.18.2) {
-        /*return new TextComponent(MessageCatalog.text(config.language, key, arguments))
+        /*return VersionMessages.literal(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
         *///?}
         //? if (>=1.19 && <=26.3) {
-        return Component.literal(MessageCatalog.text(config.language, key, arguments))
+        return VersionMessages.literal(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
         //?}
 
@@ -1772,11 +1771,12 @@ public final class AntiCrashController {
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*if (!CarpetIntegration.isFakePlayer(player)) player.displayClientMessage(message, true);
+            /*if (!CarpetIntegration.isFakePlayer(player))
+                VersionMessages.send(player, message, true);
             *///?}
             //? if (>=26.1 && <=26.3) {
             if (!CarpetIntegration.isFakePlayer(player))
-                com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, true);
+                VersionMessages.send(player, message, true);
             //?}
 
         }
@@ -1870,10 +1870,10 @@ public final class AntiCrashController {
                         ChatFormatting.YELLOW);
 
         //? if (>=1.18 && <=1.21.11) {
-        /*player.displayClientMessage(message, false);
+        /*VersionMessages.send(player, message, false);
         *///?}
         //? if (>=26.1 && <=26.3) {
-        com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, false);
+        VersionMessages.send(player, message, false);
         //?}
 
     }
@@ -1977,7 +1977,8 @@ public final class AntiCrashController {
         if (accepted) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*player.displayClientMessage(
+            /*VersionMessages.send(
+                    player,
                     chat(
                             restore
                                     ? MessageCatalog.text(
@@ -1990,7 +1991,7 @@ public final class AntiCrashController {
                     false);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            com.atsukimc.anticrash.runtime.VersionMessages.send(
+            VersionMessages.send(
                     player,
                     chat(
                             restore
@@ -2025,7 +2026,8 @@ public final class AntiCrashController {
         if (states.canResumeWithStart()) {
 
             //? if (>=1.18 && <=1.21.11) {
-            /*player.displayClientMessage(
+            /*VersionMessages.send(
+                    player,
                     chat(
                             MessageCatalog.text(
                                     config.language,
@@ -2035,7 +2037,7 @@ public final class AntiCrashController {
                     false);
             *///?}
             //? if (>=26.1 && <=26.3) {
-            com.atsukimc.anticrash.runtime.VersionMessages.send(
+            VersionMessages.send(
                     player,
                     chat(
                             MessageCatalog.text(

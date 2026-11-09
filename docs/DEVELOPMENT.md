@@ -88,7 +88,7 @@ Minecraft 1.18.2を対象にする例です。
 
 版切り替えは一回のGradle呼び出しにつき一つにします。非アクティブな枝はコメントとして保存されるため、通常の不要コードと判断して削除しないでください。
 
-APIと処理が同じ部分は条件の外へ出し、差がある箇所だけを条件分岐にします。同じimport、メソッド宣言、ループ全体を版ごとに繰り返す必要はありません。同じAPI変更が多くの箇所に現れる場合は、条件をヘルパーへ集めて呼び出し側を条件なしにします。ID（`ResourceLocation`/`Identifier`、`ResourceKey`の文字列化、組み込みレジストリの参照）は`util/VersionIds`を、26.1でrecordになった`ChunkPos`の座標・long変換は`util/VersionChunkPos`を、1.21.5でOptionalになったNBT読み取りは`runtime/VersionNbt`を、1.21.6でviewになった保存と復元は`runtime/VersionStorage`を使います。`if / else if`を使うかは条件の意味に合わせて選び、分岐数を減らすために版固有の挙動を失わないようにしてください。
+APIと処理が同じ部分は条件の外へ出し、差がある箇所だけを条件分岐にします。同じimport、メソッド宣言、ループ全体を版ごとに繰り返す必要はありません。同じAPI変更が多くの箇所に現れる場合は、条件をヘルパーへ集めて呼び出し側を条件なしにします。ID（`ResourceLocation`/`Identifier`、`ResourceKey`の文字列化、組み込みレジストリの参照）は`util/VersionIds`を、26.1でrecordになった`ChunkPos`の座標・long変換は`util/VersionChunkPos`を、1.21.5でOptionalになったNBT読み取りは`runtime/VersionNbt`を、1.21.6でviewになった保存と復元は`runtime/VersionStorage`を、1.19で変わったテキスト生成と26.1で分かれたプレイヤーへのメッセージ送信は`runtime/VersionMessages`を使います。`if / else if`を使うかは条件の意味に合わせて選び、分岐数を減らすために版固有の挙動を失わないようにしてください。
 
 条件整理前後のJavaトークンを全版で比較する補助コマンドもあります。
 

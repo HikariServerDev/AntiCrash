@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
+import com.atsukimc.anticrash.runtime.VersionMessages;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
@@ -63,13 +64,13 @@ public abstract class PlayerManagerMixin {
 
             //? if (>=1.18 && <=1.18.2) {
             /*callbackInfo.setReturnValue(
-                    new TextComponent(
+                    VersionMessages.literal(
                             MessageCatalog.text(
                                     controller.config().language, "recovery.login_blocked")));
             *///?}
             //? if (>=1.19 && <=26.3) {
             callbackInfo.setReturnValue(
-                    Component.literal(
+                    VersionMessages.literal(
                             MessageCatalog.text(
                                     controller.config().language, "recovery.login_blocked")));
             //?}
