@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.snapshot.FileFacts;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
@@ -78,10 +79,10 @@ public final class LogicalDeltaMaterializer {
             Path file;
 
             //? if (>=1.18 && <=1.21.4) {
-            /*if (root.getList("Entities", 10).isEmpty())
+            /*if (VersionNbt.list(root, "Entities", 10).isEmpty())
             *///?}
             //? if (>=1.21.5 && <=26.3) {
-            if (com.atsukimc.anticrash.runtime.VersionNbt.list(root, "Entities", 10).isEmpty())
+            if (VersionNbt.list(root, "Entities", 10).isEmpty())
             //?}
             {
                 // Vanilla deletes an empty entity chunk instead of storing an empty list. Do the
@@ -298,19 +299,18 @@ public final class LogicalDeltaMaterializer {
             }
 
             //? if (>=1.18 && <=1.21.4) {
-            /*if (root == null || !root.contains("Entities", 9))
+            /*if (root == null || !VersionNbt.contains(root, "Entities", 9))
             *///?}
             //? if (>=1.21.5 && <=26.3) {
-            if (root == null
-                    || !com.atsukimc.anticrash.runtime.VersionNbt.contains(root, "Entities", 9))
+            if (root == null || !VersionNbt.contains(root, "Entities", 9))
             //?}
                 return file;
 
             //? if (>=1.18 && <=1.21.4) {
-            /*ListTag entities = root.getList("Entities", 10);
+            /*ListTag entities = VersionNbt.list(root, "Entities", 10);
             *///?}
             //? if (>=1.21.5 && <=26.3) {
-            ListTag entities = com.atsukimc.anticrash.runtime.VersionNbt.list(root, "Entities", 10);
+            ListTag entities = VersionNbt.list(root, "Entities", 10);
             //?}
 
             ListTag retained = new ListTag();
@@ -318,10 +318,10 @@ public final class LogicalDeltaMaterializer {
             for (int index = 0; index < entities.size(); index++) {
 
                 //? if (>=1.18 && <=1.21.4) {
-                /*CompoundTag entity = entities.getCompound(index);
+                /*CompoundTag entity = VersionNbt.getCompound(entities, index);
                 *///?}
                 //? if (>=1.21.5 && <=26.3) {
-                CompoundTag entity = entities.getCompound(index).orElseThrow();
+                CompoundTag entity = VersionNbt.getCompound(entities, index);
                 //?}
 
                 if (!matchesUuid(entity, uuidText)) retained.add(entity.copy());
@@ -359,13 +359,10 @@ public final class LogicalDeltaMaterializer {
         try {
 
             //? if (>=1.18 && <=1.21.4) {
-            /*return uuidText.equalsIgnoreCase(entity.getUUID("UUID").toString());
+            /*return uuidText.equalsIgnoreCase(VersionNbt.getUUID(entity, "UUID").toString());
             *///?}
             //? if (>=1.21.5 && <=26.3) {
-            return uuidText.equalsIgnoreCase(
-                    entity.read("UUID", net.minecraft.core.UUIDUtil.CODEC)
-                            .orElseThrow()
-                            .toString());
+            return uuidText.equalsIgnoreCase(VersionNbt.getUUID(entity, "UUID").toString());
             //?}
 
         } catch (RuntimeException ignored) {

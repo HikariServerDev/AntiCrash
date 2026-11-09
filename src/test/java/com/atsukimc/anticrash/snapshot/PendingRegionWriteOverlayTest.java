@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.runtime.VersionNbt;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -162,17 +164,17 @@ class PendingRegionWriteOverlayTest {
         Path copied = secondWorld.resolve("region/r.0.0.mca");
 
         //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("kept", read(copied, kept).getString("marker"));
+        /*assertEquals("kept", VersionNbt.getString(read(copied, kept), "marker"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        assertEquals("kept", read(copied, kept).getString("marker").orElseThrow());
+        assertEquals("kept", VersionNbt.getString(read(copied, kept), "marker"));
         //?}
 
         //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("queued", read(copied, queued).getString("marker"));
+        /*assertEquals("queued", VersionNbt.getString(read(copied, queued), "marker"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        assertEquals("queued", read(copied, queued).getString("marker").orElseThrow());
+        assertEquals("queued", VersionNbt.getString(read(copied, queued), "marker"));
         //?}
 
         assertNull(read(copied, deleted));
@@ -180,15 +182,16 @@ class PendingRegionWriteOverlayTest {
         //? if (>=1.18 && <=1.21.4) {
         /*assertEquals(
                 "new-region",
-                read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0))
-                        .getString("marker"));
+                VersionNbt.getString(
+                        read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
+                        "marker"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 "new-region",
-                read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0))
-                        .getString("marker")
-                        .orElseThrow());
+                VersionNbt.getString(
+                        read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
+                        "marker"));
         //?}
 
         assertTrue(java.util.Arrays.equals(liveBefore, Files.readAllBytes(region)));

@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -85,14 +86,12 @@ public abstract class EndGatewayBlockEntityMixin {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (extension != null && extension.contains("TeleportCooldown", 99)) {
-            teleportCooldown = Math.max(0, extension.getInt("TeleportCooldown"));
+        /*if (extension != null && VersionNbt.contains(extension, "TeleportCooldown", 99)) {
+            teleportCooldown = Math.max(0, VersionNbt.getInt(extension, "TeleportCooldown"));
         }
         *///?} else {
-        if (extension != null
-                && com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                        extension, "TeleportCooldown", 99)) {
-            teleportCooldown = Math.max(0, extension.getInt("TeleportCooldown").orElseThrow());
+        if (extension != null && VersionNbt.contains(extension, "TeleportCooldown", 99)) {
+            teleportCooldown = Math.max(0, VersionNbt.getInt(extension, "TeleportCooldown"));
         }
         //?}
     }

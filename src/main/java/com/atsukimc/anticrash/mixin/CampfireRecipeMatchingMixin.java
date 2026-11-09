@@ -2,6 +2,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
@@ -122,22 +123,23 @@ public abstract class CampfireRecipeMatchingMixin
         //? if (>=1.19 && <=1.21.1) {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
-                        extension.contains("RecipeMatch", 8)
-                                ? VersionIds.tryParse(extension.getString("RecipeMatch"))
+                        VersionNbt.contains(extension, "RecipeMatch", 8)
+                                ? VersionIds.tryParse(
+                                        VersionNbt.getString(extension, "RecipeMatch"))
                                 : null);
         *///?} else if <= 1.21.4 {
         /*anticrash$savedId =
-                extension.contains("RecipeMatch", 8)
+                VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                VersionIds.parse(extension.getString("RecipeMatch")))
+                                VersionIds.parse(VersionNbt.getString(extension, "RecipeMatch")))
                         : null;
         *///?} else {
         anticrash$savedId =
-                com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "RecipeMatch", 8)
+                VersionNbt.contains(extension, "RecipeMatch", 8)
                         ? net.minecraft.resources.ResourceKey.create(
                                 net.minecraft.core.registries.Registries.RECIPE,
-                                VersionIds.parse(extension.getString("RecipeMatch").orElseThrow()))
+                                VersionIds.parse(VersionNbt.getString(extension, "RecipeMatch")))
                         : null;
         //?}
 

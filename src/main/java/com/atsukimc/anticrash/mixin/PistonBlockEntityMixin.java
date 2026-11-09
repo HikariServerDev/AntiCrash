@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
@@ -97,19 +98,18 @@ public abstract class PistonBlockEntityMixin {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (extension == null || !extension.contains("Progress", 99))
+        /*if (extension == null || !VersionNbt.contains(extension, "Progress", 99))
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        if (extension == null
-                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "Progress", 99))
+        if (extension == null || !VersionNbt.contains(extension, "Progress", 99))
         //?}
             return;
 
         //? if (>=1.18 && <=1.21.4) {
-        /*float exact = extension.getFloat("Progress");
+        /*float exact = VersionNbt.getFloat(extension, "Progress");
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        float exact = extension.getFloat("Progress").orElseThrow();
+        float exact = VersionNbt.getFloat(extension, "Progress");
         //?}
 
         // Progress only moves forward from lastProgress to 1; anything else is not a state the
@@ -118,12 +118,12 @@ public abstract class PistonBlockEntityMixin {
         if (exact >= progressO && exact <= 1.0f) progress = exact;
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (extension.contains("SavedWorldTime", 99))
-            lastTicked = extension.getLong("SavedWorldTime");
+        /*if (VersionNbt.contains(extension, "SavedWorldTime", 99))
+            lastTicked = VersionNbt.getLong(extension, "SavedWorldTime");
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        if (com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "SavedWorldTime", 99))
-            lastTicked = extension.getLong("SavedWorldTime").orElseThrow();
+        if (VersionNbt.contains(extension, "SavedWorldTime", 99))
+            lastTicked = VersionNbt.getLong(extension, "SavedWorldTime");
         //?}
 
     }

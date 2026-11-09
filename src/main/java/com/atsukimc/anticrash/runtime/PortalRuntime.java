@@ -49,10 +49,10 @@ public final class PortalRuntime {
     public static PortalProcessor read(CompoundTag nbt) {
 
         //? if (>=1.21 && <=1.21.4) {
-        /*var id = VersionIds.tryParse(nbt.getString("Type"));
+        /*var id = VersionIds.tryParse(VersionNbt.getString(nbt, "Type"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        var id = VersionIds.tryParse(nbt.getString("Type").orElseThrow());
+        var id = VersionIds.tryParse(VersionNbt.getString(nbt, "Type"));
         //?}
 
         if (id == null
@@ -74,10 +74,10 @@ public final class PortalRuntime {
         //?}
 
         //? if (>=1.21 && <=1.21.4) {
-        /*int ticks = nbt.getInt("Time");
+        /*int ticks = VersionNbt.getInt(nbt, "Time");
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        int ticks = nbt.getInt("Time").orElseThrow();
+        int ticks = VersionNbt.getInt(nbt, "Time");
         //?}
 
         if (ticks < 0) throw new IllegalArgumentException("Negative saved Portal time");
@@ -85,10 +85,10 @@ public final class PortalRuntime {
         PortalProcessor manager = new PortalProcessor(portal, pos);
 
         //? if (>=1.21 && <=1.21.4) {
-        /*manager.setAsInsidePortalThisTick(nbt.getBoolean("In"));
+        /*manager.setAsInsidePortalThisTick(VersionNbt.getBoolean(nbt, "In"));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        manager.setAsInsidePortalThisTick(nbt.getBoolean("In").orElseThrow());
+        manager.setAsInsidePortalThisTick(VersionNbt.getBoolean(nbt, "In"));
         //?}
 
         ((PortalManagerAccessorMixin) manager).anticrash$setTicksInPortal(ticks);

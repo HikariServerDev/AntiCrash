@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.player;
 
+import com.atsukimc.anticrash.runtime.VersionNbt;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertInstanceOf;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -36,10 +38,10 @@ class NbtCodecTest {
         ListTag decoded = assertInstanceOf(ListTag.class, NbtCodec.decode(NbtCodec.encode(list)));
 
         //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("slot", decoded.getString(0));
+        /*assertEquals("slot", VersionNbt.getString(decoded, 0));
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        assertEquals("slot", decoded.getString(0).orElseThrow());
+        assertEquals("slot", VersionNbt.getString(decoded, 0));
         //?}
 
     }

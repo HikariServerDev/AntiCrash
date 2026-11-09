@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.mixin;
 
 //? if (>=1.19.1 && <=1.20.6) {
 /*import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import net.minecraft.nbt.CompoundTag;
 import org.spongepowered.asm.mixin.Shadow;
 *///?}
@@ -70,8 +71,8 @@ public abstract class JukeboxRuntimeMixin {
             /*{
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-        if (extension != null && extension.contains("JukeboxEventPhase", 3)) {
-            ticksSinceLastEvent = extension.getInt("JukeboxEventPhase");
+        if (extension != null && VersionNbt.contains(extension, "JukeboxEventPhase", 3)) {
+            ticksSinceLastEvent = VersionNbt.getInt(extension, "JukeboxEventPhase");
         }
     }
 

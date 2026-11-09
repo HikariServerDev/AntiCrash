@@ -93,12 +93,15 @@ public final class RuntimeExtensionNbt {
     public static void write(CompoundTag nbt, Consumer<CompoundTag> writer) {
 
         //? if (>=1.18 && <=1.21.4) {
-        /*CompoundTag extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new CompoundTag();
+        /*CompoundTag extension =
+                VersionNbt.contains(nbt, KEY, 10)
+                        ? VersionNbt.getCompoundOrEmpty(nbt, KEY)
+                        : new CompoundTag();
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         CompoundTag extension =
-                com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
-                        ? nbt.getCompoundOrEmpty(KEY)
+                VersionNbt.contains(nbt, KEY, 10)
+                        ? VersionNbt.getCompoundOrEmpty(nbt, KEY)
                         : new CompoundTag();
         //?}
 
@@ -118,22 +121,22 @@ public final class RuntimeExtensionNbt {
     public static CompoundTag read(CompoundTag nbt) {
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (nbt == null || !nbt.contains(KEY, 10))
+        /*if (nbt == null || !VersionNbt.contains(nbt, KEY, 10))
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
+        if (nbt == null || !VersionNbt.contains(nbt, KEY, 10))
         //?}
             return null;
 
         //? if (>=1.18 && <=1.21.4) {
-        /*CompoundTag extension = nbt.getCompound(KEY);
+        /*CompoundTag extension = VersionNbt.getCompoundOrEmpty(nbt, KEY);
         *///?}
         //? if (>=1.21.5 && <=26.3) {
-        CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
+        CompoundTag extension = VersionNbt.getCompoundOrEmpty(nbt, KEY);
         //?}
 
         //? if (>=1.18 && <=1.21.4) {
-        /*int version = extension.getInt(VERSION_KEY);
+        /*int version = VersionNbt.getInt(extension, VERSION_KEY);
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         int version = extension.getInt(VERSION_KEY).orElse(0);

@@ -5,6 +5,7 @@ import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.ReflectionUtil;
 import com.atsukimc.anticrash.util.VersionIds;
 
@@ -345,18 +346,16 @@ public final class CarpetIntegration {
 
             *///?}
                 //? if (>=1.18 && <=1.20.4) {
-                /*data.effectsNbt.add(
-                        NbtCodec.encode(effect.save(new net.minecraft.nbt.CompoundTag())));
+                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
                 *///?}
                 //? if (>=1.20.5 && <=1.21.4) {
-                /*data.effectsNbt.add(NbtCodec.encode(effect.save()));
+                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
                 *///?}
             //? if (>=26.1 && <=26.3) {
             for (MobEffectInstance effect : player.getActiveEffects())
             //?}
                 //? if (>=1.21.5 && <=26.3) {
-                data.effectsNbt.add(
-                        NbtCodec.encode(com.atsukimc.anticrash.runtime.VersionNbt.effect(effect)));
+                data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
                 //?}
 
         if (player.isPassenger()) {
@@ -715,10 +714,9 @@ public final class CarpetIntegration {
                     throw new IOException("FakePlayer effect snapshot is not an NBT compound");
 
                 //? if (>=1.18 && <=1.21.4) {
-                /*MobEffectInstance effect = MobEffectInstance.load(compound);
+                /*MobEffectInstance effect = VersionNbt.effect(compound);
                 *///?} else {
-                MobEffectInstance effect =
-                        com.atsukimc.anticrash.runtime.VersionNbt.effect(compound);
+                MobEffectInstance effect = VersionNbt.effect(compound);
                 //?}
 
                 if (effect == null) throw new IOException("FakePlayer effect snapshot is invalid");
@@ -959,18 +957,17 @@ public final class CarpetIntegration {
 
         //? if (>=1.18 && <=1.21.4) {
         /*if (nbt.hasUUID("UUID")) uuids.add(nbt.getUUID("UUID"));
-        net.minecraft.nbt.ListTag passengers = nbt.getList("Passengers", 10);
+        net.minecraft.nbt.ListTag passengers = VersionNbt.list(nbt, "Passengers", 10);
         *///?} else {
         nbt.read("UUID", net.minecraft.core.UUIDUtil.CODEC).ifPresent(uuids::add);
-        net.minecraft.nbt.ListTag passengers =
-                com.atsukimc.anticrash.runtime.VersionNbt.list(nbt, "Passengers", 10);
+        net.minecraft.nbt.ListTag passengers = VersionNbt.list(nbt, "Passengers", 10);
         //?}
 
         for (int i = 0; i < passengers.size(); i++)
             //? if (>=1.18 && <=1.21.4) {
-            /*collectUuids(passengers.getCompound(i), uuids);
+            /*collectUuids(VersionNbt.getCompound(passengers, i), uuids);
             *///?} else {
-            collectUuids(passengers.getCompound(i).orElseThrow(), uuids);
+            collectUuids(VersionNbt.getCompound(passengers, i), uuids);
             //?}
     }
 
@@ -1108,7 +1105,7 @@ public final class CarpetIntegration {
         if (data.fluidTrackersNbt != null)
             com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.restore(
                     player,
-                    com.atsukimc.anticrash.runtime.VersionNbt.list(
+                    VersionNbt.list(
                             NbtCodec.decodeCompound(data.fluidTrackersNbt), "Trackers", 10));
         //?}
 
@@ -1233,7 +1230,7 @@ public final class CarpetIntegration {
         //? if (>=26.1 && <=26.3) {
         if (data.fluidTrackersNbt != null)
             com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.decode(
-                    com.atsukimc.anticrash.runtime.VersionNbt.list(
+                    VersionNbt.list(
                             NbtCodec.decodeCompound(data.fluidTrackersNbt), "Trackers", 10));
         //?}
 
@@ -1295,10 +1292,10 @@ public final class CarpetIntegration {
 
                 //? if (>=1.18 && <=1.21.4) {
                 /*if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
-                        || MobEffectInstance.load(compound) == null)
+                        || VersionNbt.effect(compound) == null)
                 *///?} else {
                 if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
-                        || com.atsukimc.anticrash.runtime.VersionNbt.effect(compound) == null)
+                        || VersionNbt.effect(compound) == null)
                 //?}
                     throw new IOException("FakePlayer effect snapshot is invalid");
             }

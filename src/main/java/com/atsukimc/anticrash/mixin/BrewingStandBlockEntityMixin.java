@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 //? if (>=1.18 && <=26.2) {
@@ -100,15 +101,15 @@ public abstract class BrewingStandBlockEntityMixin {
                 com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.read(nbt);
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (extension == null || !extension.contains("ItemBrewing", 8) || brewTime <= 0) return;
+        /*if (extension == null || !VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0)
+            return;
 
-        var id = VersionIds.tryParse(extension.getString("ItemBrewing"));
+        var id = VersionIds.tryParse(VersionNbt.getString(extension, "ItemBrewing"));
         *///?} else {
-        if (extension == null
-                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "ItemBrewing", 8)
-                || brewTime <= 0) return;
+        if (extension == null || !VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0)
+            return;
 
-        var id = VersionIds.tryParse(extension.getString("ItemBrewing").orElseThrow());
+        var id = VersionIds.tryParse(VersionNbt.getString(extension, "ItemBrewing"));
         //?}
 
         if (id != null && VersionIds.items().containsKey(id)) {
