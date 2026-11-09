@@ -1,4 +1,7 @@
 import os
+import hashlib
+import io
+import urllib.error
 from pathlib import Path
 import subprocess
 import tempfile
@@ -50,6 +53,49 @@ class CommandTest(unittest.TestCase):
         for name in ['api', 'code', 'file', 'parser', 'tree', 'util']:
             self.assertIn(f'--add-exports=jdk.compiler/com.sun.tools.javac.{name}=ALL-UNNAMED', line)
         self.assertEqual([str(ROOT / 'scripts/StonecutterFormat.java'), '--self-test'], line[-2:])
+
+
+class FormatterDownloadTest(unittest.TestCase):
+    def test_transient_failure_retries_then_checks_the_download(self):
+        payload = b'verified formatter'
+        error = urllib.error.HTTPError(format_java.URL, 504, 'timeout', {}, None)
+        with tempfile.TemporaryDirectory() as temporary, \
+                patch.object(format_java.urllib.request, 'urlopen', side_effect=[error, io.BytesIO(payload)]) as fetch, \
+                patch.object(format_java.time, 'sleep') as sleep, \
+                patch.object(format_java, 'SHA256', hashlib.sha256(payload).hexdigest()):
+            jar = format_java.formatter_jar(Path(temporary))
+            self.assertEqual(payload, jar.read_bytes())
+            self.assertEqual(2, fetch.call_count)
+            sleep.assert_called_once_with(1)
+
+    def test_transport_retries_are_bounded_and_do_not_publish_a_cache(self):
+        with tempfile.TemporaryDirectory() as temporary, \
+                patch.object(format_java.urllib.request, 'urlopen', side_effect=TimeoutError('timeout')) as fetch, \
+                patch.object(format_java.time, 'sleep'):
+            with self.assertRaises(TimeoutError):
+                format_java.formatter_jar(Path(temporary))
+            self.assertEqual(3, fetch.call_count)
+            self.assertEqual([], list(Path(temporary).rglob('*.jar')))
+
+    def test_http_client_errors_are_not_retried(self):
+        error = urllib.error.HTTPError(format_java.URL, 404, 'missing', {}, None)
+        with tempfile.TemporaryDirectory() as temporary, \
+                patch.object(format_java.urllib.request, 'urlopen', side_effect=error) as fetch, \
+                patch.object(format_java.time, 'sleep') as sleep:
+            with self.assertRaises(urllib.error.HTTPError):
+                format_java.formatter_jar(Path(temporary))
+            self.assertEqual(1, fetch.call_count)
+            sleep.assert_not_called()
+
+    def test_corrupt_payload_is_rejected_without_retry_or_cache(self):
+        with tempfile.TemporaryDirectory() as temporary, \
+                patch.object(format_java.urllib.request, 'urlopen', return_value=io.BytesIO(b'corrupt')) as fetch, \
+                patch.object(format_java.time, 'sleep') as sleep:
+            with self.assertRaisesRegex(ValueError, 'checksum'):
+                format_java.formatter_jar(Path(temporary))
+            self.assertEqual(1, fetch.call_count)
+            sleep.assert_not_called()
+            self.assertEqual([], list(Path(temporary).rglob('*.jar')))
 
 
 class StonecutterFormatSelfTest(unittest.TestCase):
