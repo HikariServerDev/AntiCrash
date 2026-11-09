@@ -6,9 +6,6 @@ package com.atsukimc.anticrash.runtime;
 *///?} else {
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
 //?}
-//? if (>=1.19 && <=1.21.5) {
-/*import net.minecraft.nbt.CompoundTag;
-*///?}
 //? if (>=26.1 && <=26.3) {
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.SculkCatalystBlockEntity;
@@ -33,30 +30,16 @@ public final class SculkRuntimeFingerprint {
         else
         *///?}
         if (entity instanceof SculkCatalystBlockEntity catalyst) {
-
-            //? if (>=1.19 && <=1.21.5) {
-            /*var view = VersionStorage.writer(entity);
-            *///?}
-            //? if (>=1.21.6 && <=26.3) {
             var view = VersionStorage.writer(entity);
-            //?}
 
             //? if (>=1.19 && <=1.19.4) {
             /*catalyst.getSculkSpreader().save(view);
             *///?}
-            //? if (>=1.20 && <=1.21.5) {
-            /*catalyst.getListener().getSculkSpreader().save(view);
-            *///?}
-            //? if (>=1.21.6 && <=26.3) {
+            //? if (>=1.20 && <=26.3) {
             catalyst.getListener().getSculkSpreader().save(view);
             //?}
 
-            //? if (>=1.19 && <=1.21.5) {
-            /*return "catalyst|" + VersionStorage.result(view);
-            *///?}
-            //? if (>=1.21.6 && <=26.3) {
             return "catalyst|" + VersionStorage.result(view);
-            //?}
 
         } else
         //? if (>=1.20 && <=26.3) {

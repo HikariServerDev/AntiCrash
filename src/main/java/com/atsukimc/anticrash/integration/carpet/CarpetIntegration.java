@@ -555,7 +555,7 @@ public final class CarpetIntegration {
                         Object result = method.invoke(null, args);
 
                         if (result instanceof ServerPlayer player) return player;
-                        
+
                         return find(server, data);
                     }
             } catch (java.lang.reflect.InvocationTargetException failure) {
@@ -893,29 +893,16 @@ public final class CarpetIntegration {
 
         if (root == null || root == player) return null;
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*net.minecraft.nbt.CompoundTag nbt;
-        *///?} else {
         net.minecraft.nbt.CompoundTag nbt;
-        //?}
 
         com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
         try {
-            //? if (>=1.18 && <=1.21.5) {
-            /*nbt = VersionStorage.entity(root);
-            *///?} else {
             nbt = VersionStorage.entity(root);
-            //?}
-
         } finally {
             com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(false);
         }
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*return nbt != null ? NbtCodec.encode(nbt) : null;
-        *///?} else {
         return nbt != null ? NbtCodec.encode(nbt) : null;
-        //?}
     }
 
     /** Removes the vehicle (and its non-player passengers) the player currently rides. */

@@ -25,7 +25,25 @@ import net.minecraft.world.level.storage.TagValueOutput;
 public final class VersionStorage {
     private VersionStorage() {}
 
-    //? if (>=1.21.6 && <=26.3) {
+    /** Where a block entity's state is saved; {@link #result} reads it back. */
+    //? if (>=1.18 && <=1.21.5) {
+    /*public static CompoundTag writer(BlockEntity entity) {
+        return new CompoundTag();
+    }
+
+    public static CompoundTag result(CompoundTag writer) {
+        return writer;
+    }
+
+    *///?} else {
+    public static TagValueOutput writer(BlockEntity entity) {
+        return writer(entity.getLevel().registryAccess());
+    }
+
+    public static CompoundTag result(TagValueOutput writer) {
+        return writer.buildResult();
+    }
+
     public record ThrowingReporter(String path) implements ProblemReporter {
         public ProblemReporter forChild(ProblemReporter.PathElement context) {
 
@@ -44,25 +62,51 @@ public final class VersionStorage {
         return TagValueOutput.createWithContext(new ThrowingReporter("snapshot"), registries);
     }
 
-    //?}
+    public static ListTag inventory(Container inventory, HolderLookup.Provider registries) {
 
-    /** Where a block entity's state is saved; {@link #result} reads it back. */
-    //? if (>=1.18 && <=1.21.5) {
-    /*public static CompoundTag writer(BlockEntity entity) {
-        return new CompoundTag();
+        var list = new ListTag();
+
+        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
+
+            var stack = inventory.getItem(slot);
+
+            if (!stack.isEmpty())
+                list.add(
+                        ItemStackWithSlot.CODEC
+                                .encodeStart(ops, new ItemStackWithSlot(slot, stack))
+                                .getOrThrow());
+        }
+        return list;
     }
 
-    public static CompoundTag result(CompoundTag writer) {
-        return writer;
+    public static List<ItemStack> inventory(
+            ListTag encoded, int size, HolderLookup.Provider registries) {
+        if (encoded.size() > size) throw new IllegalArgumentException("Too many inventory entries");
+        List<ItemStack> stacks = new ArrayList<>(Collections.nCopies(size, ItemStack.EMPTY));
+        Set<Integer> slots = new HashSet<>();
+
+        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
+
+        for (var element : encoded) {
+
+            var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
+
+            if (!entry.isValidInContainer(size) || !slots.add(entry.slot()))
+                throw new IllegalArgumentException("Invalid/duplicate inventory slot");
+            stacks.set(entry.slot(), entry.stack());
+        }
+        return stacks;
     }
 
-    *///?} else {
-    public static TagValueOutput writer(BlockEntity entity) {
-        return writer(entity.getLevel().registryAccess());
-    }
+    public static void applyInventory(Container inventory, List<ItemStack> stacks) {
 
-    public static CompoundTag result(TagValueOutput writer) {
-        return writer.buildResult();
+        if (inventory.getContainerSize() != stacks.size())
+            throw new IllegalArgumentException("Inventory shape changed");
+        for (int i = 0; i < stacks.size(); i++) inventory.setItem(i, stacks.get(i));
+
+        inventory.setChanged();
     }
 
     //?}
@@ -132,53 +176,4 @@ public final class VersionStorage {
         return () -> applyInventory(player.getEnderChestInventory(), stacks);
         //?}
     }
-
-    //? if (>=1.21.6 && <=26.3) {
-    public static ListTag inventory(Container inventory, HolderLookup.Provider registries) {
-
-        var list = new ListTag();
-
-        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-
-        for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-
-            var stack = inventory.getItem(slot);
-
-            if (!stack.isEmpty())
-                list.add(
-                        ItemStackWithSlot.CODEC
-                                .encodeStart(ops, new ItemStackWithSlot(slot, stack))
-                                .getOrThrow());
-        }
-        return list;
-    }
-
-    public static List<ItemStack> inventory(
-            ListTag encoded, int size, HolderLookup.Provider registries) {
-        if (encoded.size() > size) throw new IllegalArgumentException("Too many inventory entries");
-        List<ItemStack> stacks = new ArrayList<>(Collections.nCopies(size, ItemStack.EMPTY));
-        Set<Integer> slots = new HashSet<>();
-
-        var ops = registries.createSerializationContext(NbtOps.INSTANCE);
-
-        for (var element : encoded) {
-
-            var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
-
-            if (!entry.isValidInContainer(size) || !slots.add(entry.slot()))
-                throw new IllegalArgumentException("Invalid/duplicate inventory slot");
-            stacks.set(entry.slot(), entry.stack());
-        }
-        return stacks;
-    }
-
-    public static void applyInventory(Container inventory, List<ItemStack> stacks) {
-
-        if (inventory.getContainerSize() != stacks.size())
-            throw new IllegalArgumentException("Inventory shape changed");
-        for (int i = 0; i < stacks.size(); i++) inventory.setItem(i, stacks.get(i));
-
-        inventory.setChanged();
-    }
-    //?}
 }

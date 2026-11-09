@@ -518,16 +518,9 @@ public final class LogicalDeltaEngine {
                 // save writes the "id" key; saveWithoutId alone produces an entity that Minecraft
                 // silently discards on load.
 
-                //? if (>=1.18 && <=1.21.5) {
-                /*CompoundTag nbt = VersionStorage.entity(entity);
-                if (nbt == null)
-                *///?}
-                //? if (>=1.21.6 && <=26.3) {
                 CompoundTag nbt = VersionStorage.entity(entity);
 
-                if (nbt == null)
-                //?}
-                    continue;
+                if (nbt == null) continue;
                 entities.add(nbt);
                 saved.add(entity);
                 savedNbt.add(nbt);
