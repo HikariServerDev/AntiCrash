@@ -37,3 +37,19 @@ class ConditionClasspathTest(unittest.TestCase):
 
     def test_exactly_one_dependency_is_accepted(self):
         self.assertEqual(Path('one.jar'), only_jar([Path('one.jar')], 'Stonecutter'))
+
+    def test_identical_wrapper_copies_are_one_binary_dependency(self):
+        with tempfile.TemporaryDirectory() as directory:
+            jars = [Path(directory) / name / 'kotlin.jar' for name in ['old-url', 'new-url']]
+            for jar in jars:
+                jar.parent.mkdir()
+                jar.write_bytes(b'same pinned binary')
+            self.assertEqual(sorted(jars)[0], only_jar(jars, 'Kotlin'))
+
+    def test_different_cached_binaries_are_still_ambiguous(self):
+        with tempfile.TemporaryDirectory() as directory:
+            jars = [Path(directory) / name for name in ['one.jar', 'two.jar']]
+            for i, jar in enumerate(jars):
+                jar.write_bytes(bytes([i]))
+            with self.assertRaisesRegex(ValueError, 'pass its path explicitly'):
+                only_jar(jars, 'Kotlin')
