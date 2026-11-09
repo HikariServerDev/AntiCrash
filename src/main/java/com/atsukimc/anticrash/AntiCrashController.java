@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash;
 
 import com.atsukimc.anticrash.checkpoint.CheckpointManager;
+import com.atsukimc.anticrash.command.VersionPermissions;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.consistency.ConsistencyManager;
 import com.atsukimc.anticrash.core.*;
@@ -1801,11 +1802,12 @@ public final class AntiCrashController {
 
         //? if (>=1.18 && <=1.21.10) {
         /*if (selectedCheckpointId == null
-                || !player.createCommandSourceStack().hasPermission(config.commands.recovery))
+                || !VersionPermissions.hasLevel(
+                        player.createCommandSourceStack(), config.commands.recovery))
         *///?}
         //? if (>=1.21.11 && <=26.3) {
         if (selectedCheckpointId == null
-                || !com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
+                || !VersionPermissions.hasLevel(
                         player.createCommandSourceStack(), config.commands.recovery))
         //?}
         {
@@ -1900,12 +1902,13 @@ public final class AntiCrashController {
         //? if (>=1.18 && <=1.21.10) {
         /*return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
-                && player.createCommandSourceStack().hasPermission(config.commands.recovery);
+                && VersionPermissions.hasLevel(
+                        player.createCommandSourceStack(), config.commands.recovery);
         *///?}
         //? if (>=1.21.11 && <=26.3) {
         return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
-                && com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
+                && VersionPermissions.hasLevel(
                         player.createCommandSourceStack(), config.commands.recovery);
         //?}
 
@@ -1918,10 +1921,11 @@ public final class AntiCrashController {
         if (!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))) return false;
 
         //? if (>=1.18 && <=1.21.10) {
-        /*if (!player.createCommandSourceStack().hasPermission(config.commands.recovery))
+        /*if (!VersionPermissions.hasLevel(
+                player.createCommandSourceStack(), config.commands.recovery))
         *///?}
         //? if (>=1.21.11 && <=26.3) {
-        if (!com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
+        if (!VersionPermissions.hasLevel(
                 player.createCommandSourceStack(), config.commands.recovery))
         //?}
             return false;
