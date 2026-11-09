@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.Block;
@@ -636,13 +637,7 @@ public final class RuntimeCapsuleManager {
         // must be accessible; the other checkpoint-FULL chunks are only cleared when loaded.
         Set<QueueChunkKey> tickChunks = new java.util.HashSet<>();
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
-            //?}
+            long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
 
             queueChunks.add(new QueueChunkKey(tick.dimension, packed));
             tickChunks.add(new QueueChunkKey(tick.dimension, packed));
@@ -686,12 +681,7 @@ public final class RuntimeCapsuleManager {
 
             ServerLevel world = worlds.get(key.dimension);
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*ChunkPos pos = new ChunkPos(key.packedChunkPosition);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            ChunkPos pos = ChunkPos.unpack(key.packedChunkPosition);
-            //?}
+            ChunkPos pos = VersionChunkPos.unpack(key.packedChunkPosition);
 
             if (world == null) {
                 throw new IllegalStateException(
@@ -735,18 +725,11 @@ public final class RuntimeCapsuleManager {
     }
 
     private static LevelChunk resolveAccessibleChunk(ServerLevel world, ChunkPos position) {
-
         ThreadedAnvilChunkStorageAccessorMixin storage =
                 (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*net.minecraft.server.level.ChunkHolder holder =
-                storage.anticrash$getCurrentChunkHolders().get(position.toLong());
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         net.minecraft.server.level.ChunkHolder holder =
-                storage.anticrash$getCurrentChunkHolders().get(position.pack());
-        //?}
+                storage.anticrash$getCurrentChunkHolders().get(VersionChunkPos.pack(position));
 
         if (holder == null) return null;
 
@@ -2036,12 +2019,7 @@ public final class RuntimeCapsuleManager {
                         "Runtime capsule contains an invalid transient entity UUID");
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(entity.chunkX, entity.chunkZ).toLong();
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(entity.chunkX, entity.chunkZ).pack();
-            //?}
+            long packed = VersionChunkPos.pack(entity.chunkX, entity.chunkZ);
 
             ChunkStateSnapshot chunks = chunksByDimension.get(entity.dimension);
             if (!unique.add(uuid)
@@ -2088,12 +2066,7 @@ public final class RuntimeCapsuleManager {
                         "Runtime capsule contains an invalid moving piston");
             }
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).toLong();
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(piston.x >> 4, piston.z >> 4).pack();
-            //?}
+            long packed = VersionChunkPos.pack(piston.x >> 4, piston.z >> 4);
 
             ChunkStateSnapshot chunks = chunksByDimension.get(piston.dimension);
             // A piston can be caught mid-move in a chunk that is loaded but no longer ticking
@@ -2140,12 +2113,7 @@ public final class RuntimeCapsuleManager {
             }
             ChunkStateSnapshot chunks = chunksByDimension.get(tick.dimension);
 
-            //? if (>=1.18 && <=1.21.11) {
-            /*long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).toLong();
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            long packed = new ChunkPos(tick.x >> 4, tick.z >> 4).pack();
-            //?}
+            long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
 
             boolean recoveryReady =
                     chunks != null

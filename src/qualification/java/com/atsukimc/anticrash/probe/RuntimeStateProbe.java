@@ -14,6 +14,7 @@ import com.atsukimc.anticrash.runtime.RedstoneTorchBurnoutSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 import com.atsukimc.anticrash.runtime.TicketLedgerSnapshot;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 import com.google.gson.Gson;
 
@@ -666,7 +667,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                                 .append('\n');
                         continue;
                     }
-                    if (chunks.add(net.minecraft.world.level.ChunkPos.asLong(cx, cz))) {
+                    if (chunks.add(VersionChunkPos.pack(cx, cz))) {
                         out.append("[inhabited] ")
                                 .append(dimension)
                                 .append(' ')

@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.util.VersionChunkPos;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 
@@ -17,13 +19,7 @@ public record PendingRegionWrite(Path directory, ChunkPos pos, CompoundTag nbt) 
     }
 
     public Path externalChunkFile() {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*return directory.resolve("c." + pos.x + "." + pos.z + ".mcc");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        return directory.resolve("c." + pos.x() + "." + pos.z() + ".mcc");
-        //?}
-
+        return directory.resolve(
+                "c." + VersionChunkPos.x(pos) + "." + VersionChunkPos.z(pos) + ".mcc");
     }
 }

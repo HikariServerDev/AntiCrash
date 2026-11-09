@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.EntityChunkWriteDeduplicator;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
@@ -70,12 +71,7 @@ public abstract class EntityChunkDataAccessMixin {
             CompoundTag nbt,
             Operation<CompletableFuture<Void>> original) {
     //?}
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*long chunk = pos.toLong();
-        *///?} else {
-        long chunk = pos.pack();
-        //?}
+        long chunk = VersionChunkPos.pack(pos);
 
         if (nbt == null) {
             anticrash$deduplicator.forget(chunk);
@@ -107,11 +103,7 @@ public abstract class EntityChunkDataAccessMixin {
             ChunkPos pos,
             java.util.function.Supplier<CompoundTag> value,
             Operation<CompletableFuture<Void>> original) {
-        //? if 1.21.11 {
-        /*anticrash$deduplicator.forget(pos.toLong());
-        *///?} else {
-        anticrash$deduplicator.forget(pos.pack());
-        //?}
+        anticrash$deduplicator.forget(VersionChunkPos.pack(pos));
 
         return original.call(storage, pos, value);
     }

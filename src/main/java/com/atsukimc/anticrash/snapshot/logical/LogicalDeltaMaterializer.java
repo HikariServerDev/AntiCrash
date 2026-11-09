@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
 import com.atsukimc.anticrash.util.Hashing;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
@@ -147,24 +148,19 @@ public final class LogicalDeltaMaterializer {
     private static Path applyRegionNbt(
             Path world, String dimension, long packed, String directoryName, String encoded)
             throws IOException {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
-        //?}
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
 
         Path dimensionRoot = dimensionRoot(world, dimension);
         Path directory = dimensionRoot.resolve(directoryName);
         Files.createDirectories(directory);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
-        //?}
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
 
         copyOnWrite(file);
         // 1.18.2 RegionFile takes (regionFilePath, regionDirectory, dsync).  Passing these in
@@ -186,18 +182,13 @@ public final class LogicalDeltaMaterializer {
 
             try (DataOutputStream output = region.getChunkDataOutputStream(chunk)) {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*//? if (>=1.18 && <=1.20.1) {
-                /^NbtIo.write(NbtCodec.decodeCompound(encoded), output);
-                ^///?}
-                //? if 1.20.2 {
-                /^NbtIo.writeUnnamedTag(NbtCodec.decodeCompound(encoded), output);
-                ^///?}
-                //? if (>=1.20.3 && <=1.21.11) {
-                /^NbtIo.writeUnnamedTagWithFallback(NbtCodec.decodeCompound(encoded), output);
-                ^///?}
+                //? if (>=1.18 && <=1.20.1) {
+                /*NbtIo.write(NbtCodec.decodeCompound(encoded), output);
                 *///?}
-                //? if (>=26.1 && <=26.3) {
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(NbtCodec.decodeCompound(encoded), output);
+                *///?}
+                //? if (>=1.20.3 && <=26.3) {
                 NbtIo.writeUnnamedTagWithFallback(NbtCodec.decodeCompound(encoded), output);
                 //?}
 
@@ -210,22 +201,16 @@ public final class LogicalDeltaMaterializer {
 
     private static Path deleteRegionChunk(
             Path world, String dimension, long packed, String directoryName) throws IOException {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
-        //?}
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
 
         Path directory = dimensionRoot(world, dimension).resolve(directoryName);
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
-        //?}
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
 
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)) {
             return null;
@@ -268,22 +253,16 @@ public final class LogicalDeltaMaterializer {
 
     private static Path removeEntity(Path world, String dimension, long packed, String uuidText)
             throws IOException {
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*ChunkPos chunk = new ChunkPos(packed);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        ChunkPos chunk = ChunkPos.unpack(packed);
-        //?}
+        ChunkPos chunk = VersionChunkPos.unpack(packed);
 
         Path directory = dimensionRoot(world, dimension).resolve("entities");
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*Path file = directory.resolve("r." + (chunk.x >> 5) + "." + (chunk.z >> 5) + ".mca");
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        Path file = directory.resolve("r." + (chunk.x() >> 5) + "." + (chunk.z() >> 5) + ".mca");
-        //?}
+        Path file =
+                directory.resolve(
+                        "r."
+                                + (VersionChunkPos.x(chunk) >> 5)
+                                + "."
+                                + (VersionChunkPos.z(chunk) >> 5)
+                                + ".mca");
 
         if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file)) {
             return null;
@@ -351,18 +330,13 @@ public final class LogicalDeltaMaterializer {
 
             try (DataOutputStream output = region.getChunkDataOutputStream(chunk)) {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*//? if (>=1.18 && <=1.20.1) {
-                /^NbtIo.write(root, output);
-                ^///?}
-                //? if 1.20.2 {
-                /^NbtIo.writeUnnamedTag(root, output);
-                ^///?}
-                //? if (>=1.20.3 && <=1.21.11) {
-                /^NbtIo.writeUnnamedTagWithFallback(root, output);
-                ^///?}
+                //? if (>=1.18 && <=1.20.1) {
+                /*NbtIo.write(root, output);
                 *///?}
-                //? if (>=26.1 && <=26.3) {
+                //? if 1.20.2 {
+                /*NbtIo.writeUnnamedTag(root, output);
+                *///?}
+                //? if (>=1.20.3 && <=26.3) {
                 NbtIo.writeUnnamedTagWithFallback(root, output);
                 //?}
 

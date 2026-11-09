@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ChunkTicketAccessorMixin;
 import com.atsukimc.anticrash.mixin.ChunkTicketManagerAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import it.unimi.dsi.fastutil.longs.Long2ObjectMap;
@@ -54,27 +55,19 @@ public final class TicketLedgerSnapshot {
             //? if (>=1.18 && <=1.21.4) {
             /*Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> tickets =
                     accessor.anticrash$getTicketsByPosition();
+
+            for (Long2ObjectMap.Entry<SortedArraySet<Ticket<?>>> positionEntry :
+                    tickets.long2ObjectEntrySet())
             *///?}
             //? if (>=1.21.5 && <=26.3) {
             Long2ObjectOpenHashMap<List<Ticket>> tickets =
                     accessor.anticrash$getTicketsByPosition();
-            //?}
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*for (Long2ObjectMap.Entry<SortedArraySet<Ticket<?>>> positionEntry :
-                    tickets.long2ObjectEntrySet())
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
             for (Long2ObjectMap.Entry<List<Ticket>> positionEntry : tickets.long2ObjectEntrySet())
             //?}
             {
 
-                //? if (>=1.18 && <=1.21.11) {
-                /*ChunkPos pos = new ChunkPos(positionEntry.getLongKey());
-                *///?}
-                //? if (>=26.1 && <=26.3) {
-                ChunkPos pos = ChunkPos.unpack(positionEntry.getLongKey());
-                //?}
+                ChunkPos pos = VersionChunkPos.unpack(positionEntry.getLongKey());
 
                 //? if (>=1.18 && <=1.21.4) {
                 /*for (Ticket<?> ticket : positionEntry.getValue())
@@ -113,21 +106,8 @@ public final class TicketLedgerSnapshot {
                     Entry entry = new Entry();
 
                     entry.dimension = VersionIds.dimension(world);
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*entry.x = pos.x;
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
-                    entry.x = pos.x();
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*entry.z = pos.z;
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
-                    entry.z = pos.z();
-                    //?}
-
+                    entry.x = VersionChunkPos.x(pos);
+                    entry.z = VersionChunkPos.z(pos);
                     entry.type = type;
 
                     entry.level = ticket.getTicketLevel();

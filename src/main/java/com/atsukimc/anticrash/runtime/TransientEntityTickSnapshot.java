@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.entity.Entity;
@@ -71,20 +72,8 @@ public final class TransientEntityTickSnapshot {
                     snapshot.uuid = entity.getStringUUID();
 
                     snapshot.kind = kind;
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkX = entity.chunkPosition().x;
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
-                    snapshot.chunkX = entity.chunkPosition().x();
-                    //?}
-
-                    //? if (>=1.18 && <=1.21.11) {
-                    /*snapshot.chunkZ = entity.chunkPosition().z;
-                    *///?}
-                    //? if (>=26.1 && <=26.3) {
-                    snapshot.chunkZ = entity.chunkPosition().z();
-                    //?}
+                    snapshot.chunkX = VersionChunkPos.x(entity.chunkPosition());
+                    snapshot.chunkZ = VersionChunkPos.z(entity.chunkPosition());
 
                     result.add(snapshot);
                 });

@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.ChunkPos;
@@ -31,15 +32,8 @@ public abstract class WorldTickSchedulerMutationMixin {
                             + tick);
         }
         if (com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*ChunkMutationTracker.recordScheduler(this, new ChunkPos(tick.pos()), "world.schedule");
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             ChunkMutationTracker.recordScheduler(
-                    this, ChunkPos.containing(tick.pos()), "world.schedule");
-            //?}
-
+                    this, VersionChunkPos.containing(tick.pos()), "world.schedule");
         }
     }
 

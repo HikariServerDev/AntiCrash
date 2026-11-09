@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import com.atsukimc.anticrash.util.AtomicFiles;
+import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -29,13 +30,7 @@ class RuntimeCapsuleV7FileTest {
 
         RuntimeCapsule.InhabitedTimes inhabited = new RuntimeCapsule.InhabitedTimes();
         inhabited.dimension = "minecraft:overworld";
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*inhabited.chunks.add(net.minecraft.world.level.ChunkPos.asLong(-3, 7));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        inhabited.chunks.add(net.minecraft.world.level.ChunkPos.pack(-3, 7));
-        //?}
+        inhabited.chunks.add(VersionChunkPos.pack(-3, 7));
 
         inhabited.times.add(123456789012L);
         capsule.inhabitedTimes.add(inhabited);
@@ -54,18 +49,7 @@ class RuntimeCapsuleV7FileTest {
 
         assertEquals(1, read.inhabitedTimes.size());
         assertEquals(123456789012L, read.inhabitedTimes.get(0).times.get(0));
-
-        //? if (>=1.18 && <=1.21.11) {
-        /*assertEquals(
-                net.minecraft.world.level.ChunkPos.asLong(-3, 7),
-                read.inhabitedTimes.get(0).chunks.get(0));
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        assertEquals(
-                net.minecraft.world.level.ChunkPos.pack(-3, 7),
-                read.inhabitedTimes.get(0).chunks.get(0));
-        //?}
-
+        assertEquals(VersionChunkPos.pack(-3, 7), read.inhabitedTimes.get(0).chunks.get(0));
         assertEquals(233L, read.ticketLedger.get(0).remainingTicks);
         assertEquals(1, read.runtimeExtensionCounts.get(RuntimeExtensionSnapshot.CHUNK));
     }
