@@ -23,7 +23,7 @@ from check_conditions import cached_libraries, only_jar
 
 FORMATTER = "2.0.0"
 SHA256 = "c78feb48c549fa7114b7ea11db3b456808f7b371ffe84e6643a44dd2f9588639"
-URL = f"https://github.com/google/google-java-format/releases/download/v{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
+URL = f"https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
 # google-java-format runs inside the same JVM as the processor, so it needs javac's internals.
 EXPORTS = [f"--add-exports=jdk.compiler/com.sun.tools.javac.{name}=ALL-UNNAMED"
            for name in ["api", "code", "file", "parser", "tree", "util"]]

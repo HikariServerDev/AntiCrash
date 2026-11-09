@@ -26,6 +26,16 @@ jobs:
         with:
           distribution: temurin
           java-version: '25'
+      # Reuse the same bounded Gradle cache as build shards, including the pinned wrapper.
+      - uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-quality-${{ hashFiles('settings.gradle.kts', 'stonecutter.gradle.kts', 'gradle/wrapper/gradle-wrapper.properties') }}
+          restore-keys: |
+            gradle-quality-
+            gradle-
       # Same entry point as local development (formatCheck, sourceCheck, scriptTest), configured
       # for the VCS target only, which is the last entry of the matrix.
       - name: Format, source ownership and script tests
