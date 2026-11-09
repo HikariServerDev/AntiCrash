@@ -91,16 +91,10 @@ public final class RuntimeExtensionNbt {
 
     /** Adds the extension to {@code nbt} when {@code writer} stored anything in it. */
     public static void write(CompoundTag nbt, Consumer<CompoundTag> writer) {
-
-        //? if (>=1.18 && <=1.21.4) {
-        /*CompoundTag extension = nbt.contains(KEY, 10) ? nbt.getCompound(KEY) : new CompoundTag();
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         CompoundTag extension =
-                com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10)
-                        ? nbt.getCompoundOrEmpty(KEY)
+                VersionNbt.contains(nbt, KEY, 10)
+                        ? VersionNbt.getCompoundOrEmpty(nbt, KEY)
                         : new CompoundTag();
-        //?}
 
         writer.accept(extension);
         extension.remove(VERSION_KEY);
@@ -116,24 +110,12 @@ public final class RuntimeExtensionNbt {
 
     /** The extension, or null when absent or written by a newer format this build cannot read. */
     public static CompoundTag read(CompoundTag nbt) {
+        if (nbt == null || !VersionNbt.contains(nbt, KEY, 10)) return null;
+
+        CompoundTag extension = VersionNbt.getCompoundOrEmpty(nbt, KEY);
 
         //? if (>=1.18 && <=1.21.4) {
-        /*if (nbt == null || !nbt.contains(KEY, 10))
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        if (nbt == null || !com.atsukimc.anticrash.runtime.VersionNbt.contains(nbt, KEY, 10))
-        //?}
-            return null;
-
-        //? if (>=1.18 && <=1.21.4) {
-        /*CompoundTag extension = nbt.getCompound(KEY);
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        CompoundTag extension = nbt.getCompoundOrEmpty(KEY);
-        //?}
-
-        //? if (>=1.18 && <=1.21.4) {
-        /*int version = extension.getInt(VERSION_KEY);
+        /*int version = VersionNbt.getInt(extension, VERSION_KEY);
         *///?}
         //? if (>=1.21.5 && <=26.3) {
         int version = extension.getInt(VERSION_KEY).orElse(0);

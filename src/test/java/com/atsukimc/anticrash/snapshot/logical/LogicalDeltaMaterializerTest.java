@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
@@ -80,59 +81,35 @@ class LogicalDeltaMaterializerTest {
         Path destination = temp.resolve("materialized");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                "before",
-                readRegion(parentWorld, "region", new ChunkPos(0, 0)).getString("marker"));
-
-        assertEquals(
-                "after", readRegion(destination, "region", new ChunkPos(0, 0)).getString("marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 "before",
-                readRegion(parentWorld, "region", new ChunkPos(0, 0))
-                        .getString("marker")
-                        .orElseThrow());
+                VersionNbt.getString(
+                        readRegion(parentWorld, "region", new ChunkPos(0, 0)), "marker"));
 
         assertEquals(
                 "after",
-                readRegion(destination, "region", new ChunkPos(0, 0))
-                        .getString("marker")
-                        .orElseThrow());
-        //?}
+                VersionNbt.getString(
+                        readRegion(destination, "region", new ChunkPos(0, 0)), "marker"));
 
         assertNotSame(
                 parentWorld.resolve("region/r.0.0.mca").toRealPath(),
                 destination.resolve("region/r.0.0.mca").toRealPath());
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
+        assertEquals(
                 0,
-                readRegion(destination, "entities", new ChunkPos(0, 0))
-                        .getList("Entities", 10)
+                VersionNbt.listOrEmpty(
+                                readRegion(destination, "entities", new ChunkPos(0, 0)),
+                                "Entities",
+                                10)
                         .size());
 
         assertEquals(
                 1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getList("Entities", 10)
+                VersionNbt.listOrEmpty(
+                                readRegion(parentWorld, "entities", new ChunkPos(0, 0)),
+                                "Entities",
+                                10)
                         .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        assertEquals(
-                0,
-                readRegion(destination, "entities", new ChunkPos(0, 0))
-                        .getListOrEmpty("Entities")
-                        .size());
-
-        assertEquals(
-                1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getListOrEmpty("Entities")
-                        .size());
-        //?}
-
     }
 
     @Test
@@ -192,33 +169,21 @@ class LogicalDeltaMaterializerTest {
             assertEquals(false, region.hasChunk(new ChunkPos(0, 0)));
         }
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
+        assertEquals(
                 1,
-                readRegion(destination, "entities", new ChunkPos(1, 0))
-                        .getList("Entities", 10)
+                VersionNbt.listOrEmpty(
+                                readRegion(destination, "entities", new ChunkPos(1, 0)),
+                                "Entities",
+                                10)
                         .size());
 
         assertEquals(
                 1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getList("Entities", 10)
+                VersionNbt.listOrEmpty(
+                                readRegion(parentWorld, "entities", new ChunkPos(0, 0)),
+                                "Entities",
+                                10)
                         .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        assertEquals(
-                1,
-                readRegion(destination, "entities", new ChunkPos(1, 0))
-                        .getListOrEmpty("Entities")
-                        .size());
-
-        assertEquals(
-                1,
-                readRegion(parentWorld, "entities", new ChunkPos(0, 0))
-                        .getListOrEmpty("Entities")
-                        .size());
-        //?}
-
     }
 
     private static CompoundTag entityChunk(UUID... uuids) {

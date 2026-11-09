@@ -27,34 +27,18 @@ class RuntimeExtensionNbtTest {
         nbt.putFloat("progress", 0.5f);
         RuntimeExtensionNbt.write(nbt, extension -> extension.putFloat("Progress", 1.0f));
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(0.5f, nbt.getFloat("progress"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        assertEquals(0.5f, nbt.getFloat("progress").orElseThrow());
-        //?}
+        assertEquals(0.5f, VersionNbt.getFloat(nbt, "progress"));
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         assertNotNull(extension);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(1.0f, extension.getFloat("Progress"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        assertEquals(1.0f, extension.getFloat("Progress").orElseThrow());
-        //?}
+        assertEquals(1.0f, VersionNbt.getFloat(extension, "Progress"));
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                RuntimeExtensionNbt.VERSION, nbt.getCompound(RuntimeExtensionNbt.KEY).getInt("v"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 RuntimeExtensionNbt.VERSION,
-                nbt.getCompoundOrEmpty(RuntimeExtensionNbt.KEY).getInt("v").orElseThrow());
-        //?}
-
+                VersionNbt.getInt(
+                        VersionNbt.getCompoundOrEmpty(nbt, RuntimeExtensionNbt.KEY), "v"));
     }
 
     @Test

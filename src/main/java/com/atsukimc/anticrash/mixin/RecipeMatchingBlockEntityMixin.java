@@ -6,6 +6,7 @@ package com.atsukimc.anticrash.mixin;
 *///?}
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
@@ -88,28 +89,19 @@ public abstract class RecipeMatchingBlockEntityMixin {
         //? if (>=1.19 && <=1.21.1) {
         /*((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
-                        extension.contains("RecipeMatch", 8)
-                                ? VersionIds.tryParse(extension.getString("RecipeMatch"))
+                        VersionNbt.contains(extension, "RecipeMatch", 8)
+                                ? VersionIds.tryParse(
+                                        VersionNbt.getString(extension, "RecipeMatch"))
                                 : null);
         *///?}
-        //? if (>=1.21.2 && <=1.21.4) {
-        /*((RecipeMatchGetterAccessorMixin) quickCheck)
-                .anticrash$setRecipeId(
-                        extension.contains("RecipeMatch", 8)
-                                ? net.minecraft.resources.ResourceKey.create(
-                                        net.minecraft.core.registries.Registries.RECIPE,
-                                        VersionIds.parse(extension.getString("RecipeMatch")))
-                                : null);
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        //? if (>=1.21.2 && <=26.3) {
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
-                        com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                                        extension, "RecipeMatch", 8)
+                        VersionNbt.contains(extension, "RecipeMatch", 8)
                                 ? net.minecraft.resources.ResourceKey.create(
                                         net.minecraft.core.registries.Registries.RECIPE,
                                         VersionIds.parse(
-                                                extension.getString("RecipeMatch").orElseThrow()))
+                                                VersionNbt.getString(extension, "RecipeMatch")))
                                 : null);
         //?}
 

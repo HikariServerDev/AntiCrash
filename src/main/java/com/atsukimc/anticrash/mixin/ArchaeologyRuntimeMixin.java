@@ -2,6 +2,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 
 //? if <=1.19.4 {
 /*import net.minecraft.world.level.block.entity.SuspiciousSandBlockEntity;
@@ -77,21 +78,11 @@ public abstract class ArchaeologyRuntimeMixin {
             {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-        //? if (>=1.19.4 && <=1.21.4) {
-        /*if (extension == null || !extension.contains("BrushCount", 3)) return;
-        brushCount = extension.getInt("BrushCount");
-        brushCountResetsAtTick = extension.getLong("BrushNextDust");
-        coolDownEndsAtTick = extension.getLong("BrushNextUse");
-        int direction = extension.getInt("BrushDirection");
-        *///?} else {
-        if (extension == null
-                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(extension, "BrushCount", 3))
-            return;
-        brushCount = extension.getInt("BrushCount").orElseThrow();
-        brushCountResetsAtTick = extension.getLong("BrushNextDust").orElseThrow();
-        coolDownEndsAtTick = extension.getLong("BrushNextUse").orElseThrow();
-        int direction = extension.getInt("BrushDirection").orElseThrow();
-        //?}
+        if (extension == null || !VersionNbt.contains(extension, "BrushCount", 3)) return;
+        brushCount = VersionNbt.getInt(extension, "BrushCount");
+        brushCountResetsAtTick = VersionNbt.getLong(extension, "BrushNextDust");
+        coolDownEndsAtTick = VersionNbt.getLong(extension, "BrushNextUse");
+        int direction = VersionNbt.getInt(extension, "BrushDirection");
 
         if (direction < -1 || direction > 5)
             throw new IllegalStateException("Invalid saved brush direction");

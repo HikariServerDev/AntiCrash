@@ -4,6 +4,7 @@ import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.core.InternalStateManager;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.server.MinecraftServer;
@@ -105,17 +106,10 @@ public final class ConsistencyManager implements AutoCloseable {
 
                 //? if (>=1.18 && <=1.20.4) {
                 /*transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
-                *///?} else if <=1.21.4 {
-                /*transaction.nbt =
-                        NbtCodec.encode(
-                                stack.saveOptional(
-                                        player != null
-                                                ? player.registryAccess()
-                                                : server.registryAccess()));
                 *///?} else {
                 transaction.nbt =
                         NbtCodec.encode(
-                                com.atsukimc.anticrash.runtime.VersionNbt.item(
+                                VersionNbt.item(
                                         stack,
                                         player != null
                                                 ? player.registryAccess()

@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.player;
 
+import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.entity.player.Inventory;
@@ -38,14 +39,11 @@ public final class InventorySnapshot {
                 /*snapshot.main.add(NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
                 *///?}
                 //? if (>=1.20.5 && <=1.21.4) {
-                /*snapshot.main.add(NbtCodec.encode(stack.saveOptional(player.registryAccess())));
+                /*snapshot.main.add(NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
                 *///?}
             //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : inventory.getNonEquipmentItems())
-                snapshot.main.add(
-                        NbtCodec.encode(
-                                com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                        stack, player.registryAccess())));
+                snapshot.main.add(NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
             //?}
 
         if (armorEnabled)
@@ -59,14 +57,13 @@ public final class InventorySnapshot {
                         NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
                 *///?}
                 //? if (>=1.20.5 && <=1.21.4) {
-                /*snapshot.armor.add(NbtCodec.encode(stack.saveOptional(player.registryAccess())));
+                /*snapshot.armor.add(
+                        NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
                 *///?}
             //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : equipmentStacks(inventory, 36, 4))
                 snapshot.armor.add(
-                        NbtCodec.encode(
-                                com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                        stack, player.registryAccess())));
+                        NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
             //?}
 
         if (offhandEnabled)
@@ -80,14 +77,13 @@ public final class InventorySnapshot {
                         NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
                 *///?}
                 //? if (>=1.20.5 && <=1.21.4) {
-                /*snapshot.offhand.add(NbtCodec.encode(stack.saveOptional(player.registryAccess())));
+                /*snapshot.offhand.add(
+                        NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
                 *///?}
             //? if (>=1.21.5 && <=26.3) {
             for (ItemStack stack : equipmentStacks(inventory, 40, 1))
                 snapshot.offhand.add(
-                        NbtCodec.encode(
-                                com.atsukimc.anticrash.runtime.VersionNbt.item(
-                                        stack, player.registryAccess())));
+                        NbtCodec.encode(VersionNbt.item(stack, player.registryAccess())));
             //?}
 
         if (selectedEnabled)
@@ -338,24 +334,12 @@ public final class InventorySnapshot {
                 // envelope now; registry-aware decoding must finish before changing any player
                 // slot.
 
-                //? if (>=1.20.5 && <=1.21.4) {
-                /*if (!compound.isEmpty()
-                        && (!compound.contains("id", 8)
-                                || VersionIds.tryParse(compound.getString("id")) == null
-                                || !compound.contains("count", 99)
-                                || compound.getInt("count") < 1))
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
-                if (!compound.isEmpty()
-                        && (!com.atsukimc.anticrash.runtime.VersionNbt.contains(compound, "id", 8)
-                                || VersionIds.tryParse(compound.getString("id").orElseThrow())
-                                        == null
-                                || !com.atsukimc.anticrash.runtime.VersionNbt.contains(
-                                        compound, "count", 99)
-                                || compound.getInt("count").orElseThrow() < 1))
-                //?}
                 //? if (>=1.20.5 && <=26.3) {
-                {
+                if (!compound.isEmpty()
+                        && (!VersionNbt.contains(compound, "id", 8)
+                                || VersionIds.tryParse(VersionNbt.getString(compound, "id")) == null
+                                || !VersionNbt.contains(compound, "count", 99)
+                                || VersionNbt.getInt(compound, "count") < 1)) {
                     throw new IOException("Invalid component item envelope in " + category);
                 }
                 //?}

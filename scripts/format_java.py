@@ -14,6 +14,8 @@ import re
 import shutil
 import subprocess
 import tempfile
+import time
+import urllib.error
 import urllib.request
 
 from build_model import java_home, load_targets
@@ -21,7 +23,7 @@ from check_conditions import cached_libraries, only_jar
 
 FORMATTER = "2.0.0"
 SHA256 = "c78feb48c549fa7114b7ea11db3b456808f7b371ffe84e6643a44dd2f9588639"
-URL = f"https://github.com/google/google-java-format/releases/download/v{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
+URL = f"https://repo.maven.apache.org/maven2/com/google/googlejavaformat/google-java-format/{FORMATTER}/google-java-format-{FORMATTER}-all-deps.jar"
 # google-java-format runs inside the same JVM as the processor, so it needs javac's internals.
 EXPORTS = [f"--add-exports=jdk.compiler/com.sun.tools.javac.{name}=ALL-UNNAMED"
            for name in ["api", "code", "file", "parser", "tree", "util"]]
@@ -47,8 +49,16 @@ def formatter_jar(root):
     if not jar.exists():
         with tempfile.TemporaryDirectory(prefix="formatter-", dir=cache) as temporary:
             downloaded = Path(temporary) / "formatter.jar"
-            with urllib.request.urlopen(URL, timeout=60) as response, downloaded.open("wb") as output:
-                shutil.copyfileobj(response, output, length=65536)
+            for attempt in range(3):
+                try:
+                    with urllib.request.urlopen(URL, timeout=60) as response, downloaded.open("wb") as output:
+                        shutil.copyfileobj(response, output, length=65536)
+                    break
+                except (urllib.error.URLError, TimeoutError) as error:
+                    # Retry transient transport failures only; never retry integrity or HTTP 4xx failures.
+                    if (isinstance(error, urllib.error.HTTPError) and error.code not in (502, 503, 504)) or attempt == 2:
+                        raise
+                    time.sleep(attempt + 1)
             if hashlib.sha256(downloaded.read_bytes()).hexdigest() != SHA256:
                 raise ValueError("Formatter checksum mismatch")
             downloaded.replace(jar)
