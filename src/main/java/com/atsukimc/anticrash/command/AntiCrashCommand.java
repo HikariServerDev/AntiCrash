@@ -454,13 +454,7 @@ public final class AntiCrashCommand {
     }
 
     private static boolean permitted(CommandSourceStack source, int permissionLevel) {
-        //? if (>=1.18 && <=1.21.10) {
-        /*return VersionPermissions.hasLevel(source, permissionLevel);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         return VersionPermissions.hasLevel(source, permissionLevel);
-        //?}
-
     }
 
     private static boolean hasAnyPermission(

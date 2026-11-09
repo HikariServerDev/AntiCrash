@@ -1799,18 +1799,9 @@ public final class AntiCrashController {
 
     /** Sends the ASK question to one player who is allowed to answer it. */
     private void sendAskPrompt(ServerPlayer player) {
-
-        //? if (>=1.18 && <=1.21.10) {
-        /*if (selectedCheckpointId == null
-                || !VersionPermissions.hasLevel(
-                        player.createCommandSourceStack(), config.commands.recovery))
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         if (selectedCheckpointId == null
                 || !VersionPermissions.hasLevel(
-                        player.createCommandSourceStack(), config.commands.recovery))
-        //?}
-        {
+                        player.createCommandSourceStack(), config.commands.recovery)) {
             return;
         }
         long remaining = askRemainingSeconds();
@@ -1899,19 +1890,10 @@ public final class AntiCrashController {
         if (player == null || message == null) return false;
         String answer = message.trim();
 
-        //? if (>=1.18 && <=1.21.10) {
-        /*return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
-                && states.get() == AntiCrashState.RECOVERY_DECISION
-                && VersionPermissions.hasLevel(
-                        player.createCommandSourceStack(), config.commands.recovery);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
                 && VersionPermissions.hasLevel(
                         player.createCommandSourceStack(), config.commands.recovery);
-        //?}
-
     }
 
     /** Accepts a plain Y/N chat message from an operator during an ASK prompt. */
@@ -1920,15 +1902,8 @@ public final class AntiCrashController {
         String answer = message.trim();
         if (!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))) return false;
 
-        //? if (>=1.18 && <=1.21.10) {
-        /*if (!VersionPermissions.hasLevel(
-                player.createCommandSourceStack(), config.commands.recovery))
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         if (!VersionPermissions.hasLevel(
-                player.createCommandSourceStack(), config.commands.recovery))
-        //?}
-            return false;
+                player.createCommandSourceStack(), config.commands.recovery)) return false;
         boolean restore = answer.equalsIgnoreCase("Y");
         String checkpointId = selectedCheckpointId;
         boolean accepted = answerRecovery(restore);
