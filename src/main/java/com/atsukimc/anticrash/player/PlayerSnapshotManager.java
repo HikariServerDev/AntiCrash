@@ -5,9 +5,11 @@ import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.runtime.CheckpointPlayerSnapshot;
 import com.atsukimc.anticrash.runtime.VersionNbt;
+import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.Tag;
 import net.minecraft.nbt.ListTag;
@@ -29,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.function.Consumer;
 
 public final class PlayerSnapshotManager {
     private final AntiCrashConfig config;
@@ -134,13 +137,12 @@ public final class PlayerSnapshotManager {
         if (config.playerSnapshot.abilities) {
 
             //? if (>=1.18 && <=1.21.5) {
-            /*net.minecraft.nbt.CompoundTag abilities = new net.minecraft.nbt.CompoundTag();
-
-            player.getAbilities().addSaveData(abilities);
+            /*net.minecraft.nbt.CompoundTag abilities =
+                    VersionStorage.abilities(player.getAbilities());
             *///?}
             //? if (>=1.21.6 && <=26.3) {
             net.minecraft.nbt.CompoundTag abilities =
-                    com.atsukimc.anticrash.runtime.VersionStorage.abilities(player.getAbilities());
+                    VersionStorage.abilities(player.getAbilities());
             //?}
 
             data.abilitiesNbt = NbtCodec.encode(abilities);
@@ -159,18 +161,13 @@ public final class PlayerSnapshotManager {
         if (config.playerSnapshot.enderChest)
 
             //? if (>=1.18 && <=1.20.4) {
-            /*data.enderChestNbt = NbtCodec.encode(player.getEnderChestInventory().createTag());
+            /*data.enderChestNbt = NbtCodec.encode(VersionStorage.enderChest(player));
             *///?}
             //? if (>=1.20.5 && <=1.21.5) {
-            /*data.enderChestNbt =
-                    NbtCodec.encode(
-                            player.getEnderChestInventory().createTag(player.registryAccess()));
+            /*data.enderChestNbt = NbtCodec.encode(VersionStorage.enderChest(player));
             *///?}
             //? if (>=1.21.6 && <=26.3) {
-            data.enderChestNbt =
-                    NbtCodec.encode(
-                            com.atsukimc.anticrash.runtime.VersionStorage.inventory(
-                                    player.getEnderChestInventory(), player.registryAccess()));
+            data.enderChestNbt = NbtCodec.encode(VersionStorage.enderChest(player));
             //?}
 
         if (config.playerSnapshot.health) data.health = player.getHealth();
@@ -409,10 +406,10 @@ public final class PlayerSnapshotManager {
             // leave a partially restored player.
 
             //? if (>=1.18 && <=1.21.5) {
-            /*net.minecraft.nbt.CompoundTag abilities = null;
+            /*Consumer<Abilities> abilities = null;
             *///?}
             //? if (>=1.21.6 && <=26.3) {
-            net.minecraft.world.entity.player.Abilities.Packed abilities = null;
+            Consumer<Abilities> abilities = null;
             //?}
 
             if (config.playerSnapshot.abilities) {
@@ -420,12 +417,10 @@ public final class PlayerSnapshotManager {
                     throw new IOException("Enabled abilities snapshot is missing");
 
                 //? if (>=1.18 && <=1.21.5) {
-                /*abilities = NbtCodec.decodeCompound(data.abilitiesNbt);
+                /*abilities = VersionStorage.abilities(NbtCodec.decodeCompound(data.abilitiesNbt));
                 *///?}
                 //? if (>=1.21.6 && <=26.3) {
-                abilities =
-                        com.atsukimc.anticrash.runtime.VersionStorage.abilities(
-                                NbtCodec.decodeCompound(data.abilitiesNbt));
+                abilities = VersionStorage.abilities(NbtCodec.decodeCompound(data.abilitiesNbt));
                 //?}
 
             }
@@ -446,10 +441,10 @@ public final class PlayerSnapshotManager {
             }
 
             //? if (>=1.18 && <=1.21.5) {
-            /*ListTag enderChest = null;
+            /*Runnable enderChest = null;
             *///?}
             //? if (>=1.21.6 && <=26.3) {
-            List<net.minecraft.world.item.ItemStack> enderChest = null;
+            Runnable enderChest = null;
             //?}
 
             if (config.playerSnapshot.enderChest) {
@@ -462,14 +457,10 @@ public final class PlayerSnapshotManager {
                     throw new IOException("Ender Chest snapshot is not an NBT list");
 
                 //? if (>=1.18 && <=1.21.5) {
-                /*enderChest = list;
+                /*enderChest = VersionStorage.enderChest(player, list);
                 *///?}
                 //? if (>=1.21.6 && <=26.3) {
-                enderChest =
-                        com.atsukimc.anticrash.runtime.VersionStorage.inventory(
-                                list,
-                                player.getEnderChestInventory().getContainerSize(),
-                                player.registryAccess());
+                enderChest = VersionStorage.enderChest(player, list);
                 //?}
 
             }
@@ -539,10 +530,10 @@ public final class PlayerSnapshotManager {
             if (abilities != null) {
 
                 //? if (>=1.18 && <=1.21.5) {
-                /*player.getAbilities().loadSaveData(abilities);
+                /*abilities.accept(player.getAbilities());
                 *///?}
                 //? if (>=1.21.6 && <=26.3) {
-                player.getAbilities().apply(abilities);
+                abilities.accept(player.getAbilities());
                 //?}
 
                 player.onUpdateAbilities();
@@ -564,17 +555,16 @@ public final class PlayerSnapshotManager {
                 player.totalExperience = data.experienceTotal;
 
             //? if (>=1.18 && <=1.20.4) {
-            /*if (enderChest != null) player.getEnderChestInventory().fromTag(enderChest);
+            /*if (enderChest != null) enderChest.run();
             *///?}
             //? if (>=1.20.5 && <=26.3) {
             if (enderChest != null)
             //?}
                 //? if (>=1.20.5 && <=1.21.5) {
-                /*player.getEnderChestInventory().fromTag(enderChest, player.registryAccess());
+                /*enderChest.run();
                 *///?}
                 //? if (>=1.21.6 && <=26.3) {
-                com.atsukimc.anticrash.runtime.VersionStorage.applyInventory(
-                        player.getEnderChestInventory(), enderChest);
+                enderChest.run();
                 //?}
 
             if (config.playerSnapshot.health) player.setHealth(data.health);

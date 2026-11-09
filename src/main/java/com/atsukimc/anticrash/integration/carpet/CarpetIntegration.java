@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.runtime.VersionNbt;
+import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.ReflectionUtil;
 import com.atsukimc.anticrash.util.VersionIds;
 
@@ -554,10 +555,8 @@ public final class CarpetIntegration {
                         Object result = method.invoke(null, args);
 
                         if (result instanceof ServerPlayer player) return player;
-
-                        ServerPlayer found = find(server, data);
-
-                        return found;
+                        
+                        return find(server, data);
                     }
             } catch (java.lang.reflect.InvocationTargetException failure) {
                 throw new IOException("Carpet FakePlayer factory failed", failure.getCause());
@@ -895,8 +894,7 @@ public final class CarpetIntegration {
         if (root == null || root == player) return null;
 
         //? if (>=1.18 && <=1.21.5) {
-        /*net.minecraft.nbt.CompoundTag nbt = new net.minecraft.nbt.CompoundTag();
-        boolean saved;
+        /*net.minecraft.nbt.CompoundTag nbt;
         *///?} else {
         net.minecraft.nbt.CompoundTag nbt;
         //?}
@@ -904,9 +902,9 @@ public final class CarpetIntegration {
         com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
         try {
             //? if (>=1.18 && <=1.21.5) {
-            /*saved = root.save(nbt);
+            /*nbt = VersionStorage.entity(root);
             *///?} else {
-            nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(root);
+            nbt = VersionStorage.entity(root);
             //?}
 
         } finally {
@@ -914,7 +912,7 @@ public final class CarpetIntegration {
         }
 
         //? if (>=1.18 && <=1.21.5) {
-        /*return saved ? NbtCodec.encode(nbt) : null;
+        /*return nbt != null ? NbtCodec.encode(nbt) : null;
         *///?} else {
         return nbt != null ? NbtCodec.encode(nbt) : null;
         //?}

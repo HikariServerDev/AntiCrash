@@ -35,27 +35,27 @@ public final class SculkRuntimeFingerprint {
         if (entity instanceof SculkCatalystBlockEntity catalyst) {
 
             //? if (>=1.19 && <=1.21.5) {
-            /*CompoundTag cursors = new CompoundTag();
+            /*var view = VersionStorage.writer(entity);
             *///?}
             //? if (>=1.21.6 && <=26.3) {
-            var view = VersionStorage.writer(entity.getLevel().registryAccess());
+            var view = VersionStorage.writer(entity);
             //?}
 
             //? if (>=1.19 && <=1.19.4) {
-            /*catalyst.getSculkSpreader().save(cursors);
+            /*catalyst.getSculkSpreader().save(view);
             *///?}
             //? if (>=1.20 && <=1.21.5) {
-            /*catalyst.getListener().getSculkSpreader().save(cursors);
+            /*catalyst.getListener().getSculkSpreader().save(view);
             *///?}
             //? if (>=1.21.6 && <=26.3) {
             catalyst.getListener().getSculkSpreader().save(view);
             //?}
 
             //? if (>=1.19 && <=1.21.5) {
-            /*return "catalyst|" + cursors;
+            /*return "catalyst|" + VersionStorage.result(view);
             *///?}
             //? if (>=1.21.6 && <=26.3) {
-            return "catalyst|" + view.buildResult();
+            return "catalyst|" + VersionStorage.result(view);
             //?}
 
         } else
