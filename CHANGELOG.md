@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.6 — chunk coordinate compatibility
+
+- Integrate PR #11: centralize ChunkPos coordinate access, packing, unpacking and BlockPos conversion in `VersionChunkPos`.
+- Simplify version conditions while preserving ticket handling, chunk readiness and NBT write paths.
+- Add cross-version regression tests for the persisted packed-coordinate layout and negative block boundaries.
+- Preserve checkpoint formats and recovery validation.
+
 ## 1.0.5 — consistent formatting and identifier compatibility
 
 - Integrate PR #8: format active and inactive Stonecutter branches consistently across Minecraft versions.

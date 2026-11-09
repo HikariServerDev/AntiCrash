@@ -1,6 +1,6 @@
 # AntiCrash
 
-**Minecraft FabricサーバーMod** · AtsukiMC · **v1.0.5** · **LGPL-3.0-only**
+**Minecraft FabricサーバーMod** · AtsukiMC · **v1.0.6** · **LGPL-3.0-only**
 
 [英語版](README.md)
 
@@ -12,12 +12,12 @@ AntiCrashは、ワールドデータと対応する実行状態のチェック�
 
 ### 導入方法
 
-[Release 1.0.5](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.5)から、Minecraftのバージョンに合ったJARをダウンロードしてください。Modはサーバーへ導入し、クライアントはVanillaのまま参加できます。Fabric APIは任意です。FakePlayer連携には対応するCarpetが必要です。
+[Release 1.0.6](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.6)から、Minecraftのバージョンに合ったJARをダウンロードしてください。Modはサーバーへ導入し、クライアントはVanillaのまま参加できます。Fabric APIは任意です。FakePlayer連携には対応するCarpetが必要です。
 
 | 内容 | ファイル名 | 配置先 |
 | --- | --- | --- |
-| Mod | `AntiCrash-1.0.5+mc<VERSION>.jar` | サーバーの`mods/` |
-| Supervisor（任意） | `AntiCrash-Supervisor-1.0.5+mc<VERSION>.jar` | `mods/`の外にあるサーバーディレクトリ |
+| Mod | `AntiCrash-1.0.6+mc<VERSION>.jar` | サーバーの`mods/` |
+| Supervisor（任意） | `AntiCrash-Supervisor-1.0.6+mc<VERSION>.jar` | `mods/`の外にあるサーバーディレクトリ |
 
 ### 対応バージョン
 
@@ -60,7 +60,7 @@ AntiCrashは、ワールドデータと対応する実行状態のチェック�
 任意のSupervisorを使うと、クラッシュや制御された再起動の後にMinecraftを同じコンソールで再起動できます。`--`の後ろにサーバー起動コマンドを指定します。1.18.2の場合は次のとおりです。
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.5+mc1.18.2.jar --workdir /path/to/server -- java -jar fabric-server-launch.jar nogui
+java -jar AntiCrash-Supervisor-1.0.6+mc1.18.2.jar --workdir /path/to/server -- java -jar fabric-server-launch.jar nogui
 ```
 
 ライセンスは**GNU Lesser General Public License v3.0 only**（`LGPL-3.0-only`）です。
