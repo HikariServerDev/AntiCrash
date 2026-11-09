@@ -5,14 +5,14 @@ import net.minecraft.nbt.*;
 
 /**
  * NBT reads across versions. 1.21.5 made the typed getters return Optional, removed type-aware
- * contains and permits heterogeneous lists. Each method keeps what its version always did: before
- * 1.21.5 a missing value reads as the vanilla default, from 1.21.5 it throws, so malformed recovery
- * data is never erased by accepting a wrong type as an empty or default value.
+ * contains and permits heterogeneous lists. The adapters preserve their existing version-specific
+ * behavior: legacy getters use Vanilla defaults, while Optional getters require a value. Tolerant
+ * reads are explicit; list validation is strict on 1.21.5 and later.
  */
 public final class VersionNbt {
     private VersionNbt() {}
 
-    /** Sparse true-only flags default to false only when absent, never when malformed. */
+    /** Sparse flags default to false when absent; newer versions also reject malformed values. */
     public static boolean sparseFlag(CompoundTag nbt, String key) {
         //? if (>=1.18 && <=1.21.4) {
         /*return nbt.getBoolean(key);
@@ -94,7 +94,7 @@ public final class VersionNbt {
         //?}
     }
 
-    /** The list under key, or an empty one when it is missing or holds another type. */
+    /** Vanilla tolerant list read. The element-type filter applies only before 1.21.5. */
     public static ListTag listOrEmpty(CompoundTag nbt, String key, int type) {
         //? if (>=1.18 && <=1.21.4) {
         /*return nbt.getList(key, type);
