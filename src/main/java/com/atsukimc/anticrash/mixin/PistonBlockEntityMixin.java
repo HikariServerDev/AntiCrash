@@ -97,34 +97,16 @@ public abstract class PistonBlockEntityMixin {
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (extension == null || !VersionNbt.contains(extension, "Progress", 99))
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
-        if (extension == null || !VersionNbt.contains(extension, "Progress", 99))
-        //?}
-            return;
+        if (extension == null || !VersionNbt.contains(extension, "Progress", 99)) return;
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*float exact = VersionNbt.getFloat(extension, "Progress");
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         float exact = VersionNbt.getFloat(extension, "Progress");
-        //?}
 
         // Progress only moves forward from lastProgress to 1; anything else is not a state the
         // game can be in, so Vanilla's own value is kept.
 
         if (exact >= progressO && exact <= 1.0f) progress = exact;
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (VersionNbt.contains(extension, "SavedWorldTime", 99))
-            lastTicked = VersionNbt.getLong(extension, "SavedWorldTime");
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         if (VersionNbt.contains(extension, "SavedWorldTime", 99))
             lastTicked = VersionNbt.getLong(extension, "SavedWorldTime");
-        //?}
-
     }
 }

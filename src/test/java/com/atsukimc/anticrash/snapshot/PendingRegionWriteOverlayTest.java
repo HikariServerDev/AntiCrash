@@ -163,36 +163,17 @@ class PendingRegionWriteOverlayTest {
 
         Path copied = secondWorld.resolve("region/r.0.0.mca");
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("kept", VersionNbt.getString(read(copied, kept), "marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals("kept", VersionNbt.getString(read(copied, kept), "marker"));
-        //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("queued", VersionNbt.getString(read(copied, queued), "marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals("queued", VersionNbt.getString(read(copied, queued), "marker"));
-        //?}
 
         assertNull(read(copied, deleted));
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                "new-region",
-                VersionNbt.getString(
-                        read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
-                        "marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 "new-region",
                 VersionNbt.getString(
                         read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
                         "marker"));
-        //?}
 
         assertTrue(java.util.Arrays.equals(liveBefore, Files.readAllBytes(region)));
         assertFalse(Files.exists(live.resolve("region/r.1.0.mca")));

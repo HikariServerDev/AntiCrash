@@ -334,22 +334,12 @@ public final class InventorySnapshot {
                 // envelope now; registry-aware decoding must finish before changing any player
                 // slot.
 
-                //? if (>=1.20.5 && <=1.21.4) {
-                /*if (!compound.isEmpty()
-                        && (!VersionNbt.contains(compound, "id", 8)
-                                || VersionIds.tryParse(VersionNbt.getString(compound, "id")) == null
-                                || !VersionNbt.contains(compound, "count", 99)
-                                || VersionNbt.getInt(compound, "count") < 1))
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
+                //? if (>=1.20.5 && <=26.3) {
                 if (!compound.isEmpty()
                         && (!VersionNbt.contains(compound, "id", 8)
                                 || VersionIds.tryParse(VersionNbt.getString(compound, "id")) == null
                                 || !VersionNbt.contains(compound, "count", 99)
-                                || VersionNbt.getInt(compound, "count") < 1))
-                //?}
-                //? if (>=1.20.5 && <=26.3) {
-                {
+                                || VersionNbt.getInt(compound, "count") < 1)) {
                     throw new IOException("Invalid component item envelope in " + category);
                 }
                 //?}

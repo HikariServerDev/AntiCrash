@@ -106,14 +106,6 @@ public final class ConsistencyManager implements AutoCloseable {
 
                 //? if (>=1.18 && <=1.20.4) {
                 /*transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
-                *///?} else if <=1.21.4 {
-                /*transaction.nbt =
-                        NbtCodec.encode(
-                                VersionNbt.item(
-                                        stack,
-                                        player != null
-                                                ? player.registryAccess()
-                                                : server.registryAccess()));
                 *///?} else {
                 transaction.nbt =
                         NbtCodec.encode(

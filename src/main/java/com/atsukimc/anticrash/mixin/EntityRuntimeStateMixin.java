@@ -276,13 +276,7 @@ public abstract class EntityRuntimeStateMixin {
                     .anticrash$setTeleported(VersionNbt.getBoolean(extension, "TeleportedTnt"));
         //?}
 
-        //? if (>=1.21 && <=1.21.4) {
-        /*if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
-                && VersionNbt.contains(extension, "ShouldDupe", 1))
-            falling.forceTickAfterTeleportToDuplicate =
-                    VersionNbt.getBoolean(extension, "ShouldDupe");
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        //? if (>=1.21 && <=26.3) {
         if (self instanceof net.minecraft.world.entity.item.FallingBlockEntity falling
                 && VersionNbt.contains(extension, "ShouldDupe", 1))
             falling.forceTickAfterTeleportToDuplicate =
@@ -314,11 +308,7 @@ public abstract class EntityRuntimeStateMixin {
         }
         //?}
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (VersionNbt.contains(extension, "Portal", 10)) {
-        *///?} else {
         if (VersionNbt.contains(extension, "Portal", 10)) {
-        //?}
             //? if (>=1.18 && <=1.20.6) {
             /*CompoundTag portal = VersionNbt.getCompoundOrEmpty(extension, "Portal");
             isInsidePortal = VersionNbt.getBoolean(portal, "In");
@@ -330,10 +320,6 @@ public abstract class EntityRuntimeStateMixin {
                 portalEntrancePos = NbtUtils.readBlockPos(VersionNbt.getCompound(portal, "Pos"));
             *///?} else if <= 1.20.6 {
             /*portalEntrancePos = NbtUtils.readBlockPos(portal, "Pos").orElse(portalEntrancePos);
-            *///?} else if <= 1.21.4 {
-            /*portalProcess =
-                    com.atsukimc.anticrash.runtime.PortalRuntime.read(
-                            VersionNbt.getCompoundOrEmpty(extension, "Portal"));
             *///?} else {
             portalProcess =
                     com.atsukimc.anticrash.runtime.PortalRuntime.read(
@@ -341,46 +327,14 @@ public abstract class EntityRuntimeStateMixin {
             //?}
         }
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (VersionNbt.contains(extension, "RidingCooldown", 99))
-            boardingCooldown = Math.max(0, VersionNbt.getInt(extension, "RidingCooldown"));
-
-        if (VersionNbt.sparseFlag(extension, "Ticked")) {
-        *///?} else {
         if (VersionNbt.contains(extension, "RidingCooldown", 99))
             boardingCooldown = Math.max(0, VersionNbt.getInt(extension, "RidingCooldown"));
 
         if (VersionNbt.sparseFlag(extension, "Ticked")) {
-        //?}
-
             firstTick = false;
-
-            //? if (>=1.18 && <=1.21.4) {
-            /*wasTouchingWater = VersionNbt.sparseFlag(extension, "Water");
-            *///?} else {
             wasTouchingWater = VersionNbt.sparseFlag(extension, "Water");
-            //?}
-
         }
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (VersionNbt.contains(extension, "Regen", 99)) {
-            invulnerableTime = Math.max(0, VersionNbt.getInt(extension, "Regen"));
-            if (self instanceof LivingEntity living
-                    && VersionNbt.contains(extension, "LastDamage", 99)) {
-                ((LivingEntityAccessorMixin) living)
-                        .anticrash$setLastDamageTaken(VersionNbt.getFloat(extension, "LastDamage"));
-            }
-        }
-        if ((self instanceof ItemEntity || self instanceof ExperienceOrb)
-                && VersionNbt.contains(extension, "Age", 99)) {
-            tickCount = Math.max(0, VersionNbt.getInt(extension, "Age"));
-        }
-        if (self instanceof com.atsukimc.anticrash.runtime.ItemPhaseHolder item
-                && VersionNbt.contains(extension, "IdPhase", 99)) {
-            item.anticrash$setIdPhase(VersionNbt.getInt(extension, "IdPhase"));
-        }
-        *///?} else {
         if (VersionNbt.contains(extension, "Regen", 99)) {
             invulnerableTime = Math.max(0, VersionNbt.getInt(extension, "Regen"));
             if (self instanceof LivingEntity living
@@ -397,6 +351,5 @@ public abstract class EntityRuntimeStateMixin {
                 && VersionNbt.contains(extension, "IdPhase", 99)) {
             item.anticrash$setIdPhase(VersionNbt.getInt(extension, "IdPhase"));
         }
-        //?}
     }
 }

@@ -340,23 +340,8 @@ public final class CarpetIntegration {
 
         }
         if (config.fakePlayer.snapshot.effects)
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (MobEffectInstance effect : player.getActiveEffects())
-
-            *///?}
-                //? if (>=1.18 && <=1.20.4) {
-                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                *///?}
-                //? if (>=1.20.5 && <=1.21.4) {
-                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                *///?}
-            //? if (>=26.1 && <=26.3) {
             for (MobEffectInstance effect : player.getActiveEffects())
-            //?}
-                //? if (>=1.21.5 && <=26.3) {
                 data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                //?}
 
         if (player.isPassenger()) {
 
@@ -713,11 +698,7 @@ public final class CarpetIntegration {
                 if (!(element instanceof net.minecraft.nbt.CompoundTag compound))
                     throw new IOException("FakePlayer effect snapshot is not an NBT compound");
 
-                //? if (>=1.18 && <=1.21.4) {
-                /*MobEffectInstance effect = VersionNbt.effect(compound);
-                *///?} else {
                 MobEffectInstance effect = VersionNbt.effect(compound);
-                //?}
 
                 if (effect == null) throw new IOException("FakePlayer effect snapshot is invalid");
                 effects.add(effect);
@@ -964,11 +945,7 @@ public final class CarpetIntegration {
         //?}
 
         for (int i = 0; i < passengers.size(); i++)
-            //? if (>=1.18 && <=1.21.4) {
-            /*collectUuids(VersionNbt.getCompound(passengers, i), uuids);
-            *///?} else {
             collectUuids(VersionNbt.getCompound(passengers, i), uuids);
-            //?}
     }
 
     /**
@@ -1290,13 +1267,8 @@ public final class CarpetIntegration {
             for (String encoded : data.effectsNbt) {
                 Tag element = NbtCodec.decode(encoded);
 
-                //? if (>=1.18 && <=1.21.4) {
-                /*if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
-                        || VersionNbt.effect(compound) == null)
-                *///?} else {
                 if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
                         || VersionNbt.effect(compound) == null)
-                //?}
                     throw new IOException("FakePlayer effect snapshot is invalid");
             }
         boolean inventoryEnabled =

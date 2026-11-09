@@ -100,17 +100,10 @@ public abstract class BrewingStandBlockEntityMixin {
         net.minecraft.nbt.CompoundTag extension =
                 com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.read(nbt);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (extension == null || !VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0)
-            return;
-
-        var id = VersionIds.tryParse(VersionNbt.getString(extension, "ItemBrewing"));
-        *///?} else {
         if (extension == null || !VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0)
             return;
 
         var id = VersionIds.tryParse(VersionNbt.getString(extension, "ItemBrewing"));
-        //?}
 
         if (id != null && VersionIds.items().containsKey(id)) {
             ingredient = VersionIds.value(VersionIds.items(), id);

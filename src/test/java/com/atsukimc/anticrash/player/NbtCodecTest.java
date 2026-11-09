@@ -37,13 +37,7 @@ class NbtCodecTest {
 
         ListTag decoded = assertInstanceOf(ListTag.class, NbtCodec.decode(NbtCodec.encode(list)));
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals("slot", VersionNbt.getString(decoded, 0));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals("slot", VersionNbt.getString(decoded, 0));
-        //?}
-
     }
 
     @Test

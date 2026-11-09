@@ -85,14 +85,8 @@ public abstract class EndGatewayBlockEntityMixin {
 
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*if (extension != null && VersionNbt.contains(extension, "TeleportCooldown", 99)) {
-            teleportCooldown = Math.max(0, VersionNbt.getInt(extension, "TeleportCooldown"));
-        }
-        *///?} else {
         if (extension != null && VersionNbt.contains(extension, "TeleportCooldown", 99)) {
             teleportCooldown = Math.max(0, VersionNbt.getInt(extension, "TeleportCooldown"));
         }
-        //?}
     }
 }

@@ -127,13 +127,6 @@ public abstract class CampfireRecipeMatchingMixin
                                 ? VersionIds.tryParse(
                                         VersionNbt.getString(extension, "RecipeMatch"))
                                 : null);
-        *///?} else if <= 1.21.4 {
-        /*anticrash$savedId =
-                VersionNbt.contains(extension, "RecipeMatch", 8)
-                        ? net.minecraft.resources.ResourceKey.create(
-                                net.minecraft.core.registries.Registries.RECIPE,
-                                VersionIds.parse(VersionNbt.getString(extension, "RecipeMatch")))
-                        : null;
         *///?} else {
         anticrash$savedId =
                 VersionNbt.contains(extension, "RecipeMatch", 8)

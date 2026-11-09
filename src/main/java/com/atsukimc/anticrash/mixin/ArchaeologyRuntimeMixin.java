@@ -78,19 +78,11 @@ public abstract class ArchaeologyRuntimeMixin {
             {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
-        //? if (>=1.19.4 && <=1.21.4) {
-        /*if (extension == null || !VersionNbt.contains(extension, "BrushCount", 3)) return;
-        brushCount = VersionNbt.getInt(extension, "BrushCount");
-        brushCountResetsAtTick = VersionNbt.getLong(extension, "BrushNextDust");
-        coolDownEndsAtTick = VersionNbt.getLong(extension, "BrushNextUse");
-        int direction = VersionNbt.getInt(extension, "BrushDirection");
-        *///?} else {
         if (extension == null || !VersionNbt.contains(extension, "BrushCount", 3)) return;
         brushCount = VersionNbt.getInt(extension, "BrushCount");
         brushCountResetsAtTick = VersionNbt.getLong(extension, "BrushNextDust");
         coolDownEndsAtTick = VersionNbt.getLong(extension, "BrushNextUse");
         int direction = VersionNbt.getInt(extension, "BrushDirection");
-        //?}
 
         if (direction < -1 || direction > 5)
             throw new IllegalStateException("Invalid saved brush direction");

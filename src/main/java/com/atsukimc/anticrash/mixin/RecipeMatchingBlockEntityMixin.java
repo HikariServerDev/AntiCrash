@@ -94,17 +94,7 @@ public abstract class RecipeMatchingBlockEntityMixin {
                                         VersionNbt.getString(extension, "RecipeMatch"))
                                 : null);
         *///?}
-        //? if (>=1.21.2 && <=1.21.4) {
-        /*((RecipeMatchGetterAccessorMixin) quickCheck)
-                .anticrash$setRecipeId(
-                        VersionNbt.contains(extension, "RecipeMatch", 8)
-                                ? net.minecraft.resources.ResourceKey.create(
-                                        net.minecraft.core.registries.Registries.RECIPE,
-                                        VersionIds.parse(
-                                                VersionNbt.getString(extension, "RecipeMatch")))
-                                : null);
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        //? if (>=1.21.2 && <=26.3) {
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
                         VersionNbt.contains(extension, "RecipeMatch", 8)

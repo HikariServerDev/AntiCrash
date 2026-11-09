@@ -81,18 +81,6 @@ class LogicalDeltaMaterializerTest {
         Path destination = temp.resolve("materialized");
         LogicalDeltaMaterializer.materialize(parentWorld, destination, parentFiles, delta);
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                "before",
-                VersionNbt.getString(
-                        readRegion(parentWorld, "region", new ChunkPos(0, 0)), "marker"));
-
-        assertEquals(
-                "after",
-                VersionNbt.getString(
-                        readRegion(destination, "region", new ChunkPos(0, 0)), "marker"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 "before",
                 VersionNbt.getString(
@@ -102,30 +90,11 @@ class LogicalDeltaMaterializerTest {
                 "after",
                 VersionNbt.getString(
                         readRegion(destination, "region", new ChunkPos(0, 0)), "marker"));
-        //?}
 
         assertNotSame(
                 parentWorld.resolve("region/r.0.0.mca").toRealPath(),
                 destination.resolve("region/r.0.0.mca").toRealPath());
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                0,
-                VersionNbt.listOrEmpty(
-                                readRegion(destination, "entities", new ChunkPos(0, 0)),
-                                "Entities",
-                                10)
-                        .size());
-
-        assertEquals(
-                1,
-                VersionNbt.listOrEmpty(
-                                readRegion(parentWorld, "entities", new ChunkPos(0, 0)),
-                                "Entities",
-                                10)
-                        .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 0,
                 VersionNbt.listOrEmpty(
@@ -141,8 +110,6 @@ class LogicalDeltaMaterializerTest {
                                 "Entities",
                                 10)
                         .size());
-        //?}
-
     }
 
     @Test
@@ -202,24 +169,6 @@ class LogicalDeltaMaterializerTest {
             assertEquals(false, region.hasChunk(new ChunkPos(0, 0)));
         }
 
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
-                1,
-                VersionNbt.listOrEmpty(
-                                readRegion(destination, "entities", new ChunkPos(1, 0)),
-                                "Entities",
-                                10)
-                        .size());
-
-        assertEquals(
-                1,
-                VersionNbt.listOrEmpty(
-                                readRegion(parentWorld, "entities", new ChunkPos(0, 0)),
-                                "Entities",
-                                10)
-                        .size());
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         assertEquals(
                 1,
                 VersionNbt.listOrEmpty(
@@ -235,8 +184,6 @@ class LogicalDeltaMaterializerTest {
                                 "Entities",
                                 10)
                         .size());
-        //?}
-
     }
 
     private static CompoundTag entityChunk(UUID... uuids) {

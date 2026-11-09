@@ -47,13 +47,7 @@ public final class PortalRuntime {
     }
 
     public static PortalProcessor read(CompoundTag nbt) {
-
-        //? if (>=1.21 && <=1.21.4) {
-        /*var id = VersionIds.tryParse(VersionNbt.getString(nbt, "Type"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         var id = VersionIds.tryParse(VersionNbt.getString(nbt, "Type"));
-        //?}
 
         if (id == null
                 || !VersionIds.blocks().containsKey(id)
@@ -73,23 +67,13 @@ public final class PortalRuntime {
                                 new IllegalArgumentException("Missing saved Portal position"));
         //?}
 
-        //? if (>=1.21 && <=1.21.4) {
-        /*int ticks = VersionNbt.getInt(nbt, "Time");
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         int ticks = VersionNbt.getInt(nbt, "Time");
-        //?}
 
         if (ticks < 0) throw new IllegalArgumentException("Negative saved Portal time");
 
         PortalProcessor manager = new PortalProcessor(portal, pos);
 
-        //? if (>=1.21 && <=1.21.4) {
-        /*manager.setAsInsidePortalThisTick(VersionNbt.getBoolean(nbt, "In"));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
         manager.setAsInsidePortalThisTick(VersionNbt.getBoolean(nbt, "In"));
-        //?}
 
         ((PortalManagerAccessorMixin) manager).anticrash$setTicksInPortal(ticks);
         return manager;

@@ -193,23 +193,8 @@ public final class PlayerSnapshotManager {
             //?}
 
         if (config.playerSnapshot.potionEffects)
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*for (MobEffectInstance effect : player.getActiveEffects())
-
-            *///?}
-                //? if (>=1.18 && <=1.20.4) {
-                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                *///?}
-                //? if (>=1.20.5 && <=1.21.4) {
-                /*data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                *///?}
-            //? if (>=26.1 && <=26.3) {
             for (MobEffectInstance effect : player.getActiveEffects())
-            //?}
-                //? if (>=1.21.5 && <=26.3) {
                 data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
-                //?}
 
         if (config.playerSnapshot.velocity) {
 
@@ -365,15 +350,8 @@ public final class PlayerSnapshotManager {
 
                 Tag decoded = NbtCodec.decode(encoded);
 
-                //? if (>=1.18 && <=1.21.4) {
-                /*if (!(decoded instanceof net.minecraft.nbt.CompoundTag compound)
-                        || VersionNbt.effect(compound) == null)
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
                 if (!(decoded instanceof net.minecraft.nbt.CompoundTag compound)
-                        || VersionNbt.effect(compound) == null)
-                //?}
-                {
+                        || VersionNbt.effect(compound) == null) {
                     throw new IOException("Potion effect snapshot is invalid");
                 }
             }
@@ -510,12 +488,7 @@ public final class PlayerSnapshotManager {
                         throw new IOException("Potion effect snapshot is not an NBT compound");
                     }
 
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*MobEffectInstance effect = VersionNbt.effect(compound);
-                    *///?}
-                    //? if (>=1.21.5 && <=26.3) {
                     MobEffectInstance effect = VersionNbt.effect(compound);
-                    //?}
 
                     if (effect == null) throw new IOException("Potion effect snapshot is invalid");
                     effects.add(effect);
