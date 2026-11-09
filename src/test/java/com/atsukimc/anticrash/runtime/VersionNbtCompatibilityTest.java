@@ -107,7 +107,7 @@ class VersionNbtCompatibilityTest {
     @Test
     void potionEffectsPreserveTimingAndFlagsAcrossTheNbtCodec() throws java.io.IOException {
         MobEffectInstance effect =
-                new MobEffectInstance(MobEffects.SPEED, 37, 2, true, false, false);
+                new MobEffectInstance(MobEffects.GLOWING, 37, 2, true, false, false);
         CompoundTag saved = assertInstanceOf(CompoundTag.class, VersionNbt.effect(effect));
         CompoundTag wire =
                 com.atsukimc.anticrash.player.NbtCodec.decodeCompound(
