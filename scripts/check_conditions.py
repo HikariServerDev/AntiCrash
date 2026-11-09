@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Compare changed Java sources against a Git baseline with the cached Stonecutter engine."""
 import argparse
+import hashlib
 import os
 from pathlib import Path
 import re
@@ -13,6 +14,15 @@ from build_model import load_targets
 
 def only_jar(paths, label):
     jars = sorted(paths)
+    # A Wrapper URL change creates another cache directory for the same distribution.
+    # Accept byte-identical copies only; different binaries remain an ambiguous classpath.
+    if len(jars) > 1 and all(jar.is_file() for jar in jars):
+        digests = set()
+        for jar in jars:
+            with jar.open('rb') as source:
+                digests.add(hashlib.file_digest(source, 'sha256').digest())
+        if len(digests) == 1:
+            return jars[0]
     if len(jars) != 1:
         raise ValueError(f'Expected one cached {label} JAR, found {len(jars)}; pass its path explicitly')
     return jars[0]
