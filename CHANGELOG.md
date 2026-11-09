@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.7 — NBT compatibility adapters
+
+- Integrate PR #13: centralize version-specific NBT reads and item/effect serialization in `VersionNbt`.
+- Preserve legacy defaults and newer Optional-based validation, including explicit tolerant reads.
+- Add six cross-version regression tests for typed values, missing/wrong types, nested lists, UUID layout and effect timing/flags.
+- Preserve checkpoint formats, Mixin injection contracts and recovery validation.
+
 ## 1.0.6 — chunk coordinate compatibility
 
 - Integrate PR #11: centralize ChunkPos coordinate access, packing, unpacking and BlockPos conversion in `VersionChunkPos`.
