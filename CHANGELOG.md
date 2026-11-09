@@ -5,6 +5,7 @@
 - Integrate PR #13: centralize version-specific NBT reads and item/effect serialization in `VersionNbt`.
 - Preserve legacy defaults and newer Optional-based validation, including explicit tolerant reads.
 - Add six cross-version regression tests for typed values, missing/wrong types, nested lists, UUID layout and effect timing/flags.
+- Bound formatter download retries to three attempts while retaining checksum enforcement; extend the Gradle Wrapper network timeout to 60 seconds.
 - Preserve checkpoint formats, Mixin injection contracts and recovery validation.
 
 ## 1.0.6 — chunk coordinate compatibility
