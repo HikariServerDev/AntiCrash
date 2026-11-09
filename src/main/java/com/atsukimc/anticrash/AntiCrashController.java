@@ -28,10 +28,6 @@ import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
 
-//? if (>=1.18 && <=1.18.2) {
-/*import net.minecraft.network.chat.TextComponent;
-*///?}
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1077,14 +1073,7 @@ public final class AntiCrashController {
 
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     if (!CarpetIntegration.isFakePlayer(player))
-
-                        //? if (>=1.18 && <=1.21.11) {
-                        /*VersionMessages.send(player, chat(notice, null), false);
-                        *///?}
-                        //? if (>=26.1 && <=26.3) {
                         VersionMessages.send(player, chat(notice, null), false);
-                        //?}
-
                 }
                 restoreRuntimeOrderBeforeFirstTick();
                 // The contract is needed only until the first resumed tick. Release the large
@@ -1305,13 +1294,7 @@ public final class AntiCrashController {
             if (actionBarVisible) {
                 actionBarVisible = false;
 
-                //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(VersionMessages.literal(""));
-                *///?}
-                //? if (>=1.19 && <=26.3) {
                 broadcastActionBar(VersionMessages.literal(""));
-                //?}
-
             }
             return;
         }
@@ -1328,13 +1311,7 @@ public final class AntiCrashController {
             if (actionBarVisible) {
                 actionBarVisible = false;
 
-                //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(VersionMessages.literal(""));
-                *///?}
-                //? if (>=1.19 && <=26.3) {
                 broadcastActionBar(VersionMessages.literal(""));
-                //?}
-
             }
             return;
         }
@@ -1754,31 +1731,14 @@ public final class AntiCrashController {
     }
 
     private Component actionBar(ChatFormatting color, String key, Object... arguments) {
-
-        //? if (>=1.18 && <=1.18.2) {
-        /*return VersionMessages.literal(MessageCatalog.text(config.language, key, arguments))
-                .withStyle(color);
-        *///?}
-        //? if (>=1.19 && <=26.3) {
         return VersionMessages.literal(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
-        //?}
-
     }
 
     private void broadcastActionBar(Component message) {
-
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!CarpetIntegration.isFakePlayer(player))
-                VersionMessages.send(player, message, true);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             if (!CarpetIntegration.isFakePlayer(player))
                 VersionMessages.send(player, message, true);
-            //?}
-
         }
     }
 
@@ -1869,13 +1829,7 @@ public final class AntiCrashController {
                                         remaining),
                         ChatFormatting.YELLOW);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*VersionMessages.send(player, message, false);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
         VersionMessages.send(player, message, false);
-        //?}
-
     }
 
     /** Seconds left in the ASK window, or -1 when no answer window is running. */
@@ -1975,22 +1929,6 @@ public final class AntiCrashController {
         String checkpointId = selectedCheckpointId;
         boolean accepted = answerRecovery(restore);
         if (accepted) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*VersionMessages.send(
-                    player,
-                    chat(
-                            restore
-                                    ? MessageCatalog.text(
-                                            config.language,
-                                            "command.recovery.answer_restore",
-                                            checkpointId)
-                                    : MessageCatalog.text(
-                                            config.language, "command.recovery.answer_continue"),
-                            null),
-                    false);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             VersionMessages.send(
                     player,
                     chat(
@@ -2003,8 +1941,6 @@ public final class AntiCrashController {
                                             config.language, "command.recovery.answer_continue"),
                             null),
                     false);
-            //?}
-
         }
         return accepted;
     }
@@ -2024,19 +1960,6 @@ public final class AntiCrashController {
         }
         if (CarpetIntegration.isFakePlayer(player)) return;
         if (states.canResumeWithStart()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*VersionMessages.send(
-                    player,
-                    chat(
-                            MessageCatalog.text(
-                                    config.language,
-                                    "recovery.join_frozen_notice",
-                                    config.recovery.startCommand),
-                            ChatFormatting.YELLOW),
-                    false);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             VersionMessages.send(
                     player,
                     chat(
@@ -2046,8 +1969,6 @@ public final class AntiCrashController {
                                     config.recovery.startCommand),
                             ChatFormatting.YELLOW),
                     false);
-            //?}
-
         } else if (states.get() == AntiCrashState.RECOVERY_DECISION
                 && config.notifications.askPromptInGame) {
             // An operator joining a frozen server must be told what it is waiting for.

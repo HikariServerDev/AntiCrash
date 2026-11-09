@@ -1,9 +1,5 @@
 package com.atsukimc.anticrash.logging;
 
-//? if (>=1.18 && <=1.18.2) {
-/*import net.minecraft.network.chat.TextComponent;
-*///?}
-
 import com.atsukimc.anticrash.runtime.VersionMessages;
 
 import net.minecraft.ChatFormatting;
@@ -19,29 +15,14 @@ public final class ChatStyle {
      *     Vanilla wraps the text as a command error)
      */
     public static Component text(String message, ChatFormatting base, boolean coloured) {
-        if (message == null)
-            //? if (>=1.18 && <=1.18.2) {
-            /*return VersionMessages.literal("");
-            *///?} else {
-            return VersionMessages.literal("");
-            //?}
+        if (message == null) return VersionMessages.literal("");
 
         if (!coloured) {
-
-            //? if (>=1.18 && <=1.18.2) {
-            /*MutableComponent plain = VersionMessages.literal(message);
-            *///?} else {
             MutableComponent plain = VersionMessages.literal(message);
-            //?}
-
             return base == null ? plain : plain.withStyle(base);
         }
 
-        //? if (>=1.18 && <=1.18.2) {
-        /*MutableComponent result = VersionMessages.literal("");
-        *///?} else {
         MutableComponent result = VersionMessages.literal("");
-        //?}
 
         if (base != null) result.withStyle(base);
 
@@ -49,12 +30,7 @@ public final class ChatStyle {
         for (int index = 0; index < lines.length; index++) {
             if (index > 0) result.append("\n");
             for (MessageStyle.Span span : MessageStyle.spans(lines[index])) {
-
-                //? if (>=1.18 && <=1.18.2) {
-                /*MutableComponent part = VersionMessages.literal(span.text());
-                *///?} else {
                 MutableComponent part = VersionMessages.literal(span.text());
-                //?}
 
                 switch (span.kind()) {
                     case HEADER -> part.withStyle(ChatFormatting.BOLD);
