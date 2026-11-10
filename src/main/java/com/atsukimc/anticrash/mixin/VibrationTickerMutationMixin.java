@@ -1,6 +1,8 @@
 //? if (>=1.20 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.util.VersionLevels;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.vibrations.VibrationSystem;
@@ -21,11 +23,11 @@ public interface VibrationTickerMutationMixin {
             CallbackInfo ci) {
 
         //? if (>=1.20 && <=1.21.8) {
-        /*if (!world.isClientSide)
+        /*if (!VersionLevels.isClientSide(world))
 
         *///?}
         //? if (>=1.21.9 && <=1.21.11) {
-        /*if (!world.isClientSide())
+        /*if (!VersionLevels.isClientSide(world))
 
         *///?}
             //? if (>=1.20 && <=1.21.11) {
@@ -34,7 +36,7 @@ public interface VibrationTickerMutationMixin {
                     .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
             *///?}
         //? if (>=26.1 && <=26.3) {
-        if (!world.isClientSide())
+        if (!VersionLevels.isClientSide(world))
             callback.getPositionSource()
                     .getPosition(world)
                     .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));

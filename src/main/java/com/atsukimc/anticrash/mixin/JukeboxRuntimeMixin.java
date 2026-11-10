@@ -1,6 +1,8 @@
 //? if (>=1.19.1 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.util.VersionLevels;
+
 //? if (>=1.19.1 && <=1.20.6) {
 /*import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.VersionNbt;
@@ -97,19 +99,19 @@ public abstract class JukeboxRuntimeMixin {
     *///?}
             //? if (>=1.19.1 && <=1.20.6) {
             /*{
-        if (!world.isClientSide)
+        if (!VersionLevels.isClientSide(world))
             *///?}
         //? if (>=1.21 && <=1.21.8) {
-        /*if (!world.isClientSide && jukebox.getSongPlayer().getSong() != null)
+        /*if (!VersionLevels.isClientSide(world) && jukebox.getSongPlayer().getSong() != null)
         *///?}
         //? if (>=1.21.9 && <=1.21.11) {
-        /*if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
+        /*if (!VersionLevels.isClientSide(world) && jukebox.getSongPlayer().getSong() != null)
         *///?}
             //? if (>=1.19.1 && <=1.21.11) {
             /*world.blockEntityChanged(pos);
             *///?}
         //? if (>=26.1 && <=26.3) {
-        if (!world.isClientSide() && jukebox.getSongPlayer().getSong() != null)
+        if (!VersionLevels.isClientSide(world) && jukebox.getSongPlayer().getSong() != null)
             world.blockEntityChanged(pos);
         //?}
 

@@ -9,6 +9,7 @@ import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.ReflectionUtil;
 import com.atsukimc.anticrash.util.VersionIds;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -660,9 +661,9 @@ public final class CarpetIntegration {
         //?}
 
         //? if (>=1.18 && <=1.19.4) {
-        /*ServerLevel world = (ServerLevel) player.getLevel();
+        /*ServerLevel world = VersionLevels.level(player);
         *///?} else {
-        ServerLevel world = (ServerLevel) player.level();
+        ServerLevel world = VersionLevels.level(player);
         //?}
 
         if (config.fakePlayer.snapshot.dimension) {
@@ -756,9 +757,9 @@ public final class CarpetIntegration {
                                     : player.getViewXRot(0);
 
             //? if (>=1.18 && <=1.19.4) {
-            /*if (config.fakePlayer.snapshot.dimension && player.getLevel() != world)
+            /*if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
             *///?} else {
-            if (config.fakePlayer.snapshot.dimension && player.level() != world)
+            if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
             //?}
 
                 //? if (>=1.18 && <=1.21.1) {
@@ -778,9 +779,9 @@ public final class CarpetIntegration {
                 // FakePlayer that keeps chunks loaded does so at its checkpoint position
                 // immediately.
                 //? if (>=1.18 && <=1.19.4) {
-                /*((ServerLevel) player.getLevel()).getChunkSource().move(player);
+                /*VersionLevels.level(player).getChunkSource().move(player);
                 *///?} else {
-                ((ServerLevel) player.level()).getChunkSource().move(player);
+                VersionLevels.level(player).getChunkSource().move(player);
                 //?}
             }
         }
@@ -873,11 +874,14 @@ public final class CarpetIntegration {
         if (vehicle != null) {
 
             //? if (>=1.18 && <=1.19.4) {
-            /*if (vehicle.getLevel() != player.getLevel() || !player.startRiding(vehicle, true))
+            /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
+                    || !player.startRiding(vehicle, true))
             *///?} else if <=1.21.8 {
-            /*if (vehicle.level() != player.level() || !player.startRiding(vehicle, true))
+            /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
+                    || !player.startRiding(vehicle, true))
             *///?} else {
-            if (vehicle.level() != player.level() || !player.startRiding(vehicle, true, false))
+            if (VersionLevels.level(vehicle) != VersionLevels.level(player)
+                    || !player.startRiding(vehicle, true, false))
             //?}
                 throw new IOException("FakePlayer riding state could not be restored");
         }

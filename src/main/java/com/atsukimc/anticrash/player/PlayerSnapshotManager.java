@@ -7,6 +7,7 @@ import com.atsukimc.anticrash.runtime.CheckpointPlayerSnapshot;
 import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.VersionIds;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Abilities;
@@ -356,25 +357,25 @@ public final class PlayerSnapshotManager {
         try {
 
             //? if (>=1.18 && <=1.21.5) {
-            /*MinecraftServer server = player.server;
+            /*MinecraftServer server = VersionLevels.server(player);
             *///?}
             //? if (>=1.21.6 && <=1.21.8) {
-            /*MinecraftServer server = player.getServer();
+            /*MinecraftServer server = VersionLevels.server(player);
             *///?}
             //? if (>=1.21.9 && <=26.3) {
-            MinecraftServer server = player.level().getServer();
+            MinecraftServer server = VersionLevels.server(player);
             //?}
 
             //? if (>=1.18 && <=1.21.8) {
             /*//? if (>=1.18 && <=1.19.4) {
-            /^ServerLevel target = (ServerLevel) player.getLevel();
+            /^ServerLevel target = VersionLevels.level(player);
             ^///?}
             //? if (>=1.20 && <=1.21.8) {
-            /^ServerLevel target = (ServerLevel) player.level();
+            /^ServerLevel target = VersionLevels.level(player);
             ^///?}
             *///?}
             //? if (>=1.21.9 && <=26.3) {
-            ServerLevel target = (ServerLevel) player.level();
+            ServerLevel target = VersionLevels.level(player);
             //?}
 
             if (config.playerSnapshot.dimension) {
