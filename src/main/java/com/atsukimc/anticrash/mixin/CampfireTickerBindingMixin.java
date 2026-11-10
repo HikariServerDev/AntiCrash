@@ -2,6 +2,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RecipeBoundTicker;
+import com.atsukimc.anticrash.util.VersionLevels;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
@@ -38,14 +39,9 @@ public abstract class CampfireTickerBindingMixin {
         try {
             BlockEntityTicker<T> ticker = original.call(world, state, type);
 
-            //? if <=1.21.8 {
-            /*return ticker == null || world.isClientSide
-            *///?} else {
-            return ticker == null || world.isClientSide()
-            //?}
+            return ticker == null || VersionLevels.isClientSide(world)
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
-
         } finally {
             stack.pop();
             if (stack.isEmpty()) anticrash$scopes.remove();

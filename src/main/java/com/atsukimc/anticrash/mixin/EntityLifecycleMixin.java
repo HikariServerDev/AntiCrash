@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
 import com.atsukimc.anticrash.util.VersionChunkPos;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
@@ -43,11 +44,7 @@ public abstract class EntityLifecycleMixin {
         if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
         Entity entity = (Entity) (Object) this;
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*if (entity.getLevel() == null) return;
-        *///?} else {
-        if (entity.level() == null) return;
-        //?}
+        if (VersionLevels.level(entity) == null) return;
 
         long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
         long newChunk =

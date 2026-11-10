@@ -9,6 +9,7 @@ import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.ReflectionUtil;
 import com.atsukimc.anticrash.util.VersionIds;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
@@ -659,11 +660,7 @@ public final class CarpetIntegration {
         if (config.fakePlayer.snapshot.movement) PlayerInputCodec.restore(data.playerInput);
         //?}
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*ServerLevel world = (ServerLevel) player.getLevel();
-        *///?} else {
-        ServerLevel world = (ServerLevel) player.level();
-        //?}
+        ServerLevel world = VersionLevels.level(player);
 
         if (config.fakePlayer.snapshot.dimension) {
             world = findWorld(server, data.dimension);
@@ -755,11 +752,7 @@ public final class CarpetIntegration {
                                     ? data.pitch
                                     : player.getViewXRot(0);
 
-            //? if (>=1.18 && <=1.19.4) {
-            /*if (config.fakePlayer.snapshot.dimension && player.getLevel() != world)
-            *///?} else {
-            if (config.fakePlayer.snapshot.dimension && player.level() != world)
-            //?}
+            if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
 
                 //? if (>=1.18 && <=1.21.1) {
                 /*player.teleportTo(world, x, y, z, yaw, pitch);
@@ -777,11 +770,7 @@ public final class CarpetIntegration {
                 // A FakePlayer's player ticket follows its tracked chunk position. Move it now so a
                 // FakePlayer that keeps chunks loaded does so at its checkpoint position
                 // immediately.
-                //? if (>=1.18 && <=1.19.4) {
-                /*((ServerLevel) player.getLevel()).getChunkSource().move(player);
-                *///?} else {
-                ((ServerLevel) player.level()).getChunkSource().move(player);
-                //?}
+                VersionLevels.level(player).getChunkSource().move(player);
             }
         }
         if (config.fakePlayer.snapshot.gamemode && data.gamemode != null)
@@ -872,12 +861,12 @@ public final class CarpetIntegration {
                                     config.fakePlayer.snapshot.blockBreakProgress));
         if (vehicle != null) {
 
-            //? if (>=1.18 && <=1.19.4) {
-            /*if (vehicle.getLevel() != player.getLevel() || !player.startRiding(vehicle, true))
-            *///?} else if <=1.21.8 {
-            /*if (vehicle.level() != player.level() || !player.startRiding(vehicle, true))
+            //? if (>=1.18 && <=1.21.8) {
+            /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
+                    || !player.startRiding(vehicle, true))
             *///?} else {
-            if (vehicle.level() != player.level() || !player.startRiding(vehicle, true, false))
+            if (VersionLevels.level(vehicle) != VersionLevels.level(player)
+                    || !player.startRiding(vehicle, true, false))
             //?}
                 throw new IOException("FakePlayer riding state could not be restored");
         }

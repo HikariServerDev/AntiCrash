@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.world.entity.Entity;
 
@@ -71,32 +72,11 @@ public final class EntityLifecycleTracker {
      * player movement from filling the bounded event list.
      */
     private static boolean persisted(Entity entity) {
-
-        //? if (>=1.18 && <=1.21.8) {
-        /*return LogicalTracking.enabled()
-                && entity != null
-                //? if (>=1.18 && <=1.19.4) {
-                /^&& entity.getLevel() != null
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^&& entity.level() != null
-                ^///?}
-                //? if (>=1.18 && <=1.19.4) {
-                /^&& !entity.getLevel().isClientSide
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^&& !entity.level().isClientSide
-                ^///?}
-                && entity.getType().canSerialize();
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
         return LogicalTracking.enabled()
                 && entity != null
-                && entity.level() != null
-                && !entity.level().isClientSide()
+                && VersionLevels.level(entity) != null
+                && !VersionLevels.isClientSide(VersionLevels.level(entity))
                 && entity.getType().canSerialize();
-        //?}
-
     }
 
     private synchronized void record(

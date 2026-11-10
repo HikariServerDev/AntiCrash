@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.util.VersionLevels;
+
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 
@@ -23,17 +25,10 @@ public abstract class ComparatorBlockEntityMixin {
     private void anticrash$markSignalDirty(int signal, CallbackInfo callbackInfo) {
         BlockEntity self = (BlockEntity) (Object) this;
 
-        //? if (>=1.18 && <=1.21.8) {
-        /*if (signal != output
-                && self.hasLevel()
-                && self.getLevel() != null
-                && !self.getLevel().isClientSide) {
-        *///?} else {
         if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
-                && !self.getLevel().isClientSide()) {
-        //?}
+                && !VersionLevels.isClientSide(self.getLevel())) {
             self.getLevel().blockEntityChanged(self.getBlockPos());
         }
     }

@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.command.RecoveryCommandPolicy;
+import com.atsukimc.anticrash.util.VersionLevels;
 
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.core.BlockPos;
@@ -131,63 +132,24 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
         if (player == null) return;
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*player.server.execute(
-                () -> {
+        VersionLevels.server(player)
+                .execute(() -> {
                     anticrash$handler()
-                            //? if (>=1.18 && <=1.19.4) {
-                            /^.send(new ClientboundBlockUpdatePacket(player.getLevel(), first));
-                            ^///?}
-                            //? if (>=1.20 && <=1.21.5) {
-                            /^.send(new ClientboundBlockUpdatePacket(player.level(), first));
-                            ^///?}
-        *///?}
+                            .send(
+                                    new ClientboundBlockUpdatePacket(
+                                            VersionLevels.level(player), first));
 
-        //? if (>=1.21.6 && <=1.21.8) {
-        /*player.getServer()
-                .execute(
-                        () ->
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
-        player.level()
-                .getServer()
-                .execute(
-                        () ->
-        //?}
-                        //? if (>=1.21.6 && <=26.3) {
-                        {
-                            anticrash$handler()
-                                    .send(new ClientboundBlockUpdatePacket(player.level(), first));
-                        //?}
-
-                            if (second != null)
-                    //? if (>=1.18 && <=1.21.5) {
-                    /*{
+                    if (second != null) {
                         anticrash$handler()
-                                //? if (>=1.18 && <=1.19.4) {
-                                /^.send(new ClientboundBlockUpdatePacket(player.getLevel(), second));
-                                ^///?}
-                                //? if (>=1.20 && <=1.21.5) {
-                                /^.send(new ClientboundBlockUpdatePacket(player.level(), second));
-                                ^///?}
+                                .send(
+                                        new ClientboundBlockUpdatePacket(
+                                                VersionLevels.level(player), second));
                     }
-                }
-                    *///?}
-                            //? if (>=1.21.6 && <=26.3) {
-                            {
-                                anticrash$handler()
-                                        .send(
-                                                new ClientboundBlockUpdatePacket(
-                                                        player.level(), second));
-                            }
-                        }
-                            //?}
-                        );
+                });
     }
 
     /** Tells the client the mining action was not approved so it restores the block it removed. */
     private void anticrash$resyncBlockBreak(ServerboundPlayerActionPacket packet) {
-
         ServerPlayer player = anticrash$player();
 
         if (player == null) return;
@@ -196,104 +158,60 @@ public abstract class ServerPlayNetworkHandlerMixin {
         //? if (>=1.18 && <=1.18.2) {
         /*ServerboundPlayerActionPacket.Action action = packet.getAction();
 
-        player.server.execute(() ->
-                anticrash$handler()
-                        .send(
-                                new ClientboundBlockBreakAckPacket(
-                                        pos,
-                                        player.getLevel().getBlockState(pos),
-                                        action,
-                                        false,
-                                        "AntiCrash freeze")));
-        *///?}
-        //? if (>=1.19 && <=1.21.5) {
-        /*player.server.execute(() -> {
-            // 1.19 replaced per-block approvals with a cumulative prediction sequence ACK.
-            //? if (>=1.19 && <=1.19.4) {
-            /^anticrash$handler().send(new ClientboundBlockUpdatePacket(player.getLevel(), pos));
-            ^///?}
-            //? if (>=1.20 && <=1.21.5) {
-            /^anticrash$handler().send(new ClientboundBlockUpdatePacket(player.level(), pos));
-            ^///?}
-        *///?}
-
-        //? if (>=1.21.6 && <=1.21.8) {
-        /*player.getServer()
+        VersionLevels.server(player)
                 .execute(() ->
+                        anticrash$handler()
+                                .send(
+                                        new ClientboundBlockBreakAckPacket(
+                                                pos,
+                                                VersionLevels.level(player).getBlockState(pos),
+                                                action,
+                                                false,
+                                                "AntiCrash freeze")));
         *///?}
-        //? if (>=1.21.9 && <=26.3) {
-        player.level()
-                .getServer()
-                .execute(() ->
-        //?}
-                //? if (>=1.21.6 && <=26.3) {
-                {
+        //? if (>=1.19 && <=26.3) {
+        VersionLevels.server(player)
+                .execute(() -> {
                     // 1.19 replaced per-block approvals with a cumulative prediction sequence ACK.
-                    anticrash$handler().send(new ClientboundBlockUpdatePacket(player.level(), pos));
-                //?}
+                    anticrash$handler()
+                            .send(
+                                    new ClientboundBlockUpdatePacket(
+                                            VersionLevels.level(player), pos));
 
-                    //? if (>=1.19 && <=26.3) {
                     anticrash$ackPrediction(packet.getSequence());
                 });
-                    //?}
+        //?}
 
     }
 
     /** Re-sends the authoritative ability flags after a refused toggle. */
     private void anticrash$resyncAbilities() {
-
         ServerPlayer player = anticrash$player();
 
         if (player == null) return;
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*player.server.execute(player::onUpdateAbilities);
-        *///?}
-        //? if (>=1.21.6 && <=1.21.8) {
-        /*player.getServer().execute(player::onUpdateAbilities);
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
-        player.level().getServer().execute(player::onUpdateAbilities);
-        //?}
-
+        VersionLevels.server(player).execute(player::onUpdateAbilities);
     }
 
     /** Restores the client's predicted inventory, cursor stack and container contents. */
     private void anticrash$resyncInventory() {
-
         ServerPlayer player = anticrash$player();
 
         if (player == null) return;
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*player.server.execute(
-                () -> {
-
-        *///?}
-        //? if (>=1.21.6 && <=1.21.8) {
-        /*player.getServer()
+        VersionLevels.server(player)
                 .execute(
-                        () ->
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
-        player.level()
-                .getServer()
-                .execute(
-                        () ->
-        //?}
-                        //? if (>=1.21.6 && <=26.3) {
-                        {
-                        //?}
+                        () -> {
                             AbstractContainerMenu handler = player.containerMenu;
 
                             if (handler != null)
                                 //? if (>=1.18 && <=1.21.11) {
                                 /*handler.sendAllDataToRemote();
                                 *///?}
-                //? if (>=1.18 && <=1.21.5) {
+                        //? if (>=1.18 && <=1.21.5) {
 
-                /*}
-                *///?}
+                        /*}
+                        *///?}
                                 //? if (>=26.1 && <=26.3) {
                                 handler.sendAllDataToRemote();
                                 //?}
@@ -315,16 +233,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
         // Mutation packets pass this HEAD injection twice: on the network thread and again
         // after Minecraft re-queues them to the server thread. Record only the authoritative pass.
 
-        //? if (>=1.18 && <=1.21.5) {
-        /*if (player == null || !player.server.isSameThread())
-        *///?}
-        //? if (>=1.21.6 && <=1.21.8) {
-        /*if (player == null || !player.getServer().isSameThread())
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
-        if (player == null || !player.level().getServer().isSameThread())
-        //?}
-            return;
+        if (player == null || !VersionLevels.server(player).isSameThread()) return;
         AntiCrashController controller = anticrash$controller();
         if (controller != null)
             controller.recordTransaction(type, player, source, destination, position, stack);
@@ -383,18 +292,8 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
             ServerPlayer player = anticrash$player();
 
-            //? if (>=1.18 && <=1.21.5) {
-            /*player.server.execute(() -> controller.answerRecoveryFromChat(player, message));
-            *///?}
-            //? if (>=1.21.6 && <=1.21.8) {
-            /*player.getServer().execute(() -> controller.answerRecoveryFromChat(player, message));
-            *///?}
-            //? if (>=1.21.9 && <=26.3) {
-            player.level()
-                    .getServer()
+            VersionLevels.server(player)
                     .execute(() -> controller.answerRecoveryFromChat(player, message));
-            //?}
-
             return;
         }
         // A checkpoint barrier needs no filter here: a command reaches the world only through the
@@ -548,48 +447,21 @@ public abstract class ServerPlayNetworkHandlerMixin {
                 // That read is safe only once Minecraft has moved this packet to the server thread,
                 // so let the packet through and decide again on that second pass.
 
-                //? if (>=1.18 && <=1.21.5) {
-                /*if (Thread.currentThread() != player.server.getRunningThread())
-                *///?}
-                //? if (>=1.21.6 && <=1.21.8) {
-                /*if (Thread.currentThread() != player.getServer().getRunningThread())
-                *///?}
-                //? if (>=1.21.9 && <=26.3) {
-                if (Thread.currentThread() != player.level().getServer().getRunningThread())
-                //?}
+                if (Thread.currentThread() != VersionLevels.server(player).getRunningThread())
                     return;
 
-                //? if (>=1.18 && <=1.21.8) {
-                /*//? if (>=1.18 && <=1.19.4) {
-                /^refused = player.getLevel().getBlockEntity(pos) != null;
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^refused = player.level().getBlockEntity(pos) != null;
-                ^///?}
-                *///?}
-                //? if (>=1.21.9 && <=26.3) {
-                refused = player.level().getBlockEntity(pos) != null;
-                //?}
-
+                refused = VersionLevels.level(player).getBlockEntity(pos) != null;
             }
             if (refused) {
                 info.cancel();
                 anticrash$resyncBlocks(pos, placement);
 
-                //? if (>=1.19 && <=1.21.5) {
-                /*player.server.execute(() -> anticrash$ackPrediction(packet.getSequence()));
-                *///?}
-                //? if (>=1.21.6 && <=1.21.8) {
-                /*player.getServer().execute(() -> anticrash$ackPrediction(packet.getSequence()));
-                *///?}
-                //? if (>=1.21.9 && <=26.2) {
-                /*player.level()
-                        .getServer()
+                //? if (>=1.19 && <=26.2) {
+                /*VersionLevels.server(player)
                         .execute(() -> anticrash$ackPrediction(packet.getSequence()));
                 *///?}
                 //? if 26.3 {
-                player.level()
-                        .getServer()
+                VersionLevels.server(player)
                         .execute(() -> anticrash$ackPrediction(packet.sequence()));
                 //?}
 
@@ -629,17 +501,12 @@ public abstract class ServerPlayNetworkHandlerMixin {
             ServerPlayer player = anticrash$player();
             //?}
 
-            //? if (>=1.19 && <=1.21.5) {
-            /*player.server.execute(() -> anticrash$ackPrediction(packet.getSequence()));
-            *///?}
-            //? if (>=1.21.6 && <=1.21.8) {
-            /*player.getServer().execute(() -> anticrash$ackPrediction(packet.getSequence()));
-            *///?}
-            //? if (>=1.21.9 && <=26.2) {
-            /*player.level().getServer().execute(() -> anticrash$ackPrediction(packet.getSequence()));
+            //? if (>=1.19 && <=26.2) {
+            /*VersionLevels.server(player)
+                    .execute(() -> anticrash$ackPrediction(packet.getSequence()));
             *///?}
             //? if 26.3 {
-            player.level().getServer().execute(() -> anticrash$ackPrediction(packet.sequence()));
+            VersionLevels.server(player).execute(() -> anticrash$ackPrediction(packet.sequence()));
             //?}
 
             return;
