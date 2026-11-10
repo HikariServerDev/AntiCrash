@@ -25,12 +25,7 @@ public abstract class CrafterMutationMixin {
             BlockState state,
             CrafterBlockEntity crafter,
             CallbackInfo ci) {
-
-        //? if <=1.21.8 {
-        /*if (!VersionLevels.isClientSide(world)
-        *///?} else {
         if (!VersionLevels.isClientSide(world)
-        //?}
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
             world.blockEntityChanged(pos);
     }

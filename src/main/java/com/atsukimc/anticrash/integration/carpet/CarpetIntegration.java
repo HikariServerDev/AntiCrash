@@ -660,11 +660,7 @@ public final class CarpetIntegration {
         if (config.fakePlayer.snapshot.movement) PlayerInputCodec.restore(data.playerInput);
         //?}
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*ServerLevel world = VersionLevels.level(player);
-        *///?} else {
         ServerLevel world = VersionLevels.level(player);
-        //?}
 
         if (config.fakePlayer.snapshot.dimension) {
             world = findWorld(server, data.dimension);
@@ -756,11 +752,7 @@ public final class CarpetIntegration {
                                     ? data.pitch
                                     : player.getViewXRot(0);
 
-            //? if (>=1.18 && <=1.19.4) {
-            /*if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
-            *///?} else {
             if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
-            //?}
 
                 //? if (>=1.18 && <=1.21.1) {
                 /*player.teleportTo(world, x, y, z, yaw, pitch);
@@ -778,11 +770,7 @@ public final class CarpetIntegration {
                 // A FakePlayer's player ticket follows its tracked chunk position. Move it now so a
                 // FakePlayer that keeps chunks loaded does so at its checkpoint position
                 // immediately.
-                //? if (>=1.18 && <=1.19.4) {
-                /*VersionLevels.level(player).getChunkSource().move(player);
-                *///?} else {
                 VersionLevels.level(player).getChunkSource().move(player);
-                //?}
             }
         }
         if (config.fakePlayer.snapshot.gamemode && data.gamemode != null)
@@ -873,10 +861,7 @@ public final class CarpetIntegration {
                                     config.fakePlayer.snapshot.blockBreakProgress));
         if (vehicle != null) {
 
-            //? if (>=1.18 && <=1.19.4) {
-            /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
-                    || !player.startRiding(vehicle, true))
-            *///?} else if <=1.21.8 {
+            //? if (>=1.18 && <=1.21.8) {
             /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
                     || !player.startRiding(vehicle, true))
             *///?} else {

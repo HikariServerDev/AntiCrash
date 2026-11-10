@@ -25,17 +25,10 @@ public abstract class ComparatorBlockEntityMixin {
     private void anticrash$markSignalDirty(int signal, CallbackInfo callbackInfo) {
         BlockEntity self = (BlockEntity) (Object) this;
 
-        //? if (>=1.18 && <=1.21.8) {
-        /*if (signal != output
-                && self.hasLevel()
-                && self.getLevel() != null
-                && !VersionLevels.isClientSide(self.getLevel())) {
-        *///?} else {
         if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
                 && !VersionLevels.isClientSide(self.getLevel())) {
-        //?}
             self.getLevel().blockEntityChanged(self.getBlockPos());
         }
     }

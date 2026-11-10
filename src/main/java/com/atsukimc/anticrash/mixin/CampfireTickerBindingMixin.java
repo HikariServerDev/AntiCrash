@@ -39,14 +39,9 @@ public abstract class CampfireTickerBindingMixin {
         try {
             BlockEntityTicker<T> ticker = original.call(world, state, type);
 
-            //? if <=1.21.8 {
-            /*return ticker == null || VersionLevels.isClientSide(world)
-            *///?} else {
             return ticker == null || VersionLevels.isClientSide(world)
-            //?}
                     ? ticker
                     : new RecipeBoundTicker<>(ticker, scope[0]);
-
         } finally {
             stack.pop();
             if (stack.isEmpty()) anticrash$scopes.remove();

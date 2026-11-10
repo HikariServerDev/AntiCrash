@@ -44,11 +44,7 @@ public abstract class EntityLifecycleMixin {
         if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
         Entity entity = (Entity) (Object) this;
 
-        //? if (>=1.18 && <=1.19.4) {
-        /*if (VersionLevels.level(entity) == null) return;
-        *///?} else {
         if (VersionLevels.level(entity) == null) return;
-        //?}
 
         long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
         long newChunk =

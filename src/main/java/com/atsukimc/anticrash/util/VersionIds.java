@@ -50,11 +50,7 @@ public final class VersionIds {
 
     /** Dimension id of the level an entity is in. */
     public static String dimension(Entity entity) {
-        //? if (>=1.18 && <=1.19.4) {
-        /*return dimension(VersionLevels.level(entity));
-        *///?} else {
         return dimension(VersionLevels.level(entity));
-        //?}
     }
 
     // Built-in registries

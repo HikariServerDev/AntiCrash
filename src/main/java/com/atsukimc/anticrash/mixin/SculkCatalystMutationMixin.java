@@ -31,15 +31,9 @@ public abstract class SculkCatalystMutationMixin {
             SculkCatalystBlockEntity catalyst,
             CallbackInfo ci) {
 
-        //? if (>=1.19 && <=1.21.8) {
-        /*if (!VersionLevels.isClientSide(world))
+        //? if (>=1.19 && <=1.21.11) {
+        /*if (!VersionLevels.isClientSide(world)) world.blockEntityChanged(pos);
         *///?}
-        //? if (>=1.21.9 && <=1.21.11) {
-        /*if (!VersionLevels.isClientSide(world))
-        *///?}
-            //? if (>=1.19 && <=1.21.11) {
-            /*world.blockEntityChanged(pos);
-            *///?}
     //? if (>=1.19 && <=1.21.8) {
 
     /*}

@@ -101,10 +101,7 @@ public abstract class JukeboxRuntimeMixin {
             /*{
         if (!VersionLevels.isClientSide(world))
             *///?}
-        //? if (>=1.21 && <=1.21.8) {
-        /*if (!VersionLevels.isClientSide(world) && jukebox.getSongPlayer().getSong() != null)
-        *///?}
-        //? if (>=1.21.9 && <=1.21.11) {
+        //? if (>=1.21 && <=1.21.11) {
         /*if (!VersionLevels.isClientSide(world) && jukebox.getSongPlayer().getSong() != null)
         *///?}
             //? if (>=1.19.1 && <=1.21.11) {

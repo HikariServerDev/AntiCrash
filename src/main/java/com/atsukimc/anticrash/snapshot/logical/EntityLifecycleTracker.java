@@ -72,32 +72,11 @@ public final class EntityLifecycleTracker {
      * player movement from filling the bounded event list.
      */
     private static boolean persisted(Entity entity) {
-
-        //? if (>=1.18 && <=1.21.8) {
-        /*return LogicalTracking.enabled()
-                && entity != null
-                //? if (>=1.18 && <=1.19.4) {
-                /^&& VersionLevels.level(entity) != null
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^&& VersionLevels.level(entity) != null
-                ^///?}
-                //? if (>=1.18 && <=1.19.4) {
-                /^&& !VersionLevels.isClientSide(VersionLevels.level(entity))
-                ^///?}
-                //? if (>=1.20 && <=1.21.8) {
-                /^&& !VersionLevels.isClientSide(VersionLevels.level(entity))
-                ^///?}
-                && entity.getType().canSerialize();
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
         return LogicalTracking.enabled()
                 && entity != null
                 && VersionLevels.level(entity) != null
                 && !VersionLevels.isClientSide(VersionLevels.level(entity))
                 && entity.getType().canSerialize();
-        //?}
-
     }
 
     private synchronized void record(

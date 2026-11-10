@@ -355,28 +355,8 @@ public final class PlayerSnapshotManager {
 
         if (data == null) return true;
         try {
-
-            //? if (>=1.18 && <=1.21.5) {
-            /*MinecraftServer server = VersionLevels.server(player);
-            *///?}
-            //? if (>=1.21.6 && <=1.21.8) {
-            /*MinecraftServer server = VersionLevels.server(player);
-            *///?}
-            //? if (>=1.21.9 && <=26.3) {
             MinecraftServer server = VersionLevels.server(player);
-            //?}
-
-            //? if (>=1.18 && <=1.21.8) {
-            /*//? if (>=1.18 && <=1.19.4) {
-            /^ServerLevel target = VersionLevels.level(player);
-            ^///?}
-            //? if (>=1.20 && <=1.21.8) {
-            /^ServerLevel target = VersionLevels.level(player);
-            ^///?}
-            *///?}
-            //? if (>=1.21.9 && <=26.3) {
             ServerLevel target = VersionLevels.level(player);
-            //?}
 
             if (config.playerSnapshot.dimension) {
                 target = findWorld(server, data.dimension);
