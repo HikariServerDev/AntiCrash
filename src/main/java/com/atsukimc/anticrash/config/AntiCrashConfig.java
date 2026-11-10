@@ -1098,7 +1098,7 @@ public final class AntiCrashConfig {
 
     public String toToml() {
         return """
-        # AntiCrash 1.0.8 - complete user configuration / 完全設定
+        # AntiCrash 1.0.9 - complete user configuration / 完全設定
         # User settings only. Run markers, recovery state and checkpoints are stored
         # under .anticrash/ and must never be copied into this file.
         # ユーザー設定専用です。実行・復旧状態は .anticrash/ に分離して保存されます。

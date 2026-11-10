@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.9 — world access compatibility
+
+- Integrate PR #17: centralize version-specific entity and player world access in `VersionLevels`.
+- Preserve player packet resynchronization, FakePlayer restoration, logical mutation tracking and Mixin contracts across supported Minecraft versions.
+- Keep checkpoint and recovery formats unchanged.
+
 ## 1.0.8 — storage, messaging and permission compatibility
 
 - Integrate PR #15: centralize version-specific storage, message and permission APIs in the existing adapters.
