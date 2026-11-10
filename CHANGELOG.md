@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.0.8 — storage, messaging and permission compatibility
+
+- Integrate PR #15: centralize version-specific storage, message and permission APIs in the existing adapters.
+- Preserve entity-save refusal, abilities and Ender Chest restore timing, message destinations and command permission checks.
+- Add cross-version regression coverage for literal/chat text and player ability flags/speeds.
+- Preserve checkpoint formats, Mixin injection contracts and recovery validation.
+
 ## 1.0.7 — NBT compatibility adapters
 
 - Integrate PR #13: centralize version-specific NBT reads and item/effect serialization in `VersionNbt`.

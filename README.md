@@ -1,6 +1,6 @@
 # AntiCrash
 
-**Minecraft Fabric server mod** · AtsukiMC · **v1.0.7** · **LGPL-3.0-only**
+**Minecraft Fabric server mod** · AtsukiMC · **v1.0.8** · **LGPL-3.0-only**
 
 [Read this in Japanese](README-ja.md)
 
@@ -12,12 +12,12 @@ Recovery coverage varies by Minecraft version and installed mods. `OPTIMIZED` us
 
 ### Installation
 
-Download the JAR for the exact Minecraft version from [Release 1.0.7](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.7). Install the Mod on the server; clients can join with a Vanilla client. Fabric API is optional. Install a compatible Carpet version for FakePlayer integration.
+Download the JAR for the exact Minecraft version from [Release 1.0.8](https://github.com/HikariServerDev/AntiCrash/releases/tag/1.0.8). Install the Mod on the server; clients can join with a Vanilla client. Fabric API is optional. Install a compatible Carpet version for FakePlayer integration.
 
 | Component | File name | Location |
 | --- | --- | --- |
-| Mod | `AntiCrash-1.0.7+mc<VERSION>.jar` | Server `mods/` folder |
-| Supervisor (optional) | `AntiCrash-Supervisor-1.0.7+mc<VERSION>.jar` | Server directory, outside `mods/` |
+| Mod | `AntiCrash-1.0.8+mc<VERSION>.jar` | Server `mods/` folder |
+| Supervisor (optional) | `AntiCrash-Supervisor-1.0.8+mc<VERSION>.jar` | Server directory, outside `mods/` |
 
 ### Supported versions
 
@@ -60,7 +60,7 @@ Use `/ac status` to view progress, `/ac start` to resume game time, `/ac checkpo
 The optional Supervisor monitors Minecraft and can restart it in the same console after a crash or controlled restart. Start it with the server command after `--`; for example:
 
 ```sh
-java -jar AntiCrash-Supervisor-1.0.7+mc1.18.2.jar --workdir /path/to/server -- java -jar fabric-server-launch.jar nogui
+java -jar AntiCrash-Supervisor-1.0.8+mc1.18.2.jar --workdir /path/to/server -- java -jar fabric-server-launch.jar nogui
 ```
 
 The license is GNU Lesser General Public License v3.0 only (LGPL-3.0-only).
