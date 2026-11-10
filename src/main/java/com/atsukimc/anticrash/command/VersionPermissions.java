@@ -1,24 +1,27 @@
-//? if (>=1.21.11 && <=26.3) {
 package com.atsukimc.anticrash.command;
 
 import net.minecraft.commands.CommandSourceStack;
-import net.minecraft.server.permissions.Permission;
-import net.minecraft.server.permissions.PermissionLevel;
-import net.minecraft.server.permissions.PermissionSet;
 
-/** Preserve configurable 0..4 command levels using Vanilla's new permission predicate. */
+/** Configurable 0..4 command levels; 1.21.11 replaced the integer check with a predicate. */
 public final class VersionPermissions {
     private VersionPermissions() {}
 
+    //? if (>=1.18 && <=1.21.10) {
+    /*public static boolean hasLevel(CommandSourceStack source, int level) {
+        return source.hasPermission(level);
+    }
+    *///?} else {
     public static boolean hasLevel(CommandSourceStack source, int level) {
         return hasLevel(source.permissions(), level);
     }
 
-    public static boolean hasLevel(PermissionSet permissions, int level) {
+    public static boolean hasLevel(
+            net.minecraft.server.permissions.PermissionSet permissions, int level) {
         if (level < 0 || level > 4 || permissions == null) return false;
         return level == 0
                 || permissions.hasPermission(
-                        new Permission.HasCommandLevel(PermissionLevel.byId(level)));
+                        new net.minecraft.server.permissions.Permission.HasCommandLevel(
+                                net.minecraft.server.permissions.PermissionLevel.byId(level)));
     }
+    //?}
 }
-//?}

@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.Hashing;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
@@ -517,17 +518,9 @@ public final class LogicalDeltaEngine {
                 // save writes the "id" key; saveWithoutId alone produces an entity that Minecraft
                 // silently discards on load.
 
-                //? if (>=1.18 && <=1.21.5) {
-                /*CompoundTag nbt = new CompoundTag();
+                CompoundTag nbt = VersionStorage.entity(entity);
 
-                if (!entity.save(nbt))
-                *///?}
-                //? if (>=1.21.6 && <=26.3) {
-                CompoundTag nbt = com.atsukimc.anticrash.runtime.VersionStorage.entity(entity);
-
-                if (nbt == null)
-                //?}
-                    continue;
+                if (nbt == null) continue;
                 entities.add(nbt);
                 saved.add(entity);
                 savedNbt.add(nbt);

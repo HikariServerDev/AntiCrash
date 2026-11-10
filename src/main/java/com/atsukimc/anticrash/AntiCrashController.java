@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash;
 
 import com.atsukimc.anticrash.checkpoint.CheckpointManager;
+import com.atsukimc.anticrash.command.VersionPermissions;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.consistency.ConsistencyManager;
 import com.atsukimc.anticrash.core.*;
@@ -27,10 +28,6 @@ import net.minecraft.ChatFormatting;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerPlayer;
-
-//? if (>=1.18 && <=1.18.2) {
-/*import net.minecraft.network.chat.TextComponent;
-*///?}
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1077,15 +1074,7 @@ public final class AntiCrashController {
 
                 for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                     if (!CarpetIntegration.isFakePlayer(player))
-
-                        //? if (>=1.18 && <=1.21.11) {
-                        /*player.displayClientMessage(chat(notice, null), false);
-                        *///?}
-                        //? if (>=26.1 && <=26.3) {
-                        com.atsukimc.anticrash.runtime.VersionMessages.send(
-                                player, chat(notice, null), false);
-                        //?}
-
+                        VersionMessages.send(player, chat(notice, null), false);
                 }
                 restoreRuntimeOrderBeforeFirstTick();
                 // The contract is needed only until the first resumed tick. Release the large
@@ -1306,13 +1295,7 @@ public final class AntiCrashController {
             if (actionBarVisible) {
                 actionBarVisible = false;
 
-                //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(new TextComponent(""));
-                *///?}
-                //? if (>=1.19 && <=26.3) {
-                broadcastActionBar(Component.literal(""));
-                //?}
-
+                broadcastActionBar(VersionMessages.literal(""));
             }
             return;
         }
@@ -1329,13 +1312,7 @@ public final class AntiCrashController {
             if (actionBarVisible) {
                 actionBarVisible = false;
 
-                //? if (>=1.18 && <=1.18.2) {
-                /*broadcastActionBar(new TextComponent(""));
-                *///?}
-                //? if (>=1.19 && <=26.3) {
-                broadcastActionBar(Component.literal(""));
-                //?}
-
+                broadcastActionBar(VersionMessages.literal(""));
             }
             return;
         }
@@ -1755,30 +1732,14 @@ public final class AntiCrashController {
     }
 
     private Component actionBar(ChatFormatting color, String key, Object... arguments) {
-
-        //? if (>=1.18 && <=1.18.2) {
-        /*return new TextComponent(MessageCatalog.text(config.language, key, arguments))
+        return VersionMessages.literal(MessageCatalog.text(config.language, key, arguments))
                 .withStyle(color);
-        *///?}
-        //? if (>=1.19 && <=26.3) {
-        return Component.literal(MessageCatalog.text(config.language, key, arguments))
-                .withStyle(color);
-        //?}
-
     }
 
     private void broadcastActionBar(Component message) {
-
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*if (!CarpetIntegration.isFakePlayer(player)) player.displayClientMessage(message, true);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
             if (!CarpetIntegration.isFakePlayer(player))
-                com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, true);
-            //?}
-
+                VersionMessages.send(player, message, true);
         }
     }
 
@@ -1838,17 +1799,9 @@ public final class AntiCrashController {
 
     /** Sends the ASK question to one player who is allowed to answer it. */
     private void sendAskPrompt(ServerPlayer player) {
-
-        //? if (>=1.18 && <=1.21.10) {
-        /*if (selectedCheckpointId == null
-                || !player.createCommandSourceStack().hasPermission(config.commands.recovery))
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         if (selectedCheckpointId == null
-                || !com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
-                        player.createCommandSourceStack(), config.commands.recovery))
-        //?}
-        {
+                || !VersionPermissions.hasLevel(
+                        player.createCommandSourceStack(), config.commands.recovery)) {
             return;
         }
         long remaining = askRemainingSeconds();
@@ -1869,13 +1822,7 @@ public final class AntiCrashController {
                                         remaining),
                         ChatFormatting.YELLOW);
 
-        //? if (>=1.18 && <=1.21.11) {
-        /*player.displayClientMessage(message, false);
-        *///?}
-        //? if (>=26.1 && <=26.3) {
-        com.atsukimc.anticrash.runtime.VersionMessages.send(player, message, false);
-        //?}
-
+        VersionMessages.send(player, message, false);
     }
 
     /** Seconds left in the ASK window, or -1 when no answer window is running. */
@@ -1943,18 +1890,10 @@ public final class AntiCrashController {
         if (player == null || message == null) return false;
         String answer = message.trim();
 
-        //? if (>=1.18 && <=1.21.10) {
-        /*return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
-                && states.get() == AntiCrashState.RECOVERY_DECISION
-                && player.createCommandSourceStack().hasPermission(config.commands.recovery);
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
         return (answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))
                 && states.get() == AntiCrashState.RECOVERY_DECISION
-                && com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
+                && VersionPermissions.hasLevel(
                         player.createCommandSourceStack(), config.commands.recovery);
-        //?}
-
     }
 
     /** Accepts a plain Y/N chat message from an operator during an ASK prompt. */
@@ -1963,34 +1902,13 @@ public final class AntiCrashController {
         String answer = message.trim();
         if (!(answer.equalsIgnoreCase("Y") || answer.equalsIgnoreCase("N"))) return false;
 
-        //? if (>=1.18 && <=1.21.10) {
-        /*if (!player.createCommandSourceStack().hasPermission(config.commands.recovery))
-        *///?}
-        //? if (>=1.21.11 && <=26.3) {
-        if (!com.atsukimc.anticrash.command.VersionPermissions.hasLevel(
-                player.createCommandSourceStack(), config.commands.recovery))
-        //?}
-            return false;
+        if (!VersionPermissions.hasLevel(
+                player.createCommandSourceStack(), config.commands.recovery)) return false;
         boolean restore = answer.equalsIgnoreCase("Y");
         String checkpointId = selectedCheckpointId;
         boolean accepted = answerRecovery(restore);
         if (accepted) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*player.displayClientMessage(
-                    chat(
-                            restore
-                                    ? MessageCatalog.text(
-                                            config.language,
-                                            "command.recovery.answer_restore",
-                                            checkpointId)
-                                    : MessageCatalog.text(
-                                            config.language, "command.recovery.answer_continue"),
-                            null),
-                    false);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            com.atsukimc.anticrash.runtime.VersionMessages.send(
+            VersionMessages.send(
                     player,
                     chat(
                             restore
@@ -2002,8 +1920,6 @@ public final class AntiCrashController {
                                             config.language, "command.recovery.answer_continue"),
                             null),
                     false);
-            //?}
-
         }
         return accepted;
     }
@@ -2023,19 +1939,7 @@ public final class AntiCrashController {
         }
         if (CarpetIntegration.isFakePlayer(player)) return;
         if (states.canResumeWithStart()) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*player.displayClientMessage(
-                    chat(
-                            MessageCatalog.text(
-                                    config.language,
-                                    "recovery.join_frozen_notice",
-                                    config.recovery.startCommand),
-                            ChatFormatting.YELLOW),
-                    false);
-            *///?}
-            //? if (>=26.1 && <=26.3) {
-            com.atsukimc.anticrash.runtime.VersionMessages.send(
+            VersionMessages.send(
                     player,
                     chat(
                             MessageCatalog.text(
@@ -2044,8 +1948,6 @@ public final class AntiCrashController {
                                     config.recovery.startCommand),
                             ChatFormatting.YELLOW),
                     false);
-            //?}
-
         } else if (states.get() == AntiCrashState.RECOVERY_DECISION
                 && config.notifications.askPromptInGame) {
             // An operator joining a frozen server must be told what it is waiting for.

@@ -3,15 +3,13 @@ package com.atsukimc.anticrash.mixin;
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
+import com.atsukimc.anticrash.runtime.VersionMessages;
 
 import net.minecraft.network.Connection;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.players.PlayerList;
 import net.minecraft.server.level.ServerPlayer;
 
-//? if (>=1.18 && <=1.18.2) {
-/*import net.minecraft.network.chat.TextComponent;
-*///?}
 //? if (>=1.18 && <=1.21.8) {
 /*import com.mojang.authlib.GameProfile;
 *///?}
@@ -60,20 +58,10 @@ public abstract class PlayerManagerMixin {
         AntiCrashController controller = AntiCrashMod.controller();
         // Reached only after ServerLoginNetworkHandlerMixin's retry window has expired.
         if (controller != null && controller.isLoginBlocked()) {
-
-            //? if (>=1.18 && <=1.18.2) {
-            /*callbackInfo.setReturnValue(
-                    new TextComponent(
-                            MessageCatalog.text(
-                                    controller.config().language, "recovery.login_blocked")));
-            *///?}
-            //? if (>=1.19 && <=26.3) {
             callbackInfo.setReturnValue(
-                    Component.literal(
+                    VersionMessages.literal(
                             MessageCatalog.text(
                                     controller.config().language, "recovery.login_blocked")));
-            //?}
-
         }
     }
 

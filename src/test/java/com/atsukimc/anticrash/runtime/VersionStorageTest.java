@@ -81,7 +81,7 @@ class VersionStorageTest {
 
         var restored = new Abilities();
 
-        restored.apply(VersionStorage.abilities(VersionStorage.abilities(abilities)));
+        VersionStorage.abilities(VersionStorage.abilities(abilities)).accept(restored);
 
         assertTrue(restored.flying);
 
