@@ -1,7 +1,5 @@
 package com.atsukimc.anticrash.mixin;
 
-import com.atsukimc.anticrash.util.VersionLevels;
-
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ComparatorBlockEntity;
 
@@ -28,7 +26,7 @@ public abstract class ComparatorBlockEntityMixin {
         if (signal != output
                 && self.hasLevel()
                 && self.getLevel() != null
-                && !VersionLevels.isClientSide(self.getLevel())) {
+                && !self.getLevel().isClientSide()) {
             self.getLevel().blockEntityChanged(self.getBlockPos());
         }
     }

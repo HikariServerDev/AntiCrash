@@ -1,8 +1,6 @@
 //? if (>=1.20.3 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
-import com.atsukimc.anticrash.util.VersionLevels;
-
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;
 import net.minecraft.core.BlockPos;
@@ -25,7 +23,7 @@ public abstract class CrafterMutationMixin {
             BlockState state,
             CrafterBlockEntity crafter,
             CallbackInfo ci) {
-        if (!VersionLevels.isClientSide(world)
+        if (!world.isClientSide()
                 && ((CrafterAccessorMixin) crafter).anticrash$craftingTicksRemaining() > 0)
             world.blockEntityChanged(pos);
     }

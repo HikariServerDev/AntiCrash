@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.10 — consistent side checks
+
+- Use `Level.isClientSide()` directly across supported Minecraft versions, following the review of PR #17.
+- Remove the redundant `VersionLevels.isClientSide` adapter without changing checkpoint or recovery formats.
+
 ## 1.0.9 — world access compatibility
 
 - Integrate PR #17: centralize version-specific entity and player world access in `VersionLevels`.
