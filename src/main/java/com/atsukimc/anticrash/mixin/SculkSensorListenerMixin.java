@@ -1,8 +1,6 @@
 //? if (>=1.18 && <=1.19.4) {
 /*package com.atsukimc.anticrash.mixin;
 
-import com.atsukimc.anticrash.util.VersionLevels;
-
 //? if (>=1.18 && <=1.18.2) {
 /^import java.util.Optional;
 ^///?} else {
@@ -49,15 +47,15 @@ public abstract class SculkSensorListenerMixin {
 
             ^///?}
         //? if (>=1.18 && <=1.18.2) {
-        /^if (VersionLevels.isClientSide(world) || receivingEvent.isEmpty())
+        /^if (world.isClientSide() || receivingEvent.isEmpty())
         ^///?}
         //? if (>=1.19 && <=1.19.2) {
-        /^if (VersionLevels.isClientSide(world) || receivingEvent == null)
+        /^if (world.isClientSide() || receivingEvent == null)
         ^///?}
             //? if (>=1.19.3 && <=1.19.4) {
             /^{
         // The selector may hold a same-tick candidate while the current vibration is still null.
-        if (VersionLevels.isClientSide(world))
+        if (world.isClientSide())
             ^///?}
             return;
 
@@ -118,7 +116,7 @@ public abstract class SculkSensorListenerMixin {
             {
 
         //? if (>=1.18 && <=1.18.2) {
-        /^if (!VersionLevels.isClientSide(world)) world.blockEntityChanged(pos);
+        /^if (!world.isClientSide()) world.blockEntityChanged(pos);
         ^///?}
         //? if (>=1.19 && <=1.19.4) {
         /^if (ci.getReturnValueZ()) {

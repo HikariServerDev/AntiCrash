@@ -1,8 +1,6 @@
 //? if (>=1.19 && <=26.3) {
 package com.atsukimc.anticrash.mixin;
 
-import com.atsukimc.anticrash.util.VersionLevels;
-
 //? if (>=1.19 && <=1.19.4) {
 /*import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.gameevent.GameEvent;
@@ -32,7 +30,7 @@ public abstract class SculkCatalystMutationMixin {
             CallbackInfo ci) {
 
         //? if (>=1.19 && <=1.21.11) {
-        /*if (!VersionLevels.isClientSide(world)) world.blockEntityChanged(pos);
+        /*if (!world.isClientSide()) world.blockEntityChanged(pos);
         *///?}
     //? if (>=1.19 && <=1.21.8) {
 
@@ -59,7 +57,7 @@ public abstract class SculkCatalystMutationMixin {
             world.blockEntityChanged(((SculkCatalystBlockEntity) (Object) this).getBlockPos());
             *///?}
         //? if (>=26.1 && <=26.3) {
-        if (!VersionLevels.isClientSide(world)) world.blockEntityChanged(pos);
+        if (!world.isClientSide()) world.blockEntityChanged(pos);
         //?}
     //? if (>=1.19 && <=1.19.4) || (>=1.21.9 && <=26.3) {
 

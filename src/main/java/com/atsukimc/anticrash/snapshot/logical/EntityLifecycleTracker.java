@@ -75,7 +75,7 @@ public final class EntityLifecycleTracker {
         return LogicalTracking.enabled()
                 && entity != null
                 && VersionLevels.level(entity) != null
-                && !VersionLevels.isClientSide(VersionLevels.level(entity))
+                && !VersionLevels.level(entity).isClientSide()
                 && entity.getType().canSerialize();
     }
 
