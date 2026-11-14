@@ -10,9 +10,11 @@ import net.minecraft.world.phys.Vec3;
 
 import java.util.*;
 
-/** Reconstructs tracker values only, never replaces Vanilla's final map or its objects. */
-
-/** 26.3 separates fluid-type contacts from tag-based currents. Preserve both domains and order. */
+/**
+ * Reconstructs tracker values only, never replaces Vanilla's final map or its objects. From
+ * {@code >=26.3} fluid-type contacts are separate from tag-based currents; both domains and their
+ * order are preserved.
+ */
 public final class FluidInteractionSnapshot {
     private FluidInteractionSnapshot() {}
 

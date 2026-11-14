@@ -76,6 +76,9 @@ import java.util.concurrent.TimeoutException;
  * CaptureContext} while the server thread owns the barrier.
  */
 public final class CheckpointManager {
+    /** How long the cut waits for every IO worker to finish its current task and park. */
+    private static final long IO_SEAL_TIMEOUT_NANOS = 10_000_000_000L;
+
     /**
      * Longest a portable cut may take before it is abandoned (no checkpoint, the world resumes).
      *
@@ -84,9 +87,6 @@ public final class CheckpointManager {
      * events, ...) between the Runtime Capsule and the file capture, and any of them may change the
      * world after the cut. The bound keeps the call well below the 60 s watchdog.
      */
-    /** How long the cut waits for every IO worker to finish its current task and park. */
-    private static final long IO_SEAL_TIMEOUT_NANOS = 10_000_000_000L;
-
     private static final long MAX_CUT_NANOS = 40_000_000_000L;
 
     /**

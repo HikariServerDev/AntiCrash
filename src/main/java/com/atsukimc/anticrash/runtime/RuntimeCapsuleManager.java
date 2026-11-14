@@ -734,7 +734,6 @@ public final class RuntimeCapsuleManager {
         }
     }
 
-    /** Restores the relative tick order of moving pistons before the first recovered world tick. */
     /**
      * Puts each loaded chunk's InhabitedTime back to its value at the cut.
      *
@@ -772,6 +771,7 @@ public final class RuntimeCapsuleManager {
         return new int[] {restored, missing};
     }
 
+    /** Restores the relative tick order of moving pistons before the first recovered world tick. */
     public int restoreMovingPistonTickOrder(MinecraftServer server, RuntimeCapsule capsule) {
         validate(capsule);
         if (capsule.formatVersion < 3) return 0;

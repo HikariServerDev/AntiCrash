@@ -1097,25 +1097,10 @@ public final class AntiCrashController {
         updateFrozenActionBar();
     }
 
-    /**
-     * ServerLevel#tick is canceled during a recovery freeze, and with it the entity manager tick
-     * that attaches entity sections read from disk. Attach them while frozen (nothing ticks) so the
-     * first resumed tick sees the same entities as the checkpoint instead of adding them one tick
-     * late.
-     */
     /** Server ticks spent waiting for Vanilla to re-create its own tickets before the resume. */
     private int permanentTicketWaitTicks;
 
     private static final int MAX_PERMANENT_TICKET_WAIT_TICKS = 200;
-
-    /**
-     * Player tickets are added by Vanilla asynchronously, some ticks after a player is placed, and
-     * only while the chunk manager is ticked. The world is frozen, so that is driven here. The
-     * resume waits until every permanent ticket of the checkpoint exists again: only then do the
-     * recovery tickets hold nothing that the checkpoint's own tickets would not hold.
-     *
-     * @return true while the resume should wait another server tick
-     */
     private static final int PERMANENT_TICKET_STALL_TICKS = 20;
 
     private int permanentTicketsMissing = -1;
@@ -1219,6 +1204,14 @@ public final class AntiCrashController {
         return deferredPayloads;
     }
 
+    /**
+     * Player tickets are added by Vanilla asynchronously, some ticks after a player is placed, and
+     * only while the chunk manager is ticked. The world is frozen, so that is driven here. The
+     * resume waits until every permanent ticket of the checkpoint exists again: only then do the
+     * recovery tickets hold nothing that the checkpoint's own tickets would not hold.
+     *
+     * @return true while the resume should wait another server tick
+     */
     private boolean awaitPermanentTickets() {
         com.atsukimc.anticrash.runtime.RuntimeCapsule capsule = pendingRuntimeCapsule;
         if (capsule == null || capsule.ticketLedger == null || server == null) return false;
@@ -1254,6 +1247,12 @@ public final class AntiCrashController {
         return true;
     }
 
+    /**
+     * ServerLevel#tick is canceled during a recovery freeze, and with it the entity manager tick
+     * that attaches entity sections read from disk. Attach them while frozen (nothing ticks) so the
+     * first resumed tick sees the same entities as the checkpoint instead of adding them one tick
+     * late.
+     */
     private void pumpEntityLoading(MinecraftServer server) {
 
         for (net.minecraft.server.level.ServerLevel world : server.getAllLevels()) {
