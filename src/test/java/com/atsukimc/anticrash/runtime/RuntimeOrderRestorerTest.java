@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 //? if <=1.21.4 {
 /*class RuntimeOrderRestorerTest {
-    /^* Vanilla's Ticket#isExpired. ^/
+    /^* Vanilla's Ticket#timedOut. ^/
     private static boolean expired(long age, long tickCreated, long expiry) {
         return expiry != 0L && age - tickCreated > expiry;
     }

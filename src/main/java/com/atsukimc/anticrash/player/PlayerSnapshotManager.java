@@ -441,9 +441,9 @@ public final class PlayerSnapshotManager {
                 float yaw = config.playerSnapshot.rotation ? data.yaw : player.getViewYRot(0),
                         pitch = config.playerSnapshot.rotation ? data.pitch : player.getViewXRot(0);
 
-                // teleport() also handles the same-world case through requestTeleport, which tells
-                // the
-                // client its new position; updatePositionAndAngles alone left the client elsewhere.
+                // teleportTo() also handles the same-world case through connection.teleport, which
+                // tells the client its new position; absMoveTo (absSnapTo from 1.21.5) alone left
+                // the client elsewhere.
 
                 //? if <=1.21.1 {
                 /*player.teleportTo(target, x, y, z, yaw, pitch);

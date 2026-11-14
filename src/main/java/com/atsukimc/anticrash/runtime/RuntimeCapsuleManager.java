@@ -61,7 +61,7 @@ public final class RuntimeCapsuleManager {
             TransientChunkStateMarker.MarkResult transientState,
             CheckpointTiming timing) {
         RuntimeCapsule capsule = captureObservableState(server, transientState, true, timing);
-        // Capturing an epoch must be observational.  Mutating World#nextTickOrder here changes
+        // Capturing an epoch must be observational.  Mutating Level#subTickCount here changes
         // the live simulation merely because a checkpoint was requested and made the previous
         // implementation timing-dependent.  Restore/legacy migration may opt into repair, but
         // the checkpoint capture path never does.
@@ -540,7 +540,7 @@ public final class RuntimeCapsuleManager {
                 accessor.anticrash$setThunderGradientValue(thunder);
                 accessor.anticrash$setThunderGradientPrev(thunder);
             }
-            // ServerChunkCache adds (world time - lastMobSpawningTime) to every ticking chunk's
+            // ServerChunkCache adds (world time - lastInhabitedUpdate) to every ticking chunk's
             // InhabitedTime. The field starts at 0 in a new JVM, so the first tick after a restart
             // would add the whole age of the world. At a tick boundary it equals the world time.
             // 26.3 incrementInhabitedTime() increments once per spawning tick. There is no
@@ -671,7 +671,7 @@ public final class RuntimeCapsuleManager {
                 throw new IllegalStateException(
                         "Scheduled-tick recovery dimension is not ready: " + key.dimension);
             }
-            // getWorldChunk() is backed by the ticking future and returns null for a legal
+            // getTickingChunk() is backed by the ticking future and returns null for a legal
             // FULL-only holder. Scheduled ticks live in the chunk-local scheduler and only need
             // the accessible LevelChunk here. Resolve it without joining a future.
 
@@ -1153,7 +1153,7 @@ public final class RuntimeCapsuleManager {
         for (TickingBlockEntity ticker : live) {
             // Removed tickers are never captured (Vanilla drops them unrun), so they are neither
             // matched here nor kept: leaving them out of the reordered list is what the next
-            // World#tickBlockEntities pass would do anyway.
+            // Level#tickBlockEntities pass would do anyway.
             if (BlockEntityTickerSnapshot.removed(ticker)) continue;
             liveCount++;
             String key = BlockEntityTickerSnapshot.keyFor(world, queue, ticker);
@@ -1197,7 +1197,7 @@ public final class RuntimeCapsuleManager {
         output.add(new PreparedTickerOrder(live, ordered));
     }
 
-    /** Restores the per-world Redstone Torch burnout history without retaining old World keys. */
+    /** Restores the per-world Redstone Torch burnout history without retaining old Level keys. */
     public int restoreRedstoneTorchBurnout(MinecraftServer server, RuntimeCapsule capsule) {
         validate(capsule);
         if (capsule.formatVersion < 6) return 0;

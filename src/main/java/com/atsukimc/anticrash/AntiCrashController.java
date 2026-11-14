@@ -2031,7 +2031,7 @@ public final class AntiCrashController {
             } catch (IOException exception) {
                 logger.importantKey("state.process_lock_release_failed", exception.getMessage());
             }
-        // Injected at the return of MinecraftServer.shutdown, so this is the last line AntiCrash
+        // Injected at the return of MinecraftServer.stopServer, so this is the last line AntiCrash
         // can emit before the process ends.
         if (pendingRestore != null) logger.importantKey("recovery.restore_ready_start_server");
     }

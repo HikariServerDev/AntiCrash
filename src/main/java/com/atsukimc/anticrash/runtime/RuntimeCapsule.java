@@ -187,7 +187,7 @@ public final class RuntimeCapsule {
         public long gameTime;
         public long timeOfDay;
 
-        /** The next value returned by World#getTickOrder, not the last emitted value. */
+        /** The next value returned by Level#nextSubTickCount, not the last emitted value. */
         public long nextTickOrder;
 
         public int loadedChunkCount;
@@ -196,14 +196,14 @@ public final class RuntimeCapsule {
         public int entityTickingChunkCount;
         public int forcedChunkCount;
 
-        /** Current World#lcgBlockSeed; safe to access through the mapped accessor. */
+        /** Current Level#randValue; safe to access through the mapped accessor. */
         public int lcgBlockSeed;
 
         /** java.util.Random internals are intentionally not forced open by AntiCrash. */
         public boolean randomStateSupported;
 
         /**
-         * v7. ServerLevel#idleTimeout: a dimension with no player and no forced chunk stops ticking
+         * v7. ServerLevel#emptyTime: a dimension with no player and no forced chunk stops ticking
          * entities and block entities after 300 ticks; Vanilla restarts the count at 0. Null in
          * older capsules.
          */

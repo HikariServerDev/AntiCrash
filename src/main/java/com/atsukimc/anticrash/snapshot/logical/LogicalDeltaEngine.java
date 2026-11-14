@@ -446,9 +446,9 @@ public final class LogicalDeltaEngine {
             String dimension = VersionIds.dimension(world);
 
             for (Entity entity : world.getAllEntities()) {
-                // Mirror PersistentEntitySectionManager#trySave: players, passengers (saved inside
-                // their
-                // vehicle) and vehicles ridden by a player (saved with the player) never belong to
+                // Mirror PersistentEntitySectionManager#storeChunkSections: players, passengers
+                // (saved inside their vehicle) and vehicles ridden by a player (saved with the
+                // player) never belong to
                 // an entity region.
 
                 if (entity == null || entity.isRemoved() || !entity.shouldBeSaved()) continue;
@@ -571,7 +571,7 @@ public final class LogicalDeltaEngine {
         if (!(server.getWorldData() instanceof PrimaryLevelData properties)) {
             throw new IOException("save_properties_not_level_properties");
         }
-        // Refresh the values MinecraftServer#save and ServerLevel#saveLevel copy into the save
+        // Refresh the values MinecraftServer#save and ServerLevel#saveLevelData copy into the save
         // properties right before writing level.dat. Without this, the world border, custom
         // boss bars and the dragon fight would be restored from the last full save instead.
 
@@ -628,7 +628,7 @@ public final class LogicalDeltaEngine {
         CompoundTag data = properties.createTag(profile == null ? null : profile.id());
         //?}
 
-        // LevelStorageSource.Session#backupLevelDataFile nests everything under "Data". A bare
+        // LevelStorageSource.LevelStorageAccess#saveDataTag nests everything under "Data". A bare
         // compound is unreadable to LevelStorageSource and falls back to level.dat_old or defaults.
 
         CompoundTag root = new CompoundTag();

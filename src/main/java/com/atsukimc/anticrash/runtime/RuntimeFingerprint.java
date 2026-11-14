@@ -251,7 +251,7 @@ public final class RuntimeFingerprint {
     //?}
 
     /**
-     * Records the capability boundary for World.random. Minecraft 1.18.2 exposes this as a
+     * Records the capability boundary for Level.random. Minecraft 1.18.2 exposes this as a
      * java.util.Random without a safe semantic state accessor; the line is therefore a
      * deterministic evidence marker, not a claim that the random seed was restored.
      */

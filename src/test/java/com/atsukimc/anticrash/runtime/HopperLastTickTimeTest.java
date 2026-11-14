@@ -8,23 +8,24 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Why HopperBlockEntity.lastTickTime needs no restore, as an executable argument.
+ * Why HopperBlockEntity.tickedGameTime needs no restore, as an executable argument.
  *
- * <p>The field is written in one place (serverTick: {@code lastTickTime = world.getTime()}, every
- * tick, before the hopper moves anything) and read in one place: when a hopper-to-hopper transfer
- * fills an empty hopper, the receiver's cooldown is 7 if {@code to.lastTickTime >=
- * from.lastTickTime} and 8 otherwise. Transfers between hoppers only happen while block entities
- * tick, and the side that acts has always just stamped itself with the current tick. So the
- * comparison only asks "has the other hopper already ticked in this tick?". This model replays the
- * first ticks after a checkpoint for every tick order of a chain, once with the live values (every
- * hopper stamped with the checkpoint tick) and once with the values after a load (0), and with a
- * hopper in a chunk that does not tick.
+ * <p>The field is written in one place (pushItemsTick:
+ * {@code tickedGameTime = level.getGameTime()}, every tick, before the hopper moves anything) and
+ * read in one place: when a hopper-to-hopper transfer fills an empty hopper, the receiver's
+ * cooldown is 7 if {@code to.tickedGameTime >= from.tickedGameTime} and 8 otherwise. Transfers
+ * between hoppers only happen while block entities tick, and the side that acts has always just
+ * stamped itself with the current tick. So the comparison only asks "has the other hopper already
+ * ticked in this tick?". This model replays the first ticks after a checkpoint for every tick order
+ * of a chain, once with the live values (every hopper stamped with the checkpoint tick) and once
+ * with the values after a load (0), and with a hopper in a chunk that does not tick.
  */
 class HopperLastTickTimeTest {
     private record Transfer(int tick, int from, int to, int cooldown) {}
 
     /**
-     * from pushes into to, and to pulls from the hopper above it, exactly as transfer() decides.
+     * from pushes into to, and to pulls from the hopper above it, exactly as tryMoveInItem()
+     * decides.
      */
     private static List<Transfer> run(
             long[] lastTickTime, boolean[] ticking, int[] order, long firstTick) {

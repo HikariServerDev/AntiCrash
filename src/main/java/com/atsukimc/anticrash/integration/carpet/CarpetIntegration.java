@@ -503,7 +503,7 @@ public final class CarpetIntegration {
         if (!server.isSameThread())
             throw new IOException("FakePlayer restore must run on the server thread");
         UUID expectedUuid = UUID.fromString(data.uuid);
-        // PlayerList.onPlayerConnect may disconnect an existing UUID. Reject collisions before
+        // PlayerList.placeNewPlayer may disconnect an existing UUID. Reject collisions before
         // calling Carpet so restoring a bot cannot evict or overwrite a real player's session.
 
         if (server.getPlayerList().getPlayer(expectedUuid) != null
@@ -1173,7 +1173,7 @@ public final class CarpetIntegration {
                     NbtCodec.decodeCompound(data.motionFrameNbt));
         //?}
 
-        // LivingEntity initializes lastKineticAttackTime to Integer.MIN_VALUE (as long).
+        // LivingEntity initializes lastKineticHitFeedbackTime to Integer.MIN_VALUE (as long).
         // Preserve that never-hit sentinel, while still rejecting other invalid negative times.
 
         //? if >=26.1 {

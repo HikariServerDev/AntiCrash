@@ -356,9 +356,9 @@ public final class ChunkRecoveryManager {
         Ticket ticket = null;
         try {
             //? if <=1.21.4 {
-            /*// ServerChunkCache.addTicket accepts a radius, not the resulting Vanilla ticket
+            /*// ServerChunkCache.addRegionTicket accepts a radius, not the resulting Vanilla ticket
             // level. Track the converted radius before touching Minecraft so an OOM in
-            // addTicket/getChunk still leaves abort() with an entry it can remove.
+            // addRegionTicket/getChunk still leaves abort() with an entry it can remove.
             int ticketRadius = ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel());
             *///?} else {
             // 1.21.5 takes the LEVEL directly; the pre-1.21.5 radius conversion is not applicable.
@@ -386,7 +386,7 @@ public final class ChunkRecoveryManager {
                 ticket.forcedAddedByRecovery =
                         world.setChunkForced(VersionChunkPos.x(pos), VersionChunkPos.z(pos), true);
             }
-            // The public getChunkFutureSyncOnMainThread method pumps the main-thread executor
+            // The public getChunkFuture method pumps the main-thread executor
             // until completion when called from this thread. Advance only the ticket/holder
             // lifecycle first, then invoke the private future-producing path so this request
             // returns immediately and is observed by a later poll pass.

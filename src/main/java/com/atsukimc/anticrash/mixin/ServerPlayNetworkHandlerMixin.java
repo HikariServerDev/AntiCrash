@@ -212,7 +212,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
      * Stops the player's own tick while a checkpoint holds the world at its cut.
      *
      * <p>The connection tick runs from MinecraftServer#tick, outside the frozen world tick, and
-     * {@code playerTick} moves, damages and feeds the player and picks up items. Letting it run
+     * {@code doTick} moves, damages and feeds the player and picks up items. Letting it run
      * would change the world after the cut; its packets are already waiting in the held task queue.
      * Pausing it keeps the whole barrier equivalent to a single long server tick, which is also
      * what Vanilla's movement checks expect when the queued packets are processed.
@@ -360,7 +360,7 @@ public abstract class ServerPlayNetworkHandlerMixin {
             else anticrash$resyncInventory();
             return;
         }
-        // Actual block breaks are recorded at ServerPlayerGameMode.tryBreakBlock.
+        // Actual block breaks are recorded at ServerPlayerGameMode.destroyBlock.
         if (drop)
             anticrash$record(
                     "ITEM_DROP",

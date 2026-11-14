@@ -11,7 +11,9 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Covers World#markDirty, including piston progress that bypasses BlockEntity#markDirty. */
+/**
+ * Covers Level#blockEntityChanged, including piston progress that bypasses BlockEntity#setChanged.
+ */
 @Mixin(Level.class)
 public abstract class WorldMutationMixin {
     @Inject(method = "blockEntityChanged", at = @At("HEAD"))

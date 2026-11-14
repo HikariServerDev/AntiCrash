@@ -10,7 +10,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** 1.20 separates ListenerData/Ticker/Callback; countdown and pending selector must be dirty. */
+/** 1.20 separates Data/Ticker/User; countdown and pending selector must be dirty. */
 @Mixin(VibrationSystem.Ticker.class)
 public interface VibrationTickerMutationMixin {
     @Inject(method = "tick", at = @At("HEAD"))

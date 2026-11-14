@@ -39,8 +39,8 @@ public abstract class PlayerManagerMixin {
             CallbackInfoReturnable<Component> callbackInfo) {
     //?}
         // Preserve Vanilla ban, whitelist, IP-ban and capacity messages.  Returning a reason from
-        // checkCanJoin lets ServerLoginPacketListenerImpl perform its normal one-shot disconnect;
-        // cancelling onPlayerConnect after player creation caused handleDisconnection() twice.
+        // canPlayerLogin lets ServerLoginPacketListenerImpl perform its normal one-shot disconnect;
+        // cancelling placeNewPlayer after player creation caused handleDisconnection() twice.
         if (callbackInfo.getReturnValue() != null) return;
         AntiCrashController controller = AntiCrashMod.controller();
         // Reached only after ServerLoginNetworkHandlerMixin's retry window has expired.

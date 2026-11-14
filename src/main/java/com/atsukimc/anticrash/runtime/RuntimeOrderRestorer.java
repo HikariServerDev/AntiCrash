@@ -86,7 +86,7 @@ public final class RuntimeOrderRestorer {
                 }
             }
         }
-        // World#tickBlockEntities appends PENDING to CURRENT and then runs CURRENT in order, so
+        // Level#tickBlockEntities appends PENDING to CURRENT and then runs CURRENT in order, so
         // where a live ticker sits today does not matter, only the two lists' final contents.
 
         List<TickingBlockEntity> orderedCurrent = new ArrayList<>();
@@ -479,8 +479,8 @@ public final class RuntimeOrderRestorer {
     }
 
     /**
-     * Vanilla drops a ticket once {@code age - tickCreated > expiry}; a ticket with {@code
-     * remaining} ticks left therefore satisfies {@code age - tickCreated == expiry - remaining}.
+     * Vanilla drops a ticket once {@code age - createdTick > expiry}; a ticket with {@code
+     * remaining} ticks left therefore satisfies {@code age - createdTick == expiry - remaining}.
      */
 
     //? if <=1.21.4 {

@@ -161,7 +161,7 @@ public abstract class EntityRuntimeStateMixin {
 
                         if (wasTouchingWater) extension.putBoolean("Water", true);
                     }
-                    // Damage immunity window; LivingEntity compares new damage with lastDamageTaken
+                    // Damage immunity window; LivingEntity compares new damage with lastHurt
                     // in it.
 
                     if (invulnerableTime > 0) {

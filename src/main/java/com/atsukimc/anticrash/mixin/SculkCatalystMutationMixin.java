@@ -17,7 +17,7 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-/** Vanilla writes spread cursors but their countdown does not call markDirty (1.19 bytecode). */
+/** Vanilla writes spread cursors but their countdown does not call setChanged (1.19 bytecode). */
 @Mixin(SculkCatalystBlockEntity.class)
 public abstract class SculkCatalystMutationMixin {
 

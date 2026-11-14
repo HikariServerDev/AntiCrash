@@ -19,11 +19,11 @@ import java.util.concurrent.CompletableFuture;
 /**
  * Exposes the non-blocking 1.18.2 chunk future path.
  *
- * <p>{@code getChunkFutureSyncOnMainThread} is not a non-blocking API when called from the server
- * thread: its implementation runs the main-thread executor until the returned future is complete.
- * Recovery must keep the future and return to the normal server loop instead. This invoker targets
- * the private {@code getChunkFuture} method confirmed in the 1.18.2 merged bytecode and never
- * changes the ticket manager's internal state.
+ * <p>{@code getChunkFuture} is not a non-blocking API when called from the server thread: its
+ * implementation runs the main-thread executor until the returned future is complete. Recovery must
+ * keep the future and return to the normal server loop instead. This invoker targets the private
+ * {@code getChunkFutureMainThread} method confirmed in the 1.18.2 merged bytecode and never changes
+ * the ticket manager's internal state.
  */
 @Mixin(ServerChunkCache.class)
 public interface ServerChunkManagerAccessorMixin {

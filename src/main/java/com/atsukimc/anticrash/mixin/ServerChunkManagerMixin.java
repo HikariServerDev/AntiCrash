@@ -25,7 +25,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Keeps optional consumers such as Carpet's mobcap HUD safe while AntiCrash is deliberately
  * preventing the first world tick after a recovery.
  *
- * <p>Vanilla initializes {@code ServerChunkCache.spawnInfo} from {@code tickChunks}. Recovery
+ * <p>Vanilla initializes {@code ServerChunkCache.lastSpawnState} from {@code tickChunks}. Recovery
  * freeze must not run that method just to satisfy an observer, because doing so would advance the
  * restored world. Instead this mixin supplies an immutable, empty view until Vanilla has produced
  * the real value. The backing field itself is never changed.

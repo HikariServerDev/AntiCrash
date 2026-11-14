@@ -23,8 +23,8 @@ public final class RuntimeExtensionNbt {
      * while it stays loaded (a checkpoint, an autosave, the save at shutdown). When Vanilla unloads
      * a chunk or an entity section and loads it again later, losing this state is what Vanilla does
      * in an uninterrupted game, and that must stay as it is. Entity#saveWithoutId and
-     * BlockEntity#saveWithoutId also feed dimension changes, /data, structure blocks and client packets;
-     * none of those get the extension either.
+     * BlockEntity#saveWithoutMetadata also feed dimension changes, /data, structure blocks and
+     * client packets; none of those get the extension either.
      */
     private static final class Scope {
         boolean entitySave;
@@ -130,7 +130,7 @@ public final class RuntimeExtensionNbt {
         Scope scope = SCOPE.get();
     //?}
 
-        // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
+        // ValueOutput.child creates/replaces the nested compound on every call. Preserve superclass
         // and subclass extension contributions in one bounded save scope, then discard references.
 
         //? if >=1.21.6 {

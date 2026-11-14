@@ -124,7 +124,9 @@ class RuntimeExtensionNbtTest {
     void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception {
     *///?}
 
-    /** Every mixin that adds to a Vanilla writeData must be gated by one of the two save scopes. */
+    /**
+     * Every mixin that adds to a Vanilla save method must be gated by one of the two save scopes.
+     */
 
     //? if >=1.21.6 {
     @Test

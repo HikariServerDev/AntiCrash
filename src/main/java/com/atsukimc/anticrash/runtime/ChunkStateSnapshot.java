@@ -60,8 +60,8 @@ public final class ChunkStateSnapshot {
         /*for (Long position : accessor.anticrash$getLoadedChunks()) loaded.add(position);
         *///?}
 
-        // 1.21 removed storage.loadedChunks. Observe already-completed FULL holders and their
-        // actual loadedToWorld flag, including the pending unload map; never request/load a chunk.
+        // 1.21 removed ChunkMap.entitiesInLevel. Observe already-completed FULL holders and their
+        // actual loaded flag, including the pending unload map; never request/load a chunk.
 
         //? if >=1.21 {
         for (var holders :

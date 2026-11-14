@@ -125,7 +125,7 @@ public final class TicketLedgerSnapshot {
 
                     if (entry.expiryTicks > 0) {
                         //? if <=1.21.4 {
-                        /*// Vanilla keeps a ticket while age - tickCreated <= expiry.
+                        /*// Vanilla keeps a ticket while age - createdTick <= expiry.
                         entry.remainingTicks =
                                 entry.expiryTicks
                                         - (accessor.anticrash$getAge() - entry.tickCreated);

@@ -35,18 +35,18 @@ public abstract class PistonBlockEntityMixin {
             BlockState state,
             PistonMovingBlockEntity piston,
             CallbackInfo callbackInfo) {
-        // World#markDirty only sets the loaded chunk's needsSaving flag. Calling
-        // BlockEntity#markDirty here would also run comparator updates on every piston tick.
+        // Level#blockEntityChanged only sets the loaded chunk's unsaved flag. Calling
+        // BlockEntity#setChanged here would also run comparator updates on every piston tick.
 
         world.blockEntityChanged(pos);
     }
 
     /**
-     * Vanilla saves {@code lastProgress} under "progress" and loads it into both fields, so a
-     * piston that was half way (progress 0.5, lastProgress 0.0) or about to finish (1.0, 0.5)
+     * Vanilla saves {@code progressO} under "progress" and loads it into both fields, so a
+     * piston that was half way (progress 0.5, progressO 0.0) or about to finish (1.0, 0.5)
      * restarts half a step behind and arrives one tick late. That one tick stops every flying
-     * machine caught mid-move. {@code lastProgress} stays Vanilla's; only the real progress and the
-     * tick it was last advanced in ({@code savedWorldTime}, which PistonBaseBlock compares with the
+     * machine caught mid-move. {@code progressO} stays Vanilla's; only the real progress and the
+     * tick it was last advanced in ({@code lastTicked}, which PistonBaseBlock compares with the
      * world time when a piston is retracted again) are added.
      */
     //? if <=1.20.4 {
@@ -93,7 +93,7 @@ public abstract class PistonBlockEntityMixin {
 
         float exact = VersionNbt.getFloat(extension, "Progress");
 
-        // Progress only moves forward from lastProgress to 1; anything else is not a state the
+        // Progress only moves forward from progressO to 1; anything else is not a state the
         // game can be in, so Vanilla's own value is kept.
 
         if (exact >= progressO && exact <= 1.0f) progress = exact;

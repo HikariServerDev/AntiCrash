@@ -474,7 +474,7 @@ public final class RuntimeStateProbe implements ModInitializer {
         }
         if (server.getTickCount() < incidentNextTick || !status.state().equals("RUNNING")) return;
         for (int n = 0; n < 110; n++) {
-            // 1.18.2 MovingPistonBlock#createBlockEntity returns null: /setblock cannot
+            // 1.18.2 MovingPistonBlock#newBlockEntity returns null: /setblock cannot
             // synthesize moving-piston BEs. Use its verified public semantic constructor instead.
             BlockPos pos = new BlockPos(n * 2, 8, 16);
             BlockState state =
@@ -793,9 +793,8 @@ public final class RuntimeStateProbe implements ModInitializer {
                     nbt.remove("UUID");
                     entities.add(
                             id + ' ' + where + " regen=" + entity.invulnerableTime + ' ' + nbt);
-                    // Entity#age is restored only for items and experience orbs (see the audit);
-                    // kept on
-                    // its own line so that known difference cannot hide any other.
+                    // Entity#tickCount is restored only for items and experience orbs (see the
+                    // audit); kept on its own line so that known difference cannot hide any other.
                     ages.add(id + ' ' + where + " age=" + entity.tickCount);
                 });
         java.util.Collections.sort(entities);

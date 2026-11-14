@@ -17,8 +17,8 @@ import java.util.concurrent.CompletableFuture;
 
 /**
  * Vanilla schedules saved-data IO separately from chunk IO. The saved-data future must finish
- * before file revision facts are captured. Calling save/startSaving again is insufficient: an empty
- * dirty map returns a completed future even while a previous write is still pending.
+ * before file revision facts are captured. Calling save/scheduleSave again is insufficient: an
+ * empty dirty map returns a completed future even while a previous write is still pending.
  */
 public final class PersistentDataFlush {
     private PersistentDataFlush() {}

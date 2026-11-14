@@ -5,7 +5,9 @@ import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 
-/** Read-only, non-loading view. ChunkHolder#getWorldChunk exposes ticking, not all loaded FULL. */
+/**
+ * Read-only, non-loading view. ChunkHolder#getTickingChunk exposes ticking, not all loaded FULL.
+ */
 public final class VersionChunkView {
     private VersionChunkView() {}
 

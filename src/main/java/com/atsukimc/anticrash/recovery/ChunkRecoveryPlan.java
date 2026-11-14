@@ -37,13 +37,15 @@ public final class ChunkRecoveryPlan {
     //? if <=1.21.4 {
     /*/^*
      * Converts the level used by ChunkHolder/DistanceManager to the radius expected by
-     * ServerChunkCache.addTicket in Minecraft 1.18.2. The public ServerChunkCache method
+     * ServerChunkCache.addRegionTicket in Minecraft 1.18.2. The public ServerChunkCache method
      * accepts a radius and internally calculates {@code 33 - radius}; passing a level directly
      * would therefore turn FULL=33 into level 0 and load a huge area.
      ^/
     public static int ticketRadiusForLevel(int ticketLevel) {
     *///?} else {
-    /** Minecraft 1.21.5 ServerChunkCache.addTicket accepts the level directly, not radius. */
+    /**
+     * Minecraft 1.21.5 ServerChunkCache.addTicketWithRadius accepts the level directly, not radius.
+     */
     public static int ticketArgumentForLevel(int ticketLevel) {
     //?}
         if (ticketLevel < 0 || ticketLevel > FULL_TICKET_LEVEL) {

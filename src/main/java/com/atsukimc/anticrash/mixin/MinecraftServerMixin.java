@@ -45,8 +45,8 @@ public abstract class MinecraftServerMixin {
      * behind and produced "moved too quickly" rubber-banding, a dropped close-screen packet left
      * containers open, and a dropped START_FALL_FLYING left elytra gliding on the client.
      *
-     * <p>{@code runOneTask} is the one entry point for both {@code runTasks()} and {@code
-     * runTasks(BooleanSupplier)}; the latter never consults {@code canExecute}, so that is not a
+     * <p>{@code pollTaskInternal} is the one entry point for both {@code runAllTasks()} and {@code
+     * managedBlock(BooleanSupplier)}; the latter never consults {@code shouldRun}, so that is not a
      * usable gate. Returning false makes the tick loop wait for the next tick as usual.
      */
     @Inject(method = "pollTaskInternal", at = @At("HEAD"), cancellable = true)

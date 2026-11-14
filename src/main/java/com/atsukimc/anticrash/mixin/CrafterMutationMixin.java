@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 @Mixin(CrafterBlockEntity.class)
 public abstract class CrafterMutationMixin {
 
-    // Vanilla persists the countdown but tickCrafting does not mark intermediate ticks dirty.
+    // Vanilla persists the countdown but serverTick does not mark intermediate ticks dirty.
 
     @Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$dirty(

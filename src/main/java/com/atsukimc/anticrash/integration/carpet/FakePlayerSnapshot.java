@@ -17,7 +17,7 @@ public final class FakePlayerSnapshot {
     public float forward, strafing;
 
     /**
-     * 1.21.2 Vanilla PlayerInput is a seven-bit semantic record, separate from Carpet's analog
+     * 1.21.2 Vanilla Input is a seven-bit semantic record, separate from Carpet's analog
      * speeds.
      */
 
