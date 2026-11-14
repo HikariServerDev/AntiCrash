@@ -86,17 +86,11 @@ class RuntimeExtensionNbtTest {
     }
 
     /**
-     * Permanent regression test. Entity#restoreFrom (a dimension change) is saveWithoutId on the old entity
-     * followed by load on the new one. An earlier build wrote the pending portal state on every
-     * saveAdditional, so the copy arrived "inside a portal" and went straight back. The extension may
-     * only be written inside an entity chunk save of entities that stay loaded.
-     */
-
-    /**
-     * Permanent regression test. Entity#restoreFrom (a dimension change) is writeData on the old
-     * entity followed by load on the new one. An earlier build wrote the pending portal state on
-     * every writeData, so the copy arrived "inside a portal" and went straight back. The extension
-     * may only be written inside an entity chunk save of entities that stay loaded.
+     * Permanent regression test. Entity#restoreFrom (a dimension change) is saveWithoutId on the
+     * old entity followed by load on the new one. An earlier build wrote the
+     * pending portal state on every saveWithoutId, so the copy arrived "inside a portal" and went
+     * straight back. The extension may only be written inside an entity chunk save of entities that
+     * stay loaded.
      */
     @Test
     void portalStateIsNeverWrittenDuringADimensionChangeCopy() {

@@ -147,35 +147,6 @@ public final class RuntimeOrderRestorer {
         return new Result(restored, unknown, missing);
     }
 
-    /**
-     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
-     * ticks after something used a portal), POST_TELEPORT (5 ticks after a teleport) and UNKNOWN (1
-     * tick after a chunk was fetched by code such as a hopper or an entity looking into the next
-     * chunk). Vanilla saves none of them. Each is added through the same DistanceManager method
-     * Vanilla uses for that type and expires by itself, so nothing can leak. LIGHT tickets are
-     * owned by the lighting engine, which removes them itself, and are never re-created.
-     *
-     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
-     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
-     * refreshes it, so calling this twice is harmless.
-     *
-     * @return the number of tickets restored
-     */
-
-    /**
-     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
-     * ticks after something used a portal), ENDER_PEARL (40 ticks) and UNKNOWN (1 tick after a
-     * chunk was fetched by code such as a hopper or an entity looking into the next chunk). Vanilla
-     * saves none of them. Each is added through the same DistanceManager method Vanilla uses for
-     * that type and expires by itself, so nothing can leak. LIGHT tickets are owned by the lighting
-     * engine, which removes them itself, and are never re-created.
-     *
-     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
-     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
-     * refreshes it, so calling this twice is harmless.
-     *
-     * @return the number of tickets restored
-     */
     private static String expiringKey(
             String dimension, int x, int z, String type, int level, String argument) {
         // A post-teleport ticket's argument is a network entity id, which a restart renumbers.
@@ -327,6 +298,22 @@ public final class RuntimeOrderRestorer {
 
     *///?}
 
+    /**
+     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
+     * ticks after something used a portal), POST_TELEPORT (5 ticks after a teleport;
+     * {@code <=1.21.3}), ENDER_PEARL (40 ticks; {@code >=1.21.4}, where it replaces POST_TELEPORT)
+     * and UNKNOWN (1 tick after a chunk was fetched by code such as a hopper or an entity looking
+     * into the next chunk). Vanilla saves none of them. Each is added through the same
+     * DistanceManager method Vanilla uses for that type and expires by itself, so nothing can leak.
+     * LIGHT tickets are owned by the lighting engine, which removes them itself, and are never
+     * re-created.
+     *
+     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
+     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
+     * refreshes it, so calling this twice is harmless.
+     *
+     * @return the number of tickets restored
+     */
     public static int expiringTickets(
             Map<String, ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
         int restored = 0;

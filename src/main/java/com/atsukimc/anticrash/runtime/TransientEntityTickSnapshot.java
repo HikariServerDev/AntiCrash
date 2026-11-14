@@ -17,31 +17,11 @@ import java.util.List;
  * Persistent identity sequence for transient physics entities that actually belong to the
  * entity-ticking domain at the checkpoint boundary.
  *
- * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
- * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
- * recovery scan happened to see them. The same {@link ServerLevel#shouldTickEntity(BlockPos)}
- * predicate used by the server tick is therefore applied while capturing.
- */
-
-/**
- * Persistent identity sequence for transient physics entities that actually belong to the
- * entity-ticking domain at the checkpoint boundary.
- *
- * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
- * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
- * recovery scan happened to see them. The same {@link ServerLevel#shouldTickEntityAt(BlockPos)}
- * predicate used by the server tick is therefore applied while capturing.
- */
-
-/**
- * Persistent identity sequence for transient physics entities that actually belong to the
- * entity-ticking domain at the checkpoint boundary.
- *
- * <p>{@code ServerLevel.entityList} also contains entities in loaded-only chunks. Those entities
- * are deliberately dormant in 1.18.2 and must not be promoted to active physics merely because a
- * recovery scan happened to see them. The same {@link
- * ServerLevel#isPositionEntityTicking(BlockPos)} predicate used by the server tick is therefore
- * applied while capturing.
+ * <p>{@code ServerLevel.entityTickList} also contains entities in loaded-only chunks. Those
+ * entities are deliberately dormant in 1.18.2 and must not be promoted to active physics merely
+ * because a recovery scan happened to see them. The same
+ * {@link ServerLevel#isPositionEntityTicking(BlockPos)} predicate used by the server tick is
+ * therefore applied while capturing.
  */
 public final class TransientEntityTickSnapshot {
     public static final String TNT = "TNT";

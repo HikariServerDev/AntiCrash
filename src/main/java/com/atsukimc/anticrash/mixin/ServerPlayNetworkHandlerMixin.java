@@ -100,26 +100,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
     /**
      * Answers a refused interaction the way Vanilla does.
      *
-     * <p>Minecraft never drops a block or inventory action silently: {@code onPlayerAction} always
-     * replies with {@link ClientboundBlockChangedAckPacket}, {@code handleUseItemOn} re-sends
-     * the two affected block states, and {@code onClickSlot} calls {@link
-     * AbstractContainerMenu#syncState()}. The client needs that answer to undo the change it already
-     * predicted locally. Cancelling the packet at HEAD skipped every one of those replies, so a
-     * block mined or placed during a checkpoint barrier or a recovery freeze stayed on the client
-     * forever as a ghost block.
-     *
-     * <p>A HEAD injection also runs on the Netty thread, before Minecraft moves the packet to the
-     * server thread, so the world must only be read from inside the scheduled task.
-     */
-
-    /**
-     * Answers a refused interaction the way Vanilla does.
-     *
-     * <p>Minecraft never drops a block or inventory action silently: {@code onPlayerAction} always
-     * replies with {@link ClientboundBlockChangedAckPacket}, {@code handleUseItemOn} re-sends
-     * the two affected block states, and {@code onClickSlot} calls {@link
-     * AbstractContainerMenu#sendAllDataToRemote()}. The client needs that answer to undo the change
-     * it already predicted locally. Cancelling the packet at HEAD skipped every one of those
+     * <p>Minecraft never drops a block or inventory action silently: {@code handlePlayerAction}
+     * always replies with {@link ClientboundBlockChangedAckPacket}, {@code handleUseItemOn}
+     * re-sends the two affected block states, and {@code handleContainerClick} calls
+     * {@link AbstractContainerMenu#sendAllDataToRemote()}. The client needs that answer to undo the
+     * change it already predicted locally. Cancelling the packet at HEAD skipped every one of those
      * replies, so a block mined or placed during a checkpoint barrier or a recovery freeze stayed
      * on the client forever as a ghost block.
      *
