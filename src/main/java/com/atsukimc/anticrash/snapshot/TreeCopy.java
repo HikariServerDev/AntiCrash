@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.util.AtomicFiles;
 import com.atsukimc.anticrash.util.PathSafety;
 
 import java.io.IOException;
@@ -7,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.util.Comparator;
 
 public final class TreeCopy {
     private TreeCopy() {}
@@ -57,7 +59,7 @@ public final class TreeCopy {
         }
         Files.createDirectories(destination);
         try (var stream = Files.walk(destination)) {
-            for (Path existing : stream.sorted(java.util.Comparator.reverseOrder()).toList())
+            for (Path existing : stream.sorted(Comparator.reverseOrder()).toList())
                 if (!existing.equals(destination)) Files.deleteIfExists(existing);
         }
         copy(source, destination);
@@ -67,13 +69,12 @@ public final class TreeCopy {
     private static void forceTree(Path root) throws IOException {
         try (var stream = Files.walk(root)) {
             for (Path path : stream.toList())
-                if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS))
-                    com.atsukimc.anticrash.util.AtomicFiles.force(path);
+                if (Files.isRegularFile(path, LinkOption.NOFOLLOW_LINKS)) AtomicFiles.force(path);
         }
         try (var stream = Files.walk(root)) {
-            for (Path path : stream.sorted(java.util.Comparator.reverseOrder()).toList())
+            for (Path path : stream.sorted(Comparator.reverseOrder()).toList())
                 if (Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS))
-                    com.atsukimc.anticrash.util.AtomicFiles.forceDirectory(path);
+                    AtomicFiles.forceDirectory(path);
         }
     }
 }

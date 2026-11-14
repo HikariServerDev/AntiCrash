@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.core.Vec3i;
@@ -31,7 +32,7 @@ public abstract class WorldTickSchedulerMutationMixin {
                             + " tick="
                             + tick);
         }
-        if (com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) {
+        if (LogicalTracking.enabled()) {
             ChunkMutationTracker.recordScheduler(
                     this, VersionChunkPos.containing(tick.pos()), "world.schedule");
         }

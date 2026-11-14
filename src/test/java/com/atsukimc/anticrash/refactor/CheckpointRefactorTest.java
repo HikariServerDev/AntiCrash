@@ -12,6 +12,7 @@ import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.function.Executable;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -198,7 +199,7 @@ class CheckpointRefactorTest {
                 outcome(() -> RecoveryChecks.validateStrictManifest(manifest, capsule)));
     }
 
-    private static String outcome(org.junit.jupiter.api.function.Executable operation) {
+    private static String outcome(Executable operation) {
         try {
             operation.execute();
             return "accepted";

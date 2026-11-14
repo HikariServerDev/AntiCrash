@@ -6,6 +6,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+import java.util.Set;
+
 //? if <=1.21.4 {
 /*class RuntimeOrderRestorerTest {
     /^* Vanilla's Ticket#timedOut. ^/
@@ -107,20 +110,20 @@ class RuntimeOrderRestorerTest {
      */
     @Test
     void recoveryTicketsGoOnlyWhenEveryPermanentTicketIsBack() {
-        java.util.List<TicketLedgerSnapshot.Entry> checkpoint =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> checkpoint =
+                List.of(
                         ticket("player", 0, 8, 31, 0),
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("portal", 0, 4, 30, 300),
                         ticket("unknown", 3, 3, 33, 1),
                         ticket("light", 5, 5, 33, 0));
-        java.util.List<TicketLedgerSnapshot.Entry> beforePlayer =
-                java.util.List.of(ticket("forced", 0, 0, 31, 0), ticket("start", 0, 0, 22, 0));
+        List<TicketLedgerSnapshot.Entry> beforePlayer =
+                List.of(ticket("forced", 0, 0, 31, 0), ticket("start", 0, 0, 22, 0));
         assertFalse(RuntimeOrderRestorer.permanentTicketsCovered(beforePlayer, checkpoint));
 
-        java.util.List<TicketLedgerSnapshot.Entry> wrongLevel =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> wrongLevel =
+                List.of(
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("player", 0, 8, 32, 0));
@@ -128,8 +131,8 @@ class RuntimeOrderRestorerTest {
 
         // Expiring and light tickets are restored (or not needed) separately and are not waited
         // for.
-        java.util.List<TicketLedgerSnapshot.Entry> ready =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> ready =
+                List.of(
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("player", 0, 8, 31, 0),
@@ -158,8 +161,7 @@ class RuntimeOrderRestorerTest {
         teleport.remainingTicks = 3L;
         TicketLedgerSnapshot.Entry player = ticket("player", 0, 8, 31, 0);
         player.argument = "[0, 8]";
-        java.util.Set<String> keys =
-                RuntimeOrderRestorer.expiringKeys(java.util.List.of(unknown, teleport, player));
+        Set<String> keys = RuntimeOrderRestorer.expiringKeys(List.of(unknown, teleport, player));
 
         assertEquals(2, keys.size());
         assertTrue(keys.contains("minecraft:overworld|3,3|unknown|33|[3, 3]"));

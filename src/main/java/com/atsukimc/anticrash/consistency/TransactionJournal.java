@@ -17,7 +17,9 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public final class TransactionJournal implements AutoCloseable {
@@ -94,7 +96,7 @@ public final class TransactionJournal implements AutoCloseable {
                     .filter(path ->
                             path.getFileName().toString().startsWith("transactions-")
                                     && path.toString().endsWith(".jsonl"))
-                    .sorted(java.util.Comparator.reverseOrder())
+                    .sorted(Comparator.reverseOrder())
                     .collect(Collectors.toList());
         }
     }
@@ -126,9 +128,8 @@ public final class TransactionJournal implements AutoCloseable {
                             malformed++;
                         } else if (("*".equals(record.checkpointId)
                                         || "*".equals(record.fallbackCheckpointId)
-                                        || java.util.Objects.equals(
-                                                checkpointId, record.checkpointId)
-                                        || java.util.Objects.equals(
+                                        || Objects.equals(checkpointId, record.checkpointId)
+                                        || Objects.equals(
                                                 checkpointId, record.fallbackCheckpointId))
                                 && "UNRESOLVED".equals(record.reconciliationStatus)) {
                             unresolved++;

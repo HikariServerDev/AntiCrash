@@ -6,11 +6,11 @@ import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;
 
 //? if <=1.21.1 {
-/*import net.minecraft.world.item.crafting.RecipeManager;
-import org.spongepowered.asm.mixin.Final;
+/*import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Shadow;
 *///?}
 
@@ -56,7 +56,7 @@ public abstract class CampfireRecipeMatchingMixin
             net.minecraft.core.BlockPos pos,
             net.minecraft.world.level.block.state.BlockState state,
             CampfireBlockEntity campfire,
-            net.minecraft.world.item.crafting.RecipeManager.CachedCheck getter,
+            RecipeManager.CachedCheck getter,
             CallbackInfo ci) {
         ((com.atsukimc.anticrash.runtime.CampfireRecipeState) campfire)
                 .anticrash$bindRecipeGetter((RecipeMatchGetterAccessorMixin) getter);

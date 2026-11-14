@@ -25,6 +25,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -165,7 +166,7 @@ class PendingRegionWriteOverlayTest {
                         read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
                         "marker"));
 
-        assertTrue(java.util.Arrays.equals(liveBefore, Files.readAllBytes(region)));
+        assertTrue(Arrays.equals(liveBefore, Files.readAllBytes(region)));
         assertFalse(Files.exists(live.resolve("region/r.1.0.mca")));
 
         Map<String, SnapshotFile> files = index(result);

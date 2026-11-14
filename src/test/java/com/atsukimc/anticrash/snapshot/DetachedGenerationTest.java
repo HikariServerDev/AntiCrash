@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.atsukimc.anticrash.util.Hashing;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -14,6 +16,7 @@ import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 class DetachedGenerationTest {
     @Test
@@ -82,7 +85,7 @@ class DetachedGenerationTest {
         Files.writeString(scratch, "0");
         long first = FileFacts.read(scratch).changeTime();
         if (first == 0L) return; // no ctime on this filesystem; content is always authenticated
-        long deadline = System.nanoTime() + java.util.concurrent.TimeUnit.SECONDS.toNanos(2);
+        long deadline = System.nanoTime() + TimeUnit.SECONDS.toNanos(2);
         for (int attempt = 1; FileFacts.read(scratch).changeTime() == first; attempt++) {
             assertTrue(
                     System.nanoTime() < deadline,
@@ -138,9 +141,7 @@ class DetachedGenerationTest {
         assertTrue(FileFacts.read(secondWorld.resolve("region/r.1.0.mca")).linkCount() >= 2);
         SnapshotFile changed = index(result).get("region/r.0.0.mca");
         assertFalse(changed.reusedFromParent);
-        assertEquals(
-                com.atsukimc.anticrash.util.Hashing.sha256("region-a-2".getBytes()),
-                changed.sha256);
+        assertEquals(Hashing.sha256("region-a-2".getBytes()), changed.sha256);
     }
 
     @Test

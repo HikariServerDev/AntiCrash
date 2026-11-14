@@ -4,11 +4,11 @@
 //? if <=1.18.2 {
 /^import java.util.Optional;
 ^///?} else {
-import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 //?}
 
+import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.gameevent.PositionSource;
@@ -78,8 +78,8 @@ public abstract class SculkSensorListenerMixin {
     private void anticrash$markHeardVibrationDirty(
             Level world,
             GameEvent heard,
-            net.minecraft.core.BlockPos pos,
-            net.minecraft.core.BlockPos sourcePos,
+            BlockPos pos,
+            BlockPos sourcePos,
             CallbackInfo callbackInfo) {
     ^///?} else if <=1.19.2 {
     /^@Inject(

@@ -12,6 +12,7 @@ import net.minecraft.world.level.chunk.status.ChunkStatus;
 import net.minecraft.server.level.ServerChunkCache;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
 import java.util.concurrent.CompletableFuture;
@@ -42,13 +43,13 @@ public interface ServerChunkManagerAccessorMixin {
     //?}
 
     //? if >=1.21.5 {
-    @org.spongepowered.asm.mixin.gen.Accessor("ticketStorage")
+    @Accessor("ticketStorage")
     net.minecraft.world.level.TicketStorage anticrash$getTicketManager();
 
     //?}
 
     //? if <=26.2 {
-    /*@org.spongepowered.asm.mixin.gen.Accessor("lastInhabitedUpdate")
+    /*@Accessor("lastInhabitedUpdate")
     void anticrash$setLastMobSpawningTime(long time);
     *///?}
 

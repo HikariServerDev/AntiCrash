@@ -1,11 +1,20 @@
 package com.atsukimc.anticrash.util;
 
+import com.atsukimc.anticrash.snapshot.CheckpointManifest;
+import com.atsukimc.anticrash.snapshot.CheckpointWriteGuard;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.InstanceCreator;
+import com.google.gson.stream.JsonReader;
+import com.google.gson.stream.JsonToken;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
+import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.*;
 
@@ -15,13 +24,10 @@ public final class AtomicFiles {
             new GsonBuilder()
                     .setPrettyPrinting()
                     .registerTypeAdapter(
-                            com.atsukimc.anticrash.snapshot.CheckpointManifest.class,
-                            (com.google.gson.InstanceCreator<
-                                            com.atsukimc.anticrash.snapshot.CheckpointManifest>)
+                            CheckpointManifest.class,
+                            (InstanceCreator<CheckpointManifest>)
                                     type -> {
-                                        var manifest =
-                                                new com.atsukimc.anticrash.snapshot
-                                                        .CheckpointManifest();
+                                        var manifest = new CheckpointManifest();
                                         // Unversioned checkpoints predate the multi-version port
                                         // and belong to
                                         // the original 1.18.2 engine. Never stamp them with this
@@ -34,7 +40,7 @@ public final class AtomicFiles {
     private AtomicFiles() {}
 
     public static void writeText(Path target, String content) throws IOException {
-        com.atsukimc.anticrash.snapshot.CheckpointWriteGuard.requireMutable(target);
+        CheckpointWriteGuard.requireMutable(target);
         Path normalizedTarget = target.toAbsolutePath().normalize();
         Path parent = normalizedTarget.getParent();
         if (parent == null)
@@ -64,7 +70,7 @@ public final class AtomicFiles {
     }
 
     public static <T> void writeJson(Path target, T value) throws IOException {
-        com.atsukimc.anticrash.snapshot.CheckpointWriteGuard.requireMutable(target);
+        CheckpointWriteGuard.requireMutable(target);
         Path normalized = target.toAbsolutePath().normalize();
         Path parent = normalized.getParent();
         if (parent == null) throw new IOException("Target has no parent directory: " + normalized);
@@ -87,7 +93,7 @@ public final class AtomicFiles {
     }
 
     public static void writeLines(Path target, Iterable<String> lines) throws IOException {
-        com.atsukimc.anticrash.snapshot.CheckpointWriteGuard.requireMutable(target);
+        CheckpointWriteGuard.requireMutable(target);
         Path normalized = target.toAbsolutePath().normalize();
         Path parent = normalized.getParent();
         if (parent == null) throw new IOException("Target has no parent: " + normalized);
@@ -118,29 +124,26 @@ public final class AtomicFiles {
     public static <T> T readJson(Path source, Class<T> type, long maxBytes) throws IOException {
         try (var reader = boundedJsonReader(source, maxBytes)) {
             T value = GSON.fromJson(reader, type);
-            if (reader.peek() != com.google.gson.stream.JsonToken.END_DOCUMENT)
+            if (reader.peek() != JsonToken.END_DOCUMENT)
                 throw new IOException("Trailing JSON data: " + source);
             return value;
         }
     }
 
     /** Bounded streaming JSON, including files that grow after stat; never buffers whole text. */
-    public static com.google.gson.stream.JsonReader boundedJsonReader(Path source, long maxBytes)
-            throws IOException {
-        return new com.google.gson.stream.JsonReader(boundedTextReader(source, maxBytes));
+    public static JsonReader boundedJsonReader(Path source, long maxBytes) throws IOException {
+        return new JsonReader(boundedTextReader(source, maxBytes));
     }
 
-    public static java.io.BufferedReader boundedTextReader(Path source, long maxBytes)
-            throws IOException {
+    public static BufferedReader boundedTextReader(Path source, long maxBytes) throws IOException {
         if (maxBytes < 0
-                || !Files.isRegularFile(source, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                || !Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(source)
                 || Files.size(source) > maxBytes) {
             throw new IOException("Unsafe or oversized JSON: " + source);
         }
         InputStream bounded =
-                new java.io.FilterInputStream(
-                        Files.newInputStream(source, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
+                new FilterInputStream(Files.newInputStream(source, LinkOption.NOFOLLOW_LINKS)) {
                     private long remaining = maxBytes;
 
                     private void consume(int count) throws IOException {
@@ -162,8 +165,7 @@ public final class AtomicFiles {
                         return count;
                     }
                 };
-        return new java.io.BufferedReader(
-                new java.io.InputStreamReader(bounded, StandardCharsets.UTF_8), 8192);
+        return new BufferedReader(new InputStreamReader(bounded, StandardCharsets.UTF_8), 8192);
     }
 
     /** Reads a regular file without following its final symlink and enforces a race-safe cap. */
@@ -171,14 +173,13 @@ public final class AtomicFiles {
         if (maxBytes < 0 || maxBytes > Integer.MAX_VALUE) {
             throw new IllegalArgumentException("maxBytes must fit in a Java array");
         }
-        if (!Files.isRegularFile(source, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+        if (!Files.isRegularFile(source, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(source)) {
             throw new IOException("Not a safe regular file: " + source);
         }
         long size = Files.size(source);
         if (size > maxBytes) throw new IOException("File is too large: " + source);
-        try (InputStream input =
-                        Files.newInputStream(source, java.nio.file.LinkOption.NOFOLLOW_LINKS);
+        try (InputStream input = Files.newInputStream(source, LinkOption.NOFOLLOW_LINKS);
                 ByteArrayOutputStream output =
                         new ByteArrayOutputStream((int) Math.min(size, 8192L))) {
             byte[] buffer = new byte[8192];
@@ -195,7 +196,7 @@ public final class AtomicFiles {
     }
 
     public static void force(Path file) throws IOException {
-        try (var channel = java.nio.channels.FileChannel.open(file, StandardOpenOption.WRITE)) {
+        try (var channel = FileChannel.open(file, StandardOpenOption.WRITE)) {
             channel.force(true);
         }
     }
@@ -204,7 +205,7 @@ public final class AtomicFiles {
         if (directory == null) {
             return;
         }
-        try (var channel = java.nio.channels.FileChannel.open(directory, StandardOpenOption.READ)) {
+        try (var channel = FileChannel.open(directory, StandardOpenOption.READ)) {
             channel.force(true);
         } catch (IOException ignored) {
             // Directory fsync is not available on every supported filesystem.

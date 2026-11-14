@@ -6,6 +6,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -30,7 +31,7 @@ class WorldLocatorTest {
     void neverFallsBackToAnotherWorldForAnEscapingLevelName() throws Exception {
         Files.writeString(temp.resolve("server.properties"), "level-name=../other-server/world\n");
 
-        assertThrows(java.io.IOException.class, () -> WorldLocator.resolve(temp));
+        assertThrows(IOException.class, () -> WorldLocator.resolve(temp));
     }
 
     @Test
@@ -40,6 +41,6 @@ class WorldLocatorTest {
         Files.createSymbolicLink(temp.resolve("linked"), outside);
         Files.writeString(temp.resolve("server.properties"), "level-name=linked/world\n");
 
-        assertThrows(java.io.IOException.class, () -> WorldLocator.resolve(temp));
+        assertThrows(IOException.class, () -> WorldLocator.resolve(temp));
     }
 }

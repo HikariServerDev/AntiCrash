@@ -16,6 +16,8 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 
+import java.util.ArrayDeque;
+
 /**
  * 1.21.2 getTicker captures CachedCheck in a lambda rather than storing it on the BE. Bind at
  * ticker construction, not first tick: relighting may be checkpointed before any tick.
@@ -23,8 +25,8 @@ import org.spongepowered.asm.mixin.injection.At;
 @Mixin(CampfireBlock.class)
 public abstract class CampfireTickerBindingMixin {
     @Unique
-    private static final ThreadLocal<java.util.ArrayDeque<RecipeMatchGetterAccessorMixin[]>>
-            anticrash$scopes = ThreadLocal.withInitial(java.util.ArrayDeque::new);
+    private static final ThreadLocal<ArrayDeque<RecipeMatchGetterAccessorMixin[]>>
+            anticrash$scopes = ThreadLocal.withInitial(ArrayDeque::new);
 
     @WrapMethod(method = "getTicker")
     private <T extends BlockEntity> BlockEntityTicker<T> anticrash$bind(

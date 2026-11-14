@@ -3,26 +3,32 @@ package com.atsukimc.anticrash.runtime;
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
+import com.atsukimc.anticrash.integration.carpet.CarpetRules;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
+import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
+import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
-import net.minecraft.world.level.block.Block;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-import net.minecraft.world.level.material.Fluid;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.material.Fluid;
 import net.minecraft.world.ticks.LevelChunkTicks;
 import net.minecraft.world.ticks.ScheduledTick;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -151,8 +157,7 @@ public final class RuntimeCapsuleManager {
             worldRuntime.timeOfDay = world.getDefaultClockTime();
             //?}
 
-            com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                    (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
             worldRuntime.nextTickOrder = accessor.anticrash$getNextTickOrder();
             worldRuntime.lcgBlockSeed = accessor.anticrash$getLcgBlockSeed();
             worldRuntime.randomStateSupported = false;
@@ -160,7 +165,7 @@ public final class RuntimeCapsuleManager {
             inhabited.dimension = chunks.dimension;
             for (Long packed : chunks.loadedChunks) {
 
-                net.minecraft.world.level.chunk.LevelChunk loaded =
+                LevelChunk loaded =
                         world.getChunkSource()
                                 .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
 
@@ -170,8 +175,7 @@ public final class RuntimeCapsuleManager {
             }
             capsule.inhabitedTimes.add(inhabited);
             worldRuntime.idleTimeout =
-                    ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                            .anticrash$getIdleTimeout();
+                    ((ServerWorldAccessorMixin) world).anticrash$getIdleTimeout();
             worldRuntime.rainGradient = accessor.anticrash$getRainGradient();
             worldRuntime.thunderGradient = accessor.anticrash$getThunderGradient();
             worldRuntime.loadedChunkCount = chunks.loadedCount();
@@ -225,7 +229,7 @@ public final class RuntimeCapsuleManager {
         recordPhase(timing, "runtime.block_events", phaseStart);
         phaseStart = System.nanoTime();
         capsule.carpetTickSpeed = CarpetIntegration.captureTickSpeed();
-        capsule.carpetRules = com.atsukimc.anticrash.integration.carpet.CarpetRules.capture();
+        capsule.carpetRules = CarpetRules.capture();
         if (CarpetIntegration.isInstalled()) {
             capsule.carpetCaptureStatus =
                     capsule.carpetTickSpeed == null ? "INCOMPLETE" : "CAPTURED";
@@ -249,7 +253,7 @@ public final class RuntimeCapsuleManager {
             capsule.scheduledTicks.addAll(captureActiveScheduledTicks(server));
         }
         capsule.scheduledTicks.sort(
-                java.util.Comparator.comparing((ScheduledTickSnapshot tick) -> tick.dimension)
+                Comparator.comparing((ScheduledTickSnapshot tick) -> tick.dimension)
                         .thenComparingLong(tick -> tick.triggerTick)
                         .thenComparingInt(tick -> tick.priority)
                         .thenComparingLong(tick -> tick.subTickOrder)
@@ -269,7 +273,7 @@ public final class RuntimeCapsuleManager {
                 com.atsukimc.anticrash.mixin.ServerEntityIdAccessor.anticrash$currentId().get();
         //?}
 
-        for (net.minecraft.server.level.ServerPlayer player : server.getPlayerList().getPlayers()) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
 
             if (player.containerMenu != null && player.containerMenu != player.inventoryMenu) {
 
@@ -324,8 +328,7 @@ public final class RuntimeCapsuleManager {
             ThreadedAnvilChunkStorageAccessorMixin storage =
                     (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
-            for (net.minecraft.server.level.ChunkHolder holder :
-                    storage.anticrash$getCurrentChunkHolders().values()) {
+            for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;
                 // LevelTicks uses block-ticking readiness. ENTITY_TICKING would omit
                 // valid FULL/TICKING chunks and could leave a multi-chunk machine's scheduler
@@ -358,7 +361,7 @@ public final class RuntimeCapsuleManager {
             }
         }
         result.sort(
-                java.util.Comparator.comparing((ScheduledTickSnapshot tick) -> tick.dimension)
+                Comparator.comparing((ScheduledTickSnapshot tick) -> tick.dimension)
                         .thenComparingLong(tick -> tick.triggerTick)
                         .thenComparingLong(tick -> tick.subTickOrder)
                         .thenComparing(tick -> tick.kind)
@@ -448,8 +451,7 @@ public final class RuntimeCapsuleManager {
             if (applyLiveState) {
                 // Legacy restore can repair a live process whose counter reset.  Checkpoint
                 // capture deliberately passes false and remains side-effect free.
-                ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                        .anticrash$setNextTickOrder(snapshot.nextTickOrder);
+                ((WorldAccessorMixin) world).anticrash$setNextTickOrder(snapshot.nextTickOrder);
             }
         }
     }
@@ -486,9 +488,7 @@ public final class RuntimeCapsuleManager {
         if (capsule.carpetRules != null) {
             // Rules changed at run time are not in carpet.conf and would otherwise be back at
             // whatever a fresh start gives them.
-            com.atsukimc.anticrash.integration.carpet.CarpetRules.Outcome rules =
-                    com.atsukimc.anticrash.integration.carpet.CarpetRules.restore(
-                            capsule.carpetRules, server);
+            CarpetRules.Outcome rules = CarpetRules.restore(capsule.carpetRules, server);
             if (rules.changed() > 0 || rules.failed() > 0 || rules.unknown() > 0) {
                 logger.normalKey(
                         "carpet.rules_restored", rules.changed(), rules.failed(), rules.unknown());
@@ -525,11 +525,10 @@ public final class RuntimeCapsuleManager {
             if (world == null)
                 throw new IllegalStateException(
                         "World runtime dimension is unavailable: " + snapshot.dimension);
-            com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                    (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
             accessor.anticrash$setLcgBlockSeed(snapshot.lcgBlockSeed);
             if (snapshot.idleTimeout != null) {
-                ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
+                ((ServerWorldAccessorMixin) world)
                         .anticrash$setIdleTimeout(Math.max(0, snapshot.idleTimeout));
             }
             if (snapshot.rainGradient != null && snapshot.thunderGradient != null) {
@@ -579,8 +578,7 @@ public final class RuntimeCapsuleManager {
                 throw new IllegalStateException(
                         "Scheduled-tick order dimension is unavailable: " + snapshot.dimension);
             }
-            ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                    .anticrash$setNextTickOrder(snapshot.nextTickOrder);
+            ((WorldAccessorMixin) world).anticrash$setNextTickOrder(snapshot.nextTickOrder);
             restored++;
         }
         logger.normalKey("runtime.tick_order", restored);
@@ -616,10 +614,10 @@ public final class RuntimeCapsuleManager {
             }
         }
         Map<QueueKey, List<ScheduledTickSnapshot>> groups = new LinkedHashMap<>();
-        Set<QueueChunkKey> queueChunks = new java.util.LinkedHashSet<>();
+        Set<QueueChunkKey> queueChunks = new LinkedHashSet<>();
         // Chunks that own an exact scheduled tick. Recovery prepares every one of them, so each
         // must be accessible; the other checkpoint-FULL chunks are only cleared when loaded.
-        Set<QueueChunkKey> tickChunks = new java.util.HashSet<>();
+        Set<QueueChunkKey> tickChunks = new HashSet<>();
         for (ScheduledTickSnapshot tick : capsule.scheduledTicks) {
             long packed = VersionChunkPos.pack(tick.x >> 4, tick.z >> 4);
 
@@ -712,7 +710,7 @@ public final class RuntimeCapsuleManager {
         ThreadedAnvilChunkStorageAccessorMixin storage =
                 (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
-        net.minecraft.server.level.ChunkHolder holder =
+        ChunkHolder holder =
                 storage.anticrash$getCurrentChunkHolders().get(VersionChunkPos.pack(position));
 
         if (holder == null) return null;
@@ -756,7 +754,7 @@ public final class RuntimeCapsuleManager {
             for (int index = 0; index < inhabited.chunks.size(); index++) {
                 long packed = inhabited.chunks.get(index);
 
-                net.minecraft.world.level.chunk.LevelChunk chunk =
+                LevelChunk chunk =
                         world.getChunkSource()
                                 .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
 
@@ -812,8 +810,7 @@ public final class RuntimeCapsuleManager {
             }
 
             List<TickingBlockEntity> tickers =
-                    ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                            .anticrash$getBlockEntityTickers();
+                    ((WorldAccessorMixin) world).anticrash$getBlockEntityTickers();
 
             Map<BlockPos, TickingBlockEntity> targetTickers = new HashMap<>();
 
@@ -823,8 +820,7 @@ public final class RuntimeCapsuleManager {
             }
 
             for (TickingBlockEntity pending :
-                    ((com.atsukimc.anticrash.mixin.WorldAccessorMixin) world)
-                            .anticrash$getPendingBlockEntityTickers()) {
+                    ((WorldAccessorMixin) world).anticrash$getPendingBlockEntityTickers()) {
                 if (!BlockEntityTickerSnapshot.removed(pending)
                         && expected.contains(pending.getPos())) {
                     throw new IllegalStateException(
@@ -916,8 +912,7 @@ public final class RuntimeCapsuleManager {
             if (world == null)
                 throw new IllegalStateException(
                         "Moving-piston dimension is not available: " + dimension.getKey());
-            com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                    (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
             prepareOptimizedPistonQueue(
                     prepared,
                     world,
@@ -1039,8 +1034,7 @@ public final class RuntimeCapsuleManager {
                                 + " "
                                 + snapshot.position());
             }
-            com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                    (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
             boolean present =
                     containsTicker(accessor.anticrash$getBlockEntityTickers(), snapshot.position())
                             || containsTicker(
@@ -1115,8 +1109,7 @@ public final class RuntimeCapsuleManager {
             if (world == null)
                 throw new IllegalStateException(
                         "BlockEntity ticker dimension is unavailable: " + dimension.getKey());
-            com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                    (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+            WorldAccessorMixin accessor = (WorldAccessorMixin) world;
             prepareTickerQueue(
                     prepared,
                     world,
@@ -1872,7 +1865,7 @@ public final class RuntimeCapsuleManager {
         Set<String> dimensions = new HashSet<>();
         Map<String, ChunkStateSnapshot> chunksByDimension = new HashMap<>();
         long listedChunkPositions = 0;
-        for (com.atsukimc.anticrash.runtime.ChunkStateSnapshot chunks : capsule.chunks) {
+        for (ChunkStateSnapshot chunks : capsule.chunks) {
             int expectedChunkVersion =
                     capsule.formatVersion == 1 ? 1 : capsule.formatVersion >= 6 ? 3 : 2;
             if (chunks == null

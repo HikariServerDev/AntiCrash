@@ -65,7 +65,7 @@ public final class ChunkStateSnapshot {
 
         //? if >=1.21 {
         for (var holders :
-                java.util.List.of(
+                List.of(
                         accessor.anticrash$getCurrentChunkHolders(),
                         accessor.anticrash$getChunksToUnload())) {
             for (ChunkHolder holder : holders.values()) {

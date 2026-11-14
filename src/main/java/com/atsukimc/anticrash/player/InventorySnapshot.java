@@ -3,6 +3,8 @@ package com.atsukimc.anticrash.player;
 import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.Tag;
 import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -32,17 +34,15 @@ public final class InventorySnapshot {
         //? if <=1.20.4 {
         /*if (mainEnabled)
             for (ItemStack stack : inventory.items)
-                snapshot.main.add(NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
+                snapshot.main.add(NbtCodec.encode(stack.save(new CompoundTag())));
 
         if (armorEnabled)
             for (ItemStack stack : inventory.armor)
-                snapshot.armor.add(
-                        NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
+                snapshot.armor.add(NbtCodec.encode(stack.save(new CompoundTag())));
 
         if (offhandEnabled)
             for (ItemStack stack : inventory.offhand)
-                snapshot.offhand.add(
-                        NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag())));
+                snapshot.offhand.add(NbtCodec.encode(stack.save(new CompoundTag())));
         *///?} else if <=1.21.4 {
         /*if (mainEnabled)
             for (ItemStack stack : inventory.items)
@@ -234,7 +234,7 @@ public final class InventorySnapshot {
     /*private static List<ItemStack> decodeList(
             List<String> encoded, int expectedSize, String category) throws IOException {
     *///?} else {
-    private static List<net.minecraft.nbt.CompoundTag> validateEncodedList(
+    private static List<CompoundTag> validateEncodedList(
             List<String> encoded, int expectedSize, String category) throws IOException {
     //?}
         if (encoded == null || encoded.size() != expectedSize) {
@@ -250,15 +250,15 @@ public final class InventorySnapshot {
         //? if <=1.20.4 {
         /*List<ItemStack> decoded = new ArrayList<>(expectedSize);
         *///?} else {
-        List<net.minecraft.nbt.CompoundTag> decoded = new ArrayList<>(expectedSize);
+        List<CompoundTag> decoded = new ArrayList<>(expectedSize);
         //?}
 
         for (String item : encoded) {
             try {
 
-                net.minecraft.nbt.Tag element = NbtCodec.decode(item);
+                Tag element = NbtCodec.decode(item);
 
-                if (!(element instanceof net.minecraft.nbt.CompoundTag compound)) {
+                if (!(element instanceof CompoundTag compound)) {
                     throw new IOException(
                             "Inventory " + category + " contains a non-compound item");
                 }

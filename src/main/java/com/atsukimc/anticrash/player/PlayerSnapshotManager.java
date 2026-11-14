@@ -9,14 +9,16 @@ import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.VersionIds;
 import com.atsukimc.anticrash.util.VersionLevels;
 
+import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
+import net.minecraft.nbt.Tag;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Abilities;
-import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.Tag;
-import net.minecraft.nbt.ListTag;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.GameType;
 import net.minecraft.world.phys.Vec3;
 
 //? if <=1.21.4 {
@@ -26,6 +28,7 @@ import net.minecraft.world.level.Level;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -96,7 +99,7 @@ public final class PlayerSnapshotManager {
             throw new IOException(
                     "Could not capture STRICT checkpoint player identities", exception);
         }
-        result.sort(java.util.Comparator.comparing(CheckpointPlayerSnapshot::canonical));
+        result.sort(Comparator.comparing(CheckpointPlayerSnapshot::canonical));
         return List.copyOf(result);
     }
 
@@ -133,8 +136,7 @@ public final class PlayerSnapshotManager {
         //?}
 
         if (config.playerSnapshot.abilities) {
-            net.minecraft.nbt.CompoundTag abilities =
-                    VersionStorage.abilities(player.getAbilities());
+            CompoundTag abilities = VersionStorage.abilities(player.getAbilities());
 
             data.abilitiesNbt = NbtCodec.encode(abilities);
         }
@@ -320,7 +322,7 @@ public final class PlayerSnapshotManager {
 
                 Tag decoded = NbtCodec.decode(encoded);
 
-                if (!(decoded instanceof net.minecraft.nbt.CompoundTag compound)
+                if (!(decoded instanceof CompoundTag compound)
                         || VersionNbt.effect(compound) == null) {
                     throw new IOException("Potion effect snapshot is invalid");
                 }
@@ -406,7 +408,7 @@ public final class PlayerSnapshotManager {
 
                     Tag decoded = NbtCodec.decode(encoded);
 
-                    if (!(decoded instanceof net.minecraft.nbt.CompoundTag compound)) {
+                    if (!(decoded instanceof CompoundTag compound)) {
                         throw new IOException("Potion effect snapshot is not an NBT compound");
                     }
 
@@ -448,14 +450,13 @@ public final class PlayerSnapshotManager {
                 //? if <=1.21.1 {
                 /*player.teleportTo(target, x, y, z, yaw, pitch);
                 *///?} else {
-                player.teleportTo(target, x, y, z, java.util.Set.of(), yaw, pitch, false);
+                player.teleportTo(target, x, y, z, Set.of(), yaw, pitch, false);
                 //?}
 
             }
             if (config.playerSnapshot.gamemode && data.gamemode != null)
                 player.setGameMode(
-                        net.minecraft.world.level.GameType.byName(
-                                data.gamemode, player.gameMode.getGameModeForPlayer()));
+                        GameType.byName(data.gamemode, player.gameMode.getGameModeForPlayer()));
 
             if (abilities != null) {
                 abilities.accept(player.getAbilities());

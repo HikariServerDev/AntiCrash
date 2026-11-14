@@ -2,6 +2,8 @@ package com.atsukimc.anticrash.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import com.atsukimc.anticrash.player.NbtCodec;
+
 import java.util.UUID;
 import net.minecraft.SharedConstants;
 import net.minecraft.nbt.CompoundTag;
@@ -12,6 +14,8 @@ import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
 
 class VersionNbtCompatibilityTest {
     @BeforeAll
@@ -105,13 +109,11 @@ class VersionNbtCompatibilityTest {
     }
 
     @Test
-    void potionEffectsPreserveTimingAndFlagsAcrossTheNbtCodec() throws java.io.IOException {
+    void potionEffectsPreserveTimingAndFlagsAcrossTheNbtCodec() throws IOException {
         MobEffectInstance effect =
                 new MobEffectInstance(MobEffects.GLOWING, 37, 2, true, false, false);
         CompoundTag saved = assertInstanceOf(CompoundTag.class, VersionNbt.effect(effect));
-        CompoundTag wire =
-                com.atsukimc.anticrash.player.NbtCodec.decodeCompound(
-                        com.atsukimc.anticrash.player.NbtCodec.encode(saved));
+        CompoundTag wire = NbtCodec.decodeCompound(NbtCodec.encode(saved));
         MobEffectInstance restored = VersionNbt.effect(wire);
         assertNotNull(restored);
         assertEquals(effect.getEffect(), restored.getEffect());

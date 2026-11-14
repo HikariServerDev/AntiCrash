@@ -8,6 +8,7 @@ import java.nio.channels.FileChannel;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.nio.file.StandardOpenOption;
@@ -84,7 +85,7 @@ public final class RestartRequest {
     public static boolean claim(Path marker) throws IOException {
         Path normalized = marker.toAbsolutePath().normalize();
         ensureSafeMarkerLocation(normalized);
-        if (!Files.exists(normalized, java.nio.file.LinkOption.NOFOLLOW_LINKS)) return false;
+        if (!Files.exists(normalized, LinkOption.NOFOLLOW_LINKS)) return false;
         validateMarker(normalized);
         boolean deleted = Files.deleteIfExists(normalized);
         if (deleted) forceDirectory(normalized.getParent());
@@ -134,19 +135,19 @@ public final class RestartRequest {
     private static void ensureSafeMarkerLocation(Path marker) throws IOException {
         Path parent = marker.getParent();
         if (parent == null
-                || !Files.isDirectory(parent, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                || !Files.isDirectory(parent, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(parent)) {
             throw new IOException("Unsafe AntiCrash restart marker directory: " + parent);
         }
         Path internal = parent.getParent();
         if (internal != null
                 && (Files.isSymbolicLink(internal)
-                        || !Files.isDirectory(internal, java.nio.file.LinkOption.NOFOLLOW_LINKS))) {
+                        || !Files.isDirectory(internal, LinkOption.NOFOLLOW_LINKS))) {
             throw new IOException("Unsafe AntiCrash internal directory: " + internal);
         }
-        if (Files.exists(marker, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+        if (Files.exists(marker, LinkOption.NOFOLLOW_LINKS)
                 && (Files.isSymbolicLink(marker)
-                        || !Files.isRegularFile(marker, java.nio.file.LinkOption.NOFOLLOW_LINKS))) {
+                        || !Files.isRegularFile(marker, LinkOption.NOFOLLOW_LINKS))) {
             throw new IOException("Unsafe AntiCrash restart marker: " + marker);
         }
     }

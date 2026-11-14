@@ -1,15 +1,19 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.AntiCrashMod;
+
 import net.minecraft.SharedConstants;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CheckpointManifest {
     /** Version 4 adds the Exact-Epoch semantic delta engine evidence. */
     public int formatVersion = 4;
 
-    public String antiCrashVersion = com.atsukimc.anticrash.AntiCrashMod.VERSION;
+    public String antiCrashVersion = AntiCrashMod.VERSION;
 
     public static final String CURRENT_MINECRAFT_VERSION = currentMinecraftVersion();
 
@@ -51,8 +55,7 @@ public final class CheckpointManifest {
     public int logicalDeltaTombstoneCount;
     public long logicalDeltaPayloadBytes;
     public String logicalDeltaFailureReason;
-    public final java.util.Map<String, String> logicalDeltaComponentStatus =
-            new java.util.LinkedHashMap<>();
+    public final Map<String, String> logicalDeltaComponentStatus = new LinkedHashMap<>();
 
     /** BASE or DELTA. DELTA is a complete materialized view with an authenticated parent. */
     public String generationType = "BASE";
@@ -74,7 +77,7 @@ public final class CheckpointManifest {
     public long snapshotDurationMs;
     public long barrierDurationMs;
     public long finalizationDurationMs;
-    public final java.util.Map<String, Long> phaseDurationsMs = new java.util.LinkedHashMap<>();
+    public final Map<String, Long> phaseDurationsMs = new LinkedHashMap<>();
     public long heapUsedBeforeBytes;
     public long heapUsedAfterBytes;
     public long heapMaxBytes;

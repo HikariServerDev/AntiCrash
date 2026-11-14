@@ -11,6 +11,7 @@ import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 /** Cross-checks authenticated payloads before any runtime state is mutated. */
@@ -31,8 +32,8 @@ public final class RecoveryPayloadValidator {
         if (manifest == null || players == null || fakePlayers == null) {
             throw new IOException("Checkpoint recovery payload is incomplete");
         }
-        if (players.stream().anyMatch(java.util.Objects::isNull)
-                || fakePlayers.stream().anyMatch(java.util.Objects::isNull)) {
+        if (players.stream().anyMatch(Objects::isNull)
+                || fakePlayers.stream().anyMatch(Objects::isNull)) {
             throw new IOException("Checkpoint recovery payload contains an empty snapshot");
         }
         if (manifest.runtimeCapsuleVersion != capsule.formatVersion
@@ -77,9 +78,8 @@ public final class RecoveryPayloadValidator {
                 capsule.expectedFingerprints == null
                         ? null
                         : capsule.expectedFingerprints.get(EquivalenceCategory.FAKEPLAYERS);
-        if (!java.util.Objects.equals(manifest.fidelity, capsule.fidelity)
-                || !java.util.Objects.equals(
-                        manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
+        if (!Objects.equals(manifest.fidelity, capsule.fidelity)
+                || !Objects.equals(manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
                 || manifest.fullChunkCount
                         != capsule.chunks.stream().mapToInt(snapshot -> snapshot.fullCount()).sum()
                 || manifest.blockTickingChunkCount
@@ -98,12 +98,12 @@ public final class RecoveryPayloadValidator {
                         != (capsule.checkpointPlayersCaptured
                                 ? capsule.checkpointPlayers.size()
                                 : 0)
-                || !java.util.Objects.equals(
+                || !Objects.equals(
                         manifest.checkpointPlayerHash,
                         capsule.expectedFingerprints == null
                                 ? null
                                 : capsule.expectedFingerprints.get(EquivalenceCategory.PLAYERS))
-                || !java.util.Objects.equals(
+                || !Objects.equals(
                         manifest.chunkDomainHash,
                         capsule.expectedFingerprints == null
                                 ? null

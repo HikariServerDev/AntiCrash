@@ -1,7 +1,11 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class RuntimeCapsule {
     public static final int MIN_SUPPORTED_FORMAT_VERSION = 1;
@@ -72,8 +76,7 @@ public final class RuntimeCapsule {
     public static final int CURRENT_FAKE_PLAYER_FINGERPRINT_VERSION = 1;
 
     /** Fingerprints are diagnostic evidence, never a substitute for category comparison. */
-    public final java.util.Map<String, String> expectedFingerprints =
-            new java.util.LinkedHashMap<>();
+    public final Map<String, String> expectedFingerprints = new LinkedHashMap<>();
 
     /** CAPTURED, NOT_APPLICABLE, INCOMPLETE or UNSUPPORTED. */
     public String carpetCaptureStatus = "NOT_APPLICABLE";
@@ -99,8 +102,7 @@ public final class RuntimeCapsule {
      * Number of entries behind each RuntimeExtensionSnapshot category (v7); the matching digest is
      * in {@link #expectedFingerprints}. Absent in older capsules.
      */
-    public final java.util.Map<String, Integer> runtimeExtensionCounts =
-            new java.util.LinkedHashMap<>();
+    public final Map<String, Integer> runtimeExtensionCounts = new LinkedHashMap<>();
 
     /**
      * Next network entity id at the cut (v7; null in older capsules). Items and experience orbs
@@ -114,8 +116,7 @@ public final class RuntimeCapsule {
      * The digest decides whether a recovery matched; these lines only let a mismatch say what
      * differs. Omitted for a category with more lines than {@link #MAX_DIAGNOSTIC_LINES}.
      */
-    public final java.util.Map<String, List<String>> runtimeExtensionLines =
-            new java.util.LinkedHashMap<>();
+    public final Map<String, List<String>> runtimeExtensionLines = new LinkedHashMap<>();
 
     public static final int MAX_DIAGNOSTIC_LINES = 20_000;
 
@@ -129,10 +130,10 @@ public final class RuntimeCapsule {
      * Carpet rule values that were not at their built-in default, per settings manager (v7,
      * optional). Null when Carpet is absent, unreadable, or the capsule predates the field.
      */
-    public java.util.Map<String, java.util.Map<String, String>> carpetRules;
+    public Map<String, Map<String, String>> carpetRules;
 
     /** Null when Carpet is absent or its tick speed could not be read. */
-    public com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot carpetTickSpeed;
+    public TickSpeedSnapshot carpetTickSpeed;
 
     public int blockEventCount() {
         return blockEvents == null ? 0 : blockEvents.entries.size();

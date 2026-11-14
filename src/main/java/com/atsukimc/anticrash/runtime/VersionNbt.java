@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.runtime;
 
+import net.minecraft.world.effect.MobEffectInstance;
+
 import java.util.UUID;
 import net.minecraft.nbt.*;
 
@@ -41,26 +43,22 @@ public final class VersionNbt {
 
     //?}
 
-    public static Tag effect(net.minecraft.world.effect.MobEffectInstance effect) {
+    public static Tag effect(MobEffectInstance effect) {
         //? if <=1.20.4 {
         /*return effect.save(new CompoundTag());
         *///?} else if <=1.21.4 {
         /*return effect.save();
         *///?} else {
         // MobEffect.ENTRY_CODEC uses the static STATUS_EFFECT registry, as verified in bytecode.
-        return net.minecraft.world.effect.MobEffectInstance.CODEC
-                .encodeStart(NbtOps.INSTANCE, effect)
-                .getOrThrow();
+        return MobEffectInstance.CODEC.encodeStart(NbtOps.INSTANCE, effect).getOrThrow();
         //?}
     }
 
-    public static net.minecraft.world.effect.MobEffectInstance effect(CompoundTag nbt) {
+    public static MobEffectInstance effect(CompoundTag nbt) {
         //? if <=1.21.4 {
-        /*return net.minecraft.world.effect.MobEffectInstance.load(nbt);
+        /*return MobEffectInstance.load(nbt);
         *///?} else {
-        return net.minecraft.world.effect.MobEffectInstance.CODEC
-                .parse(NbtOps.INSTANCE, nbt)
-                .getOrThrow();
+        return MobEffectInstance.CODEC.parse(NbtOps.INSTANCE, nbt).getOrThrow();
         //?}
     }
 

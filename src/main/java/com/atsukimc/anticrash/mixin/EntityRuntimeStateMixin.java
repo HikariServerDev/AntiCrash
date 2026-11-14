@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.runtime.ItemPhaseHolder;
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.VersionNbt;
 
@@ -120,9 +121,7 @@ public abstract class EntityRuntimeStateMixin {
                     *///?} else if >=1.21.5 {
                     if (mainSupportingBlockPos.isPresent())
                         extension.store(
-                                "SupportingBlock",
-                                net.minecraft.core.BlockPos.CODEC,
-                                mainSupportingBlockPos.get());
+                                "SupportingBlock", BlockPos.CODEC, mainSupportingBlockPos.get());
                     //?}
 
                     // Touched a nether portal this tick: the dimension change happens at the start
@@ -188,7 +187,7 @@ public abstract class EntityRuntimeStateMixin {
                     if (self instanceof ItemEntity || self instanceof ExperienceOrb)
                         extension.putInt("Age", tickCount);
 
-                    if (self instanceof com.atsukimc.anticrash.runtime.ItemPhaseHolder item)
+                    if (self instanceof ItemPhaseHolder item)
                         extension.putInt("IdPhase", item.anticrash$idPhase());
 
                     //? if >=1.21 {
@@ -284,8 +283,7 @@ public abstract class EntityRuntimeStateMixin {
             *///?} else if <=1.21.4 {
             /*mainSupportingBlockPos = NbtUtils.readBlockPos(extension, "SupportingBlock");
             *///?} else {
-            mainSupportingBlockPos =
-                    extension.read("SupportingBlock", net.minecraft.core.BlockPos.CODEC);
+            mainSupportingBlockPos = extension.read("SupportingBlock", BlockPos.CODEC);
             //?}
         }
         //?}
@@ -329,8 +327,7 @@ public abstract class EntityRuntimeStateMixin {
                 && VersionNbt.contains(extension, "Age", 99)) {
             tickCount = Math.max(0, VersionNbt.getInt(extension, "Age"));
         }
-        if (self instanceof com.atsukimc.anticrash.runtime.ItemPhaseHolder item
-                && VersionNbt.contains(extension, "IdPhase", 99)) {
+        if (self instanceof ItemPhaseHolder item && VersionNbt.contains(extension, "IdPhase", 99)) {
             item.anticrash$setIdPhase(VersionNbt.getInt(extension, "IdPhase"));
         }
     }

@@ -1,9 +1,11 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionLevels;
 
+import net.minecraft.util.Mth;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.Entity.RemovalReason;
 
@@ -43,15 +45,13 @@ public abstract class EntityLifecycleMixin {
 
     private void recordMove(double x, double z) {
         // Runs for every entity movement; return before any allocation when nothing records it.
-        if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
+        if (!LogicalTracking.enabled()) return;
         Entity entity = (Entity) (Object) this;
 
         if (VersionLevels.level(entity) == null) return;
 
         long oldChunk = VersionChunkPos.pack(entity.chunkPosition());
-        long newChunk =
-                VersionChunkPos.pack(
-                        net.minecraft.util.Mth.floor(x) >> 4, net.minecraft.util.Mth.floor(z) >> 4);
+        long newChunk = VersionChunkPos.pack(Mth.floor(x) >> 4, Mth.floor(z) >> 4);
 
         EntityLifecycleTracker.recordMove(entity, oldChunk, newChunk);
     }

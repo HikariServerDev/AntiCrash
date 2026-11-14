@@ -10,6 +10,8 @@ import net.minecraft.world.clock.ClockState;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class ClockSnapshotTest {
     @Test
     void clockPhaseRateAndPauseSurviveBothCodecs() {
@@ -32,11 +34,9 @@ class ClockSnapshotTest {
     @Test
     void fractionalPhaseCannotBeHiddenByMatchingWholeTicks() {
         var a = new RuntimeCapsule();
-        a.clockStates =
-                java.util.List.of(new ClockSnapshot("minecraft:overworld", 31, 0.25f, 1, false));
+        a.clockStates = List.of(new ClockSnapshot("minecraft:overworld", 31, 0.25f, 1, false));
         var b = new RuntimeCapsule();
-        b.clockStates =
-                java.util.List.of(new ClockSnapshot("minecraft:overworld", 31, 0.5f, 1, false));
+        b.clockStates = List.of(new ClockSnapshot("minecraft:overworld", 31, 0.5f, 1, false));
         assertNotEquals(
                 RuntimeFingerprint.hashLines(RuntimeFingerprint.worldLines(a)),
                 RuntimeFingerprint.hashLines(RuntimeFingerprint.worldLines(b)));

@@ -6,9 +6,15 @@ import com.mojang.authlib.GameProfile;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 
 class FakePlayerProfileScopeTest {
     private static final UUID CHECKPOINT_ID =
@@ -164,9 +170,8 @@ class FakePlayerProfileScopeTest {
     @Test
     void modernFactoryUsesOnlyItsOwnServerAndCompletesBeforeValidation() {
         Object cache = new Object(), server = new Object();
-        java.util.List<Runnable> queued = new java.util.ArrayList<>();
-        java.util.concurrent.atomic.AtomicReference<GameProfile> created =
-                new java.util.concurrent.atomic.AtomicReference<>();
+        List<Runnable> queued = new ArrayList<>();
+        AtomicReference<GameProfile> created = new AtomicReference<>();
         try (var scope = FakePlayerProfileScope.open(cache, server, CHECKPOINT_ID, "msbot")) {
             GameProfile saved = FakePlayerProfileScope.creationProfile(server);
             assertNotNull(saved);
@@ -183,8 +188,8 @@ class FakePlayerProfileScopeTest {
 
     @Test
     void ordinaryAndUnrelatedFactoryCompletionsKeepTheirExecutor() {
-        java.util.List<Runnable> queued = new java.util.ArrayList<>();
-        var called = new java.util.concurrent.atomic.AtomicInteger();
+        List<Runnable> queued = new ArrayList<>();
+        var called = new AtomicInteger();
         GameProfile ordinary = new GameProfile(OTHER_ID, "other");
         FakePlayerProfileScope.completeCreation(
                 CompletableFuture.completedFuture(ordinary),
@@ -206,9 +211,9 @@ class FakePlayerProfileScopeTest {
     @Test
     void incompleteAndFailedFuturesAreNeverWaitedOnOrRunInline() {
         Object server = new Object();
-        java.util.List<Runnable> queued = new java.util.ArrayList<>();
+        List<Runnable> queued = new ArrayList<>();
         CompletableFuture<GameProfile> pending = new CompletableFuture<>();
-        var called = new java.util.concurrent.atomic.AtomicInteger();
+        var called = new AtomicInteger();
         try (var scope =
                 FakePlayerProfileScope.open(new Object(), server, CHECKPOINT_ID, "msbot")) {
             FakePlayerProfileScope.completeCreation(
@@ -233,7 +238,7 @@ class FakePlayerProfileScopeTest {
                 FakePlayerProfileScope.open(new Object(), server, CHECKPOINT_ID, "msbot")) {
             var saved = FakePlayerProfileScope.creationProfile(server);
             assertThrows(
-                    java.util.concurrent.CompletionException.class,
+                    CompletionException.class,
                     () ->
                             FakePlayerProfileScope.completeCreation(
                                     CompletableFuture.completedFuture(saved),
@@ -248,13 +253,13 @@ class FakePlayerProfileScopeTest {
     @Test
     void optionalProfilesPreserveIdentityAndFinishOnTheOwningThread() {
         Object server = new Object();
-        var applied = new java.util.concurrent.atomic.AtomicInteger();
+        var applied = new AtomicInteger();
         try (var scope =
                 FakePlayerProfileScope.open(new Object(), server, CHECKPOINT_ID, "msbot")) {
             var saved = FakePlayerProfileScope.creationProfileForName("MSBOT");
             assertNotNull(saved);
             assertNull(FakePlayerProfileScope.creationProfileForName("another_player"));
-            var future = CompletableFuture.completedFuture(java.util.Optional.of(saved));
+            var future = CompletableFuture.completedFuture(Optional.of(saved));
             FakePlayerProfileScope.acceptCreation(
                     future,
                     profile -> {
@@ -275,21 +280,21 @@ class FakePlayerProfileScopeTest {
     @Test
     void optionalUnrelatedProfilesAndFailedConsumersKeepSafetyBoundaries() {
         Object server = new Object();
-        java.util.List<Runnable> queued = new java.util.ArrayList<>();
-        var called = new java.util.concurrent.atomic.AtomicInteger();
+        List<Runnable> queued = new ArrayList<>();
+        var called = new AtomicInteger();
         try (var scope =
                 FakePlayerProfileScope.open(new Object(), server, CHECKPOINT_ID, "msbot")) {
             FakePlayerProfileScope.acceptCreation(
-                    CompletableFuture.completedFuture(java.util.Optional.empty()),
+                    CompletableFuture.completedFuture(Optional.empty()),
                     ignored -> called.incrementAndGet(),
                     queued::add);
             assertEquals(0, called.get());
             assertThrows(
-                    java.util.concurrent.CompletionException.class,
+                    CompletionException.class,
                     () ->
                             FakePlayerProfileScope.acceptCreation(
                                     CompletableFuture.completedFuture(
-                                            java.util.Optional.of(
+                                            Optional.of(
                                                     FakePlayerProfileScope.creationProfile(
                                                             server))),
                                     profile -> {

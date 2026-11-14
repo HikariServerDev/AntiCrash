@@ -329,8 +329,7 @@ public class JavaIncrementalBackend implements SnapshotBackend {
      * record. Normally zero per generation; a generation that hashes every inherited file reads the
      * whole world, which is worth seeing in the checkpoint's performance line.
      */
-    public static final java.util.concurrent.atomic.AtomicLong CONTENT_AUTHENTICATIONS =
-            new java.util.concurrent.atomic.AtomicLong();
+    public static final AtomicLong CONTENT_AUTHENTICATIONS = new AtomicLong();
 
     static boolean previousFileMatches(Path previousFile, FileFacts facts, SnapshotFile previous)
             throws IOException {

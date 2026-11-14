@@ -2,10 +2,14 @@ package com.atsukimc.anticrash.integration.carpet;
 
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.util.AtomicFiles;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 public final class FakePlayerSnapshot {
     public int formatVersion = 1;
@@ -237,7 +241,7 @@ public final class FakePlayerSnapshot {
             for (ItemCooldown cooldown : itemCooldowns) {
                 if (cooldown != null) rows.add(cooldown.item + "=" + cooldown.remainingTicks);
             }
-            java.util.Collections.sort(rows);
+            Collections.sort(rows);
             cooldowns.append(rows);
         }
         return "|"
@@ -257,17 +261,15 @@ public final class FakePlayerSnapshot {
      * this the fingerprint taken at capture never matched the one recomputed from the file, and
      * every checkpoint with a FakePlayer was refused at restore.
      */
-    static com.google.gson.JsonElement withoutNullMembers(com.google.gson.JsonElement element) {
+    static JsonElement withoutNullMembers(JsonElement element) {
         if (element == null || element.isJsonNull() || element.isJsonPrimitive()) return element;
         if (element.isJsonArray()) {
-            com.google.gson.JsonArray copy = new com.google.gson.JsonArray();
-            for (com.google.gson.JsonElement child : element.getAsJsonArray())
-                copy.add(withoutNullMembers(child));
+            JsonArray copy = new JsonArray();
+            for (JsonElement child : element.getAsJsonArray()) copy.add(withoutNullMembers(child));
             return copy;
         }
-        com.google.gson.JsonObject copy = new com.google.gson.JsonObject();
-        for (java.util.Map.Entry<String, com.google.gson.JsonElement> entry :
-                element.getAsJsonObject().entrySet()) {
+        JsonObject copy = new JsonObject();
+        for (Map.Entry<String, JsonElement> entry : element.getAsJsonObject().entrySet()) {
             if (entry.getValue() == null || entry.getValue().isJsonNull()) continue;
             copy.add(entry.getKey(), withoutNullMembers(entry.getValue()));
         }

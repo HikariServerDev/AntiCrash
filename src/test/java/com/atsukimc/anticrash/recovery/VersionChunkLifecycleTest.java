@@ -5,6 +5,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 class VersionChunkLifecycleTest {
     @Test
     void scopeIsNestedAndClearedAfterFailure() {
@@ -25,8 +27,7 @@ class VersionChunkLifecycleTest {
     @Test
     void scopeIsThreadLocal() throws InterruptedException {
         VersionChunkLifecycle.withoutSimulation(() -> {
-            java.util.concurrent.atomic.AtomicBoolean observed =
-                    new java.util.concurrent.atomic.AtomicBoolean(true);
+            AtomicBoolean observed = new AtomicBoolean(true);
             Thread other =
                     new Thread(() -> observed.set(VersionChunkLifecycle.simulationDisabled()));
             other.start();

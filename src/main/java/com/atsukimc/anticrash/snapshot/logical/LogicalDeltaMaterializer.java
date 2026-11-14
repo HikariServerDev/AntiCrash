@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.runtime.VersionNbt;
+import com.atsukimc.anticrash.snapshot.CheckpointWriteGuard;
 import com.atsukimc.anticrash.snapshot.FileFacts;
 import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
@@ -18,6 +19,7 @@ import net.minecraft.world.level.chunk.storage.RegionFile;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
@@ -40,7 +42,7 @@ public final class LogicalDeltaMaterializer {
             Map<String, SnapshotFile> parentFiles,
             LogicalDelta delta)
             throws IOException {
-        com.atsukimc.anticrash.snapshot.CheckpointWriteGuard.requireMutable(destinationWorld);
+        CheckpointWriteGuard.requireMutable(destinationWorld);
         if (parentWorld == null
                 || !Files.isDirectory(parentWorld, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(parentWorld)) {
@@ -353,7 +355,7 @@ public final class LogicalDeltaMaterializer {
                     file,
                     StandardCopyOption.REPLACE_EXISTING,
                     StandardCopyOption.ATOMIC_MOVE);
-        } catch (java.nio.file.AtomicMoveNotSupportedException unsupported) {
+        } catch (AtomicMoveNotSupportedException unsupported) {
             Files.move(temporary, file, StandardCopyOption.REPLACE_EXISTING);
         }
     }

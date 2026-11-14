@@ -7,6 +7,7 @@ import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
+import java.util.Arrays;
 import java.util.List;
 
 /** Checks the actual mapped overloads, not just that a method with this name exists. */
@@ -56,16 +57,14 @@ class SealedChunkMixinContractTest {
         long overloads =
                 game.methods.stream()
                         .filter(m -> m.name.equals(selector))
-                        .filter(m ->
-                                java.util.Arrays.asList(Type.getArgumentTypes(m.desc))
-                                        .contains(nbt))
+                        .filter(m -> Arrays.asList(Type.getArgumentTypes(m.desc)).contains(nbt))
                         .count();
         assertTrue(overloads > 0, target + ": " + selector);
         // Every overload with an NBT payload must still return that NBT type. The selected
         // ordinal is the first NBT argument, never a later data-fixer context argument.
         for (var method : game.methods)
             if (method.name.equals(selector)
-                    && java.util.Arrays.asList(Type.getArgumentTypes(method.desc)).contains(nbt))
+                    && Arrays.asList(Type.getArgumentTypes(method.desc)).contains(nbt))
                 assertEquals(nbt, Type.getReturnType(method.desc), method.desc);
     }
 }

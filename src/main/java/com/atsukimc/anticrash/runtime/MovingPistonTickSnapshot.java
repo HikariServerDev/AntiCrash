@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
@@ -84,8 +85,7 @@ public final class MovingPistonTickSnapshot {
 
             if (BlockEntityTickerSnapshot.loadedBlockEntity(world, position)
                     instanceof PistonMovingBlockEntity piston) {
-                com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin accessor =
-                        (com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin) piston;
+                PistonBlockEntityAccessorMixin accessor = (PistonBlockEntityAccessorMixin) piston;
                 snapshot.progress = accessor.anticrash$getProgress();
                 snapshot.lastProgress = accessor.anticrash$getLastProgress();
             }

@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.recovery;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin;
+import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.util.VersionChunkPos;
@@ -455,9 +456,7 @@ public final class ChunkRecoveryManager {
             // Entity sections are read asynchronously and only attached by the entity manager's
             // own tick, which normally runs at the end of ServerLevel#tick. Without this pump the
             // restored entities would join one tick after the restored blocks.
-            ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                    .anticrash$getEntityManager()
-                    .tick();
+            ((ServerWorldAccessorMixin) world).anticrash$getEntityManager().tick();
         }
     }
 

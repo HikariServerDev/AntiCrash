@@ -12,6 +12,8 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.item.ItemStack;
 
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.Locale;
 import java.util.UUID;
@@ -31,7 +33,7 @@ public final class ConsistencyManager implements AutoCloseable {
 
     public ConsistencyManager(
             AntiCrashConfig config, InternalStateManager internal, AntiCrashLogger logger)
-            throws java.io.IOException {
+            throws IOException {
         this.config = config;
         this.logger = logger;
         this.journal = new TransactionJournal(internal);
@@ -157,7 +159,7 @@ public final class ConsistencyManager implements AutoCloseable {
         for (ExternalPlayerDataBridge bridge : bridges) safe(() -> bridge.onRecovery(id));
     }
 
-    public List<java.nio.file.Path> listJournalFiles() throws java.io.IOException {
+    public List<Path> listJournalFiles() throws IOException {
         return TransactionJournal.list(journal.file().getParent());
     }
 

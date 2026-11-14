@@ -9,11 +9,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 class InternalStateTest {
     @TempDir Path temp;
@@ -77,8 +80,8 @@ class InternalStateTest {
     @Test
     void aMarkerFromAnOlderBuildCountsAsHavingOpenedTheWorld() {
         RunMarker old = new RunMarker();
-        old.runId = java.util.UUID.randomUUID().toString();
-        old.startedAtUtc = java.time.Instant.now().toString();
+        old.runId = UUID.randomUUID().toString();
+        old.startedAtUtc = Instant.now().toString();
         assertEquals(old, RunMarker.effectivePrevious(old));
         assertFalse(RunMarker.effectivePrevious(old).cleanShutdown);
     }
@@ -174,9 +177,7 @@ class InternalStateTest {
         internal.initializeDirectories();
 
         try (InternalProcessLock first = InternalProcessLock.acquire(internal.locksDir())) {
-            assertThrows(
-                    java.io.IOException.class,
-                    () -> InternalProcessLock.acquire(internal.locksDir()));
+            assertThrows(IOException.class, () -> InternalProcessLock.acquire(internal.locksDir()));
         }
 
         try (InternalProcessLock ignored = InternalProcessLock.acquire(internal.locksDir())) {

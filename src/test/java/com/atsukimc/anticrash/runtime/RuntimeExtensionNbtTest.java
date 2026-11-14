@@ -6,10 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.atsukimc.anticrash.audit.MixinSaveScopeAudit;
+
 import net.minecraft.nbt.CompoundTag;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 class RuntimeExtensionNbtTest {
     @AfterEach
@@ -137,13 +141,11 @@ class RuntimeExtensionNbtTest {
         // annotation: inactive Stonecutter branches contain annotation-shaped comments.
         //? if <=1.21.11 {
         /*int injections =
-                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                        java.util.Set.of("saveAdditional", "saveWithoutId"));
+                MixinSaveScopeAudit.verifyFromProperty(Set.of("saveAdditional", "saveWithoutId"));
         *///?} else {
         int injections =
-                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                        java.util.Set.of(
-                                "saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
+                MixinSaveScopeAudit.verifyFromProperty(
+                        Set.of("saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
         //?}
         //? if <=1.18.2 {
         /*assertTrue(injections >= 5, "save injections found: " + injections);

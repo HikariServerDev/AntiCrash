@@ -11,17 +11,13 @@ public final class RecoveryReportFormatter {
 
         StringBuilder output = new StringBuilder();
         output.append(
-                        com.atsukimc.anticrash.i18n.MessageCatalog.text(
+                        MessageCatalog.text(
                                 language, "diagnostics.equivalence.anticrash_recovery_equivalence"))
                 .append('\n')
-                .append(
-                        com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                language, "diagnostics.equivalence.checkpoint"))
+                .append(MessageCatalog.text(language, "diagnostics.equivalence.checkpoint"))
                 .append(report.checkpointId == null ? "-" : report.checkpointId)
                 .append('\n')
-                .append(
-                        com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                language, "diagnostics.equivalence.fidelity"))
+                .append(MessageCatalog.text(language, "diagnostics.equivalence.fidelity"))
                 .append(report.fidelity == null ? "-" : report.fidelity)
                 .append('\n');
         for (EquivalenceCheck check : report.checks) {
@@ -45,20 +41,15 @@ public final class RecoveryReportFormatter {
                 }
             }
         }
-        output.append(
-                        com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                language, "diagnostics.equivalence.result"))
+        output.append(MessageCatalog.text(language, "diagnostics.equivalence.result"))
                 .append(
                         report.ready
-                                ? com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                        language, "diagnostics.equivalence.ready")
-                                : com.atsukimc.anticrash.i18n.MessageCatalog.text(
+                                ? MessageCatalog.text(language, "diagnostics.equivalence.ready")
+                                : MessageCatalog.text(
                                         language, "diagnostics.equivalence.not_ready"))
                 .append('\n');
         if (report.blockingReason != null) {
-            output.append(
-                            com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                    language, "diagnostics.equivalence.blocking_reason"))
+            output.append(MessageCatalog.text(language, "diagnostics.equivalence.blocking_reason"))
                     .append(report.blockingReason)
                     .append('\n');
         }

@@ -28,9 +28,11 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -166,8 +168,8 @@ public final class RuntimeOrderRestorer {
     /**
      * The key of every expiring ticket of the checkpoint that {@link #expiringTickets} re-creates.
      */
-    static java.util.Set<String> expiringKeys(List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> keys = new java.util.HashSet<>();
+    static Set<String> expiringKeys(List<TicketLedgerSnapshot.Entry> ledger) {
+        Set<String> keys = new HashSet<>();
         for (TicketLedgerSnapshot.Entry entry : ledger) {
             if (entry == null || entry.type == null || entry.remainingTicks == null) continue;
             keys.add(
@@ -195,7 +197,7 @@ public final class RuntimeOrderRestorer {
      */
     public static int removeStrayExpiringTickets(
             Map<String, ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> expected = expiringKeys(ledger);
+        Set<String> expected = expiringKeys(ledger);
         int removed = 0;
 
         for (Map.Entry<String, ServerLevel> world : worlds.entrySet()) {
@@ -512,7 +514,7 @@ public final class RuntimeOrderRestorer {
     /** How many permanent tickets of the checkpoint do not exist in {@code current}. */
     public static int missingPermanentTickets(
             List<TicketLedgerSnapshot.Entry> current, List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> live = new java.util.HashSet<>();
+        Set<String> live = new HashSet<>();
         for (TicketLedgerSnapshot.Entry entry : current) live.add(permanentKey(entry));
         int missing = 0;
         for (TicketLedgerSnapshot.Entry entry : ledger) {

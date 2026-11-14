@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
@@ -8,10 +9,13 @@ import com.atsukimc.anticrash.util.VersionIds;
 *///?}
 
 import net.minecraft.core.BlockPos;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -41,9 +45,9 @@ public abstract class BrewingStandBlockEntityMixin {
             world.blockEntityChanged(pos);
     }
 
-    @org.spongepowered.asm.mixin.Shadow private int brewTime;
+    @Shadow private int brewTime;
 
-    @org.spongepowered.asm.mixin.Shadow private net.minecraft.world.item.Item ingredient;
+    @Shadow private Item ingredient;
 
     /**
      * Vanilla does not save which ingredient the running brew started with. After a load it is
@@ -52,12 +56,11 @@ public abstract class BrewingStandBlockEntityMixin {
      */
     //? if <=1.20.4 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveBrewingItem(
-            net.minecraft.nbt.CompoundTag nbt, CallbackInfo callbackInfo) {
+    private void anticrash$saveBrewingItem(CompoundTag nbt, CallbackInfo callbackInfo) {
     *///?} else if <=1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrewingItem(
-            net.minecraft.nbt.CompoundTag nbt,
+            CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo callbackInfo) {
     *///?} else {
@@ -65,8 +68,8 @@ public abstract class BrewingStandBlockEntityMixin {
     private void anticrash$saveBrewingItem(
             net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo) {
     //?}
-        if (!com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.savingLoadedChunk()) return;
-        com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.write(
+        if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
+        RuntimeExtensionNbt.write(
                 nbt,
                 extension -> {
                     extension.remove("ItemBrewing");
@@ -79,12 +82,11 @@ public abstract class BrewingStandBlockEntityMixin {
 
     //? if <=1.20.4 {
     /*@Inject(method = "load", at = @At("TAIL"))
-    private void anticrash$loadBrewingItem(
-            net.minecraft.nbt.CompoundTag nbt, CallbackInfo callbackInfo) {
+    private void anticrash$loadBrewingItem(CompoundTag nbt, CallbackInfo callbackInfo) {
     *///?} else if <=1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrewingItem(
-            net.minecraft.nbt.CompoundTag nbt,
+            CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
             CallbackInfo callbackInfo) {
     *///?} else {
@@ -92,8 +94,7 @@ public abstract class BrewingStandBlockEntityMixin {
     private void anticrash$loadBrewingItem(
             net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo) {
     //?}
-        net.minecraft.nbt.CompoundTag extension =
-                com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.read(nbt);
+        CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         if (extension == null || !VersionNbt.contains(extension, "ItemBrewing", 8) || brewTime <= 0)
             return;

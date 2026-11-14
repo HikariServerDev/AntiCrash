@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.restart;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -236,9 +237,9 @@ public final class RestartHelper {
                         + ("en".equalsIgnoreCase(language) ? english : japanese));
     }
 
-    private static java.io.File nullDevice() {
-        return new java.io.File(
-                System.getProperty("os.name", "").toLowerCase(java.util.Locale.ROOT).contains("win")
+    private static File nullDevice() {
+        return new File(
+                System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win")
                         ? "NUL"
                         : "/dev/null");
     }

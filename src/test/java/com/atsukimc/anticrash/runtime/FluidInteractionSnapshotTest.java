@@ -10,6 +10,8 @@ import net.minecraft.world.phys.Vec3;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 class FluidInteractionSnapshotTest {
     @Test
     void trackerRoundTripPreservesAllSemanticValues() {
@@ -27,7 +29,7 @@ class FluidInteractionSnapshotTest {
         assertEquals(state, FluidInteractionSnapshot.State.read(state.write()));
         var n = new ListTag();
         n.add(state.write());
-        assertEquals(java.util.List.of(state), FluidInteractionSnapshot.decode(n));
+        assertEquals(List.of(state), FluidInteractionSnapshot.decode(n));
     }
 
     @Test
@@ -64,9 +66,9 @@ class FluidInteractionSnapshotTest {
         n.add(lava.write());
 
         //? if <=26.2 {
-        /*assertEquals(java.util.List.of(lava, water), FluidInteractionSnapshot.decode(n));
+        /*assertEquals(List.of(lava, water), FluidInteractionSnapshot.decode(n));
         *///?} else {
-        assertEquals(java.util.List.of(water, lava), FluidInteractionSnapshot.decode(n));
+        assertEquals(List.of(water, lava), FluidInteractionSnapshot.decode(n));
         //?}
 
         assertEquals(water, FluidInteractionSnapshot.State.read((CompoundTag) n.get(0)));
@@ -94,7 +96,7 @@ class FluidInteractionSnapshotTest {
 
         n.add(current.write());
 
-        assertEquals(java.util.List.of(contact, current), FluidInteractionSnapshot.decode(n));
+        assertEquals(List.of(contact, current), FluidInteractionSnapshot.decode(n));
     }
 
     @Test
@@ -103,29 +105,25 @@ class FluidInteractionSnapshotTest {
 
         var lava = new FluidInteractionSnapshot.State("minecraft:lava", 0, false, Vec3.ZERO, 0);
 
-        var expected = java.util.List.of(water, lava);
+        var expected = List.of(water, lava);
 
         assertDoesNotThrow(() ->
                 FluidInteractionSnapshot.validateDomains(
-                        expected,
-                        java.util.List.of(),
-                        java.util.List.of("minecraft:water", "minecraft:lava")));
+                        expected, List.of(), List.of("minecraft:water", "minecraft:lava")));
+
+        assertThrows(
+                IllegalStateException.class,
+                () ->
+                        FluidInteractionSnapshot.validateDomains(
+                                expected, List.of(), List.of("minecraft:lava", "minecraft:water")));
 
         assertThrows(
                 IllegalStateException.class,
                 () ->
                         FluidInteractionSnapshot.validateDomains(
                                 expected,
-                                java.util.List.of(),
-                                java.util.List.of("minecraft:lava", "minecraft:water")));
-
-        assertThrows(
-                IllegalStateException.class,
-                () ->
-                        FluidInteractionSnapshot.validateDomains(
-                                expected,
-                                java.util.List.of("minecraft:water"),
-                                java.util.List.of("minecraft:water", "minecraft:lava")));
+                                List.of("minecraft:water"),
+                                List.of("minecraft:water", "minecraft:lava")));
     }
 
     @Test
@@ -148,7 +146,7 @@ class FluidInteractionSnapshotTest {
 
         list.setAccessible(true);
 
-        assertEquals(1, ((java.util.List<?>) list.get(interaction)).size());
+        assertEquals(1, ((List<?>) list.get(interaction)).size());
     }
     //?}
 

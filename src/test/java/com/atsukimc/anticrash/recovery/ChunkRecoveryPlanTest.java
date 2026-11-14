@@ -13,7 +13,9 @@ import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 class ChunkRecoveryPlanTest {
@@ -162,7 +164,7 @@ class ChunkRecoveryPlanTest {
                 ChunkRecoveryPlan.select(
                         capsule, ChunkRecoveryPlan.PreloadMode.CRITICAL, Set.of(), 16);
 
-        java.util.Map<Long, Integer> levels = new java.util.HashMap<>();
+        Map<Long, Integer> levels = new HashMap<>();
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
             levels.put(entry.packedPosition(), entry.ticketLevel());
         }
@@ -199,7 +201,7 @@ class ChunkRecoveryPlanTest {
                         Set.of(),
                         ChunkRecoveryPlan.DEFAULT_MAX_PRELOAD_CHUNKS);
 
-        java.util.Map<Long, Integer> levels = new java.util.HashMap<>();
+        Map<Long, Integer> levels = new HashMap<>();
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
             levels.put(entry.packedPosition(), entry.ticketLevel());
         }

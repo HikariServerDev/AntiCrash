@@ -11,6 +11,7 @@ import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.concurrent.atomic.AtomicReference;
 
 class AntiCrashLoggerTest {
@@ -46,9 +47,7 @@ class AntiCrashLoggerTest {
 
         logger.normal("BBB");
         Files.writeString(
-                logs.resolve("anticrash.log"),
-                "B".repeat(1_100_000),
-                java.nio.file.StandardOpenOption.APPEND);
+                logs.resolve("anticrash.log"), "B".repeat(1_100_000), StandardOpenOption.APPEND);
         logger.normal("CCC");
 
         assertTrue(Files.readString(logs.resolve("anticrash.log")).contains("CCC"));

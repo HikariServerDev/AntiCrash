@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
 import com.atsukimc.anticrash.util.Hashing;
@@ -320,7 +321,7 @@ public final class RuntimeFingerprint {
         if (server == null) return lines;
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (com.atsukimc.anticrash.integration.carpet.CarpetIntegration.isFakePlayer(player)) {
+            if (CarpetIntegration.isFakePlayer(player)) {
                 continue;
             }
 

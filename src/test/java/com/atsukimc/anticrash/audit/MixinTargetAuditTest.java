@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -110,7 +111,7 @@ class MixinTargetAuditTest {
             problems.add(
                     context + " callback return type differs from " + target.name + target.desc);
         }
-        if (((handler.access ^ target.access) & org.objectweb.asm.Opcodes.ACC_STATIC) != 0) {
+        if (((handler.access ^ target.access) & Opcodes.ACC_STATIC) != 0) {
             problems.add(
                     context + " callback staticness differs from " + target.name + target.desc);
         }
@@ -143,7 +144,7 @@ class MixinTargetAuditTest {
                 || !Arrays.equals(
                         Arrays.copyOf(args, args.length - 1), Type.getArgumentTypes(target.desc))
                 || !Type.getReturnType(handler.desc).equals(Type.getReturnType(target.desc))
-                || ((handler.access ^ target.access) & org.objectweb.asm.Opcodes.ACC_STATIC) != 0)
+                || ((handler.access ^ target.access) & Opcodes.ACC_STATIC) != 0)
             problems.add(
                     context + " WrapMethod signature differs from " + target.name + target.desc);
     }

@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.core.BlockPos;
@@ -73,8 +74,7 @@ public final class BlockEntityTickerSnapshot {
 
     public static List<BlockEntityTickerSnapshot> capture(ServerLevel world) {
         List<BlockEntityTickerSnapshot> result = new ArrayList<>();
-        com.atsukimc.anticrash.mixin.WorldAccessorMixin accessor =
-                (com.atsukimc.anticrash.mixin.WorldAccessorMixin) world;
+        WorldAccessorMixin accessor = (WorldAccessorMixin) world;
         Map<BlockEntityType<?>, String> typeIds = new IdentityHashMap<>();
         captureList(result, world, CURRENT, accessor.anticrash$getBlockEntityTickers(), typeIds);
         captureList(

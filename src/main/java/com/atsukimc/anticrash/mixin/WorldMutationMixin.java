@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.core.BlockPos;
@@ -18,7 +19,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 public abstract class WorldMutationMixin {
     @Inject(method = "blockEntityChanged", at = @At("HEAD"))
     private void anticrash$worldDirty(BlockPos pos, CallbackInfo callbackInfo) {
-        if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
+        if (!LogicalTracking.enabled()) return;
 
         ChunkMutationTracker.record(
                 (Level) (Object) this, VersionChunkPos.containing(pos), "world.markDirty");

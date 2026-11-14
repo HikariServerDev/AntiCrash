@@ -13,15 +13,18 @@ import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.WorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionIds;
 
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.core.BlockPos;
-import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
-import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
-import net.minecraft.world.entity.ExperienceOrb;
-import net.minecraft.world.entity.item.ItemEntity;
-import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.ExperienceOrb;
+import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.world.entity.item.ItemEntity;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
+import net.minecraft.world.level.block.entity.BlockEntity;
+import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
+import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import net.minecraft.world.level.chunk.LevelChunk;
 
@@ -385,14 +388,12 @@ public final class RuntimeExtensionSnapshot {
     private static void captureEntityRuntime(
             MinecraftServer server,
             ServerLevel world,
-            net.minecraft.world.entity.Entity entity,
+            Entity entity,
             String dimension,
             Map<String, List<String>> lines,
             RuntimeCapsule capsule) {
 
-        if (entity == null
-                || entity.isRemoved()
-                || entity instanceof net.minecraft.world.entity.player.Player) return;
+        if (entity == null || entity.isRemoved() || entity instanceof Player) return;
         EntityRuntimeAccessorMixin runtime = (EntityRuntimeAccessorMixin) entity;
 
         String id = dimension + "|" + entity.getStringUUID();
@@ -559,9 +560,7 @@ public final class RuntimeExtensionSnapshot {
         //? if >=1.21.11 {
         if (entity instanceof LivingEntity)
             line.append("|kineticTime=")
-                    .append(
-                            ((com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin) entity)
-                                    .anticrash$lastKineticAttackTime());
+                    .append(((LivingEntityAccessorMixin) entity).anticrash$lastKineticAttackTime());
         //?}
 
         if (entity instanceof ItemEntity || entity instanceof ExperienceOrb)
@@ -623,9 +622,9 @@ public final class RuntimeExtensionSnapshot {
                             lines.add(
                                     inhabited.dimension
                                             + "|"
-                                            + net.minecraft.world.level.ChunkPos.getX(packed)
+                                            + ChunkPos.getX(packed)
                                             + ","
-                                            + net.minecraft.world.level.ChunkPos.getZ(packed)
+                                            + ChunkPos.getZ(packed)
                                             + "|"
                                             + inhabited.times.get(index));
                         }

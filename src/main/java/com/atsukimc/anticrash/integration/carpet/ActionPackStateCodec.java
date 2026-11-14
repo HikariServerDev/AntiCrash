@@ -15,8 +15,11 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.IdentityHashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Reflective, version-tolerant ActionPack capsule. Carpet is optional, so no Carpet class is
@@ -370,7 +373,7 @@ public final class ActionPackStateCodec {
             result.addProperty("name", enumValue.name());
             return result;
         }
-        if (value instanceof java.util.UUID uuid) {
+        if (value instanceof UUID uuid) {
             JsonObject result = kind("uuid");
             result.addProperty("value", uuid.toString());
             return result;
@@ -496,7 +499,7 @@ public final class ActionPackStateCodec {
         String kind = object.has("kind") ? object.get("kind").getAsString() : "";
         if (kind.equals("uuid"))
             try {
-                return java.util.UUID.fromString(object.get("value").getAsString());
+                return UUID.fromString(object.get("value").getAsString());
             } catch (Exception e) {
                 return Unavailable.INSTANCE;
             }
@@ -563,7 +566,7 @@ public final class ActionPackStateCodec {
     private static void restoreMap(
             Map<Object, Object> target, JsonArray entries, int depth, Selection selection) {
         if (entries == null) return;
-        Map<Object, Object> restored = new java.util.LinkedHashMap<>();
+        Map<Object, Object> restored = new LinkedHashMap<>();
         for (JsonElement element : entries) {
             JsonObject entry = element.getAsJsonObject();
             String key = entry.get("key").getAsString();
@@ -740,7 +743,7 @@ public final class ActionPackStateCodec {
             boolean itemUseCooldown,
             boolean blockBreakProgress) {
         private boolean includes(String fieldName) {
-            String name = fieldName == null ? "" : fieldName.toLowerCase(java.util.Locale.ROOT);
+            String name = fieldName == null ? "" : fieldName.toLowerCase(Locale.ROOT);
             if (name.equals("itemusecooldown") || name.equals("item_use_cooldown"))
                 return itemUseCooldown;
             if (name.equals("currentblock")

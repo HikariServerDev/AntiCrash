@@ -1,14 +1,18 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.runtime.ExtensionCarrier;
 import com.atsukimc.anticrash.snapshot.logical.EntityLifecycleTracker;
 
-import net.minecraft.world.entity.Entity;
 import net.minecraft.server.level.ChunkMap;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.chunk.ChunkAccess;
+import net.minecraft.world.level.chunk.LevelChunk;
 
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * EntityManager unload is a persistence boundary rather than a removal. The logical engine records
@@ -31,14 +35,11 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
      */
     @Inject(method = "save(Lnet/minecraft/world/level/chunk/ChunkAccess;)Z", at = @At("HEAD"))
     private void anticrash$rewriteExtensionOnUnload(
-            net.minecraft.world.level.chunk.ChunkAccess chunk,
-            org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable<Boolean>
-                    callbackInfo) {
+            ChunkAccess chunk, CallbackInfoReturnable<Boolean> callbackInfo) {
 
-        if (chunk instanceof net.minecraft.world.level.chunk.LevelChunk worldChunk
+        if (chunk instanceof LevelChunk worldChunk
                 && !((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld()
-                && ((com.atsukimc.anticrash.runtime.ExtensionCarrier) worldChunk)
-                        .anticrash$extensionOnDisk()) {
+                && ((ExtensionCarrier) worldChunk).anticrash$extensionOnDisk()) {
 
             //? if <=1.21.1 {
             /*worldChunk.setUnsaved(true);

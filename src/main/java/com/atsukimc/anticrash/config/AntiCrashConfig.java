@@ -6,6 +6,7 @@ import com.atsukimc.anticrash.util.FileSecurity;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -49,7 +50,7 @@ public final class AntiCrashConfig {
         }
         try {
             if (Files.isSymbolicLink(file)
-                    || !Files.isRegularFile(file, java.nio.file.LinkOption.NOFOLLOW_LINKS)) {
+                    || !Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS)) {
                 throw new IOException("Configuration is not a regular file: " + file);
             }
             Map<String, String> values = Toml.parse(AtomicFiles.readText(file, 4L * 1024L * 1024L));
@@ -103,8 +104,7 @@ public final class AntiCrashConfig {
     }
 
     public void reloadFrom(Path file, Consumer<String> warning) throws IOException {
-        if (!Files.isRegularFile(file, java.nio.file.LinkOption.NOFOLLOW_LINKS)
-                || Files.isSymbolicLink(file))
+        if (!Files.isRegularFile(file, LinkOption.NOFOLLOW_LINKS) || Files.isSymbolicLink(file))
             throw new IOException("Configuration file does not exist or is unsafe: " + file);
         AntiCrashConfig loaded = new AntiCrashConfig();
         try {

@@ -2,6 +2,11 @@ package com.atsukimc.anticrash.integration.carpet;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
+
 import org.junit.jupiter.api.Test;
 
 class FakePlayerCreationArgumentsTest {
@@ -19,10 +24,10 @@ class FakePlayerCreationArgumentsTest {
                 CarpetIntegration.class.getDeclaredMethod(
                         "arguments",
                         Class[].class,
-                        net.minecraft.server.MinecraftServer.class,
-                        net.minecraft.server.level.ServerLevel.class,
+                        MinecraftServer.class,
+                        ServerLevel.class,
                         FakePlayerSnapshot.class,
-                        net.minecraft.world.level.GameType.class);
+                        GameType.class);
 
         method.setAccessible(true);
 
@@ -33,8 +38,8 @@ class FakePlayerCreationArgumentsTest {
                                 null,
                                 new Class<?>[] {
                                     String.class,
-                                    net.minecraft.server.MinecraftServer.class,
-                                    net.minecraft.world.phys.Vec3.class,
+                                    MinecraftServer.class,
+                                    Vec3.class,
                                     double.class,
                                     double.class,
                                     dimensionKeyType(),
@@ -52,8 +57,8 @@ class FakePlayerCreationArgumentsTest {
                                 null,
                                 new Class<?>[] {
                                     String.class,
-                                    net.minecraft.server.MinecraftServer.class,
-                                    net.minecraft.world.phys.Vec3.class,
+                                    MinecraftServer.class,
+                                    Vec3.class,
                                     double.class,
                                     double.class,
                                     dimensionKeyType(),
@@ -72,8 +77,8 @@ class FakePlayerCreationArgumentsTest {
                                 null,
                                 new Class<?>[] {
                                     String.class,
-                                    net.minecraft.server.MinecraftServer.class,
-                                    net.minecraft.world.phys.Vec3.class,
+                                    MinecraftServer.class,
+                                    Vec3.class,
                                     double.class,
                                     double.class,
                                     dimensionKeyType(),
@@ -88,7 +93,7 @@ class FakePlayerCreationArgumentsTest {
 
         assertNotNull(args);
 
-        assertEquals(new net.minecraft.world.phys.Vec3(120, 90, -450), args[2]);
+        assertEquals(new Vec3(120, 90, -450), args[2]);
 
         assertEquals(73.0D, args[3]);
         assertEquals(-21.0D, args[4]);
@@ -102,11 +107,11 @@ class FakePlayerCreationArgumentsTest {
 
     private static Class<?> dimensionKeyType() throws Exception {
 
-        return net.minecraft.server.level.ServerLevel.class.getMethod("dimension").getReturnType();
+        return ServerLevel.class.getMethod("dimension").getReturnType();
     }
 
     private static Class<?> modeType() {
 
-        return net.minecraft.world.level.GameType.class;
+        return GameType.class;
     }
 }

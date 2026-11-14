@@ -1,5 +1,7 @@
 package com.atsukimc.anticrash.snapshot;
 
+import java.util.function.IntSupplier;
+
 /**
  * Explicit experimental backend. CRIU cannot safely capture a live Minecraft JVM as a portable
  * world checkpoint, so this backend uses the same barrier-protected file copy as JAVA_INCREMENTAL
@@ -10,7 +12,7 @@ package com.atsukimc.anticrash.snapshot;
  * refuses.
  */
 public final class CriuBackend extends JavaIncrementalBackend {
-    public CriuBackend(java.util.function.IntSupplier configuredThreads) {
+    public CriuBackend(IntSupplier configuredThreads) {
         super(configuredThreads);
     }
 

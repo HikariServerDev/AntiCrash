@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
+import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.Hashing;
@@ -8,14 +9,16 @@ import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 
 //? if <=1.21.1 {
@@ -32,10 +35,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Server-thread side of the Exact-Epoch semantic delta engine.
@@ -64,7 +69,7 @@ public final class LogicalDeltaEngine {
     private final Map<String, String> committedChunkHashes = new LinkedHashMap<>();
 
     /** Accessible domain at the last committed epoch, separate from stale generation keys. */
-    private final java.util.Set<String> committedAccessibleChunks = new java.util.HashSet<>();
+    private final Set<String> committedAccessibleChunks = new HashSet<>();
 
     private final Map<String, String> committedEntityChunkHashes = new LinkedHashMap<>();
     private boolean committedBaseline;
@@ -256,7 +261,7 @@ public final class LogicalDeltaEngine {
         long version = mutations.version();
         long phaseStart = System.nanoTime();
         List<WorldChunkRef> refs = accessibleChunks(server);
-        java.util.Set<String> accessibleKeys = new java.util.HashSet<>();
+        Set<String> accessibleKeys = new HashSet<>();
         for (WorldChunkRef ref : refs) accessibleKeys.add(ref.key());
         recordPhase(timing, "delta.chunk_scan", phaseStart);
         Map<String, Long> observedGenerations = mutations.snapshot();
@@ -408,7 +413,7 @@ public final class LogicalDeltaEngine {
 
         if (server == null || server.overworld() == null) return true;
 
-        Path root = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
+        Path root = server.getWorldPath(LevelResource.ROOT);
 
         // POI and arbitrary SavedData files have no safe generic in-memory capture API in
         // 1.18.2.  Refuse semantic materialization when they exist instead of carrying an old
@@ -416,9 +421,7 @@ public final class LogicalDeltaEngine {
 
         for (ServerLevel world : server.getAllLevels()) {
 
-            Path dimensionRoot =
-                    net.minecraft.world.level.dimension.DimensionType.getStorageFolder(
-                            world.dimension(), root);
+            Path dimensionRoot = DimensionType.getStorageFolder(world.dimension(), root);
 
             if (hasRegularFiles(dimensionRoot.resolve("poi"))
                     || hasRegularFiles(dimensionRoot.resolve("data"))) return true;
@@ -657,9 +660,7 @@ public final class LogicalDeltaEngine {
         for (ServerLevel world : server.getAllLevels()) {
             String dimension = VersionIds.dimension(world);
 
-            var storage =
-                    (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                            world.getChunkSource().chunkMap;
+            var storage = (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
             for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;

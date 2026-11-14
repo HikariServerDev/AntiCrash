@@ -10,7 +10,10 @@ import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.io.TempDir;
 
 import java.nio.file.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.stream.Stream;
 
 class ControllerRecoveryScenariosTest {
     @TempDir Path temp;
@@ -141,8 +144,8 @@ class ControllerRecoveryScenariosTest {
     }
 
     @TestFactory
-    java.util.stream.Stream<DynamicTest> exitPolicyAndDecisionMatrixUsesRealBootstrap() {
-        java.util.List<DynamicTest> tests = new java.util.ArrayList<>();
+    Stream<DynamicTest> exitPolicyAndDecisionMatrixUsesRealBootstrap() {
+        List<DynamicTest> tests = new ArrayList<>();
         for (boolean clean : new boolean[] {true, false})
             for (String policy : new String[] {"AUTO", "ASK", "MANUAL"})
                 for (var answer : PreWorldDecisionInput.Answer.values()) {

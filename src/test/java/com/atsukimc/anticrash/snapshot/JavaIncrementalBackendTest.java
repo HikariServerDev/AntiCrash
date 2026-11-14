@@ -4,12 +4,15 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.Map;
 
 class JavaIncrementalBackendTest {
     @TempDir Path temp;
@@ -60,8 +63,8 @@ class JavaIncrementalBackendTest {
         }
 
         JavaIncrementalBackend backend = new JavaIncrementalBackend();
-        org.junit.jupiter.api.Assertions.assertThrows(
-                java.io.IOException.class,
+        Assertions.assertThrows(
+                IOException.class,
                 () ->
                         backend.snapshot(
                                 live, temp.resolve("destination"), null, MapSupport.empty()));
@@ -81,10 +84,7 @@ class JavaIncrementalBackendTest {
 
         SnapshotResult next =
                 backend.snapshot(
-                        live,
-                        second,
-                        first,
-                        java.util.Map.of(oldManifestEntry.path, oldManifestEntry));
+                        live, second, first, Map.of(oldManifestEntry.path, oldManifestEntry));
 
         assertEquals(1, next.reusedFiles);
         assertEquals(0, next.changedFiles);
@@ -104,7 +104,7 @@ class JavaIncrementalBackendTest {
         Files.writeString(first.resolve("level.dat"), "corrupted-old");
 
         SnapshotResult next =
-                backend.snapshot(live, second, first, java.util.Map.of(metadata.path, metadata));
+                backend.snapshot(live, second, first, Map.of(metadata.path, metadata));
 
         assertEquals(0, next.reusedFiles);
         assertEquals(1, next.changedFiles);
@@ -128,7 +128,7 @@ class JavaIncrementalBackendTest {
                         live,
                         second,
                         first,
-                        java.util.Map.of(initial.files.get(0).path, initial.files.get(0)));
+                        Map.of(initial.files.get(0).path, initial.files.get(0)));
 
         // This models retention deleting the old checkpoint after the new one was linked.
         Files.delete(first.resolve("level.dat"));
@@ -139,7 +139,7 @@ class JavaIncrementalBackendTest {
                         live,
                         third,
                         second,
-                        java.util.Map.of(retained.files.get(0).path, retained.files.get(0)));
+                        Map.of(retained.files.get(0).path, retained.files.get(0)));
 
         assertEquals(1, next.reusedFiles);
         assertEquals(0, next.changedFiles);
@@ -147,8 +147,8 @@ class JavaIncrementalBackendTest {
     }
 
     private static final class MapSupport {
-        private static java.util.Map<String, SnapshotFile> empty() {
-            return java.util.Map.of();
+        private static Map<String, SnapshotFile> empty() {
+            return Map.of();
         }
     }
 }

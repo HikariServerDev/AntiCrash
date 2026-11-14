@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -78,11 +79,11 @@ class AtomicFilesTest {
     void boundedReadsAndHashesRejectOversizedFilesAndSymlinks() throws Exception {
         Path file = temp.resolve("large.txt");
         Files.writeString(file, "12345");
-        assertThrows(java.io.IOException.class, () -> AtomicFiles.readText(file, 4));
+        assertThrows(IOException.class, () -> AtomicFiles.readText(file, 4));
 
         Path link = temp.resolve("link.txt");
         Files.createSymbolicLink(link, file.getFileName());
-        assertThrows(java.io.IOException.class, () -> AtomicFiles.readText(link, 1024));
-        assertThrows(java.io.IOException.class, () -> Hashing.sha256(link));
+        assertThrows(IOException.class, () -> AtomicFiles.readText(link, 1024));
+        assertThrows(IOException.class, () -> Hashing.sha256(link));
     }
 }

@@ -14,6 +14,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
 
+import java.util.stream.Stream;
+
 class VersionNbtTest {
     @Test
     void sparseFalseFlagsMayBeAbsentButCannotHaveAnInvalidType() {
@@ -93,8 +95,7 @@ class VersionNbtTest {
                 ((CompoundTag)
                                 VersionNbt.item(
                                         ItemStack.EMPTY,
-                                        HolderLookup.Provider.create(
-                                                java.util.stream.Stream.empty())))
+                                        HolderLookup.Provider.create(Stream.empty())))
                         .isEmpty());
     }
 }

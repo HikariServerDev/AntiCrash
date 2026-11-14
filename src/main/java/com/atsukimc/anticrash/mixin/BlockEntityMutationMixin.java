@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.world.level.block.entity.BlockEntity;
@@ -20,7 +21,7 @@ public abstract class BlockEntityMutationMixin {
 
     @Inject(method = "setChanged()V", at = @At("HEAD"))
     private void anticrash$markDirty(CallbackInfo callbackInfo) {
-        if (!com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) return;
+        if (!LogicalTracking.enabled()) return;
         BlockEntity blockEntity = (BlockEntity) (Object) this;
 
         if (!blockEntity.hasLevel()

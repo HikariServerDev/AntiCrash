@@ -4,25 +4,35 @@ import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.core.AntiCrashState;
 import com.atsukimc.anticrash.core.AntiCrashStateMachine;
 import com.atsukimc.anticrash.core.InternalStateManager;
+import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
+import com.atsukimc.anticrash.mixin.EntityChunkDataAccessAccessorMixin;
 import com.atsukimc.anticrash.mixin.SerializingRegionBasedStorageAccessorMixin;
+import com.atsukimc.anticrash.mixin.ServerEntityManagerAccessorMixin;
+import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 import com.atsukimc.anticrash.player.PlayerSnapshotData;
 import com.atsukimc.anticrash.player.PlayerSnapshotManager;
+import com.atsukimc.anticrash.runtime.ChunkStateSnapshot;
+import com.atsukimc.anticrash.runtime.EquivalenceCategory;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
 import com.atsukimc.anticrash.runtime.RuntimeCapsuleManager;
 import com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer;
 import com.atsukimc.anticrash.runtime.TransientChunkStateMarker;
+import com.atsukimc.anticrash.snapshot.CheckpointCandidate;
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.atsukimc.anticrash.snapshot.CheckpointStore;
 import com.atsukimc.anticrash.snapshot.DetachedGeneration;
 import com.atsukimc.anticrash.snapshot.GenerationSeal;
+import com.atsukimc.anticrash.snapshot.JavaIncrementalBackend;
 import com.atsukimc.anticrash.snapshot.LiveFileTracker;
 import com.atsukimc.anticrash.snapshot.LiveWorldScan;
 import com.atsukimc.anticrash.snapshot.ParentCheckpointChangedException;
+import com.atsukimc.anticrash.snapshot.PersistentDataFlush;
 import com.atsukimc.anticrash.snapshot.PortableGenerationBackend;
+import com.atsukimc.anticrash.snapshot.SealedNbt;
 import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotManager;
 import com.atsukimc.anticrash.snapshot.SnapshotResult;
@@ -46,18 +56,22 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.chunk.ChunkAccess;
 import net.minecraft.world.level.chunk.ImposterProtoChunk;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.chunk.storage.EntityStorage;
 import net.minecraft.world.level.chunk.storage.IOWorker;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.file.Files;
+import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.CancellationException;
 import java.util.concurrent.CompletableFuture;
@@ -68,6 +82,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import java.util.stream.StreamSupport;
 
 /**
  * Coordinates the short server-thread consistency barrier and the long filesystem operation.
@@ -153,7 +168,7 @@ public final class CheckpointManager {
     private String lastLogicalFallbackReason;
 
     /** Tracker interval handed to the running job; returned to the tracker if the job fails. */
-    private Set<java.nio.file.Path> activeTrackerWrites;
+    private Set<Path> activeTrackerWrites;
 
     /** True when the running job's cut started the tracker interval now being recorded. */
     private boolean activeTrackerArmedAtCut;
@@ -391,7 +406,7 @@ public final class CheckpointManager {
             logger.verboseKey(
                     "checkpoint.rolling_prepared",
                     prepared,
-                    String.format(java.util.Locale.ROOT, "%.2f", rollingBudget.currentMs()));
+                    String.format(Locale.ROOT, "%.2f", rollingBudget.currentMs()));
     }
 
     /**
@@ -464,7 +479,7 @@ public final class CheckpointManager {
             if (Boolean.TRUE.equals(logicalPersistentStateBlocked) || baseRequested)
                 logicalDeltaEngine.releaseCandidates();
             world = WorldLocator.resolve(internal.gameDir());
-            if (!Files.isDirectory(world, java.nio.file.LinkOption.NOFOLLOW_LINKS)
+            if (!Files.isDirectory(world, LinkOption.NOFOLLOW_LINKS)
                     || Files.isSymbolicLink(world)) {
                 throw new IOException("World directory is unavailable: " + world);
             }
@@ -502,10 +517,7 @@ public final class CheckpointManager {
             String engineMode =
                     config.checkpoint.engineMode == null
                             ? "LOGICAL_DELTA"
-                            : config.checkpoint
-                                    .engineMode
-                                    .trim()
-                                    .toUpperCase(java.util.Locale.ROOT);
+                            : config.checkpoint.engineMode.trim().toUpperCase(Locale.ROOT);
             boolean logicalDelta =
                     !explicitBase
                             && CheckpointEnginePolicy.logicalDeltaRequested(config)
@@ -955,7 +967,7 @@ public final class CheckpointManager {
         for (BarrierWorld barrierWorld : barrier.worlds) {
             savePointsOfInterest(barrierWorld.world);
         }
-        com.atsukimc.anticrash.snapshot.PersistentDataFlush.await(server);
+        PersistentDataFlush.await(server);
         barrier.timing.end("vanilla_save");
         long minimumFreeBytes = Math.max(0L, config.checkpoint.minimumFreeMb) * 1024L * 1024L;
         if (minimumFreeBytes > 0L
@@ -977,7 +989,7 @@ public final class CheckpointManager {
             // starts here; the files written in the interval that ends here are what changed since
             // the tracker's base checkpoint. Queued writes land after the seal, in the next
             // interval, and are detached from this cut through the seal instead.
-            Set<java.nio.file.Path> written = LiveFileTracker.global().swap();
+            Set<Path> written = LiveFileTracker.global().swap();
             boolean trackedParent =
                     written != null
                             && barrier.sourceCheckpointId != null
@@ -1088,9 +1100,7 @@ public final class CheckpointManager {
         try {
             for (ServerLevel world : server.getAllLevels()) {
                 if (world.noSave) continue;
-                ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                        .anticrash$getEntityManager()
-                        .saveAll();
+                ((ServerWorldAccessorMixin) world).anticrash$getEntityManager().saveAll();
             }
         } finally {
             CutSave.end();
@@ -1151,21 +1161,18 @@ public final class CheckpointManager {
             }
             workers.add(chunks);
             Object entities =
-                    ((com.atsukimc.anticrash.mixin.ServerEntityManagerAccessorMixin)
-                                    ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                                            .anticrash$getEntityManager())
+                    ((ServerEntityManagerAccessorMixin)
+                                    ((ServerWorldAccessorMixin) world).anticrash$getEntityManager())
                             .anticrash$getDataAccess();
 
-            if (!(entities
-                    instanceof
-                    net.minecraft.world.level.chunk.storage.EntityStorage entityAccess)) {
+            if (!(entities instanceof EntityStorage entityAccess)) {
                 throw new IllegalStateException(
                         "Unsupported entity storage for " + VersionIds.dimension(world));
             }
 
             //? if <=1.20.4 {
             /*workers.add(
-                    ((com.atsukimc.anticrash.mixin.EntityChunkDataAccessAccessorMixin) entityAccess)
+                    ((EntityChunkDataAccessAccessorMixin) entityAccess)
                             .anticrash$getDataLoadWorker());
             workers.add(
                     ((SerializingRegionBasedStorageAccessorMixin) world.getPoiManager())
@@ -1173,9 +1180,7 @@ public final class CheckpointManager {
             *///?} else {
             workers.add(
                     ((com.atsukimc.anticrash.mixin.ChunkPosKeyedStorageAccessor)
-                                    ((com.atsukimc.anticrash.mixin
-                                                            .EntityChunkDataAccessAccessorMixin)
-                                                    entityAccess)
+                                    ((EntityChunkDataAccessAccessorMixin) entityAccess)
                                             .anticrash$getStorage())
                             .anticrash$getWorker());
             workers.add(
@@ -1224,7 +1229,7 @@ public final class CheckpointManager {
                                 ? "SUSPENDED_NEEDS_REBASE"
                                 : "SUSPENDED")
                         : "ACTIVE";
-        return com.atsukimc.anticrash.i18n.MessageCatalog.text(language, "diagnostics.engine")
+        return MessageCatalog.text(language, "diagnostics.engine")
                 + status
                 + "; reason="
                 + failureGate.category()
@@ -1249,8 +1254,7 @@ public final class CheckpointManager {
                 + "; effectiveSaveBatch="
                 + queuedChunkBudget(jvm.maxMemory(), config.checkpoint.saveBatchChunks)
                 + (failureGate.suspended()
-                        ? com.atsukimc.anticrash.i18n.MessageCatalog.text(
-                                language, "diagnostics.rebase")
+                        ? MessageCatalog.text(language, "diagnostics.rebase")
                         : "");
     }
 
@@ -1273,7 +1277,7 @@ public final class CheckpointManager {
                             barrier.unsupportedPersistentState,
                             barrier.timing);
             if (!captured.exact()) {
-                com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer.end(trace);
+                ScheduledTickMutationTracer.end(trace);
                 if (captured.reason() != null && captured.reason().contains("uncertain")) {
                     checkpointMirror.invalidate(captured.reason());
                 }
@@ -1345,7 +1349,7 @@ public final class CheckpointManager {
     private void failBarrier(Throwable failure) {
         failureGate.failed(failure, System.nanoTime());
         logicalDeltaEngine.resetCommittedBaseline();
-        com.atsukimc.anticrash.snapshot.SealedNbt.clear();
+        SealedNbt.clear();
         releaseParentPin();
         String message =
                 failure == null || failure.getMessage() == null
@@ -1383,7 +1387,7 @@ public final class CheckpointManager {
     }
 
     private List<String> captureDimensions(MinecraftServer server) {
-        return java.util.stream.StreamSupport.stream(server.getAllLevels().spliterator(), false)
+        return StreamSupport.stream(server.getAllLevels().spliterator(), false)
                 .map(world -> VersionIds.dimension(world))
                 .toList();
     }
@@ -1399,10 +1403,7 @@ public final class CheckpointManager {
                 // The cut already copied every changed file into the generation; only the
                 // immutable parent checkpoint is read from here on, never the live world.
                 long snapshotStart = System.nanoTime();
-                long rehashedBefore =
-                        com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
-                                .CONTENT_AUTHENTICATIONS
-                                .get();
+                long rehashedBefore = JavaIncrementalBackend.CONTENT_AUTHENTICATIONS.get();
                 context.timing.begin("finalize.generation");
                 // Hashing and linking run beside the live server, so they stay on a couple of
                 // threads unless the operator configured more.
@@ -1425,10 +1426,7 @@ public final class CheckpointManager {
                 context.timing.end("finalize.generation");
                 context.timing.count(
                         "parentFilesRehashed",
-                        com.atsukimc.anticrash.snapshot.JavaIncrementalBackend
-                                        .CONTENT_AUTHENTICATIONS
-                                        .get()
-                                - rehashedBefore);
+                        JavaIncrementalBackend.CONTENT_AUTHENTICATIONS.get() - rehashedBefore);
                 snapshotMs = (System.nanoTime() - snapshotStart) / 1_000_000L;
             } else if (context.logicalDelta != null) {
                 long snapshotStart = System.nanoTime();
@@ -1509,25 +1507,17 @@ public final class CheckpointManager {
             manifest.blockEventCount = context.capsule.blockEventCount();
             manifest.loadedChunkCount = context.capsule.loadedChunkCount();
             manifest.fullChunkCount =
-                    context.capsule.chunks.stream()
-                            .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::fullCount)
-                            .sum();
+                    context.capsule.chunks.stream().mapToInt(ChunkStateSnapshot::fullCount).sum();
             manifest.blockTickingChunkCount =
                     context.capsule.chunks.stream()
-                            .mapToInt(
-                                    com.atsukimc.anticrash.runtime.ChunkStateSnapshot
-                                            ::blockTickingCount)
+                            .mapToInt(ChunkStateSnapshot::blockTickingCount)
                             .sum();
             manifest.entityTickingChunkCount = context.capsule.entityTickingChunkCount();
             manifest.forcedChunkCount =
-                    context.capsule.chunks.stream()
-                            .mapToInt(
-                                    com.atsukimc.anticrash.runtime.ChunkStateSnapshot::forcedCount)
-                            .sum();
+                    context.capsule.chunks.stream().mapToInt(ChunkStateSnapshot::forcedCount).sum();
             manifest.fidelity = context.capsule.fidelity;
             manifest.chunkDomainHash =
-                    context.capsule.expectedFingerprints.get(
-                            com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN);
+                    context.capsule.expectedFingerprints.get(EquivalenceCategory.CHUNK_DOMAIN);
             manifest.carpetCaptureStatus = context.capsule.carpetCaptureStatus;
             manifest.unsupportedRuntimeState.addAll(context.capsule.unsupportedRuntimeState);
             manifest.blockEntityTickerCount = context.capsule.blockEntityTickerCount();
@@ -1539,8 +1529,7 @@ public final class CheckpointManager {
                             ? context.capsule.checkpointPlayers.size()
                             : 0;
             manifest.checkpointPlayerHash =
-                    context.capsule.expectedFingerprints.get(
-                            com.atsukimc.anticrash.runtime.EquivalenceCategory.PLAYERS);
+                    context.capsule.expectedFingerprints.get(EquivalenceCategory.PLAYERS);
             manifest.runtimeCapsuleVersion = context.capsule.formatVersion;
             manifest.transientChunkCount = context.transientState.criticalChunkCount();
             manifest.transientChunksMadeDirty = context.transientState.chunksMadeDirty();
@@ -1803,7 +1792,7 @@ public final class CheckpointManager {
         activeTemporary = null;
         capturing = false;
         lastJobSuccessful = result.success;
-        Set<java.nio.file.Path> trackerWrites = activeTrackerWrites;
+        Set<Path> trackerWrites = activeTrackerWrites;
         boolean trackerArmedAtCut = activeTrackerArmedAtCut;
         activeTrackerWrites = null;
         activeTrackerArmedAtCut = false;
@@ -2062,8 +2051,8 @@ public final class CheckpointManager {
     }
 
     /** Metadata-only candidate discovery used by the pre-world ASK decision. */
-    public com.atsukimc.anticrash.snapshot.CheckpointCandidate discoverLatestCandidate(
-            String activeCheckpointId) throws IOException {
+    public CheckpointCandidate discoverLatestCandidate(String activeCheckpointId)
+            throws IOException {
         return store.discoverLatestCandidate(activeCheckpointId);
     }
 
@@ -2096,8 +2085,7 @@ public final class CheckpointManager {
                 || manifest == null
                 || manifest.checkpointId == null
                 || !path.getFileName().toString().equals(manifest.checkpointId)
-                || !Files.isDirectory(
-                        path.resolve("world"), java.nio.file.LinkOption.NOFOLLOW_LINKS)
+                || !Files.isDirectory(path.resolve("world"), LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(path.resolve("world"))) {
             throw new IOException("Verified incremental checkpoint base is invalid");
         }
@@ -2238,7 +2226,7 @@ public final class CheckpointManager {
      * buried every other message in the log.
      */
     private void reportLogicalFallback(String reason) {
-        if (java.util.Objects.equals(reason, lastLogicalFallbackReason)) {
+        if (Objects.equals(reason, lastLogicalFallbackReason)) {
             logger.verboseKey("checkpoint.logical_fallback", reason);
             return;
         }
@@ -2427,7 +2415,7 @@ public final class CheckpointManager {
         private int drainedBatches;
 
         /** Tracker interval ended by this cut, until the worker owns it. */
-        private Set<java.nio.file.Path> trackerWrites;
+        private Set<Path> trackerWrites;
 
         private boolean trackerArmedAtCut;
 
