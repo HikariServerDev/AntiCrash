@@ -31,26 +31,7 @@ class FakePlayerCreationArgumentsTest {
 
         method.setAccessible(true);
 
-        //? if <=1.20.1 || (>=1.20.3 && <=1.21.11) {
-        /*Object[] args =
-                (Object[])
-                        method.invoke(
-                                null,
-                                new Class<?>[] {
-                                    String.class,
-                                    MinecraftServer.class,
-                                    Vec3.class,
-                                    double.class,
-                                    double.class,
-                                    dimensionKeyType(),
-                                    modeType(),
-                                    boolean.class
-                                },
-                                null,
-                                null,
-                                data,
-                                null);
-        *///?} else if <=1.20.2 {
+        //? if 1.20.2 {
         /*Object[] args =
                 (Object[])
                         method.invoke(

@@ -11,10 +11,14 @@ import net.minecraft.world.level.gameevent.vibrations.VibrationListener;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 
-//? if <=1.18.2 {
-/^@Mixin(VibrationListener.class)
+/^*
+ * From {@code >=1.19} Vanilla persists vibration/source UUIDs/distance/delay via the listener
+ * codec.
+ ^/
+@Mixin(VibrationListener.class)
 public interface SculkSensorListenerAccessorMixin {
-    @Accessor("receivingEvent")
+    //? if <=1.18.2 {
+    /^@Accessor("receivingEvent")
     Optional<GameEvent> anticrash$getEvent();
 
     @Accessor("receivingEvent")
@@ -29,17 +33,14 @@ public interface SculkSensorListenerAccessorMixin {
     @Accessor("travelTimeInTicks")
     void anticrash$setDelay(int delay);
 
-^///?} else {
-/^* 1.19 Vanilla persists vibration/source UUIDs/distance/delay via the listener codec. ^/
-@Mixin(VibrationListener.class)
-public interface SculkSensorListenerAccessorMixin {
+    ^///?} else {
     @Accessor("receivingEvent")
     VibrationListener.ReceivingEvent anticrash$getVibration();
 
     @Accessor("receivingDistance")
     float anticrash$getDistance();
 
-//?}
+    //?}
 
     @Accessor("travelTimeInTicks")
     int anticrash$getDelay();

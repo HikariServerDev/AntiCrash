@@ -844,18 +844,11 @@ public abstract class ServerPlayNetworkHandlerMixin {
         if (!anticrash$frozen()) return;
         var lock = anticrash$controller().config().recovery.lock;
 
-        //? if <=1.21.11 {
-        /*boolean allowed =
+        boolean allowed =
                 switch (packet.getAction()) {
-        *///?}
                     //? if <=1.21.5 {
                     /*case PRESS_SHIFT_KEY, RELEASE_SHIFT_KEY -> lock.allowSneak;
                     *///?}
-
-        //? if >=26.1 {
-        boolean allowed =
-                switch (packet.getAction()) {
-        //?}
                     case START_SPRINTING,
                             STOP_SPRINTING,
                             START_RIDING_JUMP,

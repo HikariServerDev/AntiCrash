@@ -492,7 +492,6 @@ public final class RuntimeExtensionSnapshot {
             line.append("|shouldDupe=").append(falling.forceTickAfterTeleportToDuplicate);
 
         if (entity instanceof net.minecraft.world.entity.projectile.Projectile) {
-        //?}
             //? if >=1.21.9 {
             line.append("|checkedOwner=")
                     .append(
@@ -500,7 +499,6 @@ public final class RuntimeExtensionSnapshot {
                                     .anticrash$checkedForLeftOwner());
             //?}
 
-            //? if >=1.21 {
             var deflected =
                     ((com.atsukimc.anticrash.mixin.ProjectileRuntimeAccessorMixin) entity)
                             .anticrash$lastDeflectedEntity();
@@ -512,7 +510,7 @@ public final class RuntimeExtensionSnapshot {
                     capsule.unsupportedRuntimeState.add("PROJECTILE_DEFLECTION_RUNTIME");
             }
         }
-            //?}
+        //?}
 
         //? if (>=1.20 && <=1.21.10) {
         /*line.append("|groundCollision=")
