@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 class EntityMotionFrameTest {
     @Test
     void fullAndNullableHistoryRoundTrip() {
-
         for (var frame :
                 new EntityMotionFrame[] {
                     new EntityMotionFrame(new Vec3(0.25, -0.5, 2), new Vec3(-330, 120, 122), true),
@@ -22,7 +21,6 @@ class EntityMotionFrameTest {
 
     @Test
     void invalidHistoryCannotBeRestored() {
-
         assertThrows(
                 IllegalArgumentException.class,
                 () -> new EntityMotionFrame(new Vec3(Double.NaN, 0, 0), null, false));

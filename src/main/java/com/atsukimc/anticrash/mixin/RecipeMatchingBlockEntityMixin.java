@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Restores only the semantic cached identifier on the newly constructed Vanilla CachedCheck. */
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class RecipeMatchingBlockEntityMixin {
-
     @Shadow @Final private RecipeManager.CachedCheck quickCheck;
 
     //? if <=1.20.4 {

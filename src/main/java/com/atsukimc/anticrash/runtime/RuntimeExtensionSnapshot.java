@@ -315,7 +315,6 @@ public final class RuntimeExtensionSnapshot {
                 List.of(
                         accessor.anticrash$getBlockEntityTickers(),
                         accessor.anticrash$getPendingBlockEntityTickers())) {
-
             for (TickingBlockEntity ticker : tickers) {
                 if (BlockEntityTickerSnapshot.removed(ticker)) continue;
                 BlockPos pos = ticker.getPos();
@@ -392,7 +391,6 @@ public final class RuntimeExtensionSnapshot {
             String dimension,
             Map<String, List<String>> lines,
             RuntimeCapsule capsule) {
-
         if (entity == null || entity.isRemoved() || entity instanceof Player) return;
         EntityRuntimeAccessorMixin runtime = (EntityRuntimeAccessorMixin) entity;
 

@@ -30,7 +30,6 @@ class VersionPermissionsTest {
 
     @Test
     void invalidLevelsNeverClampToAnAllowedPermission() {
-
         assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, -1));
 
         assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, 5));

@@ -50,7 +50,6 @@ class VersionStorageTest {
 
     @Test
     void malformedViewDataCannotBeIgnored() {
-
         var nbt = new CompoundTag();
 
         nbt.putString(RuntimeExtensionNbt.KEY, "invalid");
@@ -74,7 +73,6 @@ class VersionStorageTest {
 
     @Test
     void abilitiesPreserveFlyingAndSpeedsWithoutAWorld() {
-
         var abilities = new Abilities();
 
         abilities.flying = true;
@@ -103,7 +101,6 @@ class VersionStorageTest {
 
     @Test
     void invalidInventoryDoesNotPartiallyApply() {
-
         var inventory = new SimpleContainer(27);
 
         var nbt = new ListTag();
@@ -116,7 +113,6 @@ class VersionStorageTest {
 
     @Test
     void emptyEnderChestRoundTripsItsFixedSlotShape() {
-
         var inventory = new SimpleContainer(27);
 
         var encoded = VersionStorage.inventory(inventory, registries);

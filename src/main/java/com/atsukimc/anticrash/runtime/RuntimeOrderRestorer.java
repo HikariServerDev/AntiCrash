@@ -74,7 +74,6 @@ public final class RuntimeOrderRestorer {
         Map<String, TickingBlockEntity> live = new LinkedHashMap<>();
 
         for (List<TickingBlockEntity> list : List.of(current, pending)) {
-
             for (TickingBlockEntity ticker : list) {
                 // Vanilla drops a removed ticker unrun on its next pass; it carries no order.
                 if (BlockEntityTickerSnapshot.removed(ticker)) continue;
@@ -97,7 +96,6 @@ public final class RuntimeOrderRestorer {
 
         int missing = 0;
         for (BlockEntityTickerSnapshot snapshot : expected) {
-
             TickingBlockEntity ticker =
                     live.remove(tickerKey(snapshot.x, snapshot.y, snapshot.z, snapshot.name));
 
@@ -130,7 +128,6 @@ public final class RuntimeOrderRestorer {
         Int2ObjectMap<Entity> entities = accessor.anticrash$getEntities();
         Map<String, Entity> live = new LinkedHashMap<>();
         for (Entity entity : entities.values()) {
-
             if (live.put(entity.getStringUUID(), entity) != null) return null;
         }
         List<Entity> ordered = new ArrayList<>(live.size());
@@ -201,7 +198,6 @@ public final class RuntimeOrderRestorer {
         int removed = 0;
 
         for (Map.Entry<String, ServerLevel> world : worlds.entrySet()) {
-
             //? if <=1.21.4 {
             /*DistanceManager manager =
                     world.getValue().getChunkSource().chunkMap.getDistanceManager();
@@ -269,7 +265,6 @@ public final class RuntimeOrderRestorer {
                 }
             }
             for (Object[] ticket : stray) {
-
                 //? if <=1.21.4 {
                 /*removeTicket(
                         manager,
@@ -537,7 +532,6 @@ public final class RuntimeOrderRestorer {
     }
 
     public static Map<String, ServerLevel> worlds(Iterable<ServerLevel> worlds) {
-
         Map<String, ServerLevel> byId = new HashMap<>();
 
         for (ServerLevel world : worlds) byId.put(VersionIds.dimension(world), world);

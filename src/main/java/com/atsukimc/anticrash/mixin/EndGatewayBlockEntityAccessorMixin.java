@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(TheEndGatewayBlockEntity.class)
 public interface EndGatewayBlockEntityAccessorMixin {
-
     @Accessor("teleportCooldown")
     int anticrash$getTeleportCooldown();
 }

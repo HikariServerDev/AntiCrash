@@ -85,7 +85,6 @@ public final class FakePlayerSnapshot {
 
     /** Stable semantic representation used by the equivalence report, not by restore itself. */
     public String canonical() {
-
         //? if <=1.21.1 {
         /*return String.join(
                         "|",

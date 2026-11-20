@@ -32,7 +32,6 @@ public abstract class ServerEntityManagerMixin {
                                     "Lnet/minecraft/world/level/entity/EntityPersistentStorage;flush(Z)V"))
     private void anticrash$awaitLoadsOnlyAtCut(
             EntityPersistentStorage<?> access, boolean sync, Operation<Void> original) {
-
         if (!CutSave.active() || !(access instanceof EntityStorage entities)) {
             original.call(access, sync);
             return;

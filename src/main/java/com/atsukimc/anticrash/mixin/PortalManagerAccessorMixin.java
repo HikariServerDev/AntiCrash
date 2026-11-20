@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PortalProcessor.class)
 public interface PortalManagerAccessorMixin {
-
     @Accessor("portal")
     Portal anticrash$getPortal();
 

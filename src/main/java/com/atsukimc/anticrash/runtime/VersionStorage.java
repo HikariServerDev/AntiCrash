@@ -46,30 +46,25 @@ public final class VersionStorage {
 
     public record ThrowingReporter(String path) implements ProblemReporter {
         public ProblemReporter forChild(ProblemReporter.PathElement context) {
-
             return new ThrowingReporter(path + "/" + context.get());
         }
 
         public void report(ProblemReporter.Problem error) {
-
             throw new IllegalStateException(
                     "AntiCrash serialization failed at " + path + ": " + error.description());
         }
     }
 
     public static TagValueOutput writer(HolderLookup.Provider registries) {
-
         return TagValueOutput.createWithContext(new ThrowingReporter("snapshot"), registries);
     }
 
     public static ListTag inventory(Container inventory, HolderLookup.Provider registries) {
-
         var list = new ListTag();
 
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-
             var stack = inventory.getItem(slot);
 
             if (!stack.isEmpty())
@@ -90,7 +85,6 @@ public final class VersionStorage {
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 
         for (var element : encoded) {
-
             var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
 
             if (!entry.isValidInContainer(size) || !slots.add(entry.slot()))
@@ -101,7 +95,6 @@ public final class VersionStorage {
     }
 
     public static void applyInventory(Container inventory, List<ItemStack> stacks) {
-
         if (inventory.getContainerSize() != stacks.size())
             throw new IllegalArgumentException("Inventory shape changed");
         for (int i = 0; i < stacks.size(); i++) inventory.setItem(i, stacks.get(i));

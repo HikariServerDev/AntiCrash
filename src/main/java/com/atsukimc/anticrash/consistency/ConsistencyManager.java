@@ -105,7 +105,6 @@ public final class ConsistencyManager implements AutoCloseable {
             transaction.itemStackId = VersionIds.id(VersionIds.items(), stack.getItem());
             transaction.count = stack.getCount();
             try {
-
                 //? if <=1.20.4 {
                 /*transaction.nbt = NbtCodec.encode(stack.save(new net.minecraft.nbt.CompoundTag()));
                 *///?} else {

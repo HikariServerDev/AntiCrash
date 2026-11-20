@@ -10,7 +10,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(EntityFluidInteraction.class)
 public interface FluidInteractionAccessor {
-
     //? if <=26.2 {
     /*@Accessor("trackerByFluid")
     java.util.Map<TagKey<Fluid>, ?> anticrash$trackers();

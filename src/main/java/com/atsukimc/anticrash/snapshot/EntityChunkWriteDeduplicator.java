@@ -57,7 +57,6 @@ public final class EntityChunkWriteDeduplicator {
             try (DataOutputStream out =
                     new DataOutputStream(
                             new DigestOutputStream(OutputStream.nullOutputStream(), sha))) {
-
                 //? if <=1.20.1 {
                 /*NbtIo.write(nbt, out);
                 *///?} else if <=1.20.2 {

@@ -410,7 +410,6 @@ public final class LogicalDeltaEngine {
      * The semantic path is safe only when these mutable stores are absent or explicitly handled.
      */
     public static boolean hasUnsupportedPersistentFiles(MinecraftServer server) throws IOException {
-
         if (server == null || server.overworld() == null) return true;
 
         Path root = server.getWorldPath(LevelResource.ROOT);
@@ -420,7 +419,6 @@ public final class LogicalDeltaEngine {
         // parent file into a newer epoch. Every dimension keeps its own poi/ and data/.
 
         for (ServerLevel world : server.getAllLevels()) {
-
             Path dimensionRoot = DimensionType.getStorageFolder(world.dimension(), root);
 
             if (hasRegularFiles(dimensionRoot.resolve("poi"))
@@ -570,7 +568,6 @@ public final class LogicalDeltaEngine {
 
     private static void captureWorldMetadata(MinecraftServer server, LogicalDelta delta)
             throws IOException {
-
         if (!(server.getWorldData() instanceof PrimaryLevelData properties)) {
             throw new IOException("save_properties_not_level_properties");
         }
@@ -645,7 +642,6 @@ public final class LogicalDeltaEngine {
     }
 
     private static String encodeChunk(ServerLevel world, LevelChunk chunk) throws IOException {
-
         //? if <=1.21.1 {
         /*return NbtCodec.encode(ChunkSerializer.write(world, chunk));
         *///?} else {
@@ -699,7 +695,6 @@ public final class LogicalDeltaEngine {
     }
 
     private static void registerSchedulers(MinecraftServer server) {
-
         for (ServerLevel world : server.getAllLevels()) {
             String dimension = VersionIds.dimension(world);
 

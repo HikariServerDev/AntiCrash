@@ -152,13 +152,11 @@ public final class CarpetRules {
     private static boolean set(Object rule, MinecraftServer server, String value) {
         try {
             for (Method method : rule.getClass().getMethods()) {
-
                 if (method.getName().equals("set")
                         && method.getParameterCount() == 2
                         && method.getParameterTypes()[1] == String.class
                         && method.getParameterTypes()[0].isInstance(
                                 server.createCommandSourceStack())) {
-
                     return method.invoke(rule, server.createCommandSourceStack(), value) != null;
                 }
             }

@@ -25,7 +25,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void extensionIsOneVersionedCompoundBesideVanillaKeys() {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putFloat("progress", 0.5f);
@@ -47,7 +46,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void nothingIsAddedWhenThereIsNothingToSave() {
-
         CompoundTag nbt = new CompoundTag();
 
         RuntimeExtensionNbt.write(nbt, extension -> {});
@@ -61,7 +59,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void aNewerFormatIsIgnoredInsteadOfGuessed() {
-
         CompoundTag nbt = new CompoundTag();
 
         CompoundTag future = new CompoundTag();

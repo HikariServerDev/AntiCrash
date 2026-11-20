@@ -292,7 +292,6 @@ class ChunkRecoveryPlanTest {
     //? if <=1.21.4 {
     /*@Test
     void convertsVanillaTicketLevelsToServerChunkManagerRadii() {
-
         assertEquals(
                 0, ChunkRecoveryPlan.ticketRadiusForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
 
@@ -312,7 +311,6 @@ class ChunkRecoveryPlanTest {
     *///?} else {
     @Test
     void passesVanillaTicketLevelsDirectlyIn1215() {
-
         assertEquals(
                 33, ChunkRecoveryPlan.ticketArgumentForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
 

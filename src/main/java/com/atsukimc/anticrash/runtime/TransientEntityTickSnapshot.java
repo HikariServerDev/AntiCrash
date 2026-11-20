@@ -61,7 +61,6 @@ public final class TransientEntityTickSnapshot {
     }
 
     public static String kind(Entity entity) {
-
         if (entity instanceof PrimedTnt) return TNT;
         if (entity instanceof FallingBlockEntity) return FALLING_BLOCK;
         return null;

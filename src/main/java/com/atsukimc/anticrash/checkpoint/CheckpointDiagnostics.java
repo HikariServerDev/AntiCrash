@@ -171,7 +171,6 @@ public final class CheckpointDiagnostics {
             String compactionError) {}
 
     public static String render(View view, String language, boolean verbose) {
-
         CheckpointManifest manifest = view.manifest();
         CheckpointTiming timing = view.timing();
         StringBuilder result = new StringBuilder();

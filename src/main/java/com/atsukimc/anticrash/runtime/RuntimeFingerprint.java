@@ -257,7 +257,6 @@ public final class RuntimeFingerprint {
      * deterministic evidence marker, not a claim that the random seed was restored.
      */
     public static List<String> worldRngLines() {
-
         //? if <=1.18.2 {
         /*return List.of(
                 "implementation=java.util.Random",

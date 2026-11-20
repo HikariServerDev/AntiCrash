@@ -458,7 +458,6 @@ public final class CheckpointManager {
     }
 
     private boolean beginCaptureWithWritesHeld(MinecraftServer server) {
-
         shutdownCancellation = false;
         liveCopyComplete = false;
         liveCopyCheckpointId = null;

@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MinecraftServer.class)
 public abstract class MinecraftServerMixin {
-
     @Inject(method = "loadLevel", at = @At("HEAD"))
     private void anticrash$worldLoadBeginning(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();

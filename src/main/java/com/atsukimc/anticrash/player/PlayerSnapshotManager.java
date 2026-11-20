@@ -78,7 +78,6 @@ public final class PlayerSnapshotManager {
             throws IOException {
         List<CheckpointPlayerSnapshot> result = new ArrayList<>();
         try {
-
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
                 if (CarpetIntegration.isFakePlayer(player)) continue;
                 CheckpointPlayerSnapshot snapshot = new CheckpointPlayerSnapshot();
@@ -122,7 +121,6 @@ public final class PlayerSnapshotManager {
             data.z = player.getZ();
         }
         if (config.playerSnapshot.rotation) {
-
             data.yaw = player.getViewYRot(0);
 
             data.pitch = player.getViewXRot(0);
@@ -177,7 +175,6 @@ public final class PlayerSnapshotManager {
                 data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
 
         if (config.playerSnapshot.velocity) {
-
             Vec3 velocity = player.getDeltaMovement();
 
             data.velocityX = velocity.x;
@@ -319,7 +316,6 @@ public final class PlayerSnapshotManager {
                 throw new IOException("Enabled effect snapshot is missing or too large");
             }
             for (String encoded : data.effectsNbt) {
-
                 Tag decoded = NbtCodec.decode(encoded);
 
                 if (!(decoded instanceof CompoundTag compound)
@@ -338,7 +334,6 @@ public final class PlayerSnapshotManager {
     }
 
     public boolean restoreOnJoin(ServerPlayer player) {
-
         if (!config.playerSnapshot.enabled || restored.contains(player.getUUID())) return true;
 
         PlayerSnapshotData data = snapshots.get(player.getUUID());
@@ -405,7 +400,6 @@ public final class PlayerSnapshotManager {
                     throw new IOException("Enabled effect snapshot is missing");
                 effects = new ArrayList<>(data.effectsNbt.size());
                 for (String encoded : data.effectsNbt) {
-
                     Tag decoded = NbtCodec.decode(encoded);
 
                     if (!(decoded instanceof CompoundTag compound)) {
@@ -499,7 +493,6 @@ public final class PlayerSnapshotManager {
             //?}
 
             if (effects != null) {
-
                 player.removeAllEffects();
 
                 for (MobEffectInstance effect : effects) player.addEffect(effect);

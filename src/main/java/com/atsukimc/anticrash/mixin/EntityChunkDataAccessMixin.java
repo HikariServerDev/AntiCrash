@@ -27,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 /** Skips rewriting an unchanged entity chunk; see {@link EntityChunkWriteDeduplicator}. */
 @Mixin(EntityStorage.class)
 public abstract class EntityChunkDataAccessMixin {
-
     @Unique
     private final EntityChunkWriteDeduplicator anticrash$deduplicator =
             new EntityChunkWriteDeduplicator();

@@ -35,7 +35,6 @@ public record EntityMotionFrame(Vec3 movement, Vec3 lastPosition, boolean knocke
     }
 
     public CompoundTag write() {
-
         var nbt = new CompoundTag();
 
         nbt.store("Movement", Vec3.CODEC, movement);
@@ -48,7 +47,6 @@ public record EntityMotionFrame(Vec3 movement, Vec3 lastPosition, boolean knocke
     }
 
     public static EntityMotionFrame read(CompoundTag nbt) {
-
         return new EntityMotionFrame(
                 nbt.read("Movement", Vec3.CODEC).orElseThrow(),
                 nbt.getBoolean("HasLast").orElseThrow()

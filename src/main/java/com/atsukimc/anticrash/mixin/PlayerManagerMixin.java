@@ -24,7 +24,6 @@ import java.net.SocketAddress;
 
 @Mixin(PlayerList.class)
 public abstract class PlayerManagerMixin {
-
     //? if <=1.21.8 {
     /*@Inject(method = "canPlayerLogin", at = @At("RETURN"), cancellable = true)
     private void anticrash$loginGate(

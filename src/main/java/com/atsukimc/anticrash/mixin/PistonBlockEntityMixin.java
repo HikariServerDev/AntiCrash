@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PistonMovingBlockEntity.class)
 public abstract class PistonBlockEntityMixin {
-
     @Shadow private float progress;
 
     @Shadow private float progressO;

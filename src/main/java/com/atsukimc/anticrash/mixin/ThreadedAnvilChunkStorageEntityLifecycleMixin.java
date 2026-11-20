@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  */
 @Mixin(ChunkMap.class)
 public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
-
     @Inject(method = "removeEntity", at = @At("HEAD"))
     private void anticrash$entityUnload(Entity entity, CallbackInfo callbackInfo) {
         EntityLifecycleTracker.recordUnload(entity);
@@ -36,11 +35,9 @@ public abstract class ThreadedAnvilChunkStorageEntityLifecycleMixin {
     @Inject(method = "save(Lnet/minecraft/world/level/chunk/ChunkAccess;)Z", at = @At("HEAD"))
     private void anticrash$rewriteExtensionOnUnload(
             ChunkAccess chunk, CallbackInfoReturnable<Boolean> callbackInfo) {
-
         if (chunk instanceof LevelChunk worldChunk
                 && !((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld()
                 && ((ExtensionCarrier) worldChunk).anticrash$extensionOnDisk()) {
-
             //? if <=1.21.1 {
             /*worldChunk.setUnsaved(true);
             *///?} else {

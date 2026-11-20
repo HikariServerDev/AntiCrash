@@ -17,7 +17,6 @@ public final class NativeTickState {
     public boolean sprinting;
 
     public static NativeTickState capture(MinecraftServer server) {
-
         ServerTickRateManager manager = server.tickRateManager();
 
         NativeTickState state = new NativeTickState();

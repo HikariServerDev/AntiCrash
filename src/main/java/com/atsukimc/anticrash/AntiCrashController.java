@@ -1173,7 +1173,6 @@ public final class AntiCrashController {
                             handler ->
                                     !(handler.player == null || handler.player.hasDisconnected()),
                             handler -> {
-
                                 //? if <=1.19.3 {
                                 /*var channel =
                                         ((ClientConnectionAccessorMixin) handler.connection)
@@ -1194,7 +1193,6 @@ public final class AntiCrashController {
                             },
                             (handler, packet) -> {
                                 try {
-
                                     handler.handleCustomPayload(packet);
 
                                 } catch (RunningOnDifferentThreadException rescheduled) {
@@ -1254,7 +1252,6 @@ public final class AntiCrashController {
      * late.
      */
     private void pumpEntityLoading(MinecraftServer server) {
-
         for (ServerLevel world : server.getAllLevels()) {
             try {
                 ((ServerWorldAccessorMixin) world).anticrash$getEntityManager().tick();
@@ -1351,7 +1348,6 @@ public final class AntiCrashController {
         if (capsule == null || server == null) return;
         boolean strict = "STRICT".equalsIgnoreCase(config.recovery.fidelity);
         try {
-
             Map<String, ServerLevel> worlds = RuntimeOrderRestorer.worlds(server.getAllLevels());
 
             int tickers = 0, tickersUnknown = 0, tickersMissing = 0;
@@ -1482,7 +1478,6 @@ public final class AntiCrashController {
      * never counted as a match.
      */
     private void verifyRuntimeCategories(RuntimeCapsule expected) {
-
         for (ServerLevel world : server.getAllLevels()) {
             // Apply the ticket changes to the chunk holders without ageing any ticket.
 
@@ -1558,7 +1553,6 @@ public final class AntiCrashController {
 
     private boolean playerOnline(String uuid) {
         try {
-
             return uuid != null && server.getPlayerList().getPlayer(UUID.fromString(uuid)) != null;
 
         } catch (IllegalArgumentException invalid) {
@@ -1891,7 +1885,6 @@ public final class AntiCrashController {
                 && config.recovery.lock.allowLogin
                 && playerSnapshots != null
                 && !playerSnapshots.restoreOnJoin(player)) {
-
             failRecoverySetup(
                     new IOException(
                             "Real Player snapshot restore failed for " + player.getStringUUID()));
@@ -2564,9 +2557,7 @@ public final class AntiCrashController {
         logger.update(config.logging);
         if (checkpoints != null) checkpoints.resetDeadline();
         if (server != null) {
-
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-
                 server.getPlayerList().sendPlayerPermissionLevel(player);
             }
         }

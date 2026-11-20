@@ -39,7 +39,6 @@ public abstract class WorldChunkMutationMixin {
 
     @Inject(method = "setBlockEntity", at = @At("TAIL"))
     private void anticrash$blockEntityMutation(BlockEntity blockEntity, CallbackInfo callbackInfo) {
-
         LevelChunk chunk = (LevelChunk) (Object) this;
 
         ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockEntity");
@@ -47,7 +46,6 @@ public abstract class WorldChunkMutationMixin {
 
     @Inject(method = "removeBlockEntity", at = @At("TAIL"))
     private void anticrash$removeBlockEntityMutation(BlockPos pos, CallbackInfo callbackInfo) {
-
         LevelChunk chunk = (LevelChunk) (Object) this;
 
         ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "removeBlockEntity");

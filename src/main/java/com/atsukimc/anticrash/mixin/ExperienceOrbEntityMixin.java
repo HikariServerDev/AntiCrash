@@ -21,7 +21,6 @@ public abstract class ExperienceOrbEntityMixin implements ItemPhaseHolder {
 
     @Override
     public int anticrash$idPhase() {
-
         return anticrash$idPhase >= 0
                 ? anticrash$idPhase
                 : Math.floorMod(((ExperienceOrb) (Object) this).getId(), 40);

@@ -184,13 +184,11 @@ class LogicalDeltaMaterializerTest {
     }
 
     private static CompoundTag entityChunk(UUID... uuids) {
-
         CompoundTag root = new CompoundTag();
 
         ListTag list = new ListTag();
 
         for (UUID uuid : uuids) {
-
             CompoundTag entity = new CompoundTag();
 
             entity.putString("id", "minecraft:armor_stand");
@@ -208,7 +206,6 @@ class LogicalDeltaMaterializerTest {
     }
 
     private static CompoundTag marker(String value) {
-
         CompoundTag root = new CompoundTag();
 
         root.putString("marker", value);
@@ -240,7 +237,6 @@ class LogicalDeltaMaterializerTest {
         //?}
 
             try (DataOutputStream output = region.getChunkDataOutputStream(pos)) {
-
                 //? if <=1.20.1 {
                 /*NbtIo.write(root, output);
                 *///?} else if <=1.20.2 {

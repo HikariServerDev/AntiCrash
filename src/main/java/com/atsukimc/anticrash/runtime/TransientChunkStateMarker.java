@@ -51,7 +51,6 @@ public final class TransientChunkStateMarker {
         List<ScheduledTickSnapshot> orderedScheduledTicks = new ArrayList<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
             ChunkMap storage = world.getChunkSource().chunkMap;
 
             ThreadedAnvilChunkStorageAccessorMixin accessor =
@@ -180,14 +179,12 @@ public final class TransientChunkStateMarker {
     }
 
     static boolean isCheckpointCriticalEntity(Entity entity) {
-
         return entity != null
                 && !entity.isRemoved()
                 && (entity instanceof PrimedTnt || entity instanceof FallingBlockEntity);
     }
 
     private static LevelChunk accessibleChunk(ChunkHolder holder) {
-
         var future = holder.getFullChunkFuture();
 
         if (!future.isDone() || future.isCompletedExceptionally()) return null;
@@ -211,7 +208,6 @@ public final class TransientChunkStateMarker {
         Map<BlockPos, BlockEntity> liveBlockEntities = chunk.getBlockEntities();
         int count = 0;
         for (BlockEntity blockEntity : liveBlockEntities.values()) {
-
             if (blockEntity instanceof PistonMovingBlockEntity) count++;
         }
 

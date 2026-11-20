@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class AbstractFurnaceBlockEntityMixin {
-
     //? if <=1.21.1 {
     /*@Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markProgressDirty(

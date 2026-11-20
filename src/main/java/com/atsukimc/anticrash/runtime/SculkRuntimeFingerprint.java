@@ -20,7 +20,6 @@ public final class SculkRuntimeFingerprint {
     private SculkRuntimeFingerprint() {}
 
     public static String capture(BlockEntity entity) {
-
         //? if <=1.19.4 {
         /*VibrationListener listener;
 

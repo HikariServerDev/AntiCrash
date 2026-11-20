@@ -78,7 +78,6 @@ public final class PortalRuntime {
     }
 
     public static String canonical(PortalProcessor manager) {
-
         return type(manager)
                 + "|pos="
                 + manager.getEntryPosition().asLong()

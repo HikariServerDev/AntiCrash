@@ -44,7 +44,6 @@ public abstract class CarpetFakePlayerProfileMixin {
     private static void anticrash$savedProfile(
             String name,
             CallbackInfoReturnable<CompletableFuture<Optional<GameProfile>>> callback) {
-
         GameProfile saved = FakePlayerProfileScope.creationProfileForName(name);
         if (saved != null)
             callback.setReturnValue(CompletableFuture.completedFuture(Optional.of(saved)));

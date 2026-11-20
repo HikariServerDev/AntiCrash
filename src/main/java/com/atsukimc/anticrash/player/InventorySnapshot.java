@@ -89,7 +89,6 @@ public final class InventorySnapshot {
             boolean offhandEnabled,
             boolean selectedEnabled)
             throws IOException {
-
         Inventory inventory = player.getInventory();
 
         //? if <=1.20.4 {
@@ -176,7 +175,6 @@ public final class InventorySnapshot {
             boolean offhandEnabled,
             boolean selectedEnabled)
             throws IOException {
-
         Inventory inventory = player.getInventory();
 
         //? if <=1.20.4 {
@@ -255,7 +253,6 @@ public final class InventorySnapshot {
 
         for (String item : encoded) {
             try {
-
                 Tag element = NbtCodec.decode(item);
 
                 if (!(element instanceof CompoundTag compound)) {

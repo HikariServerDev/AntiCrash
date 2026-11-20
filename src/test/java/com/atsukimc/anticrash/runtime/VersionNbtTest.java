@@ -19,7 +19,6 @@ import java.util.stream.Stream;
 class VersionNbtTest {
     @Test
     void sparseFalseFlagsMayBeAbsentButCannotHaveAnInvalidType() {
-
         var nbt = new CompoundTag();
 
         assertFalse(VersionNbt.sparseFlag(nbt, "Ticked"));
@@ -34,7 +33,6 @@ class VersionNbtTest {
 
     @Test
     void wrongTypeIsNotAnEmptyRecoveryList() {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putString("Entities", "bad");
@@ -45,7 +43,6 @@ class VersionNbtTest {
 
     @Test
     void heterogeneousListsCannotDiscardInvalidPassengers() {
-
         ListTag list = new ListTag();
 
         list.add(new CompoundTag());
@@ -60,7 +57,6 @@ class VersionNbtTest {
 
     @Test
     void numericContainsStillRecognizesAllNumericTypes() {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putDouble("n", 2);
@@ -70,7 +66,6 @@ class VersionNbtTest {
 
     @Test
     void statusEffectCodecPreservesTimingAndFlags() {
-
         var effect = new MobEffectInstance(MobEffects.SPEED, 37, 2, true, false, false);
 
         var restored = VersionNbt.effect((CompoundTag) VersionNbt.effect(effect));
@@ -90,7 +85,6 @@ class VersionNbtTest {
 
     @Test
     void emptyInventoryItemRemainsAnEmptyCompound() {
-
         assertTrue(
                 ((CompoundTag)
                                 VersionNbt.item(

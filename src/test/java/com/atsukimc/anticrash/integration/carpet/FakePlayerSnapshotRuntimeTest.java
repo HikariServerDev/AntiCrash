@@ -12,7 +12,6 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 class FakePlayerSnapshotRuntimeTest {
-
     //? if >=1.21.11 {
     @Test
     void kineticStateSurvivesJsonAndChangesTheFingerprint() throws Exception {

@@ -164,7 +164,6 @@ public final class RuntimeCapsuleManager {
             RuntimeCapsule.InhabitedTimes inhabited = new RuntimeCapsule.InhabitedTimes();
             inhabited.dimension = chunks.dimension;
             for (Long packed : chunks.loadedChunks) {
-
                 LevelChunk loaded =
                         world.getChunkSource()
                                 .getChunkNow(ChunkPos.getX(packed), ChunkPos.getZ(packed));
@@ -274,9 +273,7 @@ public final class RuntimeCapsuleManager {
         //?}
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-
             if (player.containerMenu != null && player.containerMenu != player.inventoryMenu) {
-
                 //? if <=1.21.8 {
                 /*capsule.containerSessions.add(
                         player.getGameProfile().getName()
@@ -315,7 +312,6 @@ public final class RuntimeCapsuleManager {
     }
 
     private static List<ScheduledTickSnapshot> captureActiveScheduledTicks(MinecraftServer server) {
-
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
@@ -324,7 +320,6 @@ public final class RuntimeCapsuleManager {
         List<ScheduledTickSnapshot> result = new ArrayList<>();
 
         for (ServerLevel world : worlds.values()) {
-
             ThreadedAnvilChunkStorageAccessorMixin storage =
                     (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
@@ -519,7 +514,6 @@ public final class RuntimeCapsuleManager {
             worlds.put(VersionIds.dimension(world), world);
         }
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
-
             ServerLevel world = worlds.get(snapshot.dimension);
 
             if (world == null)
@@ -571,7 +565,6 @@ public final class RuntimeCapsuleManager {
         }
         int restored = 0;
         for (RuntimeCapsule.WorldRuntime snapshot : capsule.worlds) {
-
             ServerLevel world = worlds.get(snapshot.dimension);
 
             if (world == null) {
@@ -747,7 +740,6 @@ public final class RuntimeCapsuleManager {
             worlds.put(VersionIds.dimension(world), world);
         }
         for (RuntimeCapsule.InhabitedTimes inhabited : capsule.inhabitedTimes) {
-
             ServerLevel world = inhabited == null ? null : worlds.get(inhabited.dimension);
 
             if (world == null || inhabited.chunks.size() != inhabited.times.size()) continue;
@@ -801,7 +793,6 @@ public final class RuntimeCapsuleManager {
         // Resolve every expected piston and ticker before changing list order.
         List<PreparedPistonOrder> prepared = new ArrayList<>();
         for (Map.Entry<String, List<MovingPistonTickSnapshot>> entry : byDimension.entrySet()) {
-
             ServerLevel world = worlds.get(entry.getKey());
 
             if (world == null) {
@@ -829,7 +820,6 @@ public final class RuntimeCapsuleManager {
             }
             List<Integer> slots = new ArrayList<>();
             for (int index = 0; index < tickers.size(); index++) {
-
                 TickingBlockEntity ticker = tickers.get(index);
 
                 if (BlockEntityTickerSnapshot.removed(ticker)) continue;
@@ -851,7 +841,6 @@ public final class RuntimeCapsuleManager {
             List<TickingBlockEntity> ordered = new ArrayList<>();
 
             for (MovingPistonTickSnapshot snapshot : entry.getValue()) {
-
                 TickingBlockEntity ticker = targetTickers.get(snapshot.position());
 
                 if (ticker == null) {
@@ -880,7 +869,6 @@ public final class RuntimeCapsuleManager {
      */
     private static void restoreOptimizedMovingPistonTickOrder(
             MinecraftServer server, RuntimeCapsule capsule) {
-
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
@@ -906,7 +894,6 @@ public final class RuntimeCapsuleManager {
 
         List<PreparedPistonOrder> prepared = new ArrayList<>();
         for (Map.Entry<String, List<MovingPistonTickSnapshot>> dimension : byDimension.entrySet()) {
-
             ServerLevel world = worlds.get(dimension.getKey());
 
             if (world == null)
@@ -970,7 +957,6 @@ public final class RuntimeCapsuleManager {
 
         List<Integer> slots = new ArrayList<>();
         for (int index = 0; index < live.size(); index++) {
-
             TickingBlockEntity ticker = live.get(index);
 
             if (BlockEntityTickerSnapshot.removed(ticker) || !positions.contains(ticker.getPos()))
@@ -1000,7 +986,6 @@ public final class RuntimeCapsuleManager {
         List<TickingBlockEntity> ordered = new ArrayList<>(expected.size());
 
         for (MovingPistonTickSnapshot snapshot : expected) {
-
             TickingBlockEntity ticker = targets.get(snapshot.position());
 
             if (ticker == null)
@@ -1015,14 +1000,12 @@ public final class RuntimeCapsuleManager {
     }
 
     private static void verifyMovingPistonsPresent(MinecraftServer server, RuntimeCapsule capsule) {
-
         Map<String, ServerLevel> worlds = new HashMap<>();
 
         for (ServerLevel world : server.getAllLevels()) {
             worlds.put(VersionIds.dimension(world), world);
         }
         for (MovingPistonTickSnapshot snapshot : capsule.movingPistonTickOrder) {
-
             ServerLevel world = worlds.get(snapshot.dimension);
 
             if (world == null
@@ -1050,7 +1033,6 @@ public final class RuntimeCapsuleManager {
     }
 
     private static boolean containsTicker(List<TickingBlockEntity> tickers, BlockPos position) {
-
         for (TickingBlockEntity ticker : tickers) {
             if (!BlockEntityTickerSnapshot.removed(ticker) && position.equals(ticker.getPos()))
                 return true;
@@ -1103,7 +1085,6 @@ public final class RuntimeCapsuleManager {
         List<PreparedTickerOrder> prepared = new ArrayList<>();
         for (Map.Entry<String, Map<String, List<BlockEntityTickerSnapshot>>> dimension :
                 expected.entrySet()) {
-
             ServerLevel world = worlds.get(dimension.getKey());
 
             if (world == null)
@@ -1138,7 +1119,6 @@ public final class RuntimeCapsuleManager {
             String queue,
             List<BlockEntityTickerSnapshot> expected,
             List<TickingBlockEntity> live) {
-
         Map<String, TickingBlockEntity> byKey = new HashMap<>();
 
         int liveCount = 0;
@@ -1201,7 +1181,6 @@ public final class RuntimeCapsuleManager {
             worlds.put(VersionIds.dimension(world), world);
         }
         for (RedstoneTorchBurnoutSnapshot snapshot : capsule.redstoneTorchBurnout) {
-
             ServerLevel world = worlds.get(snapshot.dimension);
 
             if (world == null)

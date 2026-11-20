@@ -288,7 +288,6 @@ public final class DetachedGeneration {
                     for (QueuedWrite queued : region.getValue()) {
                         PendingRegionWrite write = queued.write;
                         if (write.nbt() == null) {
-
                             file.clear(write.pos());
 
                         } else {
@@ -299,7 +298,6 @@ public final class DetachedGeneration {
 
                             try (DataOutputStream output =
                                     file.getChunkDataOutputStream(write.pos())) {
-
                                 //? if <=1.20.1 {
                                 /*NbtIo.write(write.nbt(), output);
                                 *///?} else if <=1.20.2 {

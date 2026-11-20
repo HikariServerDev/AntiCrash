@@ -15,7 +15,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(EntityStorage.class)
 public interface EntityChunkDataAccessAccessorMixin {
-
     //? if <=1.20.4 {
     /*@Accessor("worker")
     IOWorker anticrash$getDataLoadWorker();

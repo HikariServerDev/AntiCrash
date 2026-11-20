@@ -304,9 +304,7 @@ public final class CarpetIntegration {
             data.z = player.getZ();
         }
         if (config.fakePlayer.snapshot.rotation) {
-
             data.yaw = player.getViewYRot(0);
-
             data.pitch = player.getViewXRot(0);
         }
         //? if <=1.21.4 {
@@ -322,9 +320,7 @@ public final class CarpetIntegration {
 
         if (config.fakePlayer.snapshot.sprinting) data.sprinting = player.isSprinting();
         if (config.fakePlayer.snapshot.movement) {
-
             data.forward = player.zza;
-
             data.strafing = player.xxa;
 
             //? if >=1.21.2 {
@@ -342,7 +338,6 @@ public final class CarpetIntegration {
                             config.fakePlayer.snapshot.selectedSlot);
         if (config.fakePlayer.snapshot.health) data.health = player.getHealth();
         if (config.fakePlayer.snapshot.hunger) {
-
             data.hunger = player.getFoodData().getFoodLevel();
 
             data.saturation = player.getFoodData().getSaturationLevel();
@@ -361,9 +356,7 @@ public final class CarpetIntegration {
                 data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
 
         if (player.isPassenger()) {
-
             data.vehicleUuid = player.getVehicle().getStringUUID();
-
             data.rootVehicleNbt = captureRootVehicle(player);
         }
         captureUseState(player, data);
@@ -436,7 +429,6 @@ public final class CarpetIntegration {
         }
         for (FakePlayerSnapshot data : snapshots) {
             try {
-
                 ServerPlayer player = find(server, data);
 
                 if (player == null && config.fakePlayer.autoRejoin) player = create(server, data);
@@ -516,7 +508,6 @@ public final class CarpetIntegration {
 
     private static ServerPlayer create(MinecraftServer server, FakePlayerSnapshot data)
             throws IOException {
-
         if (!server.isSameThread())
             throw new IOException("FakePlayer restore must run on the server thread");
         UUID expectedUuid = UUID.fromString(data.uuid);
@@ -543,7 +534,6 @@ public final class CarpetIntegration {
 
     private static ServerPlayer createWithCheckpointProfile(
             MinecraftServer server, FakePlayerSnapshot data) throws IOException {
-
         ServerLevel world = findWorld(server, data.dimension);
 
         if (world == null) world = server.overworld();
@@ -583,7 +573,6 @@ public final class CarpetIntegration {
         // Command fallback: only characters a Brigadier word accepts, so the name cannot alter it.
         if (data.name != null && data.name.matches("[A-Za-z0-9_.+-]{1,16}")) {
             try {
-
                 //? if <=1.19 {
                 /*RecoveryCommandPolicy.runInternal(() ->
                         server.getCommands()
@@ -618,7 +607,6 @@ public final class CarpetIntegration {
             ServerLevel world,
             FakePlayerSnapshot data,
             GameType mode) {
-
         FakePlayerFactoryContract contract =
                 FakePlayerFactoryContract.resolve(
                         types,
@@ -669,7 +657,6 @@ public final class CarpetIntegration {
             AntiCrashConfig config)
             throws IOException {
         //? if >=1.21.2 {
-
         // Validate new input state before teleport, vehicle changes, or inventory mutation.
         if (config.fakePlayer.snapshot.movement) PlayerInputCodec.restore(data.playerInput);
         //?}
@@ -702,7 +689,6 @@ public final class CarpetIntegration {
                 throw new IOException("Enabled FakePlayer effect snapshot is missing");
             effects = new ArrayList<>(data.effectsNbt.size());
             for (String encoded : data.effectsNbt) {
-
                 Tag element = NbtCodec.decode(encoded);
 
                 if (!(element instanceof CompoundTag compound))
@@ -804,7 +790,6 @@ public final class CarpetIntegration {
             player.onUpdateAbilities();
         }
         if (config.fakePlayer.snapshot.sneaking) {
-
             player.setShiftKeyDown(data.sneaking);
         }
         if (config.fakePlayer.snapshot.sprinting) {
@@ -824,7 +809,6 @@ public final class CarpetIntegration {
 
         if (config.fakePlayer.snapshot.health) player.setHealth(data.health);
         if (config.fakePlayer.snapshot.hunger) {
-
             player.getFoodData().setFoodLevel(data.hunger);
 
             player.getFoodData().setSaturation(data.saturation);
@@ -837,7 +821,6 @@ public final class CarpetIntegration {
             //?}
         }
         if (effects != null) {
-
             player.removeAllEffects();
 
             for (MobEffectInstance effect : effects) player.addEffect(effect);
@@ -874,7 +857,6 @@ public final class CarpetIntegration {
                                     config.fakePlayer.snapshot.itemUseCooldown,
                                     config.fakePlayer.snapshot.blockBreakProgress));
         if (vehicle != null) {
-
             //? if <=1.21.8 {
             /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
                     || !player.startRiding(vehicle, true))
@@ -892,7 +874,6 @@ public final class CarpetIntegration {
      * it, so the state AntiCrash adds to entity data is included.
      */
     private static String captureRootVehicle(ServerPlayer player) throws IOException {
-
         Entity root = player.getRootVehicle();
 
         if (root == null || root == player) return null;
@@ -911,20 +892,17 @@ public final class CarpetIntegration {
 
     /** Removes the vehicle (and its non-player passengers) the player currently rides. */
     private static void discardStaleVehicle(ServerPlayer player) {
-
         Entity root = player.getRootVehicle();
 
         player.stopRiding();
         if (root == null || root == player) return;
 
         for (Entity entity : root.getPassengersAndSelf().toList()) {
-
             if (!(entity instanceof Player)) entity.discard();
         }
     }
 
     private static void collectUuids(CompoundTag nbt, Set<UUID> uuids) {
-
         //? if <=1.21.4 {
         /*if (nbt.hasUUID("UUID")) uuids.add(nbt.getUUID("UUID"));
         *///?} else {
@@ -948,7 +926,6 @@ public final class CarpetIntegration {
             String encoded,
             UUID vehicleId)
             throws IOException {
-
         CompoundTag nbt = NbtCodec.decodeCompound(encoded);
 
         Set<UUID> uuids = new HashSet<>();
@@ -959,7 +936,6 @@ public final class CarpetIntegration {
         if (player.isPassenger()) discardStaleVehicle(player);
         for (UUID uuid : uuids)
             for (ServerLevel candidate : server.getAllLevels()) {
-
                 Entity existing = candidate.getEntity(uuid);
 
                 if (existing != null && !(existing instanceof Player)) existing.discard();
@@ -989,7 +965,6 @@ public final class CarpetIntegration {
         if (root == null) throw new IOException("FakePlayer vehicle could not be loaded");
 
         for (Entity entity : root.getPassengersAndSelf().toList()) {
-
             if (vehicleId.equals(entity.getUUID())) return entity;
         }
         throw new IOException("FakePlayer vehicle was not created from its snapshot");
@@ -1061,7 +1036,6 @@ public final class CarpetIntegration {
     /** Runs after the inventory is back, so the hand holds the item that was being used. */
     private static void restoreUseState(ServerPlayer player, FakePlayerSnapshot data)
             throws IOException {
-
         //? if >=26.1 {
         if (data.fluidTrackersNbt != null)
             com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.restore(
@@ -1096,11 +1070,9 @@ public final class CarpetIntegration {
                     .anticrash$setSelectedItem(player.getMainHandItem().copy());
         }
         if (data.activeHand != null && data.itemUseTimeLeft != null) {
-
             InteractionHand hand;
 
             try {
-
                 hand = InteractionHand.valueOf(data.activeHand);
 
             } catch (IllegalArgumentException invalid) {

@@ -30,7 +30,6 @@ public final class RedstoneTorchBurnoutSnapshot {
         List<RedstoneTorchBlock.Toggle> live = map.get(world);
 
         if (live != null) {
-
             for (RedstoneTorchBlock.Toggle entry : live) {
                 if (entry == null) continue;
                 RedstoneTorchBurnoutEntryAccessorMixin entryAccessor =
@@ -48,7 +47,6 @@ public final class RedstoneTorchBurnoutSnapshot {
     }
 
     public void restore(ServerLevel world) {
-
         Map<BlockGetter, List<RedstoneTorchBlock.Toggle>> map =
                 RedstoneTorchBlockAccessorMixin.anticrash$getBurnoutMap();
 
@@ -60,7 +58,6 @@ public final class RedstoneTorchBurnoutSnapshot {
         List<RedstoneTorchBlock.Toggle> restored = new ArrayList<>(entries.size());
 
         for (Entry entry : entries) {
-
             restored.add(
                     new RedstoneTorchBlock.Toggle(
                             new BlockPos(entry.x, entry.y, entry.z), entry.time));

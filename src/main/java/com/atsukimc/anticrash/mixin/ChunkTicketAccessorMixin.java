@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 /** Read-only access to ticket metadata; the ticket manager is never rewritten. */
 @Mixin(Ticket.class)
 public interface ChunkTicketAccessorMixin {
-
     //? if <=1.21.4 {
     /*@Accessor("type")
     TicketType<?> anticrash$getType();

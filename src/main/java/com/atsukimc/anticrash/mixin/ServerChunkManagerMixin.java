@@ -64,7 +64,6 @@ public abstract class ServerChunkManagerMixin {
         if (controller == null || !controller.needsSpawnInfoFallback()) return;
 
         if (anticrash$emptySpawnInfo == null) {
-
             ServerChunkCache manager = (ServerChunkCache) (Object) this;
 
             //? if <=26.2 {

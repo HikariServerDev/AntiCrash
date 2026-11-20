@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(BrewingStandBlockEntity.class)
 public interface BrewingStandBlockEntityTimerAccessor {
-
     //? if >=26.3 {
     @Accessor("totalBrewTime")
     int anticrash$totalBrewTime();

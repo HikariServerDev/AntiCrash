@@ -66,7 +66,6 @@ class RuntimeOrderRestorerTest {
             //?}
 
             for (int ticks = 0; ticks <= expiry + 2; ticks++) {
-
                 //? if <=1.21.4 {
                 /*assertEquals(
                         expired(captureAge + ticks, liveCreated, expiry),

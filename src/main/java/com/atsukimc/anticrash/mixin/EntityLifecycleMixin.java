@@ -19,7 +19,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(Entity.class)
 public abstract class EntityLifecycleMixin {
-
     @Inject(method = "remove(Lnet/minecraft/world/entity/Entity$RemovalReason;)V", at = @At("HEAD"))
     private void anticrash$removed(RemovalReason reason, CallbackInfo callbackInfo) {
         EntityLifecycleTracker.recordRemoval(

@@ -52,7 +52,6 @@ class FakePlayerProfileScopeTest {
     void cacheAndNameMustBothMatch() {
         Object cache = new Object();
         try (var scope = FakePlayerProfileScope.open(cache, CHECKPOINT_ID, "MsBot")) {
-
             //? if <=1.21.8 {
             /*assertEquals("MsBot", FakePlayerProfileScope.lookup(cache, "msbot").getName());
             *///?} else {

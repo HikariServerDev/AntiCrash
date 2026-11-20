@@ -176,7 +176,6 @@ public final class LogicalDeltaMaterializer {
         //?}
 
             try (DataOutputStream output = region.getChunkDataOutputStream(chunk)) {
-
                 //? if <=1.20.1 {
                 /*NbtIo.write(NbtCodec.decodeCompound(encoded), output);
                 *///?} else if <=1.20.2 {
@@ -295,7 +294,6 @@ public final class LogicalDeltaMaterializer {
             root.put("Entities", retained);
 
             try (DataOutputStream output = region.getChunkDataOutputStream(chunk)) {
-
                 //? if <=1.20.1 {
                 /*NbtIo.write(root, output);
                 *///?} else if <=1.20.2 {
@@ -312,7 +310,6 @@ public final class LogicalDeltaMaterializer {
     }
 
     private static boolean matchesUuid(CompoundTag entity, String uuidText) {
-
         //? if <=1.21.4 {
         /*if (uuidText == null || !entity.hasUUID("UUID")) return false;
         *///?} else {

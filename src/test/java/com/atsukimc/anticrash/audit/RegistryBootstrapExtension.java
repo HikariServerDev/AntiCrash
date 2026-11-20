@@ -14,7 +14,6 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class RegistryBootstrapExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) {
-
         SharedConstants.tryDetectVersion();
 
         Bootstrap.bootStrap();

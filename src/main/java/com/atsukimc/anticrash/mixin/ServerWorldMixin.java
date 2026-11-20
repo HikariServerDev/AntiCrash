@@ -18,7 +18,6 @@ import java.util.function.BooleanSupplier;
 
 @Mixin(ServerLevel.class)
 public abstract class ServerWorldMixin {
-
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)
     private void anticrash$freezeWorld(
             BooleanSupplier shouldKeepTicking, CallbackInfo callbackInfo) {

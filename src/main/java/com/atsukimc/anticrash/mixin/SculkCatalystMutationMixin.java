@@ -20,7 +20,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** Vanilla writes spread cursors but their countdown does not call setChanged (1.19 bytecode). */
 @Mixin(SculkCatalystBlockEntity.class)
 public abstract class SculkCatalystMutationMixin {
-
     @Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markCursorTick(
             Level world,

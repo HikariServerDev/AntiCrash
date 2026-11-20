@@ -39,7 +39,6 @@ class PendingRegionWriteOverlayTest {
     }
 
     private static CompoundTag chunk(String marker) {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putString("marker", marker);
@@ -62,7 +61,6 @@ class PendingRegionWriteOverlayTest {
         //?}
 
         try (DataOutputStream output = file.getChunkDataOutputStream(pos)) {
-
             //? if <=1.20.1 {
             /*NbtIo.write(nbt, output);
             *///?} else if <=1.20.2 {
@@ -77,7 +75,6 @@ class PendingRegionWriteOverlayTest {
     }
 
     private static CompoundTag read(Path region, ChunkPos pos) throws IOException {
-
         //? if <=1.20.4 {
         /*RegionFile file = new RegionFile(region, region.getParent(), false);
         *///?} else {
@@ -90,7 +87,6 @@ class PendingRegionWriteOverlayTest {
         //?}
 
         try (DataInputStream input = file.getChunkDataInputStream(pos)) {
-
             //? if <=1.20.1 {
             /*return input == null ? null : NbtIo.read(input);
             *///?} else {

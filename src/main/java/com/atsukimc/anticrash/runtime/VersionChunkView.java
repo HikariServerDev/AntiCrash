@@ -12,7 +12,6 @@ public final class VersionChunkView {
     private VersionChunkView() {}
 
     public static LevelChunk worldChunk(ChunkHolder holder) {
-
         var latest = holder.getLatestChunk();
 
         if (latest instanceof ImposterProtoChunk wrapper) latest = wrapper.getWrapped();

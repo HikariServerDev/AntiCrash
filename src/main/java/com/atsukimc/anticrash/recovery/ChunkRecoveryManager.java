@@ -173,7 +173,6 @@ public final class ChunkRecoveryManager {
             worlds.put(VersionIds.dimension(world), world);
         }
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
-
             ServerLevel world = worlds.get(entry.dimension());
 
             if (world == null) {
@@ -347,7 +346,6 @@ public final class ChunkRecoveryManager {
     }
 
     private void request(PendingChunk pendingChunk) {
-
         ServerLevel world = pendingChunk.world;
 
         ChunkRecoveryPlan.Entry entry = pendingChunk.entry;
@@ -444,9 +442,7 @@ public final class ChunkRecoveryManager {
      * block/entity tick.
      */
     private void advanceChunkLifecycle() {
-
         for (ServerLevel world : recoveryWorlds) {
-
             //? if <=1.18.1 {
             /*VersionChunkLifecycle.advance(world.getChunkSource());
             *///?} else {
@@ -528,7 +524,6 @@ public final class ChunkRecoveryManager {
 
         if (holder == null) return false;
         if (ticket.ticketLevel == ChunkRecoveryPlan.FULL_TICKET_LEVEL) {
-
             //? if <=1.20.6 {
             /*return completed(holder.getFutureIfPresent(ChunkStatus.FULL));
             *///?} else {
@@ -537,7 +532,6 @@ public final class ChunkRecoveryManager {
 
         }
         if (ticket.ticketLevel == ChunkRecoveryPlan.BLOCK_TICKING_TICKET_LEVEL) {
-
             //? if <=1.19.4 {
             /*return (holder.getFullStatus() == ChunkHolder.FullChunkStatus.TICKING
                             || holder.getFullStatus() == ChunkHolder.FullChunkStatus.ENTITY_TICKING)
@@ -582,7 +576,6 @@ public final class ChunkRecoveryManager {
     //?}
         if (future == null || !future.isDone() || future.isCompletedExceptionally()) return false;
         try {
-
             //? if <=1.20.4 {
             /*Either<?, ?> result = future.getNow(null);
 
@@ -704,7 +697,6 @@ public final class ChunkRecoveryManager {
     private boolean releaseTicket(Ticket ticket, boolean undoForcedState) {
         if (ticket == null || ticket.released) return true;
         try {
-
             //? if <=1.21.4 {
             /*ticket.world
                     .getChunkSource()
@@ -732,7 +724,6 @@ public final class ChunkRecoveryManager {
     private record PendingChunk(ServerLevel world, ChunkRecoveryPlan.Entry entry) {}
 
     private static final class Ticket {
-
         private final ServerLevel world;
 
         private final ChunkPos pos;

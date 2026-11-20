@@ -8,7 +8,6 @@ public final class RecoveryReportFormatter {
 
     public static String render(
             RecoveryEquivalenceReport report, boolean verbose, String language) {
-
         StringBuilder output = new StringBuilder();
         output.append(
                         MessageCatalog.text(

@@ -90,7 +90,6 @@ public abstract class ArchaeologyRuntimeMixin {
 
     @Inject(method = "checkReset", at = @At("HEAD"))
     private void anticrash$dirtyDecay(CallbackInfo ci) {
-
         //? if <=1.19.4 {
         /*((SuspiciousSandBlockEntity) (Object) this).setChanged();
         *///?} else {
@@ -100,7 +99,6 @@ public abstract class ArchaeologyRuntimeMixin {
 
     @Inject(method = "brush", at = @At("RETURN"))
     private void anticrash$dirtyBrush(CallbackInfoReturnable<Boolean> ci) {
-
         //? if <=1.19.4 {
         /*((SuspiciousSandBlockEntity) (Object) this).setChanged();
         *///?} else {

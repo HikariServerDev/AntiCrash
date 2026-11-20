@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(VibrationListener.class)
 public abstract class SculkSensorListenerMixin {
-
     @Shadow @Final protected PositionSource listenerSource;
 
     //? if <=1.18.2 {

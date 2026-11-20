@@ -84,7 +84,6 @@ public final class VersionNbt {
             throw new IllegalArgumentException("Expected NBT list: " + key);
 
         for (Tag entry : list) {
-
             if (entry.getId() != type)
                 throw new IllegalArgumentException("Wrong NBT list element type: " + key);
         }

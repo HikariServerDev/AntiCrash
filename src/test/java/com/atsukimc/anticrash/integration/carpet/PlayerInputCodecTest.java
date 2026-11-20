@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class PlayerInputCodecTest {
-
     //? if >=1.21.6 {
     @Test
     void freezeFiltersPressReleaseAndSprintWithoutReadingNetworkThreadState() {

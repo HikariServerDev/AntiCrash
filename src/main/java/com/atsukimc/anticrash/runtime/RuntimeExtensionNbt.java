@@ -44,7 +44,6 @@ public final class RuntimeExtensionNbt {
     private RuntimeExtensionNbt() {}
 
     public static void entitySave(boolean active) {
-
         //? if <=1.21.5 {
         /*SCOPE.get().entitySave = active;
         *///?} else {

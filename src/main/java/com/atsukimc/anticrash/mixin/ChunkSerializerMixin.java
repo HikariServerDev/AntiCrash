@@ -49,7 +49,6 @@ public abstract class ChunkSerializerMixin {
                         && ((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld();
         RuntimeExtensionNbt.loadedChunkSave(staysLoaded);
         try {
-
             //? if <=1.21.1 {
             /*CompoundTag nbt = original.call(world, chunk);
             *///?} else {

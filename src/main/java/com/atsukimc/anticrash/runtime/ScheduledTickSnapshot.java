@@ -62,19 +62,16 @@ public final class ScheduledTickSnapshot {
     }
 
     public TickPriority tickPriority() {
-
         return TickPriority.byValue(priority);
     }
 
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Block> blockScheduler(LevelChunk chunk) {
-
         return (LevelChunkTicks<Block>) chunk.getBlockTicks();
     }
 
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Fluid> fluidScheduler(LevelChunk chunk) {
-
         return (LevelChunkTicks<Fluid>) chunk.getFluidTicks();
     }
 
@@ -84,7 +81,6 @@ public final class ScheduledTickSnapshot {
             String kind,
             LevelChunkTicks<T> scheduler,
             Registry<T> registry) {
-
         scheduler
                 .getAll()
                 .forEach(ordered -> {

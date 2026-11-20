@@ -8,7 +8,6 @@ import org.objectweb.asm.*;
 class ProfileCacheBytecodeContractTest {
     @Test
     void injectionMatchesTheExactTargetVersion() throws Exception {
-
         //? if <=1.21.8 {
         /*try (var input =
                 getClass()
@@ -34,7 +33,6 @@ class ProfileCacheBytecodeContractTest {
                                         String descriptor,
                                         String signature,
                                         String[] exceptions) {
-
                                     if (name.equals("get")
                                             && descriptor.equals(
                                                     "(Ljava/lang/String;)Ljava/util/Optional;"))

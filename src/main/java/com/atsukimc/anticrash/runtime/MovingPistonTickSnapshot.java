@@ -65,7 +65,6 @@ public final class MovingPistonTickSnapshot {
             String dimension,
             Set<Long> protectedChunks,
             List<TickingBlockEntity> tickers) {
-
         for (TickingBlockEntity ticker : tickers) {
             if (BlockEntityTickerSnapshot.removed(ticker)) continue;
             BlockPos position = ticker.getPos();

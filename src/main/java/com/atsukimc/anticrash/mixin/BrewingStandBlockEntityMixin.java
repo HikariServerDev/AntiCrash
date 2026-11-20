@@ -23,7 +23,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** {@code BrewTime} counts down every tick without marking the chunk for saving. */
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class BrewingStandBlockEntityMixin {
-
     //? if <=26.2 {
     /*@Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markBrewTimeDirty(

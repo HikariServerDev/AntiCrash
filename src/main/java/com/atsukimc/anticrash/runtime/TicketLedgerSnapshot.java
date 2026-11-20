@@ -39,7 +39,6 @@ public final class TicketLedgerSnapshot {
         List<Entry> result = new ArrayList<>();
 
         for (ServerLevel world : worlds) {
-
             //? if <=1.21.4 {
             /*DistanceManager manager = world.getChunkSource().chunkMap.getDistanceManager();
             *///?} else {

@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.Unique;
 
 @Mixin(LevelChunk.class)
 public abstract class WorldChunkExtensionMixin implements ExtensionCarrier {
-
     @Unique private boolean anticrash$extensionOnDisk;
 
     @Override

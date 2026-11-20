@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 //? if <=1.21.4 {
 /*@Mixin(DistanceManager.class)
 public interface ChunkTicketManagerAccessorMixin {
-
     @Accessor("tickets")
     Long2ObjectOpenHashMap<SortedArraySet<Ticket<?>>> anticrash$getTicketsByPosition();
 
@@ -27,7 +26,6 @@ public interface ChunkTicketManagerAccessorMixin {
 *///?} else {
 @Mixin(TicketStorage.class)
 public interface ChunkTicketManagerAccessorMixin {
-
     @Accessor("tickets")
     Long2ObjectOpenHashMap<java.util.List<Ticket>> anticrash$getTicketsByPosition();
 //?}

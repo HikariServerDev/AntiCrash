@@ -29,7 +29,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginNetworkHandlerMixin {
-
     @Unique private long anticrash$holdDeadlineNanos;
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)

@@ -22,12 +22,10 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(Commands.class)
 public abstract class CommandManagerMixin {
-
     @Inject(method = "<init>", at = @At("RETURN"))
     private void anticrash$register(CallbackInfo callbackInfo) {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null) {
-
             CommandDispatcher<CommandSourceStack> dispatcher =
                     ((Commands) (Object) this).getDispatcher();
 
@@ -68,7 +66,6 @@ public abstract class CommandManagerMixin {
             // made a command issued inside the sub-second barrier look like a broken feature, so
             // say why and let the operator simply run it again.
             if (!RecoveryCommandPolicy.allowedDuringCheckpoint(normalized)) {
-
                 source.sendFailure(
                         controller.chat(
                                 MessageCatalog.text(
@@ -89,7 +86,6 @@ public abstract class CommandManagerMixin {
         if (!controller.isRecoveryFrozen()) return;
         if (!RecoveryCommandPolicy.allowed(
                 normalized, controller.config().recovery.lock.allowCommands)) {
-
             source.sendFailure(
                     controller.chat(
                             MessageCatalog.text(

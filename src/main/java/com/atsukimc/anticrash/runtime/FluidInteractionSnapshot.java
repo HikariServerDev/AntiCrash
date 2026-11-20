@@ -78,7 +78,6 @@ public final class FluidInteractionSnapshot {
         }
 
         public static State read(CompoundTag n) {
-
             //? if <=26.2 {
             /*return new State(
                     n.getString("Tag").orElseThrow(),
@@ -118,7 +117,6 @@ public final class FluidInteractionSnapshot {
     *///?}
 
     public static ListTag capture(Entity entity) {
-
         //? if >=26.3 {
         var interaction = ((EntityFluidAccessor) entity).anticrash$fluids();
 
@@ -307,7 +305,6 @@ public final class FluidInteractionSnapshot {
 
         // All entries have been validated before any value changes.
         for (var s : expected) {
-
             //? if <=26.2 {
             /*var t = live.get(s.tag());
             *///?}
@@ -326,7 +323,6 @@ public final class FluidInteractionSnapshot {
 
             t.anticrash$count(s.count());
             *///?} else {
-
             } else {
                 var c = currents.get(s.tag());
 

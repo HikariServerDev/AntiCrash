@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 /** Read-only view of the entity state AntiCrash keeps in its NBT extension, for verification. */
 @Mixin(Entity.class)
 public interface EntityRuntimeAccessorMixin {
-
     //? if >=1.21.11 {
     @Accessor("lastKnownSpeed")
     net.minecraft.world.phys.Vec3 anticrash$movement();

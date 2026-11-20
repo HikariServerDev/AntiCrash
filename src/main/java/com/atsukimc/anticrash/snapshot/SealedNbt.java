@@ -13,7 +13,6 @@ import java.util.Set;
  * with the IO thread.
  */
 public final class SealedNbt {
-
     private static final Set<CompoundTag> SEALED =
             Collections.newSetFromMap(new IdentityHashMap<>());
 

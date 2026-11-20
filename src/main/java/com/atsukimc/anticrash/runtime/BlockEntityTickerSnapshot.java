@@ -121,7 +121,6 @@ public final class BlockEntityTickerSnapshot {
      * world, and the plain map lookup is also several times cheaper for thousands of tickers.
      */
     public static BlockEntity loadedBlockEntity(ServerLevel world, BlockPos position) {
-
         LevelChunk chunk =
                 world.getChunkSource().getChunkNow(position.getX() >> 4, position.getZ() >> 4);
 

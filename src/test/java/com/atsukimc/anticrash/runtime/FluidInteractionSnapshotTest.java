@@ -15,7 +15,6 @@ import java.util.List;
 class FluidInteractionSnapshotTest {
     @Test
     void trackerRoundTripPreservesAllSemanticValues() {
-
         //? if <=26.2 {
         /*var state =
                 new FluidInteractionSnapshot.State(

@@ -6,7 +6,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(targets = "net.minecraft.world.entity.EntityFluidInteraction$Tracker")
 public interface FluidTrackerAccessor {
-
     //? if >=26.3 {
     @Accessor("fluidType")
     net.minecraft.core.Holder<net.minecraft.world.level.material.Fluid> anticrash$type();

@@ -242,7 +242,6 @@ public final class ChunkStateSnapshot {
     //?}
         if (future == null || !future.isDone() || future.isCompletedExceptionally()) return false;
         try {
-
             //? if <=1.20.4 {
             /*Either<?, ?> result = future.getNow(null);
 

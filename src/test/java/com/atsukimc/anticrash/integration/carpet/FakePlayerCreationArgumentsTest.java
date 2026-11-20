@@ -106,12 +106,10 @@ class FakePlayerCreationArgumentsTest {
     }
 
     private static Class<?> dimensionKeyType() throws Exception {
-
         return ServerLevel.class.getMethod("dimension").getReturnType();
     }
 
     private static Class<?> modeType() {
-
         return GameType.class;
     }
 }

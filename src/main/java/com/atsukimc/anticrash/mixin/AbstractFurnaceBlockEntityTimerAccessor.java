@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(AbstractFurnaceBlockEntity.class)
 public interface AbstractFurnaceBlockEntityTimerAccessor {
-
     //? if <=1.21.3 {
     /*@Accessor("litTime")
     int anticrash$getBurnTime();

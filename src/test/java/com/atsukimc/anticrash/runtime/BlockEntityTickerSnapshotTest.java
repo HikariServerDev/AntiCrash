@@ -10,9 +10,7 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import org.junit.jupiter.api.Test;
 
 class BlockEntityTickerSnapshotTest {
-
     private static TickingBlockEntity ticker(boolean removed) {
-
         return new TickingBlockEntity() {
             @Override
             public void tick() {}
@@ -24,7 +22,6 @@ class BlockEntityTickerSnapshotTest {
 
             @Override
             public BlockPos getPos() {
-
                 return BlockPos.ZERO;
             }
 

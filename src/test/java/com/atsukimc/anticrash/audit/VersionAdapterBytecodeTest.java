@@ -11,11 +11,9 @@ import java.io.InputStream;
 
 /** Offline evidence for version-dependent semantic assumptions, without starting a server. */
 class VersionAdapterBytecodeTest {
-
     //? if >=1.21.9 {
     @Test
     void modernSpawnPointPreservesBothAngles() {
-
         var spawn =
                 net.minecraft.world.level.storage.LevelData.RespawnData.of(
                         net.minecraft.world.level.Level.OVERWORLD,
@@ -42,7 +40,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void borderIsPersistentStateAndRidingHasAnEventFreeRestorationPath() throws Exception {
-
         assertTrue(
                 net.minecraft.world.level.saveddata.SavedData.class.isAssignableFrom(
                         net.minecraft.world.level.border.WorldBorder.class));
@@ -127,7 +124,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void newPickPacketsAreRoutedThroughTheServerThread() throws Exception {
-
         var handler = read("net/minecraft/server/network/ServerGamePacketListenerImpl");
 
         for (String name : new String[] {"handlePickItemFromBlock", "handlePickItemFromEntity"})
@@ -143,7 +139,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void furnacePersistsAllFourRenamedTimers() throws Exception {
-
         var furnace = read("net/minecraft/world/level/block/entity/AbstractFurnaceBlockEntity");
 
         for (String field :
@@ -194,7 +189,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void vanillaOwnsSensorSerializationSince119() throws Exception {
-
         var sensor = read("net/minecraft/world/level/block/entity/SculkSensorBlockEntity");
 
         //? if <=1.21.4 {
@@ -252,12 +246,10 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void predictionAckIsCumulativeAndUsedByVanilla() throws Exception {
-
         var handler = read("net/minecraft/server/network/ServerGamePacketListenerImpl");
 
         for (String method :
                 new String[] {"handlePlayerAction", "handleUseItemOn", "handleUseItem"}) {
-
             assertTrue(invokes(handler, method, handler.name, "ackBlockChangesUpTo"), method);
         }
 
@@ -266,7 +258,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void recipeMatchCacheIsSemanticStateNotJustAConstructorValue() throws Exception {
-
         var getter = read("net/minecraft/world/item/crafting/RecipeManager$1");
 
         //? if <=1.21.1 {
@@ -293,7 +284,6 @@ class VersionAdapterBytecodeTest {
     //? if >=1.21 {
     @Test
     void tickingGetterIsNotAnExactLoadedChunkSet() throws Exception {
-
         var holder = read("net/minecraft/server/level/ChunkHolder");
 
         assertTrue(invokes(holder, "getTickingChunk", holder.name, "getTickingChunkFuture"));
@@ -305,7 +295,6 @@ class VersionAdapterBytecodeTest {
 
     @Test
     void newPortalAndTntRuntimeFieldsExistAndAreNotVanillaNbtAuthority() throws Exception {
-
         var portal = read("net/minecraft/world/entity/PortalProcessor");
 
         for (String field :
@@ -319,7 +308,6 @@ class VersionAdapterBytecodeTest {
                         .anyMatch(f -> f.name.equals("usedPortal") && f.desc.equals("Z")));
 
         for (var method : tnt.methods) {
-
             if (!method.name.equals("addAdditionalSaveData")) continue;
 
             for (var insn : method.instructions)

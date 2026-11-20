@@ -19,7 +19,6 @@ import java.util.Base64;
 class NbtCodecTest {
     @Test
     void emptyRootRoundTripsAndTrailingBytesAreRejected() throws Exception {
-
         Tag empty = NbtCodec.decode("AA==");
 
         assertEquals(0, empty.getId());
@@ -30,7 +29,6 @@ class NbtCodecTest {
 
     @Test
     void roundTripsAListRootUsedByEnderChestSnapshots() throws Exception {
-
         ListTag list = new ListTag();
 
         list.add(StringTag.valueOf("slot"));
@@ -44,7 +42,6 @@ class NbtCodecTest {
     void hostileArrayLengthIsRejectedBeforeAHeapSizedAllocation() throws Exception {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (DataOutputStream output = new DataOutputStream(bytes)) {
-
             output.writeByte(Tag.TAG_BYTE_ARRAY);
 
             output.writeUTF("");

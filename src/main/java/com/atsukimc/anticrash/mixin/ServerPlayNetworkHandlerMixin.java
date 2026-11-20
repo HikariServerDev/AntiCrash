@@ -60,13 +60,11 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(ServerGamePacketListenerImpl.class)
 public abstract class ServerPlayNetworkHandlerMixin {
-
     private AntiCrashController anticrash$controller() {
         return AntiCrashMod.controller();
     }
 
     private ServerPlayer anticrash$player() {
-
         return ((ServerGamePacketListenerImpl) (Object) this).player;
     }
 
@@ -76,7 +74,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 
     private ServerGamePacketListenerImpl anticrash$handler() {
-
         return (ServerGamePacketListenerImpl) (Object) this;
     }
 
@@ -112,7 +109,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
      * server thread, so the world must only be read from inside the scheduled task.
      */
     private void anticrash$resyncBlocks(BlockPos first, BlockPos second) {
-
         ServerPlayer player = anticrash$player();
 
         if (player == null) return;
@@ -373,7 +369,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
     @Inject(method = "handleUseItemOn", at = @At("HEAD"), cancellable = true)
     private void anticrash$blockInteract(ServerboundUseItemOnPacket packet, CallbackInfo info) {
-
         ServerPlayer player = anticrash$player();
 
         //? if <=26.2 {
@@ -852,7 +847,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
         //? if <=1.21.11 {
         /*boolean allowed =
                 switch (packet.getAction()) {
-
         *///?}
                     //? if <=1.21.5 {
                     /*case PRESS_SHIFT_KEY, RELEASE_SHIFT_KEY -> lock.allowSneak;
@@ -923,7 +917,6 @@ public abstract class ServerPlayNetworkHandlerMixin {
     }
 }
     *///?} else {
-
     /**
      * Mod payloads are not handled while recovery is frozen, but they are not thrown away either:
      * handshakes pass at once and the rest is delivered after the start; see DeferredPayloads.
