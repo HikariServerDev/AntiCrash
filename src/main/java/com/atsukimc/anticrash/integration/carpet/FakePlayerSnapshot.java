@@ -85,139 +85,51 @@ public final class FakePlayerSnapshot {
 
     /** Stable semantic representation used by the equivalence report, not by restore itself. */
     public String canonical() {
-        //? if <=1.21.1 {
-        /*return String.join(
-                        "|",
-                        value(uuid),
-                        value(name),
-                        value(dimension),
-                        Double.toString(x),
-                        Double.toString(y),
-                        Double.toString(z),
-                        Float.toString(yaw),
-                        Float.toString(pitch),
-                        value(gamemode),
-                        Boolean.toString(flying),
-                        Boolean.toString(sneaking),
-                        Boolean.toString(sprinting),
-                        Float.toString(forward),
-                        Float.toString(strafing),
-                        inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
-                        Float.toString(health),
-                        Integer.toString(hunger),
-                        Float.toString(saturation),
-                        Float.toString(exhaustion),
-                        effectsNbt == null ? "null" : effectsNbt.toString(),
-                        actionPackState == null
-                                ? "null"
-                                : withoutNullMembers(actionPackState).toString(),
-                        String.valueOf(itemUseCooldown),
-                        String.valueOf(blockBreakingProgress),
-                        value(currentBlock),
-                        value(vehicleUuid))
-                + runtimeCanonical();
-        *///?} else if <=1.21.10 {
-        /*return String.join(
-                        "|",
-                        value(uuid),
-                        value(name),
-                        value(dimension),
-                        Double.toString(x),
-                        Double.toString(y),
-                        Double.toString(z),
-                        Float.toString(yaw),
-                        Float.toString(pitch),
-                        value(gamemode),
-                        Boolean.toString(flying),
-                        Boolean.toString(sneaking),
-                        Boolean.toString(sprinting),
-                        Float.toString(forward),
-                        Float.toString(strafing),
-                        inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
-                        Float.toString(health),
-                        Integer.toString(hunger),
-                        Float.toString(saturation),
-                        Float.toString(exhaustion),
-                        effectsNbt == null ? "null" : effectsNbt.toString(),
-                        actionPackState == null
-                                ? "null"
-                                : withoutNullMembers(actionPackState).toString(),
-                        String.valueOf(itemUseCooldown),
-                        String.valueOf(blockBreakingProgress),
-                        value(currentBlock),
-                        value(vehicleUuid))
-                + runtimeCanonical()
-                + (playerInput == null ? "" : "|input=" + playerInput);
-        *///?} else if <=1.21.11 {
-        /*return String.join(
-                        "|",
-                        value(uuid),
-                        value(name),
-                        value(dimension),
-                        Double.toString(x),
-                        Double.toString(y),
-                        Double.toString(z),
-                        Float.toString(yaw),
-                        Float.toString(pitch),
-                        value(gamemode),
-                        Boolean.toString(flying),
-                        Boolean.toString(sneaking),
-                        Boolean.toString(sprinting),
-                        Float.toString(forward),
-                        Float.toString(strafing),
-                        inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
-                        Float.toString(health),
-                        Integer.toString(hunger),
-                        Float.toString(saturation),
-                        Float.toString(exhaustion),
-                        effectsNbt == null ? "null" : effectsNbt.toString(),
-                        actionPackState == null
-                                ? "null"
-                                : withoutNullMembers(actionPackState).toString(),
-                        String.valueOf(itemUseCooldown),
-                        String.valueOf(blockBreakingProgress),
-                        value(currentBlock),
-                        value(vehicleUuid))
-                + runtimeCanonical()
-                + (playerInput == null ? "" : "|input=" + playerInput)
-                + (motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt)
-                + (lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime);
-        *///?} else {
-        return String.join(
-                        "|",
-                        value(uuid),
-                        value(name),
-                        value(dimension),
-                        Double.toString(x),
-                        Double.toString(y),
-                        Double.toString(z),
-                        Float.toString(yaw),
-                        Float.toString(pitch),
-                        value(gamemode),
-                        Boolean.toString(flying),
-                        Boolean.toString(sneaking),
-                        Boolean.toString(sprinting),
-                        Float.toString(forward),
-                        Float.toString(strafing),
-                        inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
-                        Float.toString(health),
-                        Integer.toString(hunger),
-                        Float.toString(saturation),
-                        Float.toString(exhaustion),
-                        effectsNbt == null ? "null" : effectsNbt.toString(),
-                        actionPackState == null
-                                ? "null"
-                                : withoutNullMembers(actionPackState).toString(),
-                        String.valueOf(itemUseCooldown),
-                        String.valueOf(blockBreakingProgress),
-                        value(currentBlock),
-                        value(vehicleUuid))
-                + runtimeCanonical()
-                + (playerInput == null ? "" : "|input=" + playerInput)
-                + (motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt)
-                + (fluidTrackersNbt == null ? "" : "|fluid=" + fluidTrackersNbt)
-                + (lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime);
+        String canonical =
+                String.join(
+                                "|",
+                                value(uuid),
+                                value(name),
+                                value(dimension),
+                                Double.toString(x),
+                                Double.toString(y),
+                                Double.toString(z),
+                                Float.toString(yaw),
+                                Float.toString(pitch),
+                                value(gamemode),
+                                Boolean.toString(flying),
+                                Boolean.toString(sneaking),
+                                Boolean.toString(sprinting),
+                                Float.toString(forward),
+                                Float.toString(strafing),
+                                inventory == null ? "null" : AtomicFiles.GSON.toJson(inventory),
+                                Float.toString(health),
+                                Integer.toString(hunger),
+                                Float.toString(saturation),
+                                Float.toString(exhaustion),
+                                effectsNbt == null ? "null" : effectsNbt.toString(),
+                                actionPackState == null
+                                        ? "null"
+                                        : withoutNullMembers(actionPackState).toString(),
+                                String.valueOf(itemUseCooldown),
+                                String.valueOf(blockBreakingProgress),
+                                value(currentBlock),
+                                value(vehicleUuid))
+                        + runtimeCanonical();
+
+        //? if >=1.21.2 {
+        canonical += playerInput == null ? "" : "|input=" + playerInput;
         //?}
+        //? if >=1.21.11 {
+        canonical += motionFrameNbt == null ? "" : "|motion=" + motionFrameNbt;
+        //?}
+        //? if >=26.1 {
+        canonical += fluidTrackersNbt == null ? "" : "|fluid=" + fluidTrackersNbt;
+        //?}
+        //? if >=1.21.11 {
+        canonical += lastKineticAttackTime == null ? "" : "|kineticTime=" + lastKineticAttackTime;
+        //?}
+        return canonical;
     }
 
     /** Item use, attack cooldown and item cooldowns only; null when the snapshot predates them. */
