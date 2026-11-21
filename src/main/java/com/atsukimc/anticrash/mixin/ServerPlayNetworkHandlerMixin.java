@@ -868,13 +868,12 @@ public abstract class ServerPlayNetworkHandlerMixin {
             info.cancel();
     }
 
-    /**
+    //? if <=1.20.1 {
+    /*/^*
      * Mod payloads are not handled while recovery is frozen, but they are not thrown away either:
      * handshakes pass at once and the rest is delivered after the start; see DeferredPayloads.
-     */
-
-    //? if <=1.20.1 {
-    /*@Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
+     ^/
+    @Inject(method = "handleCustomPayload", at = @At("HEAD"), cancellable = true)
     private void anticrash$customPayload(ServerboundCustomPayloadPacket packet, CallbackInfo info) {
         if (!anticrash$frozen()) return;
 
@@ -908,11 +907,5 @@ public abstract class ServerPlayNetworkHandlerMixin {
 
         return attack[0];
     }
+    *///?}
 }
-    *///?} else {
-    /**
-     * Mod payloads are not handled while recovery is frozen, but they are not thrown away either:
-     * handshakes pass at once and the rest is delivered after the start; see DeferredPayloads.
-     */
-}
-    //?}
