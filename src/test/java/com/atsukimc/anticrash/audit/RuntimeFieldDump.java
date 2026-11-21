@@ -44,10 +44,6 @@ final class RuntimeFieldDump {
                         // Raw mapped jars require Knot's access transformation before JVM linking.
                         // Read bytecode rather than silently skipping classes on a VerifyError.
 
-                        //? if >=1.19.3 {
-                        ClassNode type = new ClassNode();
-                        //?}
-
                         //? if <=1.19.2 {
                         /*Class<?> type;
 
@@ -66,6 +62,7 @@ final class RuntimeFieldDump {
 
                             fields.add(field.getName());
                         *///?} else {
+                        ClassNode type = new ClassNode();
                         new ClassReader(Files.readAllBytes(path))
                                 .accept(
                                         type,

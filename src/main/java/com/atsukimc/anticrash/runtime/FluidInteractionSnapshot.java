@@ -188,9 +188,7 @@ public final class FluidInteractionSnapshot {
             *///?} else {
             if (!ids.add(state.kind() + ":" + state.tag()))
                 throw new IllegalArgumentException("Duplicate fluid entry");
-            //?}
 
-            //? if >=26.3 {
             if (state.kind() == Kind.FLUID
                     && (!state.current().equals(Vec3.ZERO) || state.count() != 0))
                 throw new IllegalArgumentException(

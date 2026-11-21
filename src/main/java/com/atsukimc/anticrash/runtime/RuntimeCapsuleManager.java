@@ -1826,11 +1826,8 @@ public final class RuntimeCapsuleManager {
             for (ClockSnapshot clock : capsule.clockStates) {
                 if (clock == null || !ids.add(clock.id()))
                     throw new IllegalStateException("Duplicate/invalid clock");
-        //?}
 
                 // Validate deserialized state too; the Gson version need not invoke a constructor.
-
-                //? if >=26.1 {
                 new ClockSnapshot(
                         clock.id(),
                         clock.totalTicks(),
@@ -1839,7 +1836,7 @@ public final class RuntimeCapsuleManager {
                         clock.paused());
             }
         }
-                //?}
+        //?}
 
         Set<String> dimensions = new HashSet<>();
         Map<String, ChunkStateSnapshot> chunksByDimension = new HashMap<>();

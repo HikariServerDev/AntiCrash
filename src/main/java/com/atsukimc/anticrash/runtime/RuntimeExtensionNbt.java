@@ -121,18 +121,14 @@ public final class RuntimeExtensionNbt {
         return version >= 1 && version <= VERSION ? extension : null;
     }
 
-    /** 1.21.6 views preserve registry/error context; do not cast a mod-provided view to NBT. */
-
     //? if >=1.21.6 {
+    /** 1.21.6 views preserve registry/error context; do not cast a mod-provided view to NBT. */
     public static void write(
             net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer) {
         Scope scope = SCOPE.get();
-    //?}
 
         // ValueOutput.child creates/replaces the nested compound on every call. Preserve superclass
         // and subclass extension contributions in one bounded save scope, then discard references.
-
-        //? if >=1.21.6 {
         CompoundTag encoded =
                 scope.entitySave || scope.loadedChunkSave
                         ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
@@ -160,6 +156,6 @@ public final class RuntimeExtensionNbt {
                 })
                 .orElse(null);
     }
-        //?}
+    //?}
 
 }

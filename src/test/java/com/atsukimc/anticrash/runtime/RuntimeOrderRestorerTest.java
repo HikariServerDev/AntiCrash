@@ -16,9 +16,7 @@ import java.util.Set;
         return expiry != 0L && age - tickCreated > expiry;
     }
 
-*///?}
-
-//? if >=1.21.5 {
+*///?} else {
 class RuntimeOrderRestorerTest {
 //?}
     @Test
@@ -32,12 +30,9 @@ class RuntimeOrderRestorerTest {
 
             //? if <=1.21.4 {
             /*long liveCreated = 1000, captureAge = liveCreated + (expiry - remaining);
-            *///?}
 
             // New JVM: the ticket manager's age restarted at some unrelated value.
-
-            //? if <=1.21.4 {
-            /*long newAge = 37;
+            long newAge = 37;
 
             long restoredCreated = RuntimeOrderRestorer.tickCreatedFor(newAge, expiry, remaining);
             *///?} else {
@@ -168,9 +163,7 @@ class RuntimeOrderRestorerTest {
 
         //? if <=1.21.3 {
         /*assertTrue(keys.contains("minecraft:overworld|0,9|post_teleport|32|-"));
-        *///?}
-
-        //? if >=1.21.4 {
+        *///?} else {
         assertTrue(keys.contains("minecraft:overworld|0,9|ender_pearl|32|[0, 9]"));
         //?}
 

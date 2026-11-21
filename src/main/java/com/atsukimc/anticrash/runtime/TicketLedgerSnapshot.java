@@ -107,19 +107,13 @@ public final class TicketLedgerSnapshot {
 
                     //? if <=1.21.4 {
                     /*entry.argument = String.valueOf(ticketAccessor.anticrash$getArgument());
+                    entry.tickCreated = ticketAccessor.anticrash$getTickCreated();
                     *///?} else {
-                    entry.argument = "-";
-                    //?}
                     // 1.21.5 no longer has per-ticket arguments or creation age.
-
-                    //? if >=1.21.5 {
+                    entry.argument = "-";
                     entry.tickCreated = 0;
                     //?}
 
-                    //? if <=1.21.4 {
-                    /*entry.tickCreated = ticketAccessor.anticrash$getTickCreated();
-
-                    *///?}
                     entry.expiryTicks = ticket.getType().timeout();
 
                     if (entry.expiryTicks > 0) {

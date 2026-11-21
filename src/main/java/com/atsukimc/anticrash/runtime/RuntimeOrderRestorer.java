@@ -421,12 +421,9 @@ public final class RuntimeOrderRestorer {
                     };
 
             if (type == null) continue;
-            //?}
 
             // Public addition deduplicates by type identity + level. PORTAL is now persisted by
             // Vanilla; refresh the existing ticket, rather than introducing a second ledger entry.
-
-            //? if >=1.21.5 {
             manager.addTicketWithRadius(type, chunk, entry.level);
             //?}
 

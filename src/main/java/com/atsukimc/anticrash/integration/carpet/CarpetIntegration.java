@@ -1095,22 +1095,20 @@ public final class CarpetIntegration {
 
                 var id = VersionIds.tryParse(cooldown.item);
 
-                //? if <=1.21.1 {
-                /*if (id == null || !VersionIds.items().containsKey(id))
-                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
-                *///?} else {
-                if (id == null)
-                    throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                //?}
-
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.
 
                 //? if <=1.21.1 {
-                /*player.getCooldowns()
+                /*if (id == null || !VersionIds.items().containsKey(id))
+                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
+
+                player.getCooldowns()
                         .addCooldown(
                                 VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
                 *///?} else {
+                if (id == null)
+                    throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
+
                 player.getCooldowns().addCooldown(id, cooldown.remainingTicks);
                 //?}
             }
