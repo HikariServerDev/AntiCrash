@@ -1,4 +1,4 @@
-//? if (>=1.19.4 && <=26.3) {
+//? if >=1.19.4 {
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
@@ -21,14 +21,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /** 1.19.4 preview archaeology omits brushing progress, cooldowns and direction from saveAdditional. */
-//? if 1.19.4 {
+//? if <=1.19.4 {
 /*@Mixin(SuspiciousSandBlockEntity.class)
 public abstract class ArchaeologyRuntimeMixin {
-
 *///?} else {
 @Mixin(BrushableBlockEntity.class)
 public abstract class ArchaeologyRuntimeMixin {
 //?}
+
     @Shadow private int brushCount;
 
     @Shadow private long brushCountResetsAtTick;
@@ -37,19 +37,18 @@ public abstract class ArchaeologyRuntimeMixin {
 
     @Shadow private Direction hitDirection;
 
-    //? if (>=1.19.4 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveBrush(CompoundTag nbt, CallbackInfo ci)
+    private void anticrash$saveBrush(CompoundTag nbt, CallbackInfo ci) {
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrush(
-            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
     *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveBrush(
-            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci)
+            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo ci) {
     //?}
-            {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         RuntimeExtensionNbt.write(
                 nbt,
@@ -63,19 +62,18 @@ public abstract class ArchaeologyRuntimeMixin {
                 });
     }
 
-    //? if (>=1.19.4 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(method = "load", at = @At("TAIL"))
-    private void anticrash$loadBrush(CompoundTag nbt, CallbackInfo ci)
+    private void anticrash$loadBrush(CompoundTag nbt, CallbackInfo ci) {
     *///?} else if <= 1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrush(
-            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci)
+            CompoundTag nbt, net.minecraft.core.HolderLookup.Provider registries, CallbackInfo ci) {
     *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadBrush(
-            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci)
+            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo ci) {
     //?}
-            {
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         if (extension == null || !VersionNbt.contains(extension, "BrushCount", 3)) return;
@@ -92,7 +90,6 @@ public abstract class ArchaeologyRuntimeMixin {
 
     @Inject(method = "checkReset", at = @At("HEAD"))
     private void anticrash$dirtyDecay(CallbackInfo ci) {
-
         //? if <=1.19.4 {
         /*((SuspiciousSandBlockEntity) (Object) this).setChanged();
         *///?} else {
@@ -102,7 +99,6 @@ public abstract class ArchaeologyRuntimeMixin {
 
     @Inject(method = "brush", at = @At("RETURN"))
     private void anticrash$dirtyBrush(CallbackInfoReturnable<Boolean> ci) {
-
         //? if <=1.19.4 {
         /*((SuspiciousSandBlockEntity) (Object) this).setChanged();
         *///?} else {

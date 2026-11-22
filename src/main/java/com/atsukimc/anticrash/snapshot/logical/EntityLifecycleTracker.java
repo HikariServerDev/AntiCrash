@@ -50,10 +50,10 @@ public final class EntityLifecycleTracker {
     }
 
     /**
-     * A PersistentEntitySectionManager unload is not a despawn: the entity may still be persisted to an entity
-     * region even though it is no longer present in {@code iterateEntities()}. Without a final
-     * immutable entity-region capture, inheriting the parent would be ambiguous, so the logical
-     * path treats this boundary as a safe fallback condition.
+     * A PersistentEntitySectionManager unload is not a despawn: the entity may still be persisted
+     * to an entity region even though it is no longer present in {@code getAllEntities()}. Without
+     * a final immutable entity-region capture, inheriting the parent would be ambiguous, so the
+     * logical path treats this boundary as a safe fallback condition.
      */
     public static void recordUnload(Entity entity) {
         if (!persisted(entity)) return;

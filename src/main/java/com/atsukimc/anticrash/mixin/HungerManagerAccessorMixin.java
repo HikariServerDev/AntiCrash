@@ -1,4 +1,4 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.food.FoodData;

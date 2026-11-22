@@ -14,12 +14,14 @@ import com.atsukimc.anticrash.util.Hashing;
 import com.atsukimc.anticrash.util.PathSafety;
 
 import java.io.IOException;
+import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.UUID;
 
 /** Pre-world-load restore. It never writes a world that Minecraft has opened. */
 public final class WorldRestorer {
@@ -86,10 +88,7 @@ public final class WorldRestorer {
         CheckpointManifest manifest = store.verifyForIncrementalReuse(checkpoint);
         if (Files.exists(liveWorld)) validateTree(liveWorld);
         Path stage =
-                workRoot.resolve(
-                                checkpoint.getFileName().toString()
-                                        + "-"
-                                        + java.util.UUID.randomUUID())
+                workRoot.resolve(checkpoint.getFileName().toString() + "-" + UUID.randomUUID())
                         .normalize();
         PathSafety.requireChild(workRoot, stage);
         Files.createDirectory(stage);
@@ -141,7 +140,7 @@ public final class WorldRestorer {
         Path source = PathSafety.requireChild(raw, raw.resolve("world"));
         if (!Files.isDirectory(source)) throw new IOException("Crash-raw world is missing");
         if (Files.exists(liveWorld)) validateTree(liveWorld);
-        Path stage = workRoot.resolve("raw-" + java.util.UUID.randomUUID()).normalize();
+        Path stage = workRoot.resolve("raw-" + UUID.randomUUID()).normalize();
         PathSafety.requireChild(workRoot, stage);
         Files.createDirectory(stage);
         Files.createDirectory(stage.resolve("world"));
@@ -188,7 +187,7 @@ public final class WorldRestorer {
     private void commitStagedWorld(Path stage, Path stagedWorld, Path liveWorld, String sourceId)
             throws IOException {
         validateLiveWorldPath(liveWorld);
-        Path backup = workRoot.resolve(".live-backup-" + java.util.UUID.randomUUID()).normalize();
+        Path backup = workRoot.resolve(".live-backup-" + UUID.randomUUID()).normalize();
         PathSafety.requireChild(workRoot, backup);
         RestoreTransaction transaction =
                 new RestoreTransaction(
@@ -316,8 +315,8 @@ public final class WorldRestorer {
 
     private static void moveDirectoryAtomically(Path source, Path target) throws IOException {
         try {
-            Files.move(source, target, java.nio.file.StandardCopyOption.ATOMIC_MOVE);
-        } catch (java.nio.file.AtomicMoveNotSupportedException exception) {
+            Files.move(source, target, StandardCopyOption.ATOMIC_MOVE);
+        } catch (AtomicMoveNotSupportedException exception) {
             throw new IOException("Atomic world directory exchange is unavailable", exception);
         }
     }

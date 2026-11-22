@@ -4,8 +4,11 @@ import com.sun.source.tree.*;
 import com.sun.source.util.JavacTask;
 import com.sun.source.util.TreeScanner;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
@@ -24,17 +27,13 @@ public final class MixinSaveScopeAudit {
             throw new AssertionError(
                     "Gradle must provide the complete effective mixin source list");
         }
-        var paths =
-                java.util.Arrays.stream(sources.split(java.io.File.pathSeparator))
-                        .map(Path::of)
-                        .toList();
+        var paths = Arrays.stream(sources.split(File.pathSeparator)).map(Path::of).toList();
         var compiler = ToolProvider.getSystemJavaCompiler();
         if (compiler == null) throw new AssertionError("A JDK is required for source audits");
         var diagnostics = new DiagnosticCollector<JavaFileObject>();
         int[] count = {0};
         try (var manager =
-                compiler.getStandardFileManager(
-                        diagnostics, null, java.nio.charset.StandardCharsets.UTF_8)) {
+                compiler.getStandardFileManager(diagnostics, null, StandardCharsets.UTF_8)) {
             JavacTask task =
                     (JavacTask)
                             compiler.getTask(

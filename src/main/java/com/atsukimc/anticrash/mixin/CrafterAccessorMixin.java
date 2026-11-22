@@ -1,4 +1,4 @@
-//? if (>=1.20.3 && <=26.3) {
+//? if >=1.20.3 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.level.block.entity.CrafterBlockEntity;

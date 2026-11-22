@@ -13,6 +13,7 @@ import net.minecraft.core.BlockPos;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.EnumMap;
 import java.util.Map;
 
@@ -176,7 +177,7 @@ class ActionPackStateCodecTest {
         actionFields.remove("next");
 
         assertThrows(
-                java.io.IOException.class,
+                IOException.class,
                 () -> ActionPackStateCodec.validateSnapshot(snapshot, true, true, false, false));
     }
 
@@ -199,7 +200,7 @@ class ActionPackStateCodecTest {
         JsonObject activeSnapshot = ActionPackStateCodec.capture(active, false, false, false, true);
         activeSnapshot.getAsJsonObject("fields").remove("currentBlock");
         assertThrows(
-                java.io.IOException.class,
+                IOException.class,
                 () ->
                         ActionPackStateCodec.validateSnapshot(
                                 activeSnapshot, false, false, false, true));

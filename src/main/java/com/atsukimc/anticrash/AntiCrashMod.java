@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash;
 
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.loader.api.FabricLoader;
 
 public final class AntiCrashMod implements ModInitializer {
     public static final String MOD_ID = "anticrash";
@@ -13,7 +14,7 @@ public final class AntiCrashMod implements ModInitializer {
     }
 
     public static String minecraftVersion() {
-        return net.fabricmc.loader.api.FabricLoader.getInstance()
+        return FabricLoader.getInstance()
                 .getModContainer("minecraft")
                 .map(container -> container.getMetadata().getVersion().getFriendlyString())
                 .orElse("unknown");

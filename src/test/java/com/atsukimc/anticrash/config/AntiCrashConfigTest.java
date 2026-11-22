@@ -10,6 +10,7 @@ import com.atsukimc.anticrash.core.InternalStateManager;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -280,7 +281,7 @@ class AntiCrashConfigTest {
         config.commands.start = 2;
         Files.writeString(configFile, "language = \"unterminated\n");
 
-        assertThrows(java.io.IOException.class, () -> config.reloadFrom(configFile, message -> {}));
+        assertThrows(IOException.class, () -> config.reloadFrom(configFile, message -> {}));
         assertEquals("en", config.language);
         assertEquals(2, config.commands.start);
     }

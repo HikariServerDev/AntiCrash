@@ -14,32 +14,23 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /** Auditable semantic mutation hooks; this is intentionally not a universal mutation journal. */
-//? if (>=1.18 && <=1.21.11) {
-/*@Mixin(LevelChunk.class)
+@Mixin(LevelChunk.class)
 public abstract class WorldChunkMutationMixin {
-
-*///?}
-    //? if (>=1.18 && <=1.21.4) {
+    //? if <=1.21.4 {
     /*@Inject(method = "setBlockState", at = @At("TAIL"))
     private void anticrash$blockStateMutation(
             BlockPos pos,
             BlockState state,
             boolean moved,
-            CallbackInfoReturnable<BlockState> callbackInfo)
-    *///?}
-//? if (>=26.1 && <=26.3) {
-@Mixin(LevelChunk.class)
-public abstract class WorldChunkMutationMixin {
-//?}
-    //? if (>=1.21.5 && <=26.3) {
+            CallbackInfoReturnable<BlockState> callbackInfo) {
+    *///?} else {
     @Inject(method = "setBlockState", at = @At("TAIL"))
     private void anticrash$blockStateMutation(
             BlockPos pos,
             BlockState state,
             int flags,
-            CallbackInfoReturnable<BlockState> callbackInfo)
+            CallbackInfoReturnable<BlockState> callbackInfo) {
     //?}
-            {
 
         LevelChunk chunk = (LevelChunk) (Object) this;
 
@@ -48,7 +39,6 @@ public abstract class WorldChunkMutationMixin {
 
     @Inject(method = "setBlockEntity", at = @At("TAIL"))
     private void anticrash$blockEntityMutation(BlockEntity blockEntity, CallbackInfo callbackInfo) {
-
         LevelChunk chunk = (LevelChunk) (Object) this;
 
         ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "setBlockEntity");
@@ -56,7 +46,6 @@ public abstract class WorldChunkMutationMixin {
 
     @Inject(method = "removeBlockEntity", at = @At("TAIL"))
     private void anticrash$removeBlockEntityMutation(BlockPos pos, CallbackInfo callbackInfo) {
-
         LevelChunk chunk = (LevelChunk) (Object) this;
 
         ChunkMutationTracker.record(chunk.getLevel(), chunk.getPos(), "removeBlockEntity");

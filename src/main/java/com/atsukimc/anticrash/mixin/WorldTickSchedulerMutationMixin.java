@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.ScheduledTickMutationTracer;
 import com.atsukimc.anticrash.snapshot.logical.ChunkMutationTracker;
+import com.atsukimc.anticrash.snapshot.logical.LogicalTracking;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import net.minecraft.core.Vec3i;
@@ -31,7 +32,7 @@ public abstract class WorldTickSchedulerMutationMixin {
                             + " tick="
                             + tick);
         }
-        if (com.atsukimc.anticrash.snapshot.logical.LogicalTracking.enabled()) {
+        if (LogicalTracking.enabled()) {
             ChunkMutationTracker.recordScheduler(
                     this, VersionChunkPos.containing(tick.pos()), "world.schedule");
         }
@@ -78,18 +79,16 @@ public abstract class WorldTickSchedulerMutationMixin {
         ChunkMutationTracker.markSchedulerUncertain("clearNextTicks");
     }
 
-    //? if (>=1.18 && <=1.19.3) {
+    //? if <=1.19.3 {
     /*@Inject(method = "copyArea", at = @At("HEAD"))
-    private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo)
-    *///?}
-    //? if (>=1.19.4 && <=26.3) {
+    private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo) {
+    *///?} else {
     @Inject(
             method =
                     "copyArea(Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/core/Vec3i;)V",
             at = @At("HEAD"))
-    private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo)
+    private void anticrash$scheduleTicks(BoundingBox box, Vec3i offset, CallbackInfo callbackInfo) {
     //?}
-            {
         if (ScheduledTickMutationTracer.isActive()) {
             ScheduledTickMutationTracer.record(
                     "world.scheduleTicks",
@@ -103,7 +102,7 @@ public abstract class WorldTickSchedulerMutationMixin {
         ChunkMutationTracker.markSchedulerUncertain("scheduleTicks");
     }
 
-    //? if (>=1.19.4 && <=26.3) {
+    //? if >=1.19.4 {
     @Inject(
             method =
                     "copyAreaFrom(Lnet/minecraft/world/ticks/LevelTicks;Lnet/minecraft/world/level/levelgen/structure/BoundingBox;Lnet/minecraft/core/Vec3i;)V",

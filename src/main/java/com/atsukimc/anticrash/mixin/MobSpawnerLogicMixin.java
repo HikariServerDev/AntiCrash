@@ -14,7 +14,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** The spawner {@code Delay} changes while a player is in range without a chunk save mark. */
 @Mixin(BaseSpawner.class)
 public abstract class MobSpawnerLogicMixin {
-
     @Shadow private int spawnDelay;
     @Unique private int anticrash$delayBefore;
 

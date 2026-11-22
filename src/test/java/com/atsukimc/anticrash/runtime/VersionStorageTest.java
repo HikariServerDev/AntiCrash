@@ -1,27 +1,33 @@
-//? if (>=1.21.6 && <=26.3) {
+//? if >=1.21.6 {
 package com.atsukimc.anticrash.runtime;
 
-//? if (>=26.1 && <=26.3) {
+//? if >=26.1 {
 import net.minecraft.world.level.storage.TagValueInput;
 //?}
 
 import static org.junit.jupiter.api.Assertions.*;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.DataResult;
+
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.*;
+import net.minecraft.world.SimpleContainer;
+import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.level.storage.*;
 
+import java.util.stream.Stream;
+
 class VersionStorageTest {
-    @org.junit.jupiter.api.AfterEach
+    @AfterEach
     void clearScope() {
         RuntimeExtensionNbt.loadedChunkSave(false);
         RuntimeExtensionNbt.entitySave(false);
     }
 
-    private final HolderLookup.Provider registries =
-            HolderLookup.Provider.create(java.util.stream.Stream.empty());
+    private final HolderLookup.Provider registries = HolderLookup.Provider.create(Stream.empty());
 
     @Test
     void viewExtensionRoundTripPreservesPistonStateAndMergesKeys() {
@@ -44,7 +50,6 @@ class VersionStorageTest {
 
     @Test
     void malformedViewDataCannotBeIgnored() {
-
         var nbt = new CompoundTag();
 
         nbt.putString(RuntimeExtensionNbt.KEY, "invalid");
@@ -59,16 +64,15 @@ class VersionStorageTest {
     void encodingFailureIsNotAnIncompleteSuccessfulSnapshot() {
         var view = VersionStorage.writer(registries);
         var rejecting =
-                com.mojang.serialization.Codec.STRING.flatXmap(
-                        s -> com.mojang.serialization.DataResult.error(() -> "reject"),
-                        s -> com.mojang.serialization.DataResult.error(() -> "reject"));
+                Codec.STRING.flatXmap(
+                        s -> DataResult.error(() -> "reject"),
+                        s -> DataResult.error(() -> "reject"));
 
         assertThrows(IllegalStateException.class, () -> view.store("invalid", rejecting, "bad"));
     }
 
     @Test
     void abilitiesPreserveFlyingAndSpeedsWithoutAWorld() {
-
         var abilities = new Abilities();
 
         abilities.flying = true;
@@ -97,8 +101,7 @@ class VersionStorageTest {
 
     @Test
     void invalidInventoryDoesNotPartiallyApply() {
-
-        var inventory = new net.minecraft.world.SimpleContainer(27);
+        var inventory = new SimpleContainer(27);
 
         var nbt = new ListTag();
 
@@ -110,8 +113,7 @@ class VersionStorageTest {
 
     @Test
     void emptyEnderChestRoundTripsItsFixedSlotShape() {
-
-        var inventory = new net.minecraft.world.SimpleContainer(27);
+        var inventory = new SimpleContainer(27);
 
         var encoded = VersionStorage.inventory(inventory, registries);
         var decoded = VersionStorage.inventory(encoded, 27, registries);

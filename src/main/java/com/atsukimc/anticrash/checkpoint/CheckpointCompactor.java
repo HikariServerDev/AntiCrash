@@ -2,6 +2,7 @@ package com.atsukimc.anticrash.checkpoint;
 
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.atsukimc.anticrash.snapshot.CheckpointStore;
+import com.atsukimc.anticrash.snapshot.SnapshotFile;
 import com.atsukimc.anticrash.snapshot.SnapshotManager;
 import com.atsukimc.anticrash.snapshot.logical.LogicalDelta;
 import com.atsukimc.anticrash.util.AtomicFiles;
@@ -55,7 +56,7 @@ public final class CheckpointCompactor {
             manifest.timelineParentCheckpointId = sourceManifest.checkpointId;
             // Every world file is now an independent copy, not a hard link to an already fsynced
             // parent file. Clearing these flags makes commit force the new files to disk.
-            for (com.atsukimc.anticrash.snapshot.SnapshotFile file : manifest.worldFiles) {
+            for (SnapshotFile file : manifest.worldFiles) {
                 file.reusedFromParent = false;
                 file.destinationMetadataRecorded = false;
                 file.storedModifiedTime = 0L;

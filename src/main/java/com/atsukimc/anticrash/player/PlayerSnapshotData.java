@@ -23,10 +23,9 @@ public final class PlayerSnapshotData {
     public final List<String> effectsNbt = new ArrayList<>();
     public double velocityX, velocityY, velocityZ;
 
-    //? if (>=1.18 && <=1.21.4) {
+    //? if <=1.21.4 {
     /*public float fallDistance;
-    *///?}
-    //? if (>=1.21.5 && <=26.3) {
+    *///?} else {
     public double fallDistance;
     //?}
 
@@ -36,7 +35,7 @@ public final class PlayerSnapshotData {
     public int spawnX, spawnY, spawnZ;
     public float spawnAngle;
 
-    //? if (>=1.21.9 && <=26.3) {
+    //? if >=1.21.9 {
     public float spawnPitch;
     //?}
 

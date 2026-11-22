@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
 import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
@@ -59,7 +60,7 @@ public final class EntityRuntimeSnapshot {
 
         String dimension = VersionIds.dimension(world);
 
-        ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
+        ((ServerWorldAccessorMixin) world)
                 .anticrash$getEntityList()
                 .forEach(entity -> {
                     if (entity == null) return;

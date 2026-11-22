@@ -8,22 +8,19 @@ import org.objectweb.asm.*;
 class ProfileCacheBytecodeContractTest {
     @Test
     void injectionMatchesTheExactTargetVersion() throws Exception {
-
-        //? if (>=1.18 && <=1.21.8) {
+        //? if <=1.21.8 {
         /*try (var input =
                 getClass()
                         .getClassLoader()
                         .getResourceAsStream(
-                                "net/minecraft/server/players/GameProfileCache.class"))
-        *///?}
-        //? if (>=1.21.9 && <=26.3) {
+                                "net/minecraft/server/players/GameProfileCache.class")) {
+        *///?} else {
         try (var input =
                 getClass()
                         .getClassLoader()
                         .getResourceAsStream(
-                                "net/minecraft/server/players/CachedUserNameToIdResolver.class"))
+                                "net/minecraft/server/players/CachedUserNameToIdResolver.class")) {
         //?}
-        {
             assertNotNull(input, "The exact mapped game class must be present");
             boolean[] found = {false};
             new ClassReader(input)
@@ -36,7 +33,6 @@ class ProfileCacheBytecodeContractTest {
                                         String descriptor,
                                         String signature,
                                         String[] exceptions) {
-
                                     if (name.equals("get")
                                             && descriptor.equals(
                                                     "(Ljava/lang/String;)Ljava/util/Optional;"))

@@ -4,7 +4,7 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.entity.AbstractFurnaceBlockEntity;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import net.minecraft.world.level.Level;
 *///?}
 
@@ -20,15 +20,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(AbstractFurnaceBlockEntity.class)
 public abstract class AbstractFurnaceBlockEntityMixin {
-
-    //? if (>=1.18 && <=1.21.1) {
+    //? if <=1.21.1 {
     /*@Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markProgressDirty(
             Level world,
             BlockPos pos,
             BlockState state,
             AbstractFurnaceBlockEntity furnace,
-            CallbackInfo callbackInfo)
+            CallbackInfo callbackInfo) {
     *///?} else {
     @Inject(method = "serverTick", at = @At("HEAD"))
     private static void anticrash$markProgressDirty(
@@ -36,9 +35,8 @@ public abstract class AbstractFurnaceBlockEntityMixin {
             BlockPos pos,
             BlockState state,
             AbstractFurnaceBlockEntity furnace,
-            CallbackInfo callbackInfo)
+            CallbackInfo callbackInfo) {
     //?}
-            {
         AbstractFurnaceBlockEntityTimerAccessor timer =
                 (AbstractFurnaceBlockEntityTimerAccessor) furnace;
         if (timer.anticrash$getBurnTime() > 0 || timer.anticrash$getCookTime() > 0)

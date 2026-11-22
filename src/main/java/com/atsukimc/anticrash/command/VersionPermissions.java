@@ -6,7 +6,7 @@ import net.minecraft.commands.CommandSourceStack;
 public final class VersionPermissions {
     private VersionPermissions() {}
 
-    //? if (>=1.18 && <=1.21.10) {
+    //? if <=1.21.10 {
     /*public static boolean hasLevel(CommandSourceStack source, int level) {
         return source.hasPermission(level);
     }

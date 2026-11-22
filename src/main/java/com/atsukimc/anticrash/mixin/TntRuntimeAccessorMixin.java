@@ -1,4 +1,4 @@
-//? if (>=1.21 && <=26.3) {
+//? if >=1.21 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.entity.item.PrimedTnt;

@@ -1,4 +1,4 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.integration.carpet;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -6,8 +6,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 class PlayerInputCodecTest {
-
-    //? if (>=1.21.6 && <=26.3) {
+    //? if >=1.21.6 {
     @Test
     void freezeFiltersPressReleaseAndSprintWithoutReadingNetworkThreadState() {
         for (int before = 0; before < 128; before++)

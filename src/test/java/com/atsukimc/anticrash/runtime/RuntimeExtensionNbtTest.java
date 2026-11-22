@@ -6,10 +6,14 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+import com.atsukimc.anticrash.audit.MixinSaveScopeAudit;
+
 import net.minecraft.nbt.CompoundTag;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.Set;
 
 class RuntimeExtensionNbtTest {
     @AfterEach
@@ -21,7 +25,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void extensionIsOneVersionedCompoundBesideVanillaKeys() {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putFloat("progress", 0.5f);
@@ -43,7 +46,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void nothingIsAddedWhenThereIsNothingToSave() {
-
         CompoundTag nbt = new CompoundTag();
 
         RuntimeExtensionNbt.write(nbt, extension -> {});
@@ -57,7 +59,6 @@ class RuntimeExtensionNbtTest {
 
     @Test
     void aNewerFormatIsIgnoredInsteadOfGuessed() {
-
         CompoundTag nbt = new CompoundTag();
 
         CompoundTag future = new CompoundTag();
@@ -86,17 +87,11 @@ class RuntimeExtensionNbtTest {
     }
 
     /**
-     * Permanent regression test. Entity#restoreFrom (a dimension change) is saveWithoutId on the old entity
-     * followed by load on the new one. An earlier build wrote the pending portal state on every
-     * saveAdditional, so the copy arrived "inside a portal" and went straight back. The extension may
-     * only be written inside an entity chunk save of entities that stay loaded.
-     */
-
-    /**
-     * Permanent regression test. Entity#restoreFrom (a dimension change) is writeData on the old
-     * entity followed by load on the new one. An earlier build wrote the pending portal state on
-     * every writeData, so the copy arrived "inside a portal" and went straight back. The extension
-     * may only be written inside an entity chunk save of entities that stay loaded.
+     * Permanent regression test. Entity#restoreFrom (a dimension change) is saveWithoutId on the
+     * old entity followed by load on the new one. An earlier build wrote the
+     * pending portal state on every saveWithoutId, so the copy arrived "inside a portal" and went
+     * straight back. The extension may only be written inside an entity chunk save of entities that
+     * stay loaded.
      */
     @Test
     void portalStateIsNeverWrittenDuringADimensionChangeCopy() {
@@ -125,30 +120,29 @@ class RuntimeExtensionNbtTest {
 
     /** Every mixin that adds to a Vanilla saveAdditional must be gated by one of the two save scopes. */
 
-    //? if (>=1.18 && <=1.21.5) {
+    //? if <=1.21.5 {
     /*@Test
-    void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception
+    void everyWriteNbtInjectionIsGatedByASaveScope() throws Exception {
     *///?}
 
-    /** Every mixin that adds to a Vanilla writeData must be gated by one of the two save scopes. */
+    /**
+     * Every mixin that adds to a Vanilla save method must be gated by one of the two save scopes.
+     */
 
-    //? if (>=1.21.6 && <=26.3) {
+    //? if >=1.21.6 {
     @Test
-    void everyWriteDataInjectionIsGatedByASaveScope() throws Exception
+    void everyWriteDataInjectionIsGatedByASaveScope() throws Exception {
     //?}
-            {
 
         // Parse executable source, not the first 200 characters after a textual
         // annotation: inactive Stonecutter branches contain annotation-shaped comments.
         //? if <=1.21.11 {
         /*int injections =
-                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                        java.util.Set.of("saveAdditional", "saveWithoutId"));
+                MixinSaveScopeAudit.verifyFromProperty(Set.of("saveAdditional", "saveWithoutId"));
         *///?} else {
         int injections =
-                com.atsukimc.anticrash.audit.MixinSaveScopeAudit.verifyFromProperty(
-                        java.util.Set.of(
-                                "saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
+                MixinSaveScopeAudit.verifyFromProperty(
+                        Set.of("saveAdditional", "addAdditionalSaveData", "saveWithoutId"));
         //?}
         //? if <=1.18.2 {
         /*assertTrue(injections >= 5, "save injections found: " + injections);

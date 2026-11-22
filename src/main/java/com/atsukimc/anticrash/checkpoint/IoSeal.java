@@ -5,7 +5,7 @@ import com.atsukimc.anticrash.mixin.StorageIoWorkerAccessorMixin;
 import com.atsukimc.anticrash.mixin.StorageIoWorkerResultAccessorMixin;
 import com.atsukimc.anticrash.snapshot.PendingRegionWrite;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import com.mojang.datafixers.util.Either;
 *///?}
 
@@ -92,7 +92,7 @@ final class IoSeal implements AutoCloseable {
                 } catch (Throwable failure) {
                     pending.completeExceptionally(failure);
 
-                    //? if (>=1.18 && <=1.21.1) {
+                    //? if <=1.21.1 {
                     /*return Either.left(null);
                     *///?} else {
                     return null;
@@ -101,7 +101,7 @@ final class IoSeal implements AutoCloseable {
                 }
                 seal.hold();
 
-                //? if (>=1.18 && <=1.21.1) {
+                //? if <=1.21.1 {
                 /*return Either.left(null);
                 *///?} else {
                 return null;

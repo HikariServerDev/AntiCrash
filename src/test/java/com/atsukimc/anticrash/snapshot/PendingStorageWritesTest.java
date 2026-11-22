@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -19,7 +20,7 @@ class PendingStorageWritesTest {
 
     @Test
     void writeFailureKeepsItsCause() {
-        var cause = new java.io.IOException("disk write");
+        var cause = new IOException("disk write");
         var error =
                 assertThrows(
                         ExecutionException.class,

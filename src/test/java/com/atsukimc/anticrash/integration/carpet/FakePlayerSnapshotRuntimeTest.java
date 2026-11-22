@@ -12,8 +12,7 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 
 class FakePlayerSnapshotRuntimeTest {
-
-    //? if (>=1.21.11 && <=26.3) {
+    //? if >=1.21.11 {
     @Test
     void kineticStateSurvivesJsonAndChangesTheFingerprint() throws Exception {
         var snapshot = player();
@@ -89,7 +88,7 @@ class FakePlayerSnapshotRuntimeTest {
         assertFalse(drawing.canonical().equals(player().canonical()));
     }
 
-    //? if (>=1.21.11 && <=26.3) {
+    //? if >=1.21.11 {
     @Test
     void nativeNeverHitSentinelPassesTheProductionSnapshotValidator() throws Exception {
         var game = new org.objectweb.asm.tree.ClassNode();

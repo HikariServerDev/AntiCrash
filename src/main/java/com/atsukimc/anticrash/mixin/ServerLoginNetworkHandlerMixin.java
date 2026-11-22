@@ -15,20 +15,20 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  * Holds a login briefly instead of rejecting it while AntiCrash is refusing connections.
  *
  * <p>A checkpoint barrier lasts well under a second, but a player who finished the handshake inside
- * that window was disconnected outright. Vanilla calls {@code acceptPlayer} only from {@code tick}
- * while the handler is in {@code READY_TO_ACCEPT}, and does not change the state there, so skipping
- * the tick simply retries the accept on the next one. {@code loginTicks} is incremented at the end
- * of that same method, so Vanilla's slow-login timeout is paused for exactly the held period too.
- * The handler ticks from {@code MinecraftServer.tick}, which keeps running while the world is
- * frozen, so the retry happens every tick of the freeze.
+ * that window was disconnected outright. Vanilla calls {@code handleAcceptedLogin}
+ * ({@code verifyLoginAndFinishConnectionSetup} from 1.20.2) only from {@code tick} while the
+ * handler is in {@code READY_TO_ACCEPT} ({@code VERIFYING} from 1.20.2), and does not change the
+ * state there, so skipping the tick simply retries the accept on the next one. The {@code tick}
+ * field is incremented at the end of that same method, so Vanilla's slow-login timeout is paused
+ * for exactly the held period too. The handler ticks from {@code MinecraftServer.tick}, which keeps
+ * running while the world is frozen, so the retry happens every tick of the freeze.
  *
  * <p>Only AntiCrash's own refusal is retried. Ban, whitelist, capacity and every other Vanilla
- * reason comes from {@code PlayerList.checkCanJoin}, which a held login never reaches; once the
+ * reason comes from {@code PlayerList.canPlayerLogin}, which a held login never reaches; once the
  * hold ends, or whenever AntiCrash is not refusing at all, Vanilla decides exactly as before.
  */
 @Mixin(ServerLoginPacketListenerImpl.class)
 public abstract class ServerLoginNetworkHandlerMixin {
-
     @Unique private long anticrash$holdDeadlineNanos;
 
     @Inject(method = "tick", at = @At("HEAD"), cancellable = true)

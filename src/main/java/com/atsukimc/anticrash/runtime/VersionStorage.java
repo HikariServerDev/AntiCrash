@@ -7,7 +7,7 @@ import net.minecraft.world.entity.player.Abilities;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
-//? if (>=1.21.6 && <=26.3) {
+//? if >=1.21.6 {
 import java.util.*;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.util.ProblemReporter;
@@ -26,7 +26,7 @@ public final class VersionStorage {
     private VersionStorage() {}
 
     /** Where a block entity's state is saved; {@link #result} reads it back. */
-    //? if (>=1.18 && <=1.21.5) {
+    //? if <=1.21.5 {
     /*public static CompoundTag writer(BlockEntity entity) {
         return new CompoundTag();
     }
@@ -46,30 +46,25 @@ public final class VersionStorage {
 
     public record ThrowingReporter(String path) implements ProblemReporter {
         public ProblemReporter forChild(ProblemReporter.PathElement context) {
-
             return new ThrowingReporter(path + "/" + context.get());
         }
 
         public void report(ProblemReporter.Problem error) {
-
             throw new IllegalStateException(
                     "AntiCrash serialization failed at " + path + ": " + error.description());
         }
     }
 
     public static TagValueOutput writer(HolderLookup.Provider registries) {
-
         return TagValueOutput.createWithContext(new ThrowingReporter("snapshot"), registries);
     }
 
     public static ListTag inventory(Container inventory, HolderLookup.Provider registries) {
-
         var list = new ListTag();
 
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 
         for (int slot = 0; slot < inventory.getContainerSize(); slot++) {
-
             var stack = inventory.getItem(slot);
 
             if (!stack.isEmpty())
@@ -90,7 +85,6 @@ public final class VersionStorage {
         var ops = registries.createSerializationContext(NbtOps.INSTANCE);
 
         for (var element : encoded) {
-
             var entry = ItemStackWithSlot.CODEC.parse(ops, element).getOrThrow();
 
             if (!entry.isValidInContainer(size) || !slots.add(entry.slot()))
@@ -101,7 +95,6 @@ public final class VersionStorage {
     }
 
     public static void applyInventory(Container inventory, List<ItemStack> stacks) {
-
         if (inventory.getContainerSize() != stacks.size())
             throw new IllegalArgumentException("Inventory shape changed");
         for (int i = 0; i < stacks.size(); i++) inventory.setItem(i, stacks.get(i));
@@ -113,7 +106,7 @@ public final class VersionStorage {
 
     /** The saved entity, or null when it declines to be saved. */
     public static CompoundTag entity(Entity entity) {
-        //? if (>=1.18 && <=1.21.5) {
+        //? if <=1.21.5 {
         /*var nbt = new CompoundTag();
 
         return entity.save(nbt) ? nbt : null;
@@ -127,7 +120,7 @@ public final class VersionStorage {
     public static CompoundTag abilities(Abilities abilities) {
         var nbt = new CompoundTag();
 
-        //? if (>=1.18 && <=1.21.5) {
+        //? if <=1.21.5 {
         /*abilities.addSaveData(nbt);
         *///?} else {
         nbt.store("abilities", Abilities.Packed.CODEC, abilities.pack());
@@ -138,7 +131,7 @@ public final class VersionStorage {
 
     /** Decodes now where the version can, and restores the abilities it is given later. */
     public static Consumer<Abilities> abilities(CompoundTag nbt) {
-        //? if (>=1.18 && <=1.21.5) {
+        //? if <=1.21.5 {
         /*return abilities -> abilities.loadSaveData(nbt);
         *///?} else {
         var packed =
@@ -151,9 +144,9 @@ public final class VersionStorage {
     }
 
     public static ListTag enderChest(Player player) {
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*return player.getEnderChestInventory().createTag();
-        *///?} else if (>=1.20.5 && <=1.21.5) {
+        *///?} else if <=1.21.5 {
         /*return player.getEnderChestInventory().createTag(player.registryAccess());
         *///?} else {
         return inventory(player.getEnderChestInventory(), player.registryAccess());
@@ -162,9 +155,9 @@ public final class VersionStorage {
 
     /** Decodes now where the version can; running the result restores the Ender Chest. */
     public static Runnable enderChest(Player player, ListTag encoded) {
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*return () -> player.getEnderChestInventory().fromTag(encoded);
-        *///?} else if (>=1.20.5 && <=1.21.5) {
+        *///?} else if <=1.21.5 {
         /*return () -> player.getEnderChestInventory().fromTag(encoded, player.registryAccess());
         *///?} else {
         var stacks =

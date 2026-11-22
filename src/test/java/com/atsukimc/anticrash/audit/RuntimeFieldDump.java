@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.audit;
 
-//? if (>=1.18 && <=1.19.2) {
+//? if <=1.19.2 {
 /*import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 *///?} else {
@@ -44,60 +44,41 @@ final class RuntimeFieldDump {
                         // Raw mapped jars require Knot's access transformation before JVM linking.
                         // Read bytecode rather than silently skipping classes on a VerifyError.
 
-                        //? if (>=1.19.3 && <=26.3) {
-                        ClassNode type = new ClassNode();
-                        //?}
-
-                        //? if (>=1.18 && <=1.19.2) {
+                        //? if <=1.19.2 {
                         /*Class<?> type;
-                        *///?}
-                        //? if (>=1.19.3 && <=26.3) {
+
+                        try {
+                            type = Class.forName(name, false, base.getClassLoader());
+                        } catch (Throwable unloadable) {
+                            continue;
+                        }
+
+                        if (!base.isAssignableFrom(type)) continue;
+
+                        List<String> fields = new ArrayList<>();
+                        for (Field field : type.getDeclaredFields()) {
+                            if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic())
+                                continue;
+
+                            fields.add(field.getName());
+                        *///?} else {
+                        ClassNode type = new ClassNode();
                         new ClassReader(Files.readAllBytes(path))
                                 .accept(
                                         type,
                                         ClassReader.SKIP_CODE
                                                 | ClassReader.SKIP_DEBUG
                                                 | ClassReader.SKIP_FRAMES);
-                        //?}
 
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*try {
-                            type = Class.forName(name, false, base.getClassLoader());
-                        } catch (Throwable unloadable) {
-                            continue;
-                        }
-
-                        if (!base.isAssignableFrom(type))
-                        *///?}
-                        //? if (>=1.19.3 && <=26.3) {
-                        if (!inherits(type, base.getName().replace('.', '/')))
-                        //?}
-                            continue;
+                        if (!inherits(type, base.getName().replace('.', '/'))) continue;
                         List<String> fields = new ArrayList<>();
 
-                        //? if (>=1.18 && <=1.19.2) {
-                        /*for (Field field : type.getDeclaredFields())
-                        *///?}
-                        //? if (>=1.19.3 && <=26.3) {
-                        for (var field : type.fields)
-                        //?}
-                        {
-
-                            //? if (>=1.18 && <=1.19.2) {
-                            /*if (Modifier.isStatic(field.getModifiers()) || field.isSynthetic())
-
-                            *///?}
-                            //? if (>=1.19.3 && <=26.3) {
+                        for (var field : type.fields) {
                             if ((field.access & (Opcodes.ACC_STATIC | Opcodes.ACC_SYNTHETIC)) != 0)
-                            //?}
                                 continue;
 
-                            //? if (>=1.18 && <=1.19.2) {
-                            /*fields.add(field.getName());
-                            *///?}
-                            //? if (>=1.19.3 && <=26.3) {
                             fields.add(field.name);
-                            //?}
+                        //?}
 
                         }
                         result.put(name, fields);
@@ -108,7 +89,7 @@ final class RuntimeFieldDump {
         return result;
     }
 
-    //? if (>=1.19.3 && <=26.3) {
+    //? if >=1.19.3 {
     private static boolean inherits(ClassNode type, String base) throws Exception {
         if (type.name.equals(base)) return true;
 

@@ -2,6 +2,8 @@ package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.AntiCrashController;
 import com.atsukimc.anticrash.AntiCrashMod;
+import com.atsukimc.anticrash.runtime.ItemPhaseHolder;
+import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,7 +18,7 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(ItemEntity.class)
-public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.ItemPhaseHolder {
+public abstract class ItemEntityMixin implements ItemPhaseHolder {
     /**
      * A resting item re-checks whether it should move only when (age + network id) % 4 is 0. The
      * network id is handed out again at every load, so that phase changed with each restart. The
@@ -37,7 +39,7 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         anticrash$idPhase = Math.floorMod(phase, 4);
     }
 
-    @com.llamalad7.mixinextras.injector.ModifyExpressionValue(
+    @ModifyExpressionValue(
             method = "tick",
             at =
                     @At(
@@ -83,17 +85,17 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
         ItemStack pickedStack = before.copy();
         pickedStack.setCount(picked);
         AntiCrashController controller = AntiCrashMod.controller();
-        if (controller != null)
-
-            //? if (>=1.18 && <=1.19.3) {
-            /*controller.recordTransaction(
+        //? if <=1.19.3 {
+        /*if (controller != null)
+            controller.recordTransaction(
                     "ITEM_PICKUP",
                     serverPlayer,
                     "world",
                     "player",
                     new BlockPos(item.position()),
                     pickedStack);
-            *///?} else {
+        *///?} else {
+        if (controller != null)
             controller.recordTransaction(
                     "ITEM_PICKUP",
                     serverPlayer,
@@ -101,6 +103,6 @@ public abstract class ItemEntityMixin implements com.atsukimc.anticrash.runtime.
                     "player",
                     BlockPos.containing(item.position()),
                     pickedStack);
-            //?}
+        //?}
     }
 }

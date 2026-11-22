@@ -1,4 +1,4 @@
-//? if (>=26.1 && <=26.3) {
+//? if >=26.1 {
 package com.atsukimc.anticrash.mixin;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -6,8 +6,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(targets = "net.minecraft.world.entity.EntityFluidInteraction$Tracker")
 public interface FluidTrackerAccessor {
-
-    //? if 26.3 {
+    //? if >=26.3 {
     @Accessor("fluidType")
     net.minecraft.core.Holder<net.minecraft.world.level.material.Fluid> anticrash$type();
 
@@ -25,7 +24,7 @@ public interface FluidTrackerAccessor {
     @Accessor("eyesInside")
     void anticrash$eyes(boolean value);
 
-    //? if (>=26.1 && <=26.2) {
+    //? if <=26.2 {
     /*@Accessor("accumulatedCurrent")
     net.minecraft.world.phys.Vec3 anticrash$current();
 

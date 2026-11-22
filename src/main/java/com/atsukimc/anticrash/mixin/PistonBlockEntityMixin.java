@@ -17,7 +17,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(PistonMovingBlockEntity.class)
 public abstract class PistonBlockEntityMixin {
-
     @Shadow private float progress;
 
     @Shadow private float progressO;
@@ -35,38 +34,34 @@ public abstract class PistonBlockEntityMixin {
             BlockState state,
             PistonMovingBlockEntity piston,
             CallbackInfo callbackInfo) {
-        // World#markDirty only sets the loaded chunk's needsSaving flag. Calling
-        // BlockEntity#markDirty here would also run comparator updates on every piston tick.
+        // Level#blockEntityChanged only sets the loaded chunk's unsaved flag. Calling
+        // BlockEntity#setChanged here would also run comparator updates on every piston tick.
 
         world.blockEntityChanged(pos);
     }
 
     /**
-     * Vanilla saves {@code lastProgress} under "progress" and loads it into both fields, so a
-     * piston that was half way (progress 0.5, lastProgress 0.0) or about to finish (1.0, 0.5)
+     * Vanilla saves {@code progressO} under "progress" and loads it into both fields, so a
+     * piston that was half way (progress 0.5, progressO 0.0) or about to finish (1.0, 0.5)
      * restarts half a step behind and arrives one tick late. That one tick stops every flying
-     * machine caught mid-move. {@code lastProgress} stays Vanilla's; only the real progress and the
-     * tick it was last advanced in ({@code savedWorldTime}, which PistonBaseBlock compares with the
+     * machine caught mid-move. {@code progressO} stays Vanilla's; only the real progress and the
+     * tick it was last advanced in ({@code lastTicked}, which PistonBaseBlock compares with the
      * world time when a piston is retracted again) are added.
      */
-
-    //? if (>=1.18 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
-    private void anticrash$saveExactProgress(CompoundTag nbt, CallbackInfo callbackInfo)
-    *///?}
-    //? if (>=1.20.5 && <=1.21.5) {
+    private void anticrash$saveExactProgress(CompoundTag nbt, CallbackInfo callbackInfo) {
+    *///?} else if <=1.21.5 {
     /*@Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveExactProgress(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo callbackInfo)
-    *///?}
-    //? if (>=1.21.6 && <=26.3) {
+            CallbackInfo callbackInfo) {
+    *///?} else {
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveExactProgress(
-            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo)
+            net.minecraft.world.level.storage.ValueOutput nbt, CallbackInfo callbackInfo) {
     //?}
-            {
         if (!RuntimeExtensionNbt.savingLoadedChunk()) return;
         RuntimeExtensionNbt.write(
                 nbt,
@@ -77,31 +72,27 @@ public abstract class PistonBlockEntityMixin {
                 });
     }
 
-    //? if (>=1.18 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(method = "load", at = @At("TAIL"))
-    private void anticrash$loadExactProgress(CompoundTag nbt, CallbackInfo callbackInfo)
-    *///?}
-    //? if (>=1.20.5 && <=1.21.5) {
+    private void anticrash$loadExactProgress(CompoundTag nbt, CallbackInfo callbackInfo) {
+    *///?} else if <=1.21.5 {
     /*@Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadExactProgress(
             CompoundTag nbt,
             net.minecraft.core.HolderLookup.Provider registries,
-            CallbackInfo callbackInfo)
-    *///?}
-    //? if (>=1.21.6 && <=26.3) {
+            CallbackInfo callbackInfo) {
+    *///?} else {
     @Inject(method = "loadAdditional", at = @At("TAIL"))
     private void anticrash$loadExactProgress(
-            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo)
+            net.minecraft.world.level.storage.ValueInput nbt, CallbackInfo callbackInfo) {
     //?}
-            {
-
         CompoundTag extension = RuntimeExtensionNbt.read(nbt);
 
         if (extension == null || !VersionNbt.contains(extension, "Progress", 99)) return;
 
         float exact = VersionNbt.getFloat(extension, "Progress");
 
-        // Progress only moves forward from lastProgress to 1; anything else is not a state the
+        // Progress only moves forward from progressO to 1; anything else is not a state the
         // game can be in, so Vanilla's own value is kept.
 
         if (exact >= progressO && exact <= 1.0f) progress = exact;

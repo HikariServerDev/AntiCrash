@@ -8,6 +8,7 @@ import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.concurrent.TimeUnit;
@@ -19,7 +20,7 @@ class CheckpointLowHeapTest {
     void fiftyCyclesAndLargeJsonUseBoundedMemoryInSmallChildJvm() throws Exception {
         String cp =
                 String.join(
-                        java.io.File.pathSeparator,
+                        File.pathSeparator,
                         Path.of(
                                         CheckpointLowHeapWorker.class
                                                 .getProtectionDomain()

@@ -8,7 +8,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(RedstoneTorchBlock.Toggle.class)
 public interface RedstoneTorchBurnoutEntryAccessorMixin {
-
     @Accessor("pos")
     BlockPos anticrash$getPos();
 

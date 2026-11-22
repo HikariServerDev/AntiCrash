@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
-//? if (>=1.18 && <=1.21.4) {
+//? if <=1.21.4 {
 /*import java.util.regex.Matcher;
 import net.minecraft.server.level.DistanceManager;
 import net.minecraft.util.SortedArraySet;
@@ -28,9 +28,11 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 /**
@@ -47,7 +49,7 @@ public final class RuntimeOrderRestorer {
 
     private static final Pattern BLOCK_POS = Pattern.compile("x=(-?\\d+), y=(-?\\d+), z=(-?\\d+)");
 
-    //? if (>=1.21.4 && <=26.3) {
+    //? if >=1.21.4 {
     private static final Pattern CHUNK_POS = Pattern.compile("\\[(-?\\d+),\\s*(-?\\d+)\\]");
 
     //?}
@@ -72,7 +74,6 @@ public final class RuntimeOrderRestorer {
         Map<String, TickingBlockEntity> live = new LinkedHashMap<>();
 
         for (List<TickingBlockEntity> list : List.of(current, pending)) {
-
             for (TickingBlockEntity ticker : list) {
                 // Vanilla drops a removed ticker unrun on its next pass; it carries no order.
                 if (BlockEntityTickerSnapshot.removed(ticker)) continue;
@@ -86,7 +87,7 @@ public final class RuntimeOrderRestorer {
                 }
             }
         }
-        // World#tickBlockEntities appends PENDING to CURRENT and then runs CURRENT in order, so
+        // Level#tickBlockEntities appends PENDING to CURRENT and then runs CURRENT in order, so
         // where a live ticker sits today does not matter, only the two lists' final contents.
 
         List<TickingBlockEntity> orderedCurrent = new ArrayList<>();
@@ -95,7 +96,6 @@ public final class RuntimeOrderRestorer {
 
         int missing = 0;
         for (BlockEntityTickerSnapshot snapshot : expected) {
-
             TickingBlockEntity ticker =
                     live.remove(tickerKey(snapshot.x, snapshot.y, snapshot.z, snapshot.name));
 
@@ -128,7 +128,6 @@ public final class RuntimeOrderRestorer {
         Int2ObjectMap<Entity> entities = accessor.anticrash$getEntities();
         Map<String, Entity> live = new LinkedHashMap<>();
         for (Entity entity : entities.values()) {
-
             if (live.put(entity.getStringUUID(), entity) != null) return null;
         }
         List<Entity> ordered = new ArrayList<>(live.size());
@@ -147,35 +146,6 @@ public final class RuntimeOrderRestorer {
         return new Result(restored, unknown, missing);
     }
 
-    /**
-     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
-     * ticks after something used a portal), POST_TELEPORT (5 ticks after a teleport) and UNKNOWN (1
-     * tick after a chunk was fetched by code such as a hopper or an entity looking into the next
-     * chunk). Vanilla saves none of them. Each is added through the same DistanceManager method
-     * Vanilla uses for that type and expires by itself, so nothing can leak. LIGHT tickets are
-     * owned by the lighting engine, which removes them itself, and are never re-created.
-     *
-     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
-     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
-     * refreshes it, so calling this twice is harmless.
-     *
-     * @return the number of tickets restored
-     */
-
-    /**
-     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
-     * ticks after something used a portal), ENDER_PEARL (40 ticks) and UNKNOWN (1 tick after a
-     * chunk was fetched by code such as a hopper or an entity looking into the next chunk). Vanilla
-     * saves none of them. Each is added through the same DistanceManager method Vanilla uses for
-     * that type and expires by itself, so nothing can leak. LIGHT tickets are owned by the lighting
-     * engine, which removes them itself, and are never re-created.
-     *
-     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
-     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
-     * refreshes it, so calling this twice is harmless.
-     *
-     * @return the number of tickets restored
-     */
     private static String expiringKey(
             String dimension, int x, int z, String type, int level, String argument) {
         // A post-teleport ticket's argument is a network entity id, which a restart renumbers.
@@ -195,8 +165,8 @@ public final class RuntimeOrderRestorer {
     /**
      * The key of every expiring ticket of the checkpoint that {@link #expiringTickets} re-creates.
      */
-    static java.util.Set<String> expiringKeys(List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> keys = new java.util.HashSet<>();
+    static Set<String> expiringKeys(List<TicketLedgerSnapshot.Entry> ledger) {
+        Set<String> keys = new HashSet<>();
         for (TicketLedgerSnapshot.Entry entry : ledger) {
             if (entry == null || entry.type == null || entry.remainingTicks == null) continue;
             keys.add(
@@ -224,16 +194,14 @@ public final class RuntimeOrderRestorer {
      */
     public static int removeStrayExpiringTickets(
             Map<String, ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> expected = expiringKeys(ledger);
+        Set<String> expected = expiringKeys(ledger);
         int removed = 0;
 
         for (Map.Entry<String, ServerLevel> world : worlds.entrySet()) {
-
-            //? if (>=1.18 && <=1.21.4) {
+            //? if <=1.21.4 {
             /*DistanceManager manager =
                     world.getValue().getChunkSource().chunkMap.getDistanceManager();
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
+            *///?} else {
             TicketStorage manager =
                     ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
                                     world.getValue().getChunkSource())
@@ -245,34 +213,25 @@ public final class RuntimeOrderRestorer {
             for (var position : accessor.anticrash$getTicketsByPosition().long2ObjectEntrySet()) {
                 ChunkPos chunk = VersionChunkPos.unpack(position.getLongKey());
 
-                //? if (>=1.18 && <=1.21.4) {
-                /*for (Ticket<?> ticket : position.getValue())
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
-                for (Ticket ticket : position.getValue())
-                //?}
-                {
-
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*TicketType<?> type = ticket.getType();
-                    *///?}
-                    //? if (>=1.21.5 && <=26.3) {
+                //? if <=1.21.4 {
+                /*for (Ticket<?> ticket : position.getValue()) {
+                    TicketType<?> type = ticket.getType();
+                *///?} else {
+                for (Ticket ticket : position.getValue()) {
                     TicketType type = ticket.getType();
-                    //?}
+                //?}
 
-                    //? if (>=1.18 && <=1.21.3) {
+                    //? if <=1.21.3 {
                     /*if (type != TicketType.UNKNOWN
                             && type != TicketType.POST_TELEPORT
-                            && type != TicketType.PORTAL)
-                    *///?}
-                    //? if (>=1.21.4 && <=26.3) {
+                            && type != TicketType.PORTAL) continue;
+                    *///?} else {
                     if (type != TicketType.UNKNOWN
                             && type != TicketType.ENDER_PEARL
-                            && type != TicketType.PORTAL)
+                            && type != TicketType.PORTAL) continue;
                     //?}
-                        continue;
 
-                    //? if (>=1.18 && <=1.21.4) {
+                    //? if <=1.21.4 {
                     /*Object argument =
                             ((ChunkTicketAccessorMixin) (Object) ticket).anticrash$getArgument();
 
@@ -283,9 +242,9 @@ public final class RuntimeOrderRestorer {
                                     VersionChunkPos.z(chunk),
                                     String.valueOf(type),
                                     ticket.getTicketLevel(),
-                                    String.valueOf(argument))))
-                    *///?}
-                    //? if (>=1.21.5 && <=26.3) {
+                                    String.valueOf(argument)))) {
+                        stray.add(new Object[] {type, chunk, ticket.getTicketLevel(), argument});
+                    *///?} else {
                     String name =
                             net.minecraft.core.registries.BuiltInRegistries.TICKET_TYPE
                                     .getKey(type)
@@ -298,31 +257,22 @@ public final class RuntimeOrderRestorer {
                                     VersionChunkPos.z(chunk),
                                     name,
                                     ticket.getTicketLevel(),
-                                    "-")))
-                    //?}
-                    {
-
-                        //? if (>=1.18 && <=1.21.4) {
-                        /*stray.add(new Object[] {type, chunk, ticket.getTicketLevel(), argument});
-                        *///?}
-                        //? if (>=1.21.5 && <=26.3) {
+                                    "-"))) {
                         stray.add(new Object[] {ticket, chunk});
-                        //?}
+                    //?}
 
                     }
                 }
             }
             for (Object[] ticket : stray) {
-
-                //? if (>=1.18 && <=1.21.4) {
+                //? if <=1.21.4 {
                 /*removeTicket(
                         manager,
                         (TicketType<?>) ticket[0],
                         (ChunkPos) ticket[1],
                         (Integer) ticket[2],
                         ticket[3]);
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
+                *///?} else {
                 manager.removeTicket((Ticket) ticket[0], (ChunkPos) ticket[1]);
                 //?}
 
@@ -330,13 +280,9 @@ public final class RuntimeOrderRestorer {
             }
         }
         return removed;
-    //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
-
     }
 
-    //?}
-
-    //? if (>=1.18 && <=1.21.4) {
+    //? if <=1.21.4 {
     /*@SuppressWarnings("unchecked")
     private static <T> void removeTicket(
             DistanceManager manager,
@@ -345,13 +291,26 @@ public final class RuntimeOrderRestorer {
             int level,
             Object argument) {
         manager.removeTicket((TicketType<T>) type, chunk, level, (T) argument);
-    *///?}
-    //? if (>=1.18 && <=1.21.11) {
-
-    /*}
+    }
 
     *///?}
 
+    /**
+     * Re-creates the checkpoint's expiring tickets with the lifetime they had left: PORTAL (300
+     * ticks after something used a portal), POST_TELEPORT (5 ticks after a teleport;
+     * {@code <=1.21.3}), ENDER_PEARL (40 ticks; {@code >=1.21.4}, where it replaces POST_TELEPORT)
+     * and UNKNOWN (1 tick after a chunk was fetched by code such as a hopper or an entity looking
+     * into the next chunk). Vanilla saves none of them. Each is added through the same
+     * DistanceManager method Vanilla uses for that type and expires by itself, so nothing can leak.
+     * LIGHT tickets are owned by the lighting engine, which removes them itself, and are never
+     * re-created.
+     *
+     * <p>Call it right before the first resumed tick: the manager ages tickets whenever the chunk
+     * manager is pumped, also while recovery is frozen. Adding a ticket that already exists only
+     * refreshes it, so calling this twice is harmless.
+     *
+     * @return the number of tickets restored
+     */
     public static int expiringTickets(
             Map<String, ServerLevel> worlds, List<TicketLedgerSnapshot.Entry> ledger) {
         int restored = 0;
@@ -367,7 +326,7 @@ public final class RuntimeOrderRestorer {
             if (world == null || entry.level < 0 || entry.level > 64) continue;
             ChunkPos chunk = new ChunkPos(entry.x, entry.z);
 
-            //? if (>=1.18 && <=1.21.4) {
+            //? if <=1.21.4 {
             /*DistanceManager manager = world.getChunkSource().chunkMap.getDistanceManager();
 
             TicketType<?> type;
@@ -378,31 +337,8 @@ public final class RuntimeOrderRestorer {
                 case "portal" -> {
                     Matcher matcher = BLOCK_POS.matcher(entry.argument);
 
-                    if (!matcher.find() || entry.level > 33)
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
-            TicketStorage manager =
-                    ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
-                                    world.getChunkSource())
-                            .anticrash$getTicketManager();
-
-            TicketType type =
-                    switch (entry.type) {
-                        case "portal" -> TicketType.PORTAL;
-
-                        case "ender_pearl" -> TicketType.ENDER_PEARL;
-
-                        case "unknown" -> TicketType.UNKNOWN;
-
-                        default -> null;
-                    };
-
-            if (type == null)
-            //?}
-                continue;
-
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*BlockPos portal =
+                    if (!matcher.find() || entry.level > 33) continue;
+                    BlockPos portal =
                             new BlockPos(
                                     Integer.parseInt(matcher.group(1)),
                                     Integer.parseInt(matcher.group(2)),
@@ -414,10 +350,9 @@ public final class RuntimeOrderRestorer {
 
                     argument = portal;
                 }
-                    *///?}
 
-                //? if (>=1.18 && <=1.21.3) {
-                /*case "post_teleport" -> {
+                //? if <=1.21.3 {
+                /^case "post_teleport" -> {
                     Integer id;
 
                     try {
@@ -433,9 +368,9 @@ public final class RuntimeOrderRestorer {
                     type = TicketType.POST_TELEPORT;
 
                     argument = id;
-                *///?}
-                //? if 1.21.4 {
-                /*case "ender_pearl" -> {
+                }
+                ^///?} else {
+                case "ender_pearl" -> {
                     // POST_TELEPORT no longer exists. This is a distinct 40-tick ticket whose
                     // argument is ChunkPos, not the old teleporting entity's network id.
                     Matcher matcher = CHUNK_POS.matcher(entry.argument);
@@ -453,10 +388,8 @@ public final class RuntimeOrderRestorer {
                     type = TicketType.ENDER_PEARL;
 
                     argument = pearl;
-                *///?}
-                //? if (>=1.18 && <=1.21.4) {
-
-                /*}
+                }
+                //?}
 
                 case "unknown" -> {
                     manager.addTicket(TicketType.UNKNOWN, chunk, entry.level, chunk);
@@ -470,22 +403,36 @@ public final class RuntimeOrderRestorer {
                     continue;
                 }
             }
-                *///?}
+            *///?} else {
+            TicketStorage manager =
+                    ((com.atsukimc.anticrash.mixin.ServerChunkManagerAccessorMixin)
+                                    world.getChunkSource())
+                            .anticrash$getTicketManager();
+
+            TicketType type =
+                    switch (entry.type) {
+                        case "portal" -> TicketType.PORTAL;
+
+                        case "ender_pearl" -> TicketType.ENDER_PEARL;
+
+                        case "unknown" -> TicketType.UNKNOWN;
+
+                        default -> null;
+                    };
+
+            if (type == null) continue;
 
             // Public addition deduplicates by type identity + level. PORTAL is now persisted by
             // Vanilla; refresh the existing ticket, rather than introducing a second ledger entry.
-
-            //? if (>=1.21.5 && <=26.3) {
             manager.addTicketWithRadius(type, chunk, entry.level);
             //?}
 
             ChunkTicketManagerAccessorMixin accessor = (ChunkTicketManagerAccessorMixin) manager;
 
-            //? if (>=1.18 && <=1.21.4) {
+            //? if <=1.21.4 {
             /*SortedArraySet<Ticket<?>> tickets =
                     accessor.anticrash$getTicketsByPosition().get(VersionChunkPos.pack(chunk));
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
+            *///?} else {
             List<Ticket> tickets =
                     accessor.anticrash$getTicketsByPosition().get(VersionChunkPos.pack(chunk));
             //?}
@@ -494,62 +441,46 @@ public final class RuntimeOrderRestorer {
 
             long expiry = type.timeout();
 
-            //? if (>=1.18 && <=1.21.4) {
-            /*for (Ticket<?> ticket : tickets)
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
-            for (Ticket ticket : tickets)
+            //? if <=1.21.4 {
+            /*for (Ticket<?> ticket : tickets) {
+            *///?} else {
+            for (Ticket ticket : tickets) {
             //?}
-            {
                 ChunkTicketAccessorMixin ticketAccessor =
                         (ChunkTicketAccessorMixin) (Object) ticket;
 
-                //? if (>=1.18 && <=1.21.4) {
+                //? if <=1.21.4 {
                 /*if (ticketAccessor.anticrash$getType() == type
                         && ticket.getTicketLevel() == entry.level
-                        && argument.equals(ticketAccessor.anticrash$getArgument()))
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
-                if (ticketAccessor.anticrash$getType() == type
-                        && ticket.getTicketLevel() == entry.level)
-                //?}
-                {
-
-                    //? if (>=1.18 && <=1.21.4) {
-                    /*ticketAccessor.anticrash$setTickCreated(
+                        && argument.equals(ticketAccessor.anticrash$getArgument())) {
+                    ticketAccessor.anticrash$setTickCreated(
                             tickCreatedFor(
                                     accessor.anticrash$getAge(), expiry, entry.remainingTicks));
-                    *///?}
-                    //? if (>=1.21.5 && <=26.3) {
+                *///?} else {
+                if (ticketAccessor.anticrash$getType() == type
+                        && ticket.getTicketLevel() == entry.level) {
                     if (entry.remainingTicks > expiry)
                         throw new IllegalArgumentException("Invalid remaining ticket lifetime");
 
                     ticketAccessor.anticrash$setTicksLeft(entry.remainingTicks);
-                    //?}
+                //?}
 
                     restored++;
                 }
             }
         }
         return restored;
-    //? if (>=1.18 && <=1.21.4) || (>=26.1 && <=26.3) {
-
     }
 
-    //?}
-
     /**
-     * Vanilla drops a ticket once {@code age - tickCreated > expiry}; a ticket with {@code
-     * remaining} ticks left therefore satisfies {@code age - tickCreated == expiry - remaining}.
+     * Vanilla drops a ticket once {@code age - createdTick > expiry}; a ticket with {@code
+     * remaining} ticks left therefore satisfies {@code age - createdTick == expiry - remaining}.
      */
 
-    //? if (>=1.18 && <=1.21.4) {
+    //? if <=1.21.4 {
     /*static long tickCreatedFor(long age, long expiry, long remaining) {
         return age - (expiry - Math.min(expiry, Math.max(0L, remaining)));
-    *///?}
-    //? if (>=1.18 && <=1.21.11) {
-
-    /*}
+    }
 
     *///?}
 
@@ -575,7 +506,7 @@ public final class RuntimeOrderRestorer {
     /** How many permanent tickets of the checkpoint do not exist in {@code current}. */
     public static int missingPermanentTickets(
             List<TicketLedgerSnapshot.Entry> current, List<TicketLedgerSnapshot.Entry> ledger) {
-        java.util.Set<String> live = new java.util.HashSet<>();
+        Set<String> live = new HashSet<>();
         for (TicketLedgerSnapshot.Entry entry : current) live.add(permanentKey(entry));
         int missing = 0;
         for (TicketLedgerSnapshot.Entry entry : ledger) {
@@ -598,7 +529,6 @@ public final class RuntimeOrderRestorer {
     }
 
     public static Map<String, ServerLevel> worlds(Iterable<ServerLevel> worlds) {
-
         Map<String, ServerLevel> byId = new HashMap<>();
 
         for (ServerLevel world : worlds) byId.put(VersionIds.dimension(world), world);

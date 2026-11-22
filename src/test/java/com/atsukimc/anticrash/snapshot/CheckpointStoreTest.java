@@ -8,8 +8,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
+import com.atsukimc.anticrash.util.AtomicFiles;
 import com.atsukimc.anticrash.util.Hashing;
 
+import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -19,6 +21,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.Executors;
 
 class CheckpointStoreTest {
     @Test
@@ -89,7 +92,7 @@ class CheckpointStoreTest {
                         config,
                         new AntiCrashLogger(temp.resolve("concurrent-logs"), config.logging));
         Path cp = commit(store, "cp-000001", "level.dat", "immutable");
-        var pool = java.util.concurrent.Executors.newFixedThreadPool(2);
+        var pool = Executors.newFixedThreadPool(2);
         try {
             var a = pool.submit(() -> store.verifyForIncrementalReuse(cp));
             var b = pool.submit(() -> store.verifyForIncrementalReuse(cp));
@@ -120,7 +123,7 @@ class CheckpointStoreTest {
         store.verify(committed);
 
         Files.writeString(committed.resolve("world/region/r.0.0.mca"), "corrupted");
-        assertThrows(java.io.IOException.class, () -> store.verify(committed));
+        assertThrows(IOException.class, () -> store.verify(committed));
         assertTrue(store.listValid().isEmpty());
     }
 
@@ -291,8 +294,7 @@ class CheckpointStoreTest {
         manifest.snapshotBackend = "JAVA_INCREMENTAL";
         manifest.utcTimestamp = Instant.now().toString();
         FileFacts atLink = FileFacts.read(linked);
-        org.junit.jupiter.api.Assumptions.assumeTrue(
-                atLink.changeTime() != 0L && atLink.linkCount() == 2L);
+        Assumptions.assumeTrue(atLink.changeTime() != 0L && atLink.linkCount() == 2L);
         SnapshotFile file =
                 new SnapshotFile(
                         "region/r.0.0.mca",
@@ -483,11 +485,9 @@ class CheckpointStoreTest {
 
         CheckpointManifest manifest = store.readManifest(checkpoint);
         manifest.worldFiles.clear();
-        Files.writeString(
-                checkpoint.resolve("manifest.json"),
-                com.atsukimc.anticrash.util.AtomicFiles.GSON.toJson(manifest));
+        Files.writeString(checkpoint.resolve("manifest.json"), AtomicFiles.GSON.toJson(manifest));
 
-        assertThrows(java.io.IOException.class, () -> store.verify(checkpoint));
+        assertThrows(IOException.class, () -> store.verify(checkpoint));
     }
 
     @Test
@@ -509,7 +509,7 @@ class CheckpointStoreTest {
         store.verifyRecoveryPayloads(checkpoint);
 
         Files.writeString(checkpoint.resolve("players.json"), "[ ]");
-        assertThrows(java.io.IOException.class, () -> store.verifyRecoveryPayloads(checkpoint));
+        assertThrows(IOException.class, () -> store.verifyRecoveryPayloads(checkpoint));
     }
 
     @Test

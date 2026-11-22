@@ -14,7 +14,6 @@ public abstract class StorageIoWorkerMixin {
     /** Leaves the queued result in place; WriteHold restarts the writes when the cut ends. */
     @Inject(method = "storePendingChunk", at = @At("HEAD"), cancellable = true)
     private void anticrash$deferWriteDuringCut(CallbackInfo callbackInfo) {
-
         if (WriteHold.defer((IOWorker) (Object) this)) callbackInfo.cancel();
     }
 }

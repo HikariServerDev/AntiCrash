@@ -23,16 +23,9 @@ public final class NbtCodec {
     public static String encode(Tag element) throws IOException {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         try (DataOutputStream output = new DataOutputStream(bytes)) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.20.2) {
-            /^NbtIo.writeUnnamedTag(element, output);
-            ^///?}
-            //? if (>=1.20.3 && <=1.21.11) {
-            /^NbtIo.writeUnnamedTagWithFallback(element, output);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
+            //? if <=1.20.2 {
+            /*NbtIo.writeUnnamedTag(element, output);
+            *///?} else {
             NbtIo.writeUnnamedTagWithFallback(element, output);
             //?}
 
@@ -66,11 +59,9 @@ public final class NbtCodec {
             final Tag element;
 
             try {
-
-                //? if (>=1.18 && <=1.20.1) {
+                //? if <=1.20.1 {
                 /*element = TagTypes.getType(type).load(input, 0, new NbtAccounter(MAX_NBT_BYTES));
-                *///?}
-                //? if (>=1.20.2 && <=26.3) {
+                *///?} else {
                 element = TagTypes.getType(type).load(input, NbtAccounter.create(MAX_NBT_BYTES));
                 //?}
 
@@ -84,7 +75,6 @@ public final class NbtCodec {
     }
 
     public static CompoundTag decodeCompound(String encoded) throws IOException {
-
         Tag element = decode(encoded);
 
         if (!(element instanceof CompoundTag compound))

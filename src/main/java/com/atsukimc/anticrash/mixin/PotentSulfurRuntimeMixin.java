@@ -1,4 +1,4 @@
-//? if (>=26.2 && <=26.3) {
+//? if >=26.2 {
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;

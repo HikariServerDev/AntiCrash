@@ -11,10 +11,10 @@ import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.level.material.Fluid;
 
-//? if (>=1.19.3 && <=26.3) {
+//? if >=1.19.3 {
 import net.minecraft.core.registries.BuiltInRegistries;
 //?}
-//? if (>=1.18 && <=1.21.10) {
+//? if <=1.21.10 {
 /*import net.minecraft.resources.ResourceLocation;
 
 *///?} else {
@@ -36,7 +36,7 @@ public final class VersionIds {
 
     /** "namespace:path" of a resource key. */
     public static String key(ResourceKey<?> key) {
-        //? if (>=1.18 && <=1.21.10) {
+        //? if <=1.21.10 {
         /*return key.location().toString();
         *///?} else {
         return key.identifier().toString();
@@ -56,7 +56,7 @@ public final class VersionIds {
     // Built-in registries
 
     public static Registry<Block> blocks() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.BLOCK;
         *///?}else {
         return BuiltInRegistries.BLOCK;
@@ -64,7 +64,7 @@ public final class VersionIds {
     }
 
     public static Registry<Fluid> fluids() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.FLUID;
         *///?} else {
         return BuiltInRegistries.FLUID;
@@ -72,7 +72,7 @@ public final class VersionIds {
     }
 
     public static Registry<Item> items() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.ITEM;
         *///?} else {
         return BuiltInRegistries.ITEM;
@@ -80,7 +80,7 @@ public final class VersionIds {
     }
 
     public static Registry<EntityType<?>> entityTypes() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.ENTITY_TYPE;
         *///?} else {
         return BuiltInRegistries.ENTITY_TYPE;
@@ -88,7 +88,7 @@ public final class VersionIds {
     }
 
     public static Registry<BlockEntityType<?>> blockEntityTypes() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.BLOCK_ENTITY_TYPE;
         *///?} else {
         return BuiltInRegistries.BLOCK_ENTITY_TYPE;
@@ -96,7 +96,7 @@ public final class VersionIds {
     }
 
     public static Registry<GameEvent> gameEvents() {
-        //? if (>=1.18 && <=1.19.2) {
+        //? if <=1.19.2 {
         /*return Registry.GAME_EVENT;
         *///?} else {
         return BuiltInRegistries.GAME_EVENT;
@@ -123,7 +123,7 @@ public final class VersionIds {
 
     // The version's own id type, for vanilla calls that take one
 
-    //? if (>=1.18 && <=1.21.10) {
+    //? if <=1.21.10 {
     /*/^* Parsed id, or null when the text is not a valid id. ^/
     public static ResourceLocation tryParse(String id) {
         return ResourceLocation.tryParse(id);
@@ -131,7 +131,7 @@ public final class VersionIds {
 
     /^* Parsed id; throws when the text is not a valid id. ^/
     public static ResourceLocation parse(String id) {
-        //? if (>=1.18 && <=1.20.6) {
+        //? if <=1.20.6 {
         /^return new ResourceLocation(id);
         ^///?} else {
         /^return ResourceLocation.parse(id);
@@ -140,7 +140,7 @@ public final class VersionIds {
 
     /^* Value registered under an id: Registry#get before 1.21.2, Registry#getValue after. ^/
     public static <T> T value(Registry<T> registry, ResourceLocation id) {
-        //? if (>=1.18 && <=1.21.1) {
+        //? if <=1.21.1 {
         /^return registry.get(id);
         ^///?} else {
         /^return registry.getValue(id);
@@ -148,7 +148,7 @@ public final class VersionIds {
     }
 
     public static ResourceLocation of(String namespace, String path) {
-        //? if (>=1.18 && <=1.20.6) {
+        //? if <=1.20.6 {
         /^return new ResourceLocation(namespace, path);
         ^///?} else {
         /^return ResourceLocation.fromNamespaceAndPath(namespace, path);

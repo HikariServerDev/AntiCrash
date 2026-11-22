@@ -1,4 +1,4 @@
-//? if (>=1.21 && <=26.3) {
+//? if >=1.21 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.entity.Entity;
@@ -12,7 +12,7 @@ public interface ProjectileRuntimeAccessorMixin {
     @Accessor("lastDeflectedBy")
     Entity anticrash$lastDeflectedEntity();
 
-    //? if (>=1.21.9 && <=26.3) {
+    //? if >=1.21.9 {
     @Accessor("leftOwnerChecked")
     boolean anticrash$checkedForLeftOwner();
 

@@ -9,7 +9,7 @@ public final class VersionMessages {
     private VersionMessages() {}
 
     public static MutableComponent literal(String text) {
-        //? if (>=1.18 && <=1.18.2) {
+        //? if <=1.18.2 {
         /*return new net.minecraft.network.chat.TextComponent(text);
         *///?} else {
         return Component.literal(text);
@@ -18,7 +18,7 @@ public final class VersionMessages {
 
     /** 26.1 split overlay and normal system messages; preserve the requested destination. */
     public static void send(ServerPlayer player, Component message, boolean overlay) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*player.displayClientMessage(message, overlay);
         *///?} else {
         if (overlay) player.sendOverlayMessage(message);

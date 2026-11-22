@@ -8,9 +8,7 @@ import net.minecraft.nbt.CompoundTag;
 import org.junit.jupiter.api.Test;
 
 class EntityChunkWriteDeduplicatorTest {
-
     private static CompoundTag chunk(int health) {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putInt("DataVersion", 2975);

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 class GenerationGraphTest {
@@ -26,6 +27,6 @@ class GenerationGraphTest {
         assertEquals(
                 3,
                 GenerationGraph.depth(
-                        "cp-3", java.util.Map.of("cp-3", "cp-2", "cp-2", "cp-1", "cp-1", "cp-2")));
+                        "cp-3", Map.of("cp-3", "cp-2", "cp-2", "cp-1", "cp-1", "cp-2")));
     }
 }

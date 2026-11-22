@@ -16,7 +16,7 @@ public interface WorldAccessorMixin {
     @Accessor("pendingBlockEntityTickers")
     List<TickingBlockEntity> anticrash$getPendingBlockEntityTickers();
 
-    /** Next global sub-tick sequence value. Calling World#getTickOrder would increment it. */
+    /** Next global sub-tick sequence value. Calling Level#nextSubTickCount would increment it. */
     @Accessor("subTickCount")
     long anticrash$getNextTickOrder();
 

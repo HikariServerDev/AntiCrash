@@ -27,20 +27,9 @@ final class LegacyCheckpointLogic {
             throw new IOException(
                     "STRICT checkpoint manifest chunk-domain fingerprint does not match");
         }
-        int full =
-                capsule.chunks.stream()
-                        .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::fullCount)
-                        .sum();
-        int block =
-                capsule.chunks.stream()
-                        .mapToInt(
-                                com.atsukimc.anticrash.runtime.ChunkStateSnapshot
-                                        ::blockTickingCount)
-                        .sum();
-        int forced =
-                capsule.chunks.stream()
-                        .mapToInt(com.atsukimc.anticrash.runtime.ChunkStateSnapshot::forcedCount)
-                        .sum();
+        int full = capsule.chunks.stream().mapToInt(ChunkStateSnapshot::fullCount).sum();
+        int block = capsule.chunks.stream().mapToInt(ChunkStateSnapshot::blockTickingCount).sum();
+        int forced = capsule.chunks.stream().mapToInt(ChunkStateSnapshot::forcedCount).sum();
         if (manifest.fullChunkCount != full
                 || manifest.blockTickingChunkCount != block
                 || manifest.entityTickingChunkCount != capsule.entityTickingChunkCount()
@@ -53,11 +42,10 @@ final class LegacyCheckpointLogic {
                         != (capsule.checkpointPlayersCaptured
                                 ? capsule.checkpointPlayers.size()
                                 : 0)
-                || !java.util.Objects.equals(
+                || !Objects.equals(
                         manifest.checkpointPlayerHash,
                         capsule.expectedFingerprints.get(EquivalenceCategory.PLAYERS))
-                || !java.util.Objects.equals(
-                        manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
+                || !Objects.equals(manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
                 || !new HashSet<>(manifest.unsupportedRuntimeState)
                         .equals(new HashSet<>(capsule.unsupportedRuntimeState))) {
             throw new IOException("STRICT checkpoint manifest runtime counters do not match");
@@ -65,7 +53,7 @@ final class LegacyCheckpointLogic {
     }
 
     static Set<String> strictAllowedUnsupportedCategories(AntiCrashConfig config) {
-        Set<String> allowed = new java.util.LinkedHashSet<>();
+        Set<String> allowed = new LinkedHashSet<>();
         if (config.recovery.strict.allowUnsupportedRuntimeState) {
             allowed.add(EquivalenceCategory.WORLD_RNG);
             if (!config.recovery.strict.requireEntityOrder)
@@ -106,86 +94,49 @@ final class LegacyCheckpointLogic {
                 .append('/')
                 .append(manifest.forcedChunkCount)
                 .append("; CHUNK_DOMAIN hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN))
+                .append(fingerprint(capsule, EquivalenceCategory.CHUNK_DOMAIN))
                 .append("; BLOCK_ENTITY_TICKERS count=")
                 .append(manifest.blockEntityTickerCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory
-                                        .BLOCK_ENTITY_TICKERS))
+                .append(fingerprint(capsule, EquivalenceCategory.BLOCK_ENTITY_TICKERS))
                 .append("; ENTITIES count=")
                 .append(manifest.entityOrderCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.ENTITIES))
+                .append(fingerprint(capsule, EquivalenceCategory.ENTITIES))
                 .append("; BLOCK_EVENTS count=")
                 .append(manifest.blockEventCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_EVENTS))
+                .append(fingerprint(capsule, EquivalenceCategory.BLOCK_EVENTS))
                 .append("; SCHEDULED_TICKS count=")
                 .append(size(capsule.scheduledTicks))
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.SCHEDULED_TICKS))
+                .append(fingerprint(capsule, EquivalenceCategory.SCHEDULED_TICKS))
                 .append("; MOVING_PISTONS count=")
                 .append(size(capsule.movingPistonTickOrder))
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.MOVING_PISTONS))
+                .append(fingerprint(capsule, EquivalenceCategory.MOVING_PISTONS))
                 .append("; TORCH_BURNOUT count=")
                 .append(manifest.torchBurnoutCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory
-                                        .REDSTONE_RUNTIME))
+                .append(fingerprint(capsule, EquivalenceCategory.REDSTONE_RUNTIME))
                 .append("; WORLD_RUNTIME hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME))
+                .append(fingerprint(capsule, EquivalenceCategory.WORLD_RUNTIME))
                 .append(" support=")
                 .append(worldRuntimeSupport(capsule))
                 .append("; WORLD_RNG hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG))
+                .append(fingerprint(capsule, EquivalenceCategory.WORLD_RNG))
                 .append("; TICKET_LEDGER count=")
                 .append(manifest.ticketCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.TICKET_LEDGER))
+                .append(fingerprint(capsule, EquivalenceCategory.TICKET_LEDGER))
                 .append("; CARPET status=")
                 .append(manifest.carpetCaptureStatus)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule, com.atsukimc.anticrash.runtime.EquivalenceCategory.CARPET))
+                .append(fingerprint(capsule, EquivalenceCategory.CARPET))
                 .append("; FAKEPLAYERS count=")
                 .append(manifest.fakePlayerCount)
                 .append(" hash=")
-                .append(
-                        fingerprint(
-                                capsule,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.FAKEPLAYERS))
+                .append(fingerprint(capsule, EquivalenceCategory.FAKEPLAYERS))
                 .append("; runtimeCapsuleBytes=")
                 .append(runtimeCapsuleBytes)
                 .append("; heapUsed/max=")
@@ -234,11 +185,9 @@ final class LegacyCheckpointLogic {
         if (capsule == null || capsule.expectedFingerprints == null) return "missing";
         boolean rngUnsupported =
                 capsule.unsupportedRuntimeState != null
-                        && capsule.unsupportedRuntimeState.contains(
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RNG);
+                        && capsule.unsupportedRuntimeState.contains(EquivalenceCategory.WORLD_RNG);
         return "WORLD_RUNTIME="
-                + (capsule.expectedFingerprints.containsKey(
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME)
+                + (capsule.expectedFingerprints.containsKey(EquivalenceCategory.WORLD_RUNTIME)
                         ? "CAPTURED"
                         : "MISSING")
                 + ",WORLD_RNG="
@@ -249,7 +198,7 @@ final class LegacyCheckpointLogic {
         String backend =
                 config.snapshot.backend == null
                         ? "AUTO"
-                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
+                        : config.snapshot.backend.trim().toUpperCase(Locale.ROOT);
         return backend.equals("AUTO")
                 || backend.equals("PORTABLE_GENERATION")
                 || backend.equals("GENERATION");
@@ -259,11 +208,11 @@ final class LegacyCheckpointLogic {
         String mode =
                 config.checkpoint.engineMode == null
                         ? "LOGICAL_DELTA"
-                        : config.checkpoint.engineMode.trim().toUpperCase(java.util.Locale.ROOT);
+                        : config.checkpoint.engineMode.trim().toUpperCase(Locale.ROOT);
         String backend =
                 config.snapshot.backend == null
                         ? "AUTO"
-                        : config.snapshot.backend.trim().toUpperCase(java.util.Locale.ROOT);
+                        : config.snapshot.backend.trim().toUpperCase(Locale.ROOT);
         return "LOGICAL_DELTA".equals(mode)
                 && ("AUTO".equals(backend)
                         || "PORTABLE_GENERATION".equals(backend)

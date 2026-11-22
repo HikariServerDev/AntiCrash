@@ -16,7 +16,7 @@ public final class VersionLevels {
     private VersionLevels() {}
 
     public static Level level(Entity entity) {
-        //? if (>=1.18 && <=1.19.4) {
+        //? if <=1.19.4 {
         /*return entity.getLevel();
         *///?} else {
         return entity.level();
@@ -24,19 +24,17 @@ public final class VersionLevels {
     }
 
     public static ServerLevel level(ServerPlayer player) {
-        //? if (>=1.18 && <=1.19.4) {
+        //? if <=1.19.4 {
         /*return player.getLevel();
-        *///?}
-        //? if (>=1.20 && <=1.21.5) {
+        *///?} else if <=1.21.5 {
         /*return player.serverLevel();
-        *///?}
-        //? if (>=1.21.6 && <=26.3) {
+        *///?} else {
         return player.level();
         //?}
     }
 
     public static MinecraftServer server(ServerPlayer player) {
-        //? if (>=1.18 && <=1.21.5) {
+        //? if <=1.21.5 {
         /*return player.server;
         *///?} else {
         return player.level().getServer();

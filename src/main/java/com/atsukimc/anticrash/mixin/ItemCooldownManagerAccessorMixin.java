@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import net.minecraft.world.item.Item;
 *///?}
 
@@ -13,7 +13,7 @@ import java.util.Map;
 
 @Mixin(ItemCooldowns.class)
 public interface ItemCooldownManagerAccessorMixin {
-    //? if (>=1.18 && <=1.21.1) {
+    //? if <=1.21.1 {
     /*@Accessor("cooldowns")
     Map<Item, Object> anticrash$getEntries();
 

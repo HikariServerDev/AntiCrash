@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
+import net.minecraft.world.item.Item;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 
 import org.spongepowered.asm.mixin.Mixin;
@@ -7,8 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(BrewingStandBlockEntity.class)
 public interface BrewingStandBlockEntityTimerAccessor {
-
-    //? if 26.3 {
+    //? if >=26.3 {
     @Accessor("totalBrewTime")
     int anticrash$totalBrewTime();
 
@@ -30,5 +30,5 @@ public interface BrewingStandBlockEntityTimerAccessor {
     int anticrash$getBrewTime();
 
     @Accessor("ingredient")
-    net.minecraft.world.item.Item anticrash$getItemBrewing();
+    Item anticrash$getItemBrewing();
 }

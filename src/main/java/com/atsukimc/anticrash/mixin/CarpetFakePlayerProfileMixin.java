@@ -1,10 +1,10 @@
-//? if (>=1.20.2 && <=26.3) {
+//? if >=1.20.2 {
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.integration.carpet.FakePlayerProfileScope;
 import com.mojang.authlib.GameProfile;
 
-//? if (>=1.20.2 && <=1.21.8) {
+//? if <=1.21.8 {
 /*import java.util.Optional;
 import java.util.function.Consumer;
 *///?} else {
@@ -25,22 +25,16 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 /**
  * Optional Carpet adapter. Verified against Carpet 1.4.120 / 1.4.128 / 1.4.140 / 1.4.147 / 1.4.161
- * / 1.4.177 sources. Only an AntiCrash-owned creation scope substitutes a completed saved profile.
- * Normal Carpet profile IO and its executor are untouched. Unknown factory shapes remain
- * fail-closed through the existing UUID/readiness checks; no reflection edits to player/cache maps
- * are performed.
- */
-
-/**
- * Optional Carpet adapter. Verified against Carpet 1.4.185 / 1.4.194 / v26.1 / v26.3 sources. Only
- * an AntiCrash-owned creation scope substitutes a completed saved profile. Normal Carpet profile IO
- * and its executor are untouched. Unknown factory shapes remain fail-closed through the existing
- * UUID/readiness checks; no reflection edits to player/cache maps are performed.
+ * / 1.4.177 sources for {@code <=1.21.8} ({@code fetchGameProfile}) and Carpet 1.4.185 / 1.4.194 /
+ * v26.1 / v26.3 sources for {@code >=1.21.9}. Only an AntiCrash-owned creation scope substitutes a
+ * completed saved profile. Normal Carpet profile IO and its executor are untouched. Unknown factory
+ * shapes remain fail-closed through the existing UUID/readiness checks; no reflection edits to
+ * player/cache maps are performed.
  */
 @Pseudo
 @Mixin(targets = "carpet.patches.EntityPlayerMPFake", remap = false)
 public abstract class CarpetFakePlayerProfileMixin {
-    //? if (>=1.20.2 && <=1.21.8) {
+    //? if <=1.21.8 {
     /*@Inject(
             method = "fetchGameProfile",
             at = @At("HEAD"),
@@ -50,7 +44,6 @@ public abstract class CarpetFakePlayerProfileMixin {
     private static void anticrash$savedProfile(
             String name,
             CallbackInfoReturnable<CompletableFuture<Optional<GameProfile>>> callback) {
-
         GameProfile saved = FakePlayerProfileScope.creationProfileForName(name);
         if (saved != null)
             callback.setReturnValue(CompletableFuture.completedFuture(Optional.of(saved)));

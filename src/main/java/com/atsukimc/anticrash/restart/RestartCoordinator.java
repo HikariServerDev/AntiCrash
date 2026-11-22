@@ -12,6 +12,7 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Locale;
 
 /** Arms one controlled replacement monitor for a restore that requires pre-world-load work. */
 public final class RestartCoordinator {
@@ -120,9 +121,7 @@ public final class RestartCoordinator {
 
     private static Path javaExecutable() throws IOException {
         boolean windows =
-                System.getProperty("os.name", "")
-                        .toLowerCase(java.util.Locale.ROOT)
-                        .contains("win");
+                System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("win");
         Path executable =
                 Path.of(System.getProperty("java.home"), "bin", windows ? "java.exe" : "java")
                         .toAbsolutePath()

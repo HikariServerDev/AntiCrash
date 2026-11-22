@@ -63,7 +63,7 @@ public final class CrashRawManager {
             target = directory.resolve(runId + "-" + System.currentTimeMillis());
         Path temporary = directory.resolve(".tmp-" + UUID.randomUUID());
         try {
-            java.util.Map<String, String> digests = new java.util.TreeMap<>();
+            Map<String, String> digests = new TreeMap<>();
             synchronized (this) {
                 RawListing previous = newestListing(null);
                 long linked =
@@ -172,7 +172,7 @@ public final class CrashRawManager {
             throw new IOException("Crash-raw world is missing");
     }
 
-    private static void writeIntegrityMetadata(Path root, java.util.Map<String, String> digests)
+    private static void writeIntegrityMetadata(Path root, Map<String, String> digests)
             throws IOException {
         List<String> lines = new ArrayList<>();
         for (var entry : digests.entrySet()) lines.add(entry.getValue() + "  " + entry.getKey());
@@ -192,7 +192,7 @@ public final class CrashRawManager {
     }
 
     /** The verified checksum listing of one committed crash-raw copy. */
-    private record RawListing(Path root, java.util.Map<String, String> digests) {}
+    private record RawListing(Path root, Map<String, String> digests) {}
 
     /** Reads a committed copy's listing after checking it against READY; null if unusable. */
     private RawListing listing(Path root) {
@@ -205,7 +205,7 @@ public final class CrashRawManager {
                 return null;
             if (!AtomicFiles.readText(readyFile, 1024L).trim().equals(Hashing.sha256(checksumFile)))
                 return null;
-            java.util.Map<String, String> digests = new java.util.HashMap<>();
+            Map<String, String> digests = new HashMap<>();
             for (String line :
                     AtomicFiles.readText(checksumFile, MAX_CHECKSUM_FILE_BYTES).split("\\R", -1)) {
                 if (line.isBlank()) continue;
@@ -255,10 +255,7 @@ public final class CrashRawManager {
      * @return the number of files linked instead of copied
      */
     private static long copyDeduplicated(
-            Path source,
-            Path destination,
-            RawListing previous,
-            java.util.Map<String, String> digests)
+            Path source, Path destination, RawListing previous, Map<String, String> digests)
             throws IOException {
         if (!Files.isDirectory(source, LinkOption.NOFOLLOW_LINKS))
             throw new IOException("Missing copy source directory: " + source);
@@ -330,7 +327,7 @@ public final class CrashRawManager {
                                 if (roots.size() < 2) return;
                                 RawListing canonical = listing(roots.get(0));
                                 if (canonical == null) return;
-                                java.util.Set<String> verified = new HashSet<>();
+                                Set<String> verified = new HashSet<>();
                                 long windowStart = System.nanoTime();
                                 long windowBytes = 0;
                                 for (int i = 1; i < roots.size(); i++) {

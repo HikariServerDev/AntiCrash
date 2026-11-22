@@ -4,9 +4,12 @@ import static net.minecraft.commands.Commands.argument;
 import static net.minecraft.commands.Commands.literal;
 
 import com.atsukimc.anticrash.AntiCrashController;
+import com.atsukimc.anticrash.AntiCrashMod;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
+import com.atsukimc.anticrash.logging.ChatStyle;
+import com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin;
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.StringArgumentType;
@@ -954,18 +957,17 @@ public final class AntiCrashCommand {
     }
 
     private static void feedback(CommandSourceStack source, String message, boolean broadcast) {
-        AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
+        AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null && fromConsole(source)) {
             // Vanilla would log the reply as plain text; print it coloured like other AntiCrash
             // lines.
             controller.logger().commandReply(message, false);
             if (broadcast)
-                ((com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin) source)
-                        .anticrash$sendToOps(text(message));
+                ((ServerCommandSourceAccessorMixin) source).anticrash$sendToOps(text(message));
             return;
         }
 
-        //? if (>=1.18 && <=1.19.4) {
+        //? if <=1.19.4 {
         /*source.sendSuccess(text(message), broadcast);
         *///?} else {
         source.sendSuccess(() -> text(message), broadcast);
@@ -974,7 +976,7 @@ public final class AntiCrashCommand {
     }
 
     private static void error(CommandSourceStack source, String message) {
-        AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
+        AntiCrashController controller = AntiCrashMod.controller();
         if (controller != null && fromConsole(source)) {
             controller.logger().commandReply(message, true);
             return;
@@ -984,15 +986,14 @@ public final class AntiCrashCommand {
     }
 
     private static boolean fromConsole(CommandSourceStack source) {
-        com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin accessor =
-                (com.atsukimc.anticrash.mixin.ServerCommandSourceAccessorMixin) source;
+        ServerCommandSourceAccessorMixin accessor = (ServerCommandSourceAccessorMixin) source;
         return accessor.anticrash$getOutput() == source.getServer()
                 && !accessor.anticrash$isSilent();
     }
 
     private static Component text(String message) {
-        AntiCrashController controller = com.atsukimc.anticrash.AntiCrashMod.controller();
-        return com.atsukimc.anticrash.logging.ChatStyle.text(
+        AntiCrashController controller = AntiCrashMod.controller();
+        return ChatStyle.text(
                 message, null, controller == null || controller.config().logging.chatColor);
     }
 }

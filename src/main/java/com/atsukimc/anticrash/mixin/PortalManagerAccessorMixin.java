@@ -1,4 +1,4 @@
-//? if (>=1.21 && <=26.3) {
+//? if >=1.21 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.world.level.block.Portal;
@@ -9,7 +9,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PortalProcessor.class)
 public interface PortalManagerAccessorMixin {
-
     @Accessor("portal")
     Portal anticrash$getPortal();
 

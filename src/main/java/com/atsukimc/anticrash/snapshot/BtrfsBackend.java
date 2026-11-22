@@ -9,6 +9,7 @@ import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.time.Duration;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.stream.Stream;
 
@@ -29,16 +30,13 @@ public final class BtrfsBackend implements SnapshotBackend {
     public boolean isSupported(Path liveWorld) {
         if (!Files.isDirectory(liveWorld, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(liveWorld)
-                || !System.getProperty("os.name", "")
-                        .toLowerCase(java.util.Locale.ROOT)
-                        .contains("linux")) return false;
+                || !System.getProperty("os.name", "").toLowerCase(Locale.ROOT).contains("linux"))
+            return false;
         Path command = commandPath();
         if (command == null) return false;
         try {
-            if (!Files.getFileStore(liveWorld)
-                    .type()
-                    .toLowerCase(java.util.Locale.ROOT)
-                    .contains("btrfs")) return false;
+            if (!Files.getFileStore(liveWorld).type().toLowerCase(Locale.ROOT).contains("btrfs"))
+                return false;
             ExternalCommand.Result result =
                     ExternalCommand.run(
                             Duration.ofSeconds(10),
@@ -113,10 +111,8 @@ public final class BtrfsBackend implements SnapshotBackend {
                 || !Files.isDirectory(path, LinkOption.NOFOLLOW_LINKS)
                 || Files.isSymbolicLink(path)) return false;
         try {
-            if (!Files.getFileStore(path)
-                    .type()
-                    .toLowerCase(java.util.Locale.ROOT)
-                    .contains("btrfs")) return false;
+            if (!Files.getFileStore(path).type().toLowerCase(Locale.ROOT).contains("btrfs"))
+                return false;
             Object inode = Files.getAttribute(path, "unix:ino", LinkOption.NOFOLLOW_LINKS);
             if (!(inode instanceof Number number) || number.longValue() != 256L) return false;
         } catch (UnsupportedOperationException exception) {

@@ -1,4 +1,4 @@
-//? if (>=1.20 && <=26.3) {
+//? if >=1.20 {
 package com.atsukimc.anticrash.mixin;
 
 import net.minecraft.server.level.ServerLevel;
@@ -20,7 +20,7 @@ public abstract class VibrationListenerMutationMixin {
     @Shadow
     public abstract PositionSource getListenerSource();
 
-    //? if (>=1.20 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(
             method =
                     "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/world/level/gameevent/GameEvent;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
@@ -30,9 +30,8 @@ public abstract class VibrationListenerMutationMixin {
             GameEvent event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci)
-    *///?}
-    //? if (>=1.20.5 && <=26.3) {
+            CallbackInfoReturnable<Boolean> ci) {
+    *///?} else {
     @Inject(
             method =
                     "handleGameEvent(Lnet/minecraft/server/level/ServerLevel;Lnet/minecraft/core/Holder;Lnet/minecraft/world/level/gameevent/GameEvent$Context;Lnet/minecraft/world/phys/Vec3;)Z",
@@ -42,34 +41,31 @@ public abstract class VibrationListenerMutationMixin {
             net.minecraft.core.Holder<GameEvent> event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfoReturnable<Boolean> ci)
+            CallbackInfoReturnable<Boolean> ci) {
     //?}
-            {
         if (ci.getReturnValueZ())
             getListenerSource()
                     .getPosition(world)
                     .ifPresent(pos -> world.blockEntityChanged(BlockPos.containing(pos)));
     }
 
-    //? if (>=1.20 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@Inject(method = "forceScheduleVibration", at = @At("TAIL"))
     private void anticrash$dirtyForcedListen(
             ServerLevel world,
             GameEvent event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfo ci)
-    *///?}
-    //? if (>=1.20.5 && <=26.3) {
+            CallbackInfo ci) {
+    *///?} else {
     @Inject(method = "forceScheduleVibration", at = @At("TAIL"))
     private void anticrash$dirtyForcedListen(
             ServerLevel world,
             net.minecraft.core.Holder<GameEvent> event,
             GameEvent.Context emitter,
             Vec3 origin,
-            CallbackInfo ci)
+            CallbackInfo ci) {
     //?}
-            {
 
         getListenerSource()
                 .getPosition(world)

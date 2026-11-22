@@ -3,16 +3,21 @@ package com.atsukimc.anticrash.integration.carpet;
 import com.mojang.authlib.GameProfile;
 
 import java.util.Objects;
+import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.Executor;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 /**
  * Supplies the checkpoint identity to Carpet's name-only creation API.
  *
- * <p>Carpet 1.4.69 createFake calls server.getUserCache().findByName(name), then passes that
- * profile to the FakePlayer constructor and PlayerList.onPlayerConnect. Looking up today's cache
- * can select a different (online/offline) UUID from the checkpoint. The GameProfileCache mixin consults
- * this scope only for this cache, this name, and this thread. No cache maps or global
- * authentication settings are changed; Vanilla handles registration of the created player.
+ * <p>Carpet 1.4.69 createFake calls server.getProfileCache().get(name), then passes that profile to
+ * the FakePlayer constructor and PlayerList.placeNewPlayer. Looking up today's cache can select a
+ * different (online/offline) UUID from the checkpoint. The GameProfileCache mixin consults this
+ * scope only for this cache, this name, and this thread. No cache maps or global authentication
+ * settings are changed; Vanilla handles registration of the created player.
  */
 public final class FakePlayerProfileScope implements AutoCloseable {
     private static final ThreadLocal<FakePlayerProfileScope> ACTIVE = new ThreadLocal<>();
@@ -61,7 +66,7 @@ public final class FakePlayerProfileScope implements AutoCloseable {
                 : null;
     }
 
-    private static boolean savedCompletion(java.util.concurrent.CompletableFuture<?> future) {
+    private static boolean savedCompletion(CompletableFuture<?> future) {
         FakePlayerProfileScope scope = ACTIVE.get();
         if (scope == null
                 || scope.server == null
@@ -70,22 +75,18 @@ public final class FakePlayerProfileScope implements AutoCloseable {
                 || future.isCancelled()) return false;
         Object value = future.getNow(null);
         return value == scope.profile
-                || value instanceof java.util.Optional<?> optional
-                        && optional.orElse(null) == scope.profile;
+                || value instanceof Optional<?> optional && optional.orElse(null) == scope.profile;
     }
 
-    public static <T> java.util.concurrent.CompletableFuture<Void> acceptCreation(
-            java.util.concurrent.CompletableFuture<T> future,
-            java.util.function.Consumer<? super T> action) {
+    public static <T> CompletableFuture<Void> acceptCreation(
+            CompletableFuture<T> future, Consumer<? super T> action) {
         return savedCompletion(future)
                 ? acceptCreation(future, action, Runnable::run)
                 : future.thenAccept(action);
     }
 
-    public static <T> java.util.concurrent.CompletableFuture<Void> acceptCreation(
-            java.util.concurrent.CompletableFuture<T> future,
-            java.util.function.Consumer<? super T> action,
-            java.util.concurrent.Executor executor) {
+    public static <T> CompletableFuture<Void> acceptCreation(
+            CompletableFuture<T> future, Consumer<? super T> action, Executor executor) {
         if (savedCompletion(future)) {
             var completed = future.thenAccept(action);
             completed.getNow(null); // Already completed, never wait for network/server work.
@@ -100,10 +101,10 @@ public final class FakePlayerProfileScope implements AutoCloseable {
      * thread, so validation/apply cannot race player registration. Unrelated/incomplete futures
      * retain Carpet's executor. No join, waiting, global executor or cache replacement.
      */
-    public static <T> java.util.concurrent.CompletableFuture<T> completeCreation(
-            java.util.concurrent.CompletableFuture<T> future,
-            java.util.function.BiConsumer<? super T, ? super Throwable> action,
-            java.util.concurrent.Executor executor) {
+    public static <T> CompletableFuture<T> completeCreation(
+            CompletableFuture<T> future,
+            BiConsumer<? super T, ? super Throwable> action,
+            Executor executor) {
         if (savedCompletion(future)) {
             var completed = future.whenComplete(action);
             completed.getNow(null); // Already done: propagate factory errors, never wait.

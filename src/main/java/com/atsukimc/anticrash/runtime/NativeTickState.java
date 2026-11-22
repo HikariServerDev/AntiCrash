@@ -1,4 +1,4 @@
-//? if (>=1.20.3 && <=26.3) {
+//? if >=1.20.3 {
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.NativeTickManagerAccessor;
@@ -17,7 +17,6 @@ public final class NativeTickState {
     public boolean sprinting;
 
     public static NativeTickState capture(MinecraftServer server) {
-
         ServerTickRateManager manager = server.tickRateManager();
 
         NativeTickState state = new NativeTickState();

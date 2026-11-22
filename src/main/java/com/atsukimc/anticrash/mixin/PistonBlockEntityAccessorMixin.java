@@ -7,7 +7,6 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(PistonMovingBlockEntity.class)
 public interface PistonBlockEntityAccessorMixin {
-
     @Accessor("progress")
     float anticrash$getProgress();
 

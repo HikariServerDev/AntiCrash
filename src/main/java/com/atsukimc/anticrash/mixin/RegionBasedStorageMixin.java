@@ -22,7 +22,6 @@ public abstract class RegionBasedStorageMixin {
 
     @Inject(method = "write", at = @At("HEAD"))
     private void anticrash$recordWrite(ChunkPos pos, CompoundTag nbt, CallbackInfo callbackInfo) {
-
         LiveFileTracker.global().recordRegionWrite(folder, pos);
     }
 }

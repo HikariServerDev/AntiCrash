@@ -18,7 +18,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
  */
 @Mixin(HopperBlockEntity.class)
 public abstract class HopperBlockEntityMixin {
-
     @Inject(method = "pushItemsTick", at = @At("HEAD"))
     private static void anticrash$markCooldownDirty(
             Level world,

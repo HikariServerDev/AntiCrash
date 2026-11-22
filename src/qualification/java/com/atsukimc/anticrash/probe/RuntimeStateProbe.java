@@ -1,4 +1,4 @@
-//? if (>=1.18 && <=1.21.11) {
+//? if <=1.21.11 {
 /*package com.atsukimc.anticrash.probe;
 
 import com.atsukimc.anticrash.AntiCrashController;
@@ -18,31 +18,50 @@ import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 import com.google.gson.Gson;
 
+import io.netty.buffer.Unpooled;
+
 import net.fabricmc.api.ModInitializer;
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerTickEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.world.level.block.state.BlockState;
+import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.network.FriendlyByteBuf;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.TheEndGatewayBlockEntity;
-import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
-import net.minecraft.world.entity.Entity;
-import net.minecraft.nbt.CompoundTag;
-import net.minecraft.server.MinecraftServer;
-import net.minecraft.server.level.ServerPlayer;
-import net.minecraft.server.level.ServerLevel;
-import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.TickingBlockEntity;
+import net.minecraft.world.level.block.piston.MovingPistonBlock;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.chunk.LevelChunk;
 
+import org.spongepowered.asm.mixin.MixinEnvironment;
+
 import java.io.IOException;
+import java.lang.reflect.Method;
+import java.lang.reflect.Proxy;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
+import java.util.TreeSet;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /^*
  * Test-only. Runs a script of commands at exact game ticks and writes the simulation state at the
@@ -83,15 +102,14 @@ public final class RuntimeStateProbe implements ModInitializer {
     private long lastTime = Long.MIN_VALUE;
     private String lastDump = "";
     private boolean audited;
-    //? if (>=1.18 && <=1.21.10) {
+    //? if <=1.21.10 {
     /^private static final net.minecraft.resources.ResourceLocation ECHO_CHANNEL =
-    ^///?}
-    //? if 1.21.11 {
-    /^private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
-    ^///?}
             VersionIds.of("anticrash_probe", "echo");
-    private final java.util.concurrent.atomic.AtomicInteger echoReceived =
-            new java.util.concurrent.atomic.AtomicInteger();
+    ^///?} else {
+    private static final net.minecraft.resources.Identifier ECHO_CHANNEL =
+            VersionIds.of("anticrash_probe", "echo");
+    //?}
+    private final AtomicInteger echoReceived = new AtomicInteger();
     private int payloadPhase;
     private int payloadWait;
     private String payloadFrozenResult;
@@ -100,29 +118,25 @@ public final class RuntimeStateProbe implements ModInitializer {
     // This preserves channel data and lets installed mods decode their own payloads.
     //? if <=1.20.1 {
     /^private static net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket payload(
+            net.minecraft.resources.ResourceLocation channel, FriendlyByteBuf data) {
+    ^///?} else if <=1.21.10 {
+    /^private static net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket payload(
+            net.minecraft.resources.ResourceLocation channel, FriendlyByteBuf data) {
     ^///?} else {
     private static net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket payload(
+            net.minecraft.resources.Identifier channel, FriendlyByteBuf data) {
     //?}
-            //? if (>=1.18 && <=1.21.10) {
-            /^net.minecraft.resources.ResourceLocation channel,
-            net.minecraft.network.FriendlyByteBuf data) {
-            ^///?}
-            //? if 1.21.11 {
-            /^net.minecraft.resources.Identifier channel,
-            net.minecraft.network.FriendlyByteBuf data) {
-            ^///?}
         //? if <=1.20.1 {
         /^return new net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket(
                 channel, data);
         ^///?} else {
-        var wire = new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+        var wire = new FriendlyByteBuf(Unpooled.buffer());
         try {
-            //? if (>=1.20.2 && <=1.21.10) {
+            //? if <=1.21.10 {
             /^wire.writeResourceLocation(channel);
-            ^///?}
-            //? if 1.21.11 {
-            /^wire.writeIdentifier(channel);
-            ^///?}
+            ^///?} else {
+            wire.writeIdentifier(channel);
+            //?}
             wire.writeBytes(data, data.readerIndex(), data.readableBytes());
             //? if <=1.20.4 {
             /^return new net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket(wire);
@@ -177,7 +191,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                     Class.forName(
                             "net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking$PlayChannelHandler");
             Object handler =
-                    java.lang.reflect.Proxy.newProxyInstance(
+                    Proxy.newProxyInstance(
                             handlerType.getClassLoader(),
                             new Class<?>[] {handlerType},
                             (proxy, method, arguments) -> {
@@ -187,7 +201,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                                         ? Boolean.FALSE
                                         : null;
                             });
-            for (java.lang.reflect.Method method : networking.getMethods()) {
+            for (Method method : networking.getMethods()) {
                 if (method.getName().equals("registerGlobalReceiver")) {
                     method.invoke(null, ECHO_CHANNEL, handler);
                     return;
@@ -198,9 +212,9 @@ public final class RuntimeStateProbe implements ModInitializer {
         }
     }
 
-    private static boolean canSend(net.minecraft.server.level.ServerPlayer player) {
+    private static boolean canSend(ServerPlayer player) {
         try {
-            for (java.lang.reflect.Method method :
+            for (Method method :
                     Class.forName("net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking")
                             .getMethods()) {
                 if (method.getName().equals("canSend")
@@ -223,21 +237,16 @@ public final class RuntimeStateProbe implements ModInitializer {
     private void payloadTest(MinecraftServer server) throws Exception {
         AntiCrashController controller = AntiCrashMod.controller();
         if (controller == null || server.getPlayerList().getPlayers().isEmpty()) return;
-        net.minecraft.server.level.ServerPlayer player = server.getPlayerList().getPlayers().get(0);
+        ServerPlayer player = server.getPlayerList().getPlayers().get(0);
         Class<?> carpet = Class.forName("carpet.network.ServerNetworkHandler");
-        java.lang.reflect.Method valid =
-                carpet.getMethod(
-                        "isValidCarpetPlayer", net.minecraft.server.level.ServerPlayer.class);
+        Method valid = carpet.getMethod("isValidCarpetPlayer", ServerPlayer.class);
         if (payloadPhase == 0) {
             if (!controller.isRecoveryFrozen()
                     || !controller.statusSnapshot().state().equals("READY_TO_START")) return;
-            net.minecraft.network.FriendlyByteBuf register =
-                    new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
-            register.writeBytes(
-                    ECHO_CHANNEL.toString().getBytes(java.nio.charset.StandardCharsets.US_ASCII));
+            FriendlyByteBuf register = new FriendlyByteBuf(Unpooled.buffer());
+            register.writeBytes(ECHO_CHANNEL.toString().getBytes(StandardCharsets.US_ASCII));
             Class<?> client = Class.forName("carpet.network.CarpetClient");
-            net.minecraft.network.FriendlyByteBuf hello =
-                    new net.minecraft.network.FriendlyByteBuf(io.netty.buffer.Unpooled.buffer());
+            FriendlyByteBuf hello = new FriendlyByteBuf(Unpooled.buffer());
             hello.writeVarInt(client.getField("HELLO").getInt(null));
             hello.writeUtf(
                     String.valueOf(
@@ -248,24 +257,22 @@ public final class RuntimeStateProbe implements ModInitializer {
             var packets =
                     List.of(
                             payload(VersionIds.of("minecraft", "register"), register),
-                            payload(
-                                    //? if (>=1.18 && <=1.21.10) {
-                                    /^(net.minecraft.resources.ResourceLocation)
-                                    ^///?}
-                                    //? if 1.21.11 {
-                                    /^(net.minecraft.resources.Identifier)
-                                    ^///?}
+                            //? if <=1.21.10 {
+                            /^payload(
+                                    (net.minecraft.resources.ResourceLocation)
                                             client.getField("CARPET_CHANNEL").get(null),
                                     hello),
+                            ^///?} else {
                             payload(
-                                    ECHO_CHANNEL,
-                                    new net.minecraft.network.FriendlyByteBuf(
-                                            io.netty.buffer.Unpooled.buffer())),
+                                    (net.minecraft.resources.Identifier)
+                                            client.getField("CARPET_CHANNEL").get(null),
+                                    hello),
+                            //?}
+                            payload(ECHO_CHANNEL, new FriendlyByteBuf(Unpooled.buffer())),
                             // No Fabric receiver: exercises a mod's own packet-handler hook.
                             payload(
                                     VersionIds.of("anticrash_probe", "own_hook"),
-                                    new net.minecraft.network.FriendlyByteBuf(
-                                            io.netty.buffer.Unpooled.buffer())));
+                                    new FriendlyByteBuf(Unpooled.buffer())));
 
             // As a real client's packets arrive: on a network thread, not on the server thread.
             Thread network =
@@ -327,21 +334,20 @@ public final class RuntimeStateProbe implements ModInitializer {
         registerEchoReceiver();
         // Simulates a start that fails after every mod initialised but before the world is loaded
         // (another mod refusing to start, the port being taken).
-        net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents.SERVER_STARTING.register(
-                server -> {
-                    Path flag =
-                            net.fabricmc.loader.api.FabricLoader.getInstance()
-                                    .getGameDir()
-                                    .resolve("probe")
-                                    .resolve("halt-before-world");
-                    if (Files.exists(flag)) {
-                        try {
-                            Files.delete(flag);
-                        } catch (java.io.IOException ignored) {
-                        }
-                        Runtime.getRuntime().halt(3);
-                    }
-                });
+        ServerLifecycleEvents.SERVER_STARTING.register(server -> {
+            Path flag =
+                    FabricLoader.getInstance()
+                            .getGameDir()
+                            .resolve("probe")
+                            .resolve("halt-before-world");
+            if (Files.exists(flag)) {
+                try {
+                    Files.delete(flag);
+                } catch (IOException ignored) {
+                }
+                Runtime.getRuntime().halt(3);
+            }
+        });
     }
 
     private void endTick(MinecraftServer server) {
@@ -362,7 +368,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                     Files.move(
                             verifyBeforeStart,
                             directory.resolve("verify-before-start.done"),
-                            java.nio.file.StandardCopyOption.REPLACE_EXISTING);
+                            StandardCopyOption.REPLACE_EXISTING);
                 }
             }
             long time = server.overworld().getGameTime();
@@ -370,7 +376,7 @@ public final class RuntimeStateProbe implements ModInitializer {
             if (!audited && Files.exists(directory.resolve("audit"))) {
                 audited = true;
                 // Applies every mixin of every loaded configuration now and throws on any failure.
-                org.spongepowered.asm.mixin.MixinEnvironment.getCurrentEnvironment().audit();
+                MixinEnvironment.getCurrentEnvironment().audit();
                 Files.writeString(directory.resolve("audit-done.txt"), "ok");
             }
             if (steps == null) return;
@@ -403,9 +409,7 @@ public final class RuntimeStateProbe implements ModInitializer {
             try {
                 Files.writeString(
                         directory.resolve("probe-error.txt"),
-                        String.valueOf(failure)
-                                + "\n"
-                                + java.util.Arrays.toString(failure.getStackTrace()));
+                        String.valueOf(failure) + "\n" + Arrays.toString(failure.getStackTrace()));
             } catch (IOException ignored) {
                 // nothing else to do
             }
@@ -468,32 +472,27 @@ public final class RuntimeStateProbe implements ModInitializer {
                             + ","
                             + jvm.maxMemory()
                             + "\n",
-                    java.nio.file.StandardOpenOption.CREATE,
-                    java.nio.file.StandardOpenOption.APPEND);
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.APPEND);
         }
         if (server.getTickCount() < incidentNextTick || !status.state().equals("RUNNING")) return;
         for (int n = 0; n < 110; n++) {
-            // 1.18.2 MovingPistonBlock#createBlockEntity returns null: /setblock cannot
+            // 1.18.2 MovingPistonBlock#newBlockEntity returns null: /setblock cannot
             // synthesize moving-piston BEs. Use its verified public semantic constructor instead.
             BlockPos pos = new BlockPos(n * 2, 8, 16);
             BlockState state =
-                    net.minecraft.world.level.block.Blocks.MOVING_PISTON
+                    Blocks.MOVING_PISTON
                             .defaultBlockState()
-                            .setValue(
-                                    net.minecraft.world.level.block.piston.MovingPistonBlock.FACING,
-                                    net.minecraft.core.Direction.EAST);
-            server.overworld()
-                    .setBlock(
-                            pos, net.minecraft.world.level.block.Blocks.AIR.defaultBlockState(), 2);
+                            .setValue(MovingPistonBlock.FACING, Direction.EAST);
+            server.overworld().setBlock(pos, Blocks.AIR.defaultBlockState(), 2);
             server.overworld().setBlock(pos, state, 2);
             server.overworld()
                     .setBlockEntity(
                             new PistonMovingBlockEntity(
                                     pos,
                                     state,
-                                    net.minecraft.world.level.block.Blocks.STONE
-                                            .defaultBlockState(),
-                                    net.minecraft.core.Direction.EAST,
+                                    Blocks.STONE.defaultBlockState(),
+                                    Direction.EAST,
                                     true,
                                     false));
         }
@@ -650,7 +649,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                 .append(accessor.anticrash$getNextTickOrder())
                 .append('\n');
         List<String> blockEntities = new ArrayList<>();
-        java.util.Set<Long> chunks = new java.util.TreeSet<>();
+        Set<Long> chunks = new TreeSet<>();
         for (Box box : boxes) {
             if (!box.dimension.equals(dimension) || !box.blocks) continue;
             BlockPos.MutableBlockPos pos = new BlockPos.MutableBlockPos();
@@ -735,7 +734,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                 }
             }
         }
-        java.util.Collections.sort(blockEntities);
+        Collections.sort(blockEntities);
         for (String line : blockEntities)
             out.append("[be] ")
                     .append(dimension)
@@ -792,15 +791,14 @@ public final class RuntimeStateProbe implements ModInitializer {
                     nbt.remove("UUID");
                     entities.add(
                             id + ' ' + where + " regen=" + entity.invulnerableTime + ' ' + nbt);
-                    // Entity#age is restored only for items and experience orbs (see the audit);
-                    // kept on
-                    // its own line so that known difference cannot hide any other.
+                    // Entity#tickCount is restored only for items and experience orbs (see the
+                    // audit); kept on its own line so that known difference cannot hide any other.
                     ages.add(id + ' ' + where + " age=" + entity.tickCount);
                 });
-        java.util.Collections.sort(entities);
+        Collections.sort(entities);
         for (String line : entities)
             out.append("[entity] ").append(dimension).append(' ').append(line).append('\n');
-        java.util.Collections.sort(ages);
+        Collections.sort(ages);
         for (String line : ages)
             out.append("[age] ").append(dimension).append(' ').append(line).append('\n');
     }
@@ -893,7 +891,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                             + " remaining="
                             + ticket.remainingTicks);
         }
-        java.util.Collections.sort(tickets);
+        Collections.sort(tickets);
         for (String ticket : tickets) out.append("[ticket] ").append(ticket).append('\n');
         for (ChunkStateSnapshot chunks : capsule.chunks) {
             out.append("[domain] ")
@@ -911,7 +909,7 @@ public final class RuntimeStateProbe implements ModInitializer {
                     .append('\n');
             List<String> rows = new ArrayList<>();
             for (ChunkStateSnapshot.ChunkReadiness row : chunks.domain) rows.add(row.canonical());
-            java.util.Collections.sort(rows);
+            Collections.sort(rows);
             for (String row : rows)
                 out.append("[chunk] ")
                         .append(chunks.dimension)

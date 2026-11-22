@@ -1,5 +1,6 @@
 package com.atsukimc.anticrash.runtime;
 
+import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.integration.carpet.TickSpeedSnapshot;
 import com.atsukimc.anticrash.util.Hashing;
@@ -236,7 +237,7 @@ public final class RuntimeFingerprint {
         return lines;
     }
 
-    //? if (>=26.1 && <=26.3) {
+    //? if >=26.1 {
     public static List<String> worldLines(RuntimeCapsule capsule) {
         List<String> lines = worldLines(capsule.worlds);
 
@@ -251,19 +252,17 @@ public final class RuntimeFingerprint {
     //?}
 
     /**
-     * Records the capability boundary for World.random. Minecraft 1.18.2 exposes this as a
+     * Records the capability boundary for Level.random. Minecraft 1.18.2 exposes this as a
      * java.util.Random without a safe semantic state accessor; the line is therefore a
      * deterministic evidence marker, not a claim that the random seed was restored.
      */
     public static List<String> worldRngLines() {
-
-        //? if (>=1.18 && <=1.18.2) {
+        //? if <=1.18.2 {
         /*return List.of(
                 "implementation=java.util.Random",
                 "state=UNSUPPORTED",
                 "reason=internal-state-not-exposed-by-minecraft-1.18.2");
-        *///?}
-        //? if (>=1.19 && <=26.3) {
+        *///?} else {
         return List.of(
                 "implementation=net.minecraft.util.math.random.Random",
                 "state=UNSUPPORTED",
@@ -321,19 +320,18 @@ public final class RuntimeFingerprint {
         if (server == null) return lines;
 
         for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-            if (com.atsukimc.anticrash.integration.carpet.CarpetIntegration.isFakePlayer(player)) {
+            if (CarpetIntegration.isFakePlayer(player)) {
                 continue;
             }
 
-            //? if (>=1.18 && <=1.21.8) {
+            //? if <=1.21.8 {
             /*lines.add(
                     player.getStringUUID()
                             + "|"
                             + player.getGameProfile().getName()
                             + "|"
                             + VersionIds.dimension(player));
-            *///?}
-            //? if (>=1.21.9 && <=26.3) {
+            *///?} else {
             lines.add(
                     player.getStringUUID()
                             + "|"

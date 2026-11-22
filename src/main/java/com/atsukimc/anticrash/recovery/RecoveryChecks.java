@@ -8,6 +8,8 @@ import com.atsukimc.anticrash.snapshot.CheckpointManifest;
 
 import java.io.IOException;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.Objects;
 import java.util.Set;
 
 /** Pure pre-start policy; all versions keep the same fail-closed checks and messages. */
@@ -47,11 +49,10 @@ public final class RecoveryChecks {
                         != (capsule.checkpointPlayersCaptured
                                 ? capsule.checkpointPlayers.size()
                                 : 0)
-                || !java.util.Objects.equals(
+                || !Objects.equals(
                         manifest.checkpointPlayerHash,
                         capsule.expectedFingerprints.get(EquivalenceCategory.PLAYERS))
-                || !java.util.Objects.equals(
-                        manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
+                || !Objects.equals(manifest.carpetCaptureStatus, capsule.carpetCaptureStatus)
                 || !new HashSet<>(manifest.unsupportedRuntimeState)
                         .equals(new HashSet<>(capsule.unsupportedRuntimeState))) {
             throw new IOException("STRICT checkpoint manifest runtime counters do not match");
@@ -59,7 +60,7 @@ public final class RecoveryChecks {
     }
 
     public static Set<String> allowedUnsupportedCategories(AntiCrashConfig.Strict strict) {
-        Set<String> allowed = new java.util.LinkedHashSet<>();
+        Set<String> allowed = new LinkedHashSet<>();
         if (strict.allowUnsupportedRuntimeState) {
             allowed.add(EquivalenceCategory.WORLD_RNG);
             if (!strict.requireEntityOrder) allowed.add(EquivalenceCategory.ENTITIES);

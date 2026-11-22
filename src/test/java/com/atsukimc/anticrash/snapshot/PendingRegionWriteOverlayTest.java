@@ -25,6 +25,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -38,7 +39,6 @@ class PendingRegionWriteOverlayTest {
     }
 
     private static CompoundTag chunk(String marker) {
-
         CompoundTag nbt = new CompoundTag();
 
         nbt.putString("marker", marker);
@@ -49,10 +49,9 @@ class PendingRegionWriteOverlayTest {
     private static void write(Path region, ChunkPos pos, CompoundTag nbt) throws IOException {
         Files.createDirectories(region.getParent());
 
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*RegionFile file = new RegionFile(region, region.getParent(), false);
-        *///?}
-        //? if (>=1.20.5 && <=26.3) {
+        *///?} else {
         RegionFile file =
                 new RegionFile(
                         com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
@@ -62,19 +61,11 @@ class PendingRegionWriteOverlayTest {
         //?}
 
         try (DataOutputStream output = file.getChunkDataOutputStream(pos)) {
-
-            //? if (>=1.18 && <=1.21.11) {
-            /*//? if (>=1.18 && <=1.20.1) {
-            /^NbtIo.write(nbt, output);
-            ^///?}
-            //? if 1.20.2 {
-            /^NbtIo.writeUnnamedTag(nbt, output);
-            ^///?}
-            //? if (>=1.20.3 && <=1.21.11) {
-            /^NbtIo.writeUnnamedTagWithFallback(nbt, output);
-            ^///?}
-            *///?}
-            //? if (>=26.1 && <=26.3) {
+            //? if <=1.20.1 {
+            /*NbtIo.write(nbt, output);
+            *///?} else if <=1.20.2 {
+            /*NbtIo.writeUnnamedTag(nbt, output);
+            *///?} else {
             NbtIo.writeUnnamedTagWithFallback(nbt, output);
             //?}
 
@@ -84,11 +75,9 @@ class PendingRegionWriteOverlayTest {
     }
 
     private static CompoundTag read(Path region, ChunkPos pos) throws IOException {
-
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*RegionFile file = new RegionFile(region, region.getParent(), false);
-        *///?}
-        //? if (>=1.20.5 && <=26.3) {
+        *///?} else {
         RegionFile file =
                 new RegionFile(
                         com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
@@ -98,11 +87,9 @@ class PendingRegionWriteOverlayTest {
         //?}
 
         try (DataInputStream input = file.getChunkDataInputStream(pos)) {
-
-            //? if (>=1.18 && <=1.20.1) {
+            //? if <=1.20.1 {
             /*return input == null ? null : NbtIo.read(input);
-            *///?}
-            //? if (>=1.20.2 && <=26.3) {
+            *///?} else {
             return input == null
                     ? null
                     : NbtIo.read(input, net.minecraft.nbt.NbtAccounter.create(16 * 1024 * 1024));
@@ -175,7 +162,7 @@ class PendingRegionWriteOverlayTest {
                         read(secondWorld.resolve("region/r.1.0.mca"), new ChunkPos(40, 0)),
                         "marker"));
 
-        assertTrue(java.util.Arrays.equals(liveBefore, Files.readAllBytes(region)));
+        assertTrue(Arrays.equals(liveBefore, Files.readAllBytes(region)));
         assertFalse(Files.exists(live.resolve("region/r.1.0.mca")));
 
         Map<String, SnapshotFile> files = index(result);

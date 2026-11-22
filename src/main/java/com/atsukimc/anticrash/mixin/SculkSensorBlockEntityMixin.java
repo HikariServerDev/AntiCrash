@@ -1,4 +1,4 @@
-//? if (>=1.18 && <=1.18.2) {
+//? if <=1.18.2 {
 /*package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;

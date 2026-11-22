@@ -13,7 +13,7 @@ class ScheduledTickSnapshotTest {
     void runtimeCapsuleJsonPreservesEveryOrderingFieldExactly() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 

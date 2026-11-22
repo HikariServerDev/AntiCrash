@@ -1,4 +1,4 @@
-//? if (>=26.2 && <=26.3) {
+//? if >=26.2 {
 package com.atsukimc.anticrash.runtime;
 
 import static org.junit.jupiter.api.Assertions.*;

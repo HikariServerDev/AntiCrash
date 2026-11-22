@@ -1,4 +1,4 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.CampfireRecipeState;
@@ -7,7 +7,7 @@ import com.atsukimc.anticrash.runtime.RecipeBoundTicker;
 import net.minecraft.world.level.block.entity.*;
 import net.minecraft.world.level.chunk.*;
 
-//? if (>=26.1 && <=26.3) {
+//? if >=26.1 {
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntityTicker;
 import net.minecraft.world.level.block.entity.CampfireBlockEntity;

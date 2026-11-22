@@ -7,6 +7,7 @@ import com.atsukimc.anticrash.util.AtomicFiles;
 import com.atsukimc.anticrash.util.Hashing;
 import com.atsukimc.anticrash.util.PathSafety;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.file.Files;
@@ -16,6 +17,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -34,10 +36,9 @@ public final class CheckpointStore {
         QUARANTINED
     }
 
-    private final Map<String, CandidateState> candidateStates =
-            new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, CandidateState> candidateStates = new ConcurrentHashMap<>();
     private final Map<String, Integer> pins = new HashMap<>();
-    private final Map<String, String> quarantined = new java.util.concurrent.ConcurrentHashMap<>();
+    private final Map<String, String> quarantined = new ConcurrentHashMap<>();
 
     public CheckpointStore(Path directory, AntiCrashConfig config, AntiCrashLogger logger)
             throws IOException {
@@ -399,8 +400,7 @@ public final class CheckpointStore {
                 if (line.isBlank()) continue;
                 int separator = line.indexOf("  ");
                 if (separator <= 0) throw new IOException("Malformed checkpoint lineage checksum");
-                String digest =
-                        line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
+                String digest = line.substring(0, separator).trim().toLowerCase(Locale.ROOT);
                 String relative = line.substring(separator + 2).trim().replace('\\', '/');
                 if (!digest.matches("[0-9a-f]{64}"))
                     throw new IOException("Malformed checkpoint lineage digest");
@@ -458,7 +458,7 @@ public final class CheckpointStore {
     }
 
     private final Object verificationLock = new Object();
-    private final Map<String, Authenticated> authenticated = new java.util.LinkedHashMap<>();
+    private final Map<String, Authenticated> authenticated = new LinkedHashMap<>();
 
     private record Authenticated(CheckpointManifest manifest, Map<String, FileFacts> revisions) {
         static Authenticated capture(Path root, CheckpointManifest manifest) throws IOException {
@@ -600,7 +600,7 @@ public final class CheckpointStore {
                                         linkCount(file)));
                     }
                 }
-                verifiedDigests.put(relative, digest.toLowerCase(java.util.Locale.ROOT));
+                verifiedDigests.put(relative, digest.toLowerCase(Locale.ROOT));
                 if (!relative.equals("manifest.json"))
                     verifiedPayloadLines.add(digest + "  " + relative);
             }
@@ -685,8 +685,7 @@ public final class CheckpointStore {
                 if (line.isBlank()) continue;
                 int separator = line.indexOf("  ");
                 if (separator <= 0) throw new IOException("Malformed checkpoint recovery checksum");
-                String digest =
-                        line.substring(0, separator).trim().toLowerCase(java.util.Locale.ROOT);
+                String digest = line.substring(0, separator).trim().toLowerCase(Locale.ROOT);
                 String relative = line.substring(separator + 2).trim().replace('\\', '/');
                 if (!digest.matches("[0-9a-f]{64}")
                         || relative.equals("READY")
@@ -964,7 +963,7 @@ public final class CheckpointStore {
         return Hashing.sha256(file);
     }
 
-    private static String readChecksumLine(java.io.BufferedReader reader) throws IOException {
+    private static String readChecksumLine(BufferedReader reader) throws IOException {
         StringBuilder line = new StringBuilder(128);
         int character;
         while ((character = reader.read()) != -1) {
@@ -1419,7 +1418,7 @@ public final class CheckpointStore {
 
     private String durabilityMode() {
         String mode = config.checkpoint.durabilityMode;
-        return mode == null ? "SAFE" : mode.trim().toUpperCase(java.util.Locale.ROOT);
+        return mode == null ? "SAFE" : mode.trim().toUpperCase(Locale.ROOT);
     }
 
     /** Throttles only background durability work; it is never used during the logical cut. */

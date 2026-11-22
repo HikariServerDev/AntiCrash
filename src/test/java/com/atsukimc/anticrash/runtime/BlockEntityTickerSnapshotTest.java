@@ -10,9 +10,7 @@ import net.minecraft.world.level.block.entity.TickingBlockEntity;
 import org.junit.jupiter.api.Test;
 
 class BlockEntityTickerSnapshotTest {
-
     private static TickingBlockEntity ticker(boolean removed) {
-
         return new TickingBlockEntity() {
             @Override
             public void tick() {}
@@ -24,7 +22,6 @@ class BlockEntityTickerSnapshotTest {
 
             @Override
             public BlockPos getPos() {
-
                 return BlockPos.ZERO;
             }
 
@@ -36,7 +33,7 @@ class BlockEntityTickerSnapshotTest {
     }
 
     /**
-     * Two block entities removed in one tick leave two identical empty tickers in the World list
+     * Two block entities removed in one tick leave two identical empty tickers in the Level list
      * until the next pass drops them. They never run again and must not reach the capsule, whose
      * validator rejects the duplicate and used to fail the whole checkpoint.
      */

@@ -1,7 +1,6 @@
 package com.atsukimc.anticrash.snapshot;
 
 import net.minecraft.nbt.CompoundTag;
-
 import net.minecraft.nbt.NbtIo;
 
 import java.io.DataOutputStream;
@@ -58,19 +57,11 @@ public final class EntityChunkWriteDeduplicator {
             try (DataOutputStream out =
                     new DataOutputStream(
                             new DigestOutputStream(OutputStream.nullOutputStream(), sha))) {
-
-                //? if (>=1.18 && <=1.21.11) {
-                /*//? if (>=1.18 && <=1.20.1) {
-                /^NbtIo.write(nbt, out);
-                ^///?}
-                //? if 1.20.2 {
-                /^NbtIo.writeUnnamedTag(nbt, out);
-                ^///?}
-                //? if (>=1.20.3 && <=1.21.11) {
-                /^NbtIo.writeUnnamedTagWithFallback(nbt, out);
-                ^///?}
-                *///?}
-                //? if (>=26.1 && <=26.3) {
+                //? if <=1.20.1 {
+                /*NbtIo.write(nbt, out);
+                *///?} else if <=1.20.2 {
+                /*NbtIo.writeUnnamedTag(nbt, out);
+                *///?} else {
                 NbtIo.writeUnnamedTagWithFallback(nbt, out);
                 //?}
 

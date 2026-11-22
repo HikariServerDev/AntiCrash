@@ -3,29 +3,46 @@ package com.atsukimc.anticrash.integration.carpet;
 import com.atsukimc.anticrash.command.RecoveryCommandPolicy;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
+import com.atsukimc.anticrash.mixin.ItemCooldownEntryAccessorMixin;
+import com.atsukimc.anticrash.mixin.ItemCooldownManagerAccessorMixin;
+import com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin;
+import com.atsukimc.anticrash.mixin.PlayerEntityAccessorMixin;
 import com.atsukimc.anticrash.player.InventorySnapshot;
 import com.atsukimc.anticrash.player.NbtCodec;
+import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.runtime.VersionNbt;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.ReflectionUtil;
 import com.atsukimc.anticrash.util.VersionIds;
 import com.atsukimc.anticrash.util.VersionLevels;
 
+import net.fabricmc.loader.api.FabricLoader;
+import net.minecraft.nbt.CompoundTag;
+import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.effect.MobEffectInstance;
+import net.minecraft.world.entity.Entity;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.GameType;
+import net.minecraft.world.phys.Vec3;
 
 import java.io.IOException;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -171,7 +188,7 @@ public final class CarpetIntegration {
 
     public static String version() {
         try {
-            return net.fabricmc.loader.api.FabricLoader.getInstance()
+            return FabricLoader.getInstance()
                     .getModContainer("carpet")
                     .map(container -> container.getMetadata().getVersion().getFriendlyString())
                     .orElse(null);
@@ -273,7 +290,7 @@ public final class CarpetIntegration {
 
         data.uuid = player.getStringUUID();
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if <=1.21.8 {
         /*data.name = player.getGameProfile().getName();
         *///?} else {
         data.name = player.getGameProfile().name();
@@ -287,31 +304,26 @@ public final class CarpetIntegration {
             data.z = player.getZ();
         }
         if (config.fakePlayer.snapshot.rotation) {
-
             data.yaw = player.getViewYRot(0);
-
             data.pitch = player.getViewXRot(0);
         }
+        //? if <=1.21.4 {
+        /*if (config.fakePlayer.snapshot.gamemode)
+            data.gamemode = player.gameMode.getGameModeForPlayer().getName();
+        *///?} else {
         if (config.fakePlayer.snapshot.gamemode)
-
-            //? if (>=1.18 && <=1.21.4) {
-            /*data.gamemode = player.gameMode.getGameModeForPlayer().getName();
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
             data.gamemode = player.gameMode.getGameModeForPlayer().getSerializedName();
-            //?}
+        //?}
 
         if (config.fakePlayer.snapshot.flying) data.flying = player.getAbilities().flying;
         if (config.fakePlayer.snapshot.sneaking) data.sneaking = player.isShiftKeyDown();
 
         if (config.fakePlayer.snapshot.sprinting) data.sprinting = player.isSprinting();
         if (config.fakePlayer.snapshot.movement) {
-
             data.forward = player.zza;
-
             data.strafing = player.xxa;
 
-            //? if (>=1.21.2 && <=26.3) {
+            //? if >=1.21.2 {
             data.playerInput = PlayerInputCodec.capture(player.getLastClientInput());
             //?}
 
@@ -326,15 +338,13 @@ public final class CarpetIntegration {
                             config.fakePlayer.snapshot.selectedSlot);
         if (config.fakePlayer.snapshot.health) data.health = player.getHealth();
         if (config.fakePlayer.snapshot.hunger) {
-
             data.hunger = player.getFoodData().getFoodLevel();
 
             data.saturation = player.getFoodData().getSaturationLevel();
 
-            //? if (>=1.18 && <=1.21.1) {
+            //? if <=1.21.1 {
             /*data.exhaustion = player.getFoodData().getExhaustionLevel();
-            *///?}
-            //? if (>=1.21.2 && <=26.3) {
+            *///?} else {
             data.exhaustion =
                     ((com.atsukimc.anticrash.mixin.HungerManagerAccessorMixin) player.getFoodData())
                             .anticrash$getExhaustion();
@@ -346,9 +356,7 @@ public final class CarpetIntegration {
                 data.effectsNbt.add(NbtCodec.encode(VersionNbt.effect(effect)));
 
         if (player.isPassenger()) {
-
             data.vehicleUuid = player.getVehicle().getStringUUID();
-
             data.rootVehicleNbt = captureRootVehicle(player);
         }
         captureUseState(player, data);
@@ -421,7 +429,6 @@ public final class CarpetIntegration {
         }
         for (FakePlayerSnapshot data : snapshots) {
             try {
-
                 ServerPlayer player = find(server, data);
 
                 if (player == null && config.fakePlayer.autoRejoin) player = create(server, data);
@@ -437,12 +444,11 @@ public final class CarpetIntegration {
                                     + player.getStringUUID());
                 }
 
-                //? if (>=1.18 && <=1.21.8) {
-                /*if (!data.name.equals(player.getGameProfile().getName()))
+                //? if <=1.21.8 {
+                /*if (!data.name.equals(player.getGameProfile().getName())) {
                 *///?} else {
-                if (!data.name.equals(player.getGameProfile().name()))
+                if (!data.name.equals(player.getGameProfile().name())) {
                 //?}
-                {
                     throw new IllegalStateException(
                             "FakePlayer name does not match the checkpoint");
                 }
@@ -488,24 +494,24 @@ public final class CarpetIntegration {
         } catch (Exception ignored) {
         }
 
-        for (ServerPlayer player : server.getPlayerList().getPlayers())
-            //? if (>=1.18 && <=1.21.8) {
+        for (ServerPlayer player : server.getPlayerList().getPlayers()) {
+            //? if <=1.21.8 {
             /*if (isFakePlayer(player)
-                    && player.getGameProfile().getName().equalsIgnoreCase(data.name))
+                    && player.getGameProfile().getName().equalsIgnoreCase(data.name)) return player;
             *///?} else {
             if (isFakePlayer(player) && player.getGameProfile().name().equalsIgnoreCase(data.name))
-            //?}
                 return player;
+            //?}
+        }
         return null;
     }
 
     private static ServerPlayer create(MinecraftServer server, FakePlayerSnapshot data)
             throws IOException {
-
         if (!server.isSameThread())
             throw new IOException("FakePlayer restore must run on the server thread");
         UUID expectedUuid = UUID.fromString(data.uuid);
-        // PlayerList.onPlayerConnect may disconnect an existing UUID. Reject collisions before
+        // PlayerList.placeNewPlayer may disconnect an existing UUID. Reject collisions before
         // calling Carpet so restoring a bot cannot evict or overwrite a real player's session.
 
         if (server.getPlayerList().getPlayer(expectedUuid) != null
@@ -513,23 +519,21 @@ public final class CarpetIntegration {
             throw new IOException("FakePlayer checkpoint identity is already in use: " + data.name);
         }
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if <=1.21.8 {
         /*try (FakePlayerProfileScope ignored =
                 FakePlayerProfileScope.open(
-                        server.getProfileCache(), server, expectedUuid, data.name))
+                        server.getProfileCache(), server, expectedUuid, data.name)) {
         *///?} else {
         try (FakePlayerProfileScope ignored =
                 FakePlayerProfileScope.open(
-                        server.services().nameToIdCache(), server, expectedUuid, data.name))
+                        server.services().nameToIdCache(), server, expectedUuid, data.name)) {
         //?}
-        {
             return createWithCheckpointProfile(server, data);
         }
     }
 
     private static ServerPlayer createWithCheckpointProfile(
             MinecraftServer server, FakePlayerSnapshot data) throws IOException {
-
         ServerLevel world = findWorld(server, data.dimension);
 
         if (world == null) world = server.overworld();
@@ -559,7 +563,7 @@ public final class CarpetIntegration {
 
                         return find(server, data);
                     }
-            } catch (java.lang.reflect.InvocationTargetException failure) {
+            } catch (InvocationTargetException failure) {
                 throw new IOException("Carpet FakePlayer factory failed", failure.getCause());
             } catch (Exception | LinkageError ignored) {
             }
@@ -569,8 +573,7 @@ public final class CarpetIntegration {
         // Command fallback: only characters a Brigadier word accepts, so the name cannot alter it.
         if (data.name != null && data.name.matches("[A-Za-z0-9_.+-]{1,16}")) {
             try {
-
-                //? if (>=1.18 && <=1.19) {
+                //? if <=1.19 {
                 /*RecoveryCommandPolicy.runInternal(() ->
                         server.getCommands()
                                 .performCommand(
@@ -604,12 +607,11 @@ public final class CarpetIntegration {
             ServerLevel world,
             FakePlayerSnapshot data,
             GameType mode) {
-
         FakePlayerFactoryContract contract =
                 FakePlayerFactoryContract.resolve(
                         types,
                         MinecraftServer.class,
-                        net.minecraft.world.phys.Vec3.class,
+                        Vec3.class,
                         ResourceKey.class,
                         GameType.class);
 
@@ -637,7 +639,7 @@ public final class CarpetIntegration {
                             new Object[] {
                                 data.name,
                                 server,
-                                new net.minecraft.world.phys.Vec3(data.x, data.y, data.z),
+                                new Vec3(data.x, data.y, data.z),
                                 (double) data.yaw,
                                 (double) data.pitch,
                                 dimension,
@@ -654,8 +656,7 @@ public final class CarpetIntegration {
             FakePlayerSnapshot data,
             AntiCrashConfig config)
             throws IOException {
-        //? if (>=1.21.2 && <=26.3) {
-
+        //? if >=1.21.2 {
         // Validate new input state before teleport, vehicle changes, or inventory mutation.
         if (config.fakePlayer.snapshot.movement) PlayerInputCodec.restore(data.playerInput);
         //?}
@@ -688,10 +689,9 @@ public final class CarpetIntegration {
                 throw new IOException("Enabled FakePlayer effect snapshot is missing");
             effects = new ArrayList<>(data.effectsNbt.size());
             for (String encoded : data.effectsNbt) {
-
                 Tag element = NbtCodec.decode(encoded);
 
-                if (!(element instanceof net.minecraft.nbt.CompoundTag compound))
+                if (!(element instanceof CompoundTag compound))
                     throw new IOException("FakePlayer effect snapshot is not an NBT compound");
 
                 MobEffectInstance effect = VersionNbt.effect(compound);
@@ -713,7 +713,7 @@ public final class CarpetIntegration {
                     config.fakePlayer.snapshot.itemUseCooldown,
                     config.fakePlayer.snapshot.blockBreakProgress);
 
-        net.minecraft.world.entity.Entity vehicle = null;
+        Entity vehicle = null;
 
         if (data.vehicleUuid != null) {
             UUID vehicleId;
@@ -752,16 +752,16 @@ public final class CarpetIntegration {
                                     ? data.pitch
                                     : player.getViewXRot(0);
 
-            if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
-
-                //? if (>=1.18 && <=1.21.1) {
-                /*player.teleportTo(world, x, y, z, yaw, pitch);
-                *///?} else {
-                player.teleportTo(world, x, y, z, java.util.Set.of(), yaw, pitch, false);
-                //?}
-
+            //? if <=1.21.1 {
+            /*if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
+                player.teleportTo(world, x, y, z, yaw, pitch);
             else {
-                //? if (>=1.18 && <=1.21.4) {
+            *///?} else {
+            if (config.fakePlayer.snapshot.dimension && VersionLevels.level(player) != world)
+                player.teleportTo(world, x, y, z, Set.of(), yaw, pitch, false);
+            else {
+            //?}
+                //? if <=1.21.4 {
                 /*player.absMoveTo(x, y, z, yaw, pitch);
                 *///?} else {
                 player.absSnapTo(x, y, z, yaw, pitch);
@@ -790,14 +790,13 @@ public final class CarpetIntegration {
             player.onUpdateAbilities();
         }
         if (config.fakePlayer.snapshot.sneaking) {
-
             player.setShiftKeyDown(data.sneaking);
         }
         if (config.fakePlayer.snapshot.sprinting) {
             player.setSprinting(data.sprinting);
         }
 
-        //? if (>=1.18 && <=1.21.1) {
+        //? if <=1.21.1 {
         /*if (config.fakePlayer.snapshot.movement)
             player.setPlayerInput(data.strafing, data.forward, false, data.sneaking);
         *///?} else {
@@ -810,12 +809,11 @@ public final class CarpetIntegration {
 
         if (config.fakePlayer.snapshot.health) player.setHealth(data.health);
         if (config.fakePlayer.snapshot.hunger) {
-
             player.getFoodData().setFoodLevel(data.hunger);
 
             player.getFoodData().setSaturation(data.saturation);
 
-            //? if (>=1.18 && <=1.21.1) {
+            //? if <=1.21.1 {
             /*player.getFoodData().setExhaustion(data.exhaustion);
             *///?} else {
             ((com.atsukimc.anticrash.mixin.HungerManagerAccessorMixin) player.getFoodData())
@@ -823,7 +821,6 @@ public final class CarpetIntegration {
             //?}
         }
         if (effects != null) {
-
             player.removeAllEffects();
 
             for (MobEffectInstance effect : effects) player.addEffect(effect);
@@ -860,15 +857,15 @@ public final class CarpetIntegration {
                                     config.fakePlayer.snapshot.itemUseCooldown,
                                     config.fakePlayer.snapshot.blockBreakProgress));
         if (vehicle != null) {
-
-            //? if (>=1.18 && <=1.21.8) {
+            //? if <=1.21.8 {
             /*if (VersionLevels.level(vehicle) != VersionLevels.level(player)
                     || !player.startRiding(vehicle, true))
+                throw new IOException("FakePlayer riding state could not be restored");
             *///?} else {
             if (VersionLevels.level(vehicle) != VersionLevels.level(player)
                     || !player.startRiding(vehicle, true, false))
-            //?}
                 throw new IOException("FakePlayer riding state could not be restored");
+            //?}
         }
     }
 
@@ -877,18 +874,17 @@ public final class CarpetIntegration {
      * it, so the state AntiCrash adds to entity data is included.
      */
     private static String captureRootVehicle(ServerPlayer player) throws IOException {
-
-        net.minecraft.world.entity.Entity root = player.getRootVehicle();
+        Entity root = player.getRootVehicle();
 
         if (root == null || root == player) return null;
 
-        net.minecraft.nbt.CompoundTag nbt;
+        CompoundTag nbt;
 
-        com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
+        RuntimeExtensionNbt.entitySave(true);
         try {
             nbt = VersionStorage.entity(root);
         } finally {
-            com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(false);
+            RuntimeExtensionNbt.entitySave(false);
         }
 
         return nbt != null ? NbtCodec.encode(nbt) : null;
@@ -896,27 +892,24 @@ public final class CarpetIntegration {
 
     /** Removes the vehicle (and its non-player passengers) the player currently rides. */
     private static void discardStaleVehicle(ServerPlayer player) {
-
-        net.minecraft.world.entity.Entity root = player.getRootVehicle();
+        Entity root = player.getRootVehicle();
 
         player.stopRiding();
         if (root == null || root == player) return;
 
-        for (net.minecraft.world.entity.Entity entity : root.getPassengersAndSelf().toList()) {
-
-            if (!(entity instanceof net.minecraft.world.entity.player.Player)) entity.discard();
+        for (Entity entity : root.getPassengersAndSelf().toList()) {
+            if (!(entity instanceof Player)) entity.discard();
         }
     }
 
-    private static void collectUuids(net.minecraft.nbt.CompoundTag nbt, Set<UUID> uuids) {
-
-        //? if (>=1.18 && <=1.21.4) {
+    private static void collectUuids(CompoundTag nbt, Set<UUID> uuids) {
+        //? if <=1.21.4 {
         /*if (nbt.hasUUID("UUID")) uuids.add(nbt.getUUID("UUID"));
-        net.minecraft.nbt.ListTag passengers = VersionNbt.list(nbt, "Passengers", 10);
         *///?} else {
         nbt.read("UUID", net.minecraft.core.UUIDUtil.CODEC).ifPresent(uuids::add);
-        net.minecraft.nbt.ListTag passengers = VersionNbt.list(nbt, "Passengers", 10);
         //?}
+
+        ListTag passengers = VersionNbt.list(nbt, "Passengers", 10);
 
         for (int i = 0; i < passengers.size(); i++)
             collectUuids(VersionNbt.getCompound(passengers, i), uuids);
@@ -926,15 +919,14 @@ public final class CarpetIntegration {
      * Puts the checkpoint's vehicle into the world in place of the one Vanilla loaded from the
      * player data file when the FakePlayer joined.
      */
-    private static net.minecraft.world.entity.Entity restoreRootVehicle(
+    private static Entity restoreRootVehicle(
             MinecraftServer server,
             ServerLevel world,
             ServerPlayer player,
             String encoded,
             UUID vehicleId)
             throws IOException {
-
-        net.minecraft.nbt.CompoundTag nbt = NbtCodec.decodeCompound(encoded);
+        CompoundTag nbt = NbtCodec.decodeCompound(encoded);
 
         Set<UUID> uuids = new HashSet<>();
         collectUuids(nbt, uuids);
@@ -944,28 +936,25 @@ public final class CarpetIntegration {
         if (player.isPassenger()) discardStaleVehicle(player);
         for (UUID uuid : uuids)
             for (ServerLevel candidate : server.getAllLevels()) {
+                Entity existing = candidate.getEntity(uuid);
 
-                net.minecraft.world.entity.Entity existing = candidate.getEntity(uuid);
-
-                if (existing != null
-                        && !(existing instanceof net.minecraft.world.entity.player.Player))
-                    existing.discard();
+                if (existing != null && !(existing instanceof Player)) existing.discard();
             }
 
-        //? if (>=1.18 && <=1.21.1) {
-        /*net.minecraft.world.entity.Entity root =
-                net.minecraft.world.entity.EntityType.loadEntityRecursive(
+        //? if <=1.21.1 {
+        /*Entity root =
+                EntityType.loadEntityRecursive(
                         nbt, world, entity -> world.addWithUUID(entity) ? entity : null);
         *///?} else if <=26.1 {
-        /*net.minecraft.world.entity.Entity root =
-                net.minecraft.world.entity.EntityType.loadEntityRecursive(
+        /*Entity root =
+                EntityType.loadEntityRecursive(
                         nbt,
                         world,
                         net.minecraft.world.entity.EntitySpawnReason.LOAD,
                         entity -> world.addWithUUID(entity) ? entity : null);
         *///?} else {
-        net.minecraft.world.entity.Entity root =
-                net.minecraft.world.entity.EntityType.loadEntityRecursive(
+        Entity root =
+                EntityType.loadEntityRecursive(
                         nbt,
                         world,
                         new net.minecraft.world.entity.EntitySpawnRequest(
@@ -975,39 +964,37 @@ public final class CarpetIntegration {
 
         if (root == null) throw new IOException("FakePlayer vehicle could not be loaded");
 
-        for (net.minecraft.world.entity.Entity entity : root.getPassengersAndSelf().toList()) {
-
+        for (Entity entity : root.getPassengersAndSelf().toList()) {
             if (vehicleId.equals(entity.getUUID())) return entity;
         }
         throw new IOException("FakePlayer vehicle was not created from its snapshot");
     }
 
-    //? if (>=1.18 && <=1.21.10) {
+    //? if <=1.21.10 {
     /*private static void captureUseState(ServerPlayer player, FakePlayerSnapshot data) {
     *///?} else {
     private static void captureUseState(ServerPlayer player, FakePlayerSnapshot data)
             throws IOException {
     //?}
 
-        //? if (>=26.1 && <=26.3) {
-        var fluids = new net.minecraft.nbt.CompoundTag();
+        //? if >=26.1 {
+        var fluids = new CompoundTag();
         fluids.put(
                 "Trackers",
                 com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.capture(player));
         data.fluidTrackersNbt = NbtCodec.encode(fluids);
         //?}
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         data.motionFrameNbt =
                 NbtCodec.encode(
                         com.atsukimc.anticrash.runtime.EntityMotionFrame.capture(player).write());
         //?}
 
-        com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin living =
-                (com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin) player;
+        LivingEntityAccessorMixin living = (LivingEntityAccessorMixin) player;
         data.lastAttackedTicks = living.anticrash$getLastAttackedTicks();
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         data.lastKineticAttackTime = living.anticrash$lastKineticAttackTime();
         //?}
 
@@ -1016,26 +1003,24 @@ public final class CarpetIntegration {
             data.itemUseTimeLeft = living.anticrash$getItemUseTimeLeft();
         }
 
-        com.atsukimc.anticrash.mixin.ItemCooldownManagerAccessorMixin manager =
-                (com.atsukimc.anticrash.mixin.ItemCooldownManagerAccessorMixin)
-                        player.getCooldowns();
+        ItemCooldownManagerAccessorMixin manager =
+                (ItemCooldownManagerAccessorMixin) player.getCooldowns();
 
         List<FakePlayerSnapshot.ItemCooldown> cooldowns = new ArrayList<>();
 
-        //? if (>=1.18 && <=1.21.1) {
-        /*for (java.util.Map.Entry<net.minecraft.world.item.Item, Object> entry :
-        *///?} else {
-        for (java.util.Map.Entry<?, Object> entry :
-        //?}
+        //? if <=1.21.1 {
+        /*for (Map.Entry<net.minecraft.world.item.Item, Object> entry :
                 manager.anticrash$getEntries().entrySet()) {
+        *///?} else {
+        for (Map.Entry<?, Object> entry : manager.anticrash$getEntries().entrySet()) {
+        //?}
             int remaining =
-                    ((com.atsukimc.anticrash.mixin.ItemCooldownEntryAccessorMixin) entry.getValue())
-                                    .anticrash$getEndTick()
+                    ((ItemCooldownEntryAccessorMixin) entry.getValue()).anticrash$getEndTick()
                             - manager.anticrash$getTick();
             if (remaining <= 0) continue;
             FakePlayerSnapshot.ItemCooldown cooldown = new FakePlayerSnapshot.ItemCooldown();
 
-            //? if (>=1.18 && <=1.21.1) {
+            //? if <=1.21.1 {
             /*cooldown.item = VersionIds.id(VersionIds.items(), entry.getKey());
             *///?} else {
             cooldown.item = entry.getKey().toString();
@@ -1044,15 +1029,14 @@ public final class CarpetIntegration {
             cooldown.remainingTicks = remaining;
             cooldowns.add(cooldown);
         }
-        cooldowns.sort(java.util.Comparator.comparing(cooldown -> cooldown.item));
+        cooldowns.sort(Comparator.comparing(cooldown -> cooldown.item));
         if (!cooldowns.isEmpty()) data.itemCooldowns = cooldowns;
     }
 
     /** Runs after the inventory is back, so the hand holds the item that was being used. */
     private static void restoreUseState(ServerPlayer player, FakePlayerSnapshot data)
             throws IOException {
-
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         if (data.fluidTrackersNbt != null)
             com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.restore(
                     player,
@@ -1060,17 +1044,16 @@ public final class CarpetIntegration {
                             NbtCodec.decodeCompound(data.fluidTrackersNbt), "Trackers", 10));
         //?}
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         if (data.motionFrameNbt != null)
             com.atsukimc.anticrash.runtime.EntityMotionFrame.read(
                             NbtCodec.decodeCompound(data.motionFrameNbt))
                     .apply(player);
         //?}
 
-        com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin living =
-                (com.atsukimc.anticrash.mixin.LivingEntityAccessorMixin) player;
+        LivingEntityAccessorMixin living = (LivingEntityAccessorMixin) player;
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         if (data.lastKineticAttackTime != null)
             living.anticrash$setLastKineticAttackTime(data.lastKineticAttackTime);
         //?}
@@ -1083,16 +1066,14 @@ public final class CarpetIntegration {
             // throw the restored value away. At a tick boundary that remembered stack is the main
             // hand.
 
-            ((com.atsukimc.anticrash.mixin.PlayerEntityAccessorMixin) player)
+            ((PlayerEntityAccessorMixin) player)
                     .anticrash$setSelectedItem(player.getMainHandItem().copy());
         }
         if (data.activeHand != null && data.itemUseTimeLeft != null) {
-
-            net.minecraft.world.InteractionHand hand;
+            InteractionHand hand;
 
             try {
-
-                hand = net.minecraft.world.InteractionHand.valueOf(data.activeHand);
+                hand = InteractionHand.valueOf(data.activeHand);
 
             } catch (IllegalArgumentException invalid) {
                 throw new IOException("Invalid FakePlayer active hand: " + data.activeHand);
@@ -1114,22 +1095,20 @@ public final class CarpetIntegration {
 
                 var id = VersionIds.tryParse(cooldown.item);
 
-                //? if (>=1.18 && <=1.21.1) {
-                /*if (id == null || !VersionIds.items().containsKey(id))
-                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
-                *///?} else if (>=1.21.2 && <=26.3) {
-                if (id == null)
-                    throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
-                //?}
-
                 // The same remaining time and the same expiry tick; only the progress bar's start
                 // differs.
 
-                //? if (>=1.18 && <=1.21.1) {
-                /*player.getCooldowns()
+                //? if <=1.21.1 {
+                /*if (id == null || !VersionIds.items().containsKey(id))
+                    throw new IOException("Unknown FakePlayer cooldown item: " + cooldown.item);
+
+                player.getCooldowns()
                         .addCooldown(
                                 VersionIds.value(VersionIds.items(), id), cooldown.remainingTicks);
                 *///?} else {
+                if (id == null)
+                    throw new IOException("Invalid FakePlayer cooldown group: " + cooldown.item);
+
                 player.getCooldowns().addCooldown(id, cooldown.remainingTicks);
                 //?}
             }
@@ -1146,7 +1125,7 @@ public final class CarpetIntegration {
                 } catch (Exception ignored) {
                 }
         }
-        for (java.lang.reflect.Field field : ReflectionUtil.instanceFields(player.getClass())) {
+        for (Field field : ReflectionUtil.instanceFields(player.getClass())) {
             String name = field.getName().toLowerCase(Locale.ROOT);
             if (name.contains("actionpack") || name.contains("action_pack"))
                 try {
@@ -1169,16 +1148,16 @@ public final class CarpetIntegration {
         if (data == null || data.formatVersion != 1)
             throw new IllegalArgumentException("Unsupported or empty FakePlayer snapshot");
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         if (data.motionFrameNbt != null)
             com.atsukimc.anticrash.runtime.EntityMotionFrame.read(
                     NbtCodec.decodeCompound(data.motionFrameNbt));
         //?}
 
-        // LivingEntity initializes lastKineticAttackTime to Integer.MIN_VALUE (as long).
+        // LivingEntity initializes lastKineticHitFeedbackTime to Integer.MIN_VALUE (as long).
         // Preserve that never-hit sentinel, while still rejecting other invalid negative times.
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         if (data.fluidTrackersNbt != null)
             com.atsukimc.anticrash.runtime.FluidInteractionSnapshot.decode(
                     VersionNbt.list(
@@ -1188,7 +1167,7 @@ public final class CarpetIntegration {
         // LivingEntity initializes lastKineticHitFeedbackTime to Integer.MIN_VALUE (as long).
         // Preserve that never-hit sentinel, while still rejecting other invalid negative times.
 
-        //? if (>=1.21.11 && <=26.3) {
+        //? if >=1.21.11 {
         if (data.lastKineticAttackTime != null
                 && data.lastKineticAttackTime < -1
                 && data.lastKineticAttackTime != Integer.MIN_VALUE)
@@ -1241,7 +1220,7 @@ public final class CarpetIntegration {
             for (String encoded : data.effectsNbt) {
                 Tag element = NbtCodec.decode(encoded);
 
-                if (!(element instanceof net.minecraft.nbt.CompoundTag compound)
+                if (!(element instanceof CompoundTag compound)
                         || VersionNbt.effect(compound) == null)
                     throw new IOException("FakePlayer effect snapshot is invalid");
             }

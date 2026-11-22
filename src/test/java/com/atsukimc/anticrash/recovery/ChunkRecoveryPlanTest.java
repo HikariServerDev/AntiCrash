@@ -13,7 +13,9 @@ import com.atsukimc.anticrash.util.VersionChunkPos;
 
 import org.junit.jupiter.api.Test;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 class ChunkRecoveryPlanTest {
@@ -21,7 +23,7 @@ class ChunkRecoveryPlanTest {
     void usesVanillaFullAndEntityTickingLevelsAndDeduplicatesPositions() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -52,7 +54,7 @@ class ChunkRecoveryPlanTest {
     void criticalModePreservesDormantExplicitAnchorAsFullOnly() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -98,7 +100,7 @@ class ChunkRecoveryPlanTest {
     void criticalModeIncludesExactTransientStateChunksAndDeduplicatesAnchors() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -131,7 +133,7 @@ class ChunkRecoveryPlanTest {
     void criticalModePreparesScheduledTickChunksAtTheirObservedTickingLevel() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -162,7 +164,7 @@ class ChunkRecoveryPlanTest {
                 ChunkRecoveryPlan.select(
                         capsule, ChunkRecoveryPlan.PreloadMode.CRITICAL, Set.of(), 16);
 
-        java.util.Map<Long, Integer> levels = new java.util.HashMap<>();
+        Map<Long, Integer> levels = new HashMap<>();
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
             levels.put(entry.packedPosition(), entry.ticketLevel());
         }
@@ -175,7 +177,7 @@ class ChunkRecoveryPlanTest {
     void allModeRestoresEveryLoadedChunkAtItsObservedLevel() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -199,7 +201,7 @@ class ChunkRecoveryPlanTest {
                         Set.of(),
                         ChunkRecoveryPlan.DEFAULT_MAX_PRELOAD_CHUNKS);
 
-        java.util.Map<Long, Integer> levels = new java.util.HashMap<>();
+        Map<Long, Integer> levels = new HashMap<>();
         for (ChunkRecoveryPlan.Entry entry : selection.entries()) {
             levels.put(entry.packedPosition(), entry.ticketLevel());
         }
@@ -215,7 +217,7 @@ class ChunkRecoveryPlanTest {
     void versionOneCapsuleRemainsReadableWithoutTransientChunkMetadata() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -237,7 +239,7 @@ class ChunkRecoveryPlanTest {
     void dormantTransientChunkIsNotActivatedByCriticalRecovery() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -262,7 +264,7 @@ class ChunkRecoveryPlanTest {
     void selectedPlanCannotExceedConfiguredPreloadLimit() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -287,18 +289,10 @@ class ChunkRecoveryPlanTest {
                 ChunkRecoveryPlan.PreloadMode.parse("critical"));
     }
 
-    //? if (>=1.18 && <=1.21.4) {
+    //? if <=1.21.4 {
     /*@Test
-    void convertsVanillaTicketLevelsToServerChunkManagerRadii()
-    *///?}
-    //? if (>=1.21.5 && <=26.3) {
-    @Test
-    void passesVanillaTicketLevelsDirectlyIn1215()
-    //?}
-            {
-
-        //? if (>=1.18 && <=1.21.4) {
-        /*assertEquals(
+    void convertsVanillaTicketLevelsToServerChunkManagerRadii() {
+        assertEquals(
                 0, ChunkRecoveryPlan.ticketRadiusForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
 
         assertEquals(
@@ -314,8 +308,9 @@ class ChunkRecoveryPlanTest {
                 () ->
                         ChunkRecoveryPlan.ticketRadiusForLevel(
                                 ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+    *///?} else {
+    @Test
+    void passesVanillaTicketLevelsDirectlyIn1215() {
         assertEquals(
                 33, ChunkRecoveryPlan.ticketArgumentForLevel(ChunkRecoveryPlan.FULL_TICKET_LEVEL));
 
@@ -332,7 +327,7 @@ class ChunkRecoveryPlanTest {
                 () ->
                         ChunkRecoveryPlan.ticketArgumentForLevel(
                                 ChunkRecoveryPlan.FULL_TICKET_LEVEL + 1));
-        //?}
+    //?}
 
     }
 
@@ -340,7 +335,7 @@ class ChunkRecoveryPlanTest {
     void criticalModeKeepsScheduledTicksAndMovingPistonsInTheirExactChunks() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -385,7 +380,7 @@ class ChunkRecoveryPlanTest {
     void criticalSelectionBoundsTheObserved2489ChunkCapsuleToThreeAnchors() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -418,13 +413,12 @@ class ChunkRecoveryPlanTest {
         assertEquals(2_489, selection.deferredLoaded());
         assertEquals(821, selection.deferredEntityTicking());
 
-        //? if (>=1.18 && <=1.21.4) {
+        //? if <=1.21.4 {
         /*assertTrue(
                 selection.entries().stream()
                         .allMatch(entry ->
                                 ChunkRecoveryPlan.ticketRadiusForLevel(entry.ticketLevel()) <= 2));
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        *///?} else {
         assertTrue(
                 selection.entries().stream()
                         .allMatch(entry ->
@@ -438,7 +432,7 @@ class ChunkRecoveryPlanTest {
     void strictSelectionKeepsEveryObservedDomainRowAndReportsLimitWithoutTruncation() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 

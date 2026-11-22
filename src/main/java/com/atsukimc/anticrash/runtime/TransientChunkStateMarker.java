@@ -34,18 +34,6 @@ import java.util.Set;
  * <p>This class runs only on the server thread while the checkpoint barrier owns the world. It
  * examines already accessible chunks and never requests or waits for a new chunk.
  */
-
-/**
- * Makes Vanilla's transient chunk state eligible for the save immediately before a checkpoint.
- *
- * <p>In 1.18.2 {@code ChunkSerializer} already writes block entities and chunk-local scheduled
- * ticks. The missing part is that {@code ChunkMap} skips serialization unless
- * {@code Chunk#needsSaving()} is true. Piston progress and some scheduler mutations do not set that
- * flag reliably, so the checkpoint can otherwise contain an older moving-piston state.
- *
- * <p>This class runs only on the server thread while the checkpoint barrier owns the world. It
- * examines already accessible chunks and never requests or waits for a new chunk.
- */
 public final class TransientChunkStateMarker {
     private static final String PISTON_BLOCK_ENTITY_ID = "minecraft:piston";
 
@@ -63,7 +51,6 @@ public final class TransientChunkStateMarker {
         List<ScheduledTickSnapshot> orderedScheduledTicks = new ArrayList<>();
 
         for (ServerLevel world : server.getAllLevels()) {
-
             ChunkMap storage = world.getChunkSource().chunkMap;
 
             ThreadedAnvilChunkStorageAccessorMixin accessor =
@@ -89,7 +76,7 @@ public final class TransientChunkStateMarker {
                                                 net.minecraft.world.level.block.entity
                                                         .PotentSulfurBlockEntity);
                 *///?}
-                //? if 26.3 {
+                //? if >=26.3 {
                 boolean sulfur =
                         chunk.getBlockEntities().values().stream()
                                 .anyMatch(entity ->
@@ -127,13 +114,12 @@ public final class TransientChunkStateMarker {
                 // queue at the checkpoint boundary; do not narrow capture to ENTITY_TICKING.
                 if (chunkScheduledTicks > 0) orderedScheduledTicks.addAll(exactTicks);
 
-                //? if (>=1.18 && <=26.1) {
-                /*if (!needsTransientSave(pistonsInChunk > 0, blockTicks, fluidTicks))
-                *///?}
-                //? if (>=26.2 && <=26.3) {
+                //? if <=26.1 {
+                /*if (!needsTransientSave(pistonsInChunk > 0, blockTicks, fluidTicks)) continue;
+                *///?} else {
                 if (!needsTransientSave(pistonsInChunk > 0 || sulfur, blockTicks, fluidTicks))
-                //?}
                     continue;
+                //?}
 
                 criticalChunks.add(
                         new ChunkReference(
@@ -151,10 +137,9 @@ public final class TransientChunkStateMarker {
                 if (!chunk.isUnsaved()) {
                     chunksMadeDirty++;
 
-                    //? if (>=1.18 && <=1.21.1) {
+                    //? if <=1.21.1 {
                     /*chunk.setUnsaved(true);
-                    *///?}
-                    //? if (>=1.21.2 && <=26.3) {
+                    *///?} else {
                     chunk.markUnsaved();
                     //?}
 
@@ -194,24 +179,21 @@ public final class TransientChunkStateMarker {
     }
 
     static boolean isCheckpointCriticalEntity(Entity entity) {
-
         return entity != null
                 && !entity.isRemoved()
                 && (entity instanceof PrimedTnt || entity instanceof FallingBlockEntity);
     }
 
     private static LevelChunk accessibleChunk(ChunkHolder holder) {
-
         var future = holder.getFullChunkFuture();
 
         if (!future.isDone() || future.isCompletedExceptionally()) return null;
         try {
             var ready = future.getNow(null);
 
-            //? if (>=1.18 && <=1.20.4) {
+            //? if <=1.20.4 {
             /*return ready == null ? null : ready.left().orElse(null);
-            *///?}
-            //? if (>=1.20.5 && <=26.3) {
+            *///?} else {
             return ready == null ? null : ready.orElse(null);
             //?}
 
@@ -226,7 +208,6 @@ public final class TransientChunkStateMarker {
         Map<BlockPos, BlockEntity> liveBlockEntities = chunk.getBlockEntities();
         int count = 0;
         for (BlockEntity blockEntity : liveBlockEntities.values()) {
-
             if (blockEntity instanceof PistonMovingBlockEntity) count++;
         }
 

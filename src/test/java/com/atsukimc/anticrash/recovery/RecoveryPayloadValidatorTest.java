@@ -9,14 +9,20 @@ import com.atsukimc.anticrash.runtime.ChunkStateSnapshot;
 import com.atsukimc.anticrash.runtime.EquivalenceCategory;
 import com.atsukimc.anticrash.runtime.MovingPistonTickSnapshot;
 import com.atsukimc.anticrash.runtime.RuntimeCapsule;
+import com.atsukimc.anticrash.runtime.RuntimeCapsuleManager;
 import com.atsukimc.anticrash.runtime.RuntimeFingerprint;
 import com.atsukimc.anticrash.runtime.ScheduledTickSnapshot;
 import com.atsukimc.anticrash.runtime.TransientEntityTickSnapshot;
 import com.atsukimc.anticrash.snapshot.CheckpointManifest;
+import com.atsukimc.anticrash.util.AtomicFiles;
+import com.google.gson.JsonNull;
+import com.google.gson.JsonObject;
+import com.google.gson.reflect.TypeToken;
 
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.List;
 
 class RecoveryPayloadValidatorTest {
@@ -211,7 +217,7 @@ class RecoveryPayloadValidatorTest {
                         RecoveryPayloadValidator.validate(
                                 manifest,
                                 capsule,
-                                java.util.Arrays.asList((PlayerSnapshotData) null),
+                                Arrays.asList((PlayerSnapshotData) null),
                                 List.of()));
     }
 
@@ -249,22 +255,19 @@ class RecoveryPayloadValidatorTest {
         FakePlayerSnapshot live = new FakePlayerSnapshot();
         live.uuid = "e3f98d24-0db3-4bca-95c7-18b7368706e5";
         live.name = "Miner";
-        live.actionPackState = new com.google.gson.JsonObject();
+        live.actionPackState = new JsonObject();
         live.actionPackState.addProperty("class", "carpet.helpers.EntityPlayerActionPack");
-        com.google.gson.JsonObject fields = new com.google.gson.JsonObject();
-        fields.add("currentBlock", com.google.gson.JsonNull.INSTANCE);
+        JsonObject fields = new JsonObject();
+        fields.add("currentBlock", JsonNull.INSTANCE);
         fields.addProperty("blockHitDelay", "0");
         live.actionPackState.add("fields", fields);
-        com.atsukimc.anticrash.runtime.RuntimeCapsuleManager.populateFakePlayerFingerprint(
-                capsule, List.of(live));
+        RuntimeCapsuleManager.populateFakePlayerFingerprint(capsule, List.of(live));
 
-        String json = com.atsukimc.anticrash.util.AtomicFiles.GSON.toJson(List.of(live));
+        String json = AtomicFiles.GSON.toJson(List.of(live));
         List<FakePlayerSnapshot> fromFile =
-                com.atsukimc.anticrash.util.AtomicFiles.GSON.fromJson(
+                AtomicFiles.GSON.fromJson(
                         json,
-                        com.google.gson.reflect.TypeToken.getParameterized(
-                                        List.class, FakePlayerSnapshot.class)
-                                .getType());
+                        TypeToken.getParameterized(List.class, FakePlayerSnapshot.class).getType());
         CheckpointManifest manifest = v6Manifest(capsule, fromFile);
         assertDoesNotThrow(
                 () -> RecoveryPayloadValidator.validate(manifest, capsule, List.of(), fromFile));
@@ -290,7 +293,7 @@ class RecoveryPayloadValidatorTest {
     private static RuntimeCapsule capsule() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 
@@ -312,7 +315,7 @@ class RecoveryPayloadValidatorTest {
     private static RuntimeCapsule v6Capsule() {
         RuntimeCapsule capsule = new RuntimeCapsule();
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         capsule.clockStates = new java.util.ArrayList<>();
         //?}
 

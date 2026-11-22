@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import com.mojang.datafixers.util.Either;
 *///?}
 
@@ -32,7 +32,6 @@ public abstract class ServerEntityManagerMixin {
                                     "Lnet/minecraft/world/level/entity/EntityPersistentStorage;flush(Z)V"))
     private void anticrash$awaitLoadsOnlyAtCut(
             EntityPersistentStorage<?> access, boolean sync, Operation<Void> original) {
-
         if (!CutSave.active() || !(access instanceof EntityStorage entities)) {
             original.call(access, sync);
             return;
@@ -41,19 +40,17 @@ public abstract class ServerEntityManagerMixin {
         // Reads run at foreground priority in submission order, so this no-op finishes after every
         // read queued before it; queued writes run at background priority and are not waited for.
 
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*((StorageIoWorkerAccessorMixin) accessor.anticrash$getDataLoadWorker())
                 .anticrash$run(() -> Either.left(null))
                 .join();
-        *///?}
-        //? if (>=1.20.5 && <=1.21.1) {
+        *///?} else if <=1.21.1 {
         /*((StorageIoWorkerAccessorMixin)
                         ((ChunkPosKeyedStorageAccessor) accessor.anticrash$getStorage())
                                 .anticrash$getWorker())
                 .anticrash$run(() -> Either.left(null))
                 .join();
-        *///?}
-        //? if (>=1.21.2 && <=26.3) {
+        *///?} else {
         ((StorageIoWorkerAccessorMixin)
                         ((ChunkPosKeyedStorageAccessor) accessor.anticrash$getStorage())
                                 .anticrash$getWorker())

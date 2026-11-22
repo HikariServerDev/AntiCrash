@@ -34,32 +34,28 @@ public final class ChunkRecoveryPlan {
     /** Vanilla's own forced-chunk ticket uses level 31 (entity ticking). */
     public static final int ENTITY_TICKING_TICKET_LEVEL = 31;
 
-    /**
+    //? if <=1.21.4 {
+    /*/^*
      * Converts the level used by ChunkHolder/DistanceManager to the radius expected by
-     * ServerChunkCache.addTicket in Minecraft 1.18.2. The public ServerChunkCache method
+     * ServerChunkCache.addRegionTicket in Minecraft 1.18.2. The public ServerChunkCache method
      * accepts a radius and internally calculates {@code 33 - radius}; passing a level directly
      * would therefore turn FULL=33 into level 0 and load a huge area.
+     ^/
+    public static int ticketRadiusForLevel(int ticketLevel) {
+    *///?} else {
+    /**
+     * Minecraft 1.21.5 ServerChunkCache.addTicketWithRadius accepts the level directly, not radius.
      */
-
-    //? if (>=1.18 && <=1.21.4) {
-    /*public static int ticketRadiusForLevel(int ticketLevel)
-    *///?}
-
-    /** Minecraft 1.21.5 ServerChunkCache.addTicket accepts the level directly, not radius. */
-
-    //? if (>=1.21.5 && <=26.3) {
-    public static int ticketArgumentForLevel(int ticketLevel)
+    public static int ticketArgumentForLevel(int ticketLevel) {
     //?}
-            {
         if (ticketLevel < 0 || ticketLevel > FULL_TICKET_LEVEL) {
             throw new IllegalArgumentException(
                     "Invalid Vanilla chunk ticket level: " + ticketLevel);
         }
 
-        //? if (>=1.18 && <=1.21.4) {
+        //? if <=1.21.4 {
         /*return FULL_TICKET_LEVEL - ticketLevel;
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        *///?} else {
         return ticketLevel;
         //?}
 

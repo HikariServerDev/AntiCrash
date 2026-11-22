@@ -17,7 +17,10 @@ import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Locale;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
+import java.util.regex.Matcher;
 
 public final class AntiCrashLogger {
     public enum Level {
@@ -35,10 +38,8 @@ public final class AntiCrashLogger {
     private final Supplier<String> languageSupplier;
     private AntiCrashConfig.Logging config;
     private final ConsoleRouter consoleRouter = new ConsoleRouter();
-    private final java.util.concurrent.atomic.AtomicLong nextFailureLog =
-            new java.util.concurrent.atomic.AtomicLong();
-    private final java.util.concurrent.atomic.AtomicInteger suppressedFailures =
-            new java.util.concurrent.atomic.AtomicInteger();
+    private final AtomicLong nextFailureLog = new AtomicLong();
+    private final AtomicInteger suppressedFailures = new AtomicInteger();
 
     public AntiCrashLogger(Path logDirectory, AntiCrashConfig.Logging config) {
         this(logDirectory, config, () -> MessageCatalog.DEFAULT_LANGUAGE);
@@ -238,10 +239,7 @@ public final class AntiCrashLogger {
         String result = message == null ? "null" : message;
         if (args != null)
             for (Object arg : args)
-                result =
-                        result.replaceFirst(
-                                "\\{}",
-                                java.util.regex.Matcher.quoteReplacement(String.valueOf(arg)));
+                result = result.replaceFirst("\\{}", Matcher.quoteReplacement(String.valueOf(arg)));
         return result;
     }
 }

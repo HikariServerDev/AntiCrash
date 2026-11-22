@@ -5,7 +5,7 @@ import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 import net.minecraft.nbt.CompoundTag;
 *///?} else {
@@ -21,7 +21,7 @@ import org.spongepowered.asm.mixin.Mixin;
 /**
  * Tells block entities whether their chunk is saved while it stays loaded; see RuntimeExtensionNbt.
  */
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*@Mixin(ChunkSerializer.class)
 public abstract class ChunkSerializerMixin {
     /^*
@@ -49,8 +49,7 @@ public abstract class ChunkSerializerMixin {
                         && ((WorldChunkAccessorMixin) worldChunk).anticrash$isLoadedToWorld();
         RuntimeExtensionNbt.loadedChunkSave(staysLoaded);
         try {
-
-            //? if (>=1.18 && <=1.21.1) {
+            //? if <=1.21.1 {
             /*CompoundTag nbt = original.call(world, chunk);
             *///?} else {
             SerializableChunkData nbt = original.call(world, chunk);

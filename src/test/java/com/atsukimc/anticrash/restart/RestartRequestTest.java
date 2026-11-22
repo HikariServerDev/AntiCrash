@@ -8,6 +8,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermissions;
@@ -37,7 +38,7 @@ class RestartRequestTest {
         Files.createDirectories(marker.getParent());
         Files.writeString(marker, "request=forged\n");
 
-        assertThrows(java.io.IOException.class, () -> RestartRequest.claim(marker));
+        assertThrows(IOException.class, () -> RestartRequest.claim(marker));
         assertTrue(Files.exists(marker));
     }
 }

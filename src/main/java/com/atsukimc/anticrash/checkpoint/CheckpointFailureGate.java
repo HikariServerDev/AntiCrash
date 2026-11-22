@@ -3,6 +3,7 @@ package com.atsukimc.anticrash.checkpoint;
 import com.atsukimc.anticrash.snapshot.ParentCheckpointChangedException;
 
 import java.io.IOException;
+import java.util.Locale;
 
 /** Server-thread circuit breaker: no automatic retries after OOM or parent invalidation. */
 public final class CheckpointFailureGate {
@@ -33,8 +34,7 @@ public final class CheckpointFailureGate {
         if (failure instanceof MemoryBudgetException) return Category.MEMORY_BUDGET;
         if (failure instanceof ParentCheckpointChangedException) return Category.PARENT_INVALID;
         String detail = failure == null || failure.getMessage() == null ? "" : failure.getMessage();
-        if (detail.toLowerCase(java.util.Locale.ROOT).contains("checksum"))
-            return Category.CHECKSUM_FAILURE;
+        if (detail.toLowerCase(Locale.ROOT).contains("checksum")) return Category.CHECKSUM_FAILURE;
         return failure instanceof IOException ? Category.IO_FAILURE : Category.INTERNAL_INVARIANT;
     }
 

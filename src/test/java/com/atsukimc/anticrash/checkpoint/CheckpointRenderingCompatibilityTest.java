@@ -41,7 +41,6 @@ class CheckpointRenderingCompatibilityTest {
     // drift.
     private static String legacy(
             CheckpointDiagnostics.View view, String language, boolean verbose) {
-
         boolean japanese = "ja".equalsIgnoreCase(language);
         CheckpointManifest manifest = view.manifest();
         CheckpointTiming timing = view.timing();

@@ -1,15 +1,18 @@
 package com.atsukimc.anticrash.mixin;
 
+import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.snapshot.EntityChunkWriteDeduplicator;
 import com.atsukimc.anticrash.util.VersionChunkPos;
+import com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod;
 import com.llamalad7.mixinextras.injector.wrapoperation.Operation;
 import com.llamalad7.mixinextras.injector.wrapoperation.WrapOperation;
 
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.storage.EntityStorage;
+import net.minecraft.world.level.entity.ChunkEntities;
 
-//? if (>=1.18 && <=1.20.4) {
+//? if <=1.20.4 {
 /*import net.minecraft.world.level.chunk.storage.IOWorker;
 *///?} else {
 import net.minecraft.world.level.chunk.storage.SimpleRegionStorage;
@@ -24,7 +27,6 @@ import java.util.concurrent.CompletableFuture;
 /** Skips rewriting an unchanged entity chunk; see {@link EntityChunkWriteDeduplicator}. */
 @Mixin(EntityStorage.class)
 public abstract class EntityChunkDataAccessMixin {
-
     @Unique
     private final EntityChunkWriteDeduplicator anticrash$deduplicator =
             new EntityChunkWriteDeduplicator();
@@ -33,18 +35,17 @@ public abstract class EntityChunkDataAccessMixin {
      * Entity runtime state is added only to data that goes to the entity's chunk on disk. A wrap,
      * so the scope also ends when an entity fails to save.
      */
-    @com.llamalad7.mixinextras.injector.wrapmethod.WrapMethod(method = "storeEntities")
-    private void anticrash$scopeEntitySave(
-            net.minecraft.world.level.entity.ChunkEntities<?> dataList, Operation<Void> original) {
-        com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(true);
+    @WrapMethod(method = "storeEntities")
+    private void anticrash$scopeEntitySave(ChunkEntities<?> dataList, Operation<Void> original) {
+        RuntimeExtensionNbt.entitySave(true);
         try {
             original.call(dataList);
         } finally {
-            com.atsukimc.anticrash.runtime.RuntimeExtensionNbt.entitySave(false);
+            RuntimeExtensionNbt.entitySave(false);
         }
     }
 
-    //? if (>=1.18 && <=1.20.4) {
+    //? if <=1.20.4 {
     /*@WrapOperation(
             method = "storeEntities",
             at =
@@ -90,7 +91,7 @@ public abstract class EntityChunkDataAccessMixin {
     // The empty-entity path now writes NULL_NBT_SUPPLIER. Forget its last digest so a later
     // identical entity payload cannot be incorrectly skipped after the chunk was deleted.
 
-    //? if (>=1.21.11 && <=26.3) {
+    //? if >=1.21.11 {
     @WrapOperation(
             method = "storeEntities",
             at =

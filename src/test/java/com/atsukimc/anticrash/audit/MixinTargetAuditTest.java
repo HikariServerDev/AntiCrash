@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 import org.objectweb.asm.ClassReader;
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.Type;
 import org.objectweb.asm.tree.*;
 
@@ -110,7 +111,7 @@ class MixinTargetAuditTest {
             problems.add(
                     context + " callback return type differs from " + target.name + target.desc);
         }
-        if (((handler.access ^ target.access) & org.objectweb.asm.Opcodes.ACC_STATIC) != 0) {
+        if (((handler.access ^ target.access) & Opcodes.ACC_STATIC) != 0) {
             problems.add(
                     context + " callback staticness differs from " + target.name + target.desc);
         }
@@ -143,7 +144,7 @@ class MixinTargetAuditTest {
                 || !Arrays.equals(
                         Arrays.copyOf(args, args.length - 1), Type.getArgumentTypes(target.desc))
                 || !Type.getReturnType(handler.desc).equals(Type.getReturnType(target.desc))
-                || ((handler.access ^ target.access) & org.objectweb.asm.Opcodes.ACC_STATIC) != 0)
+                || ((handler.access ^ target.access) & Opcodes.ACC_STATIC) != 0)
             problems.add(
                     context + " WrapMethod signature differs from " + target.name + target.desc);
     }
@@ -201,24 +202,11 @@ class MixinTargetAuditTest {
                     targets.add(((Type) target).getInternalName());
                 for (Object target : list(value(marker, "targets")))
                     targets.add(target.toString().replace('.', '/'));
-                for (String target : targets)
-                //? if (>=1.18 && <=1.20.1) {
-                /*{
-
-                *///?}
-                //? if (>=1.20.2 && <=1.21.8) {
-                /*{
-                    // Optional external Carpet is absent in this game-only offline classpath.
-                    // Mandatory Minecraft targets remain required; this is not
-                    // Carpet runtime coverage.
-                *///?}
-                //? if (>=1.21.9 && <=26.3) {
-                {
+                for (String target : targets) {
+                    //? if >=1.20.2 {
                     // Optional external adapters are absent in the game-only offline classpath.
                     // Only @Pseudo Carpet targets may be absent; mandatory Minecraft targets
                     // remain required. This is not Carpet runtime coverage.
-                //?}
-                    //? if (>=1.20.2 && <=26.3) {
                     boolean pseudo =
                             annotations(mixin.visibleAnnotations, mixin.invisibleAnnotations)
                                     .stream()
@@ -263,17 +251,17 @@ class MixinTargetAuditTest {
                                 problems.add(context + " Shadow method missing: " + member.desc);
                             }
                             for (Object selector : list(value(a, "method"))) {
+                                //? if <=1.21.11 {
+                                /*if (selector instanceof String name)
+                                    for (MethodNode selected : selectedMethods(target, name))
+                                        invokeOccursInTarget(
+                                                selected, value(a, "at"), problems, context);
+                                *///?} else {
                                 if (selector instanceof String name)
                                     for (MethodNode selected : selectedMethods(target, name))
-
-                                        //? if (>=1.18 && <=1.21.11) {
-                                        /*invokeOccursInTarget(
-                                                selected, value(a, "at"), problems, context);
-                                        *///?}
-                                        //? if (>=26.1 && <=26.3) {
                                         invokeOccursInTarget(
                                                 selected, value(a, "forIndex"), problems, context);
-                                        //?}
+                                //?}
 
                                 if (selector instanceof String name && !method(target, name)) {
                                     problems.add(context + " method missing: " + name);
@@ -291,10 +279,9 @@ class MixinTargetAuditTest {
                                 }
                             }
 
-                            //? if (>=1.18 && <=1.21.11) {
+                            //? if <=1.21.11 {
                             /*injectionPoints(value(a, "at"), problems, context);
-                            *///?}
-                            //? if (>=26.1 && <=26.3) {
+                            *///?} else {
                             injectionPoints(value(a, "forIndex"), problems, context);
                             //?}
 

@@ -6,16 +6,17 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
-//? if (>=1.18 && <=1.21.4) {
+import java.util.List;
+import java.util.Set;
+
+//? if <=1.21.4 {
 /*class RuntimeOrderRestorerTest {
-    /^* Vanilla's Ticket#isExpired. ^/
+    /^* Vanilla's Ticket#timedOut. ^/
     private static boolean expired(long age, long tickCreated, long expiry) {
         return expiry != 0L && age - tickCreated > expiry;
     }
 
-*///?}
-
-//? if (>=1.21.5 && <=26.3) {
+*///?} else {
 class RuntimeOrderRestorerTest {
 //?}
     @Test
@@ -27,18 +28,14 @@ class RuntimeOrderRestorerTest {
             long expiry = c[0], remaining = c[1];
             // Live server: created at age 1000 and captured when `remaining` ticks were left.
 
-            //? if (>=1.18 && <=1.21.4) {
+            //? if <=1.21.4 {
             /*long liveCreated = 1000, captureAge = liveCreated + (expiry - remaining);
-            *///?}
 
             // New JVM: the ticket manager's age restarted at some unrelated value.
-
-            //? if (>=1.18 && <=1.21.4) {
-            /*long newAge = 37;
+            long newAge = 37;
 
             long restoredCreated = RuntimeOrderRestorer.tickCreatedFor(newAge, expiry, remaining);
-            *///?}
-            //? if (>=1.21.5 && <=26.3) {
+            *///?} else {
             var type =
                     expiry == 300
                             ? net.minecraft.server.level.TicketType.PORTAL
@@ -64,14 +61,12 @@ class RuntimeOrderRestorerTest {
             //?}
 
             for (int ticks = 0; ticks <= expiry + 2; ticks++) {
-
-                //? if (>=1.18 && <=1.21.4) {
+                //? if <=1.21.4 {
                 /*assertEquals(
                         expired(captureAge + ticks, liveCreated, expiry),
                         expired(newAge + ticks, restoredCreated, expiry),
                         "expiry " + expiry + " remaining " + remaining + " after " + ticks);
-                *///?}
-                //? if (>=1.21.5 && <=26.3) {
+                *///?} else {
                 assertEquals(
                         remaining - ticks < 0,
                         restored.isTimedOut(),
@@ -82,7 +77,7 @@ class RuntimeOrderRestorerTest {
 
             }
 
-            //? if (>=1.18 && <=1.21.4) {
+            //? if <=1.21.4 {
             /*assertFalse(expired(newAge + remaining, restoredCreated, expiry));
 
             assertTrue(expired(newAge + remaining + 1, restoredCreated, expiry));
@@ -109,20 +104,20 @@ class RuntimeOrderRestorerTest {
      */
     @Test
     void recoveryTicketsGoOnlyWhenEveryPermanentTicketIsBack() {
-        java.util.List<TicketLedgerSnapshot.Entry> checkpoint =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> checkpoint =
+                List.of(
                         ticket("player", 0, 8, 31, 0),
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("portal", 0, 4, 30, 300),
                         ticket("unknown", 3, 3, 33, 1),
                         ticket("light", 5, 5, 33, 0));
-        java.util.List<TicketLedgerSnapshot.Entry> beforePlayer =
-                java.util.List.of(ticket("forced", 0, 0, 31, 0), ticket("start", 0, 0, 22, 0));
+        List<TicketLedgerSnapshot.Entry> beforePlayer =
+                List.of(ticket("forced", 0, 0, 31, 0), ticket("start", 0, 0, 22, 0));
         assertFalse(RuntimeOrderRestorer.permanentTicketsCovered(beforePlayer, checkpoint));
 
-        java.util.List<TicketLedgerSnapshot.Entry> wrongLevel =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> wrongLevel =
+                List.of(
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("player", 0, 8, 32, 0));
@@ -130,8 +125,8 @@ class RuntimeOrderRestorerTest {
 
         // Expiring and light tickets are restored (or not needed) separately and are not waited
         // for.
-        java.util.List<TicketLedgerSnapshot.Entry> ready =
-                java.util.List.of(
+        List<TicketLedgerSnapshot.Entry> ready =
+                List.of(
                         ticket("forced", 0, 0, 31, 0),
                         ticket("start", 0, 0, 22, 0),
                         ticket("player", 0, 8, 31, 0),
@@ -149,35 +144,26 @@ class RuntimeOrderRestorerTest {
         unknown.argument = "[3, 3]";
         unknown.remainingTicks = 1L;
 
-        //? if (>=1.18 && <=1.21.3) {
+        //? if <=1.21.3 {
         /*TicketLedgerSnapshot.Entry teleport = ticket("post_teleport", 0, 9, 32, 5);
-        *///?}
-        //? if (>=1.21.4 && <=26.3) {
+        teleport.argument = "4274109";
+        *///?} else {
         TicketLedgerSnapshot.Entry teleport = ticket("ender_pearl", 0, 9, 32, 40);
-        //?}
-
-        //? if (>=1.18 && <=1.21.3) {
-        /*teleport.argument = "4274109";
-        *///?}
-        //? if (>=1.21.4 && <=26.3) {
         teleport.argument = "[0, 9]";
         //?}
 
         teleport.remainingTicks = 3L;
         TicketLedgerSnapshot.Entry player = ticket("player", 0, 8, 31, 0);
         player.argument = "[0, 8]";
-        java.util.Set<String> keys =
-                RuntimeOrderRestorer.expiringKeys(java.util.List.of(unknown, teleport, player));
+        Set<String> keys = RuntimeOrderRestorer.expiringKeys(List.of(unknown, teleport, player));
 
         assertEquals(2, keys.size());
         assertTrue(keys.contains("minecraft:overworld|3,3|unknown|33|[3, 3]"));
         // The network entity id of a post-teleport ticket changes with every restart.
 
-        //? if (>=1.18 && <=1.21.3) {
+        //? if <=1.21.3 {
         /*assertTrue(keys.contains("minecraft:overworld|0,9|post_teleport|32|-"));
-        *///?}
-
-        //? if (>=1.21.4 && <=26.3) {
+        *///?} else {
         assertTrue(keys.contains("minecraft:overworld|0,9|ender_pearl|32|[0, 9]"));
         //?}
 

@@ -10,7 +10,7 @@ import net.minecraft.server.level.ServerChunkCache;
 import net.minecraft.world.level.LocalMobCapCalculator;
 import net.minecraft.world.level.NaturalSpawner;
 
-//? if (>=1.18 && <=26.2) {
+//? if <=26.2 {
 /*import java.util.List;
 import net.minecraft.world.entity.Entity;
 *///?}
@@ -25,17 +25,14 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
  * Keeps optional consumers such as Carpet's mobcap HUD safe while AntiCrash is deliberately
  * preventing the first world tick after a recovery.
  *
- * <p>Vanilla initializes {@code ServerChunkCache.spawnInfo} from {@code tickChunks}. Recovery
+ * <p>Vanilla initializes {@code ServerChunkCache.lastSpawnState} from {@code tickChunks}. Recovery
  * freeze must not run that method just to satisfy an observer, because doing so would advance the
  * restored world. Instead this mixin supplies an immutable, empty view until Vanilla has produced
  * the real value. The backing field itself is never changed.
  */
-//? if (>=1.18 && <=1.21.11) {
-/*@Mixin(ServerChunkCache.class)
+@Mixin(ServerChunkCache.class)
 public abstract class ServerChunkManagerMixin {
-
-*///?}
-    //? if (>=1.18 && <=1.18.1) {
+    //? if <=1.18.1 {
     /*@WrapOperation(
             method = "tick(Ljava/util/function/BooleanSupplier;)V",
             at =
@@ -50,11 +47,7 @@ public abstract class ServerChunkManagerMixin {
     }
 
     *///?}
-//? if (>=26.1 && <=26.3) {
-@Mixin(ServerChunkCache.class)
-public abstract class ServerChunkManagerMixin {
-//?}
-    //? if 26.3 {
+    //? if >=26.3 {
     @org.spongepowered.asm.mixin.Shadow @org.spongepowered.asm.mixin.Final
     private net.minecraft.server.level.ServerLevel level;
 
@@ -71,25 +64,23 @@ public abstract class ServerChunkManagerMixin {
         if (controller == null || !controller.needsSpawnInfoFallback()) return;
 
         if (anticrash$emptySpawnInfo == null) {
-
             ServerChunkCache manager = (ServerChunkCache) (Object) this;
 
-            //? if (>=1.18 && <=26.2) {
+            //? if <=26.2 {
             /*anticrash$emptySpawnInfo =
                     NaturalSpawner.createState(
                             0,
                             List.<Entity>of(),
-                            (chunkPos, consumer) ->
-            *///?}
-            //? if 26.3 {
+                            (chunkPos, consumer) -> {},
+                            new LocalMobCapCalculator(manager.chunkMap));
+            *///?} else {
             anticrash$emptySpawnInfo =
                     NaturalSpawner.createState(
                             0,
                             level,
-                            (chunkPos, consumer) ->
-            //?}
-                            {},
+                            (chunkPos, consumer) -> {},
                             new LocalMobCapCalculator(manager.chunkMap));
+            //?}
         }
         callbackInfo.setReturnValue(anticrash$emptySpawnInfo);
     }

@@ -40,7 +40,7 @@ class RuntimeStateAuditCoverageTest {
      * Entity classes that must be in the matrix; mobs are covered as a category in the document.
      */
 
-    //? if (>=1.18 && <=1.21.1) {
+    //? if <=1.21.1 {
     /*private static final List<String> REQUIRED_ENTITIES =
             List.of(
                     "net.minecraft.world.entity.Entity",
@@ -57,8 +57,7 @@ class RuntimeStateAuditCoverageTest {
                     "net.minecraft.world.entity.projectile.Projectile",
                     "net.minecraft.world.entity.projectile.AbstractArrow");
 
-    *///?}
-    //? if (>=1.21.2 && <=1.21.11) {
+    *///?} else if <=1.21.10 {
     /*private static final List<String> REQUIRED_ENTITIES =
             List.of(
                     "net.minecraft.world.entity.Entity",
@@ -66,59 +65,17 @@ class RuntimeStateAuditCoverageTest {
                     "net.minecraft.world.entity.item.PrimedTnt",
                     "net.minecraft.world.entity.item.FallingBlockEntity",
                     "net.minecraft.world.entity.ExperienceOrb",
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.AbstractMinecart",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecart",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.MinecartHopper",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.minecart.MinecartHopper",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.MinecartFurnace",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.minecart.MinecartFurnace",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.MinecartTNT",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.minecart.MinecartTNT",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.AbstractMinecartContainer",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.minecart.AbstractMinecartContainer",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.Boat",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.boat.Boat",
-                    ^///?}
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.vehicle.AbstractBoat",
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.vehicle.boat.AbstractBoat",
-                    ^///?}
+                    "net.minecraft.world.entity.vehicle.AbstractMinecart",
+                    "net.minecraft.world.entity.vehicle.MinecartHopper",
+                    "net.minecraft.world.entity.vehicle.MinecartFurnace",
+                    "net.minecraft.world.entity.vehicle.MinecartTNT",
+                    "net.minecraft.world.entity.vehicle.AbstractMinecartContainer",
+                    "net.minecraft.world.entity.vehicle.Boat",
+                    "net.minecraft.world.entity.vehicle.AbstractBoat",
                     "net.minecraft.world.entity.projectile.Projectile",
-                    //? if (>=1.21.2 && <=1.21.10) {
-                    /^"net.minecraft.world.entity.projectile.AbstractArrow");
+                    "net.minecraft.world.entity.projectile.AbstractArrow");
 
-                    ^///?}
-                    //? if 1.21.11 {
-                    /^"net.minecraft.world.entity.projectile.arrow.AbstractArrow");
-
-                    ^///?}
-    *///?}
-    //? if (>=26.1 && <=26.3) {
+    *///?} else {
     private static final List<String> REQUIRED_ENTITIES =
             List.of(
                     "net.minecraft.world.entity.Entity",

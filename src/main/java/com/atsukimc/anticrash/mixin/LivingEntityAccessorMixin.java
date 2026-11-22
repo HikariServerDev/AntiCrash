@@ -8,8 +8,7 @@ import org.spongepowered.asm.mixin.gen.Accessor;
 
 @Mixin(LivingEntity.class)
 public interface LivingEntityAccessorMixin {
-
-    //? if (>=1.21.11 && <=26.3) {
+    //? if >=1.21.11 {
     @Accessor("lastKineticHitFeedbackTime")
     long anticrash$lastKineticAttackTime();
 

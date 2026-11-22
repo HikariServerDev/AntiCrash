@@ -1,7 +1,7 @@
-//? if (>=1.21.11 && <=26.3) {
+//? if >=1.21.11 {
 package com.atsukimc.anticrash.command;
 
-//? if (>=26.1 && <=26.3) {
+//? if >=26.1 {
 import net.minecraft.server.permissions.LevelBasedPermissionSet;
 import net.minecraft.server.permissions.PermissionLevel;
 import net.minecraft.server.permissions.PermissionSet;
@@ -30,7 +30,6 @@ class VersionPermissionsTest {
 
     @Test
     void invalidLevelsNeverClampToAnAllowedPermission() {
-
         assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, -1));
 
         assertFalse(VersionPermissions.hasLevel(PermissionSet.ALL_PERMISSIONS, 5));

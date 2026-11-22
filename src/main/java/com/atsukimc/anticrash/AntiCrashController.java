@@ -4,11 +4,18 @@ import com.atsukimc.anticrash.checkpoint.CheckpointManager;
 import com.atsukimc.anticrash.command.VersionPermissions;
 import com.atsukimc.anticrash.config.AntiCrashConfig;
 import com.atsukimc.anticrash.consistency.ConsistencyManager;
+import com.atsukimc.anticrash.consistency.ExternalPlayerDataBridge;
 import com.atsukimc.anticrash.core.*;
 import com.atsukimc.anticrash.i18n.MessageCatalog;
 import com.atsukimc.anticrash.integration.carpet.CarpetIntegration;
+import com.atsukimc.anticrash.integration.carpet.CarpetRules;
 import com.atsukimc.anticrash.integration.carpet.FakePlayerSnapshot;
 import com.atsukimc.anticrash.logging.AntiCrashLogger;
+import com.atsukimc.anticrash.logging.ChatStyle;
+import com.atsukimc.anticrash.mixin.ClientConnectionAccessorMixin;
+import com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin;
+import com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin;
+import com.atsukimc.anticrash.network.DeferredPayloadDispatcher;
 import com.atsukimc.anticrash.player.PlayerSnapshotData;
 import com.atsukimc.anticrash.player.PlayerSnapshotManager;
 import com.atsukimc.anticrash.recovery.*;
@@ -25,9 +32,15 @@ import com.google.gson.reflect.TypeToken;
 
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.ChatFormatting;
+import net.minecraft.core.BlockPos;
 import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.server.RunningOnDifferentThreadException;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.level.block.piston.PistonMovingBlockEntity;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,9 +51,14 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public final class AntiCrashController {
     private static final Logger BOOT_LOGGER = LoggerFactory.getLogger("anticrash");
@@ -63,7 +81,7 @@ public final class AntiCrashController {
     private final ConsistencyManager consistency;
     private final RestartCoordinator restartCoordinator;
     private final InternalProcessLock processLock;
-    private final com.atsukimc.anticrash.core.RunMarker previousRun;
+    private final RunMarker previousRun;
     private MinecraftServer server;
     private volatile boolean normalShutdownRequested;
     private boolean finalCheckpointDone;
@@ -86,7 +104,7 @@ public final class AntiCrashController {
     private boolean forceStartEligible;
     private boolean strictBlocked;
     private RecoveryEquivalenceReport lastEquivalenceReport;
-    private final java.util.Map<String, String> recoveryDegraded = new java.util.LinkedHashMap<>();
+    private final Map<String, String> recoveryDegraded = new LinkedHashMap<>();
 
     /** Retained only while the recovery is frozen so verify/debug can explain a failed start. */
     private RuntimeCapsule equivalenceExpectedCapsule;
@@ -105,15 +123,13 @@ public final class AntiCrashController {
         this(
                 FabricLoader.getInstance().getGameDir(),
                 FabricLoader.getInstance().getConfigDir(),
-                com.atsukimc.anticrash.recovery.PreWorldDecisionInput::await);
+                PreWorldDecisionInput::await);
     }
 
-    private final com.atsukimc.anticrash.recovery.PreWorldDecisionInput.Reader decisionInput;
+    private final PreWorldDecisionInput.Reader decisionInput;
 
     AntiCrashController(
-            Path gameDirectory,
-            Path configDirectory,
-            com.atsukimc.anticrash.recovery.PreWorldDecisionInput.Reader decisionInput) {
+            Path gameDirectory, Path configDirectory, PreWorldDecisionInput.Reader decisionInput) {
         this.decisionInput = decisionInput;
         configFile = configDirectory.resolve("anticrash.toml");
         internal = new InternalStateManager(gameDirectory, BOOT_LOGGER::warn);
@@ -147,10 +163,10 @@ public final class AntiCrashController {
         }
         processLock = acquiredLock;
 
-        com.atsukimc.anticrash.core.RunMarker prior = null;
+        RunMarker prior = null;
         if (initializationError == null) prior = internal.readPreviousRun();
         // A start that ended before the world was loaded says nothing about the world.
-        previousRun = com.atsukimc.anticrash.core.RunMarker.effectivePrevious(prior);
+        previousRun = RunMarker.effectivePrevious(prior);
         if (prior != null && previousRun != prior) {
             logger.importantKey(
                     "startup.previous_start_never_opened_world",
@@ -340,10 +356,7 @@ public final class AntiCrashController {
         }
     }
 
-    private void handleDirtyExit(
-            com.atsukimc.anticrash.core.RunMarker previous,
-            CrashCause cause,
-            RecoveryStateData recovery)
+    private void handleDirtyExit(RunMarker previous, CrashCause cause, RecoveryStateData recovery)
             throws IOException {
         transitionOrThrow(AntiCrashState.PREBOOT_INSPECT);
         logger.importantKey("recovery.previous_session", cause);
@@ -391,8 +404,7 @@ public final class AntiCrashController {
      * ASK after a normal stop. Nothing is wrong with the world, so the default is to start it as it
      * is: only an explicit Y restores, and a missing console never blocks the start.
      */
-    private void handleCleanExitAsk(
-            com.atsukimc.anticrash.core.RunMarker previous, RecoveryStateData recovery)
+    private void handleCleanExitAsk(RunMarker previous, RecoveryStateData recovery)
             throws IOException {
         long candidateDiscoveryStarted = System.nanoTime();
         CheckpointCandidate candidate =
@@ -445,10 +457,7 @@ public final class AntiCrashController {
     }
 
     private void awaitPreWorldRecoveryDecision(
-            com.atsukimc.anticrash.core.RunMarker previous,
-            CrashCause cause,
-            RecoveryStateData recovery)
-            throws IOException {
+            RunMarker previous, CrashCause cause, RecoveryStateData recovery) throws IOException {
         long timeoutSeconds = Math.max(0L, config.recovery.askTimeoutSeconds);
         String timeoutText =
                 timeoutSeconds == 0
@@ -499,7 +508,7 @@ public final class AntiCrashController {
      * {@code RegionFile} view behind.
      */
     private void restoreCheckpointBeforeWorld(
-            com.atsukimc.anticrash.core.RunMarker previous,
+            RunMarker previous,
             CrashCause cause,
             RecoveryStateData recovery,
             String requestedCheckpointId)
@@ -509,7 +518,7 @@ public final class AntiCrashController {
     }
 
     private void restoreCheckpointBeforeWorld(
-            com.atsukimc.anticrash.core.RunMarker previous,
+            RunMarker previous,
             StartupRecoveryPlan.PreviousExit previousExit,
             RecoveryStateData recovery,
             String requestedCheckpointId)
@@ -623,14 +632,12 @@ public final class AntiCrashController {
                 && config.recovery.fallbackToPreviousCheckpoint;
     }
 
-    private void preserveCrashRaw(com.atsukimc.anticrash.core.RunMarker previous)
-            throws IOException {
+    private void preserveCrashRaw(RunMarker previous) throws IOException {
         preserveCrashRaw(previous, false);
     }
 
     /** Keeps the world that is about to be replaced, so `/ac recovery abort` can bring it back. */
-    private void preserveCrashRaw(com.atsukimc.anticrash.core.RunMarker previous, boolean cleanExit)
-            throws IOException {
+    private void preserveCrashRaw(RunMarker previous, boolean cleanExit) throws IOException {
         if (!config.snapshot.keepCrashRawWorld) return;
         logger.importantKey(
                 cleanExit
@@ -1097,40 +1104,24 @@ public final class AntiCrashController {
         updateFrozenActionBar();
     }
 
-    /**
-     * ServerLevel#tick is canceled during a recovery freeze, and with it the entity manager tick
-     * that attaches entity sections read from disk. Attach them while frozen (nothing ticks) so the
-     * first resumed tick sees the same entities as the checkpoint instead of adding them one tick
-     * late.
-     */
     /** Server ticks spent waiting for Vanilla to re-create its own tickets before the resume. */
     private int permanentTicketWaitTicks;
 
     private static final int MAX_PERMANENT_TICKET_WAIT_TICKS = 200;
-
-    /**
-     * Player tickets are added by Vanilla asynchronously, some ticks after a player is placed, and
-     * only while the chunk manager is ticked. The world is frozen, so that is driven here. The
-     * resume waits until every permanent ticket of the checkpoint exists again: only then do the
-     * recovery tickets hold nothing that the checkpoint's own tickets would not hold.
-     *
-     * @return true while the resume should wait another server tick
-     */
     private static final int PERMANENT_TICKET_STALL_TICKS = 20;
 
     private int permanentTicketsMissing = -1;
     private int permanentTicketStallTicks;
 
-    //? if (>=1.18 && <=1.20.1) {
-    /*private volatile com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                    net.minecraft.server.network.ServerGamePacketListenerImpl,
+    //? if <=1.20.1 {
+    /*private volatile DeferredPayloadDispatcher<
+                    ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket>
             deferredPayloads;
 
-    *///?}
-    //? if (>=1.20.2 && <=26.3) {
-    private volatile com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                    net.minecraft.server.network.ServerGamePacketListenerImpl,
+    *///?} else {
+    private volatile DeferredPayloadDispatcher<
+                    ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
             deferredPayloads;
 
@@ -1138,17 +1129,15 @@ public final class AntiCrashController {
 
     /** Keeps a mod payload received during the recovery freeze; any thread. */
 
-    //? if (>=1.18 && <=1.20.1) {
+    //? if <=1.20.1 {
     /*public void deferCustomPayload(
-            net.minecraft.server.network.ServerGamePacketListenerImpl handler,
-            net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket packet)
-    *///?}
-    //? if (>=1.20.2 && <=26.3) {
+            ServerGamePacketListenerImpl handler,
+            net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket packet) {
+    *///?} else {
     public void deferCustomPayload(
-            net.minecraft.server.network.ServerGamePacketListenerImpl handler,
-            net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet)
+            ServerGamePacketListenerImpl handler,
+            net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket packet) {
     //?}
-            {
         payloadDelivery().defer(handler, packet);
     }
 
@@ -1167,37 +1156,30 @@ public final class AntiCrashController {
         delivery.drain();
     }
 
-    //? if (>=1.18 && <=1.20.1) {
-    /*private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                    net.minecraft.server.network.ServerGamePacketListenerImpl,
+    //? if <=1.20.1 {
+    /*private synchronized DeferredPayloadDispatcher<
+                    ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket>
-            payloadDelivery()
-    *///?}
-    //? if (>=1.20.2 && <=26.3) {
-    private synchronized com.atsukimc.anticrash.network.DeferredPayloadDispatcher<
-                    net.minecraft.server.network.ServerGamePacketListenerImpl,
+            payloadDelivery() {
+    *///?} else {
+    private synchronized DeferredPayloadDispatcher<
+                    ServerGamePacketListenerImpl,
                     net.minecraft.network.protocol.common.ServerboundCustomPayloadPacket>
-            payloadDelivery()
+            payloadDelivery() {
     //?}
-            {
         if (deferredPayloads == null)
             deferredPayloads =
-                    new com.atsukimc.anticrash.network.DeferredPayloadDispatcher<>(
+                    new DeferredPayloadDispatcher<>(
                             handler ->
                                     !(handler.player == null || handler.player.hasDisconnected()),
                             handler -> {
-
-                                //? if (>=1.18 && <=1.19.3) {
+                                //? if <=1.19.3 {
                                 /*var channel =
-                                        ((com.atsukimc.anticrash.mixin
-                                                                .ClientConnectionAccessorMixin)
-                                                        handler.connection)
+                                        ((ClientConnectionAccessorMixin) handler.connection)
                                                 .anticrash$getChannel();
-                                *///?}
-                                //? if (>=1.19.4 && <=26.3) {
+                                *///?} else {
                                 var channel =
-                                        ((com.atsukimc.anticrash.mixin
-                                                                .ClientConnectionAccessorMixin)
+                                        ((ClientConnectionAccessorMixin)
                                                         ((com.atsukimc.anticrash.mixin
                                                                                 .ServerPlayConnectionAccessorMixin)
                                                                         handler)
@@ -1211,12 +1193,9 @@ public final class AntiCrashController {
                             },
                             (handler, packet) -> {
                                 try {
-
                                     handler.handleCustomPayload(packet);
 
-                                } catch (
-                                        net.minecraft.server.RunningOnDifferentThreadException
-                                                rescheduled) {
+                                } catch (RunningOnDifferentThreadException rescheduled) {
                                     // Vanilla scheduled the packet on its server thread; this is
                                     // success.
                                 }
@@ -1225,15 +1204,21 @@ public final class AntiCrashController {
         return deferredPayloads;
     }
 
+    /**
+     * Player tickets are added by Vanilla asynchronously, some ticks after a player is placed, and
+     * only while the chunk manager is ticked. The world is frozen, so that is driven here. The
+     * resume waits until every permanent ticket of the checkpoint exists again: only then do the
+     * recovery tickets hold nothing that the checkpoint's own tickets would not hold.
+     *
+     * @return true while the resume should wait another server tick
+     */
     private boolean awaitPermanentTickets() {
-        com.atsukimc.anticrash.runtime.RuntimeCapsule capsule = pendingRuntimeCapsule;
+        RuntimeCapsule capsule = pendingRuntimeCapsule;
         if (capsule == null || capsule.ticketLedger == null || server == null) return false;
 
         int missing =
-                com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.missingPermanentTickets(
-                        com.atsukimc.anticrash.runtime.TicketLedgerSnapshot.capture(
-                                server.getAllLevels()),
-                        capsule.ticketLedger);
+                RuntimeOrderRestorer.missingPermanentTickets(
+                        TicketLedgerSnapshot.capture(server.getAllLevels()), capsule.ticketLedger);
 
         if (missing == 0) return false;
         if (permanentTicketWaitTicks++ >= MAX_PERMANENT_TICKET_WAIT_TICKS) return false;
@@ -1246,30 +1231,30 @@ public final class AntiCrashController {
             return false;
         }
 
-        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels())
-        //? if (>=1.18 && <=1.18.1) {
-        /*{
-            // 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
+        for (ServerLevel world : server.getAllLevels()) {
+            //? if <=1.18.1 {
+            /*// 1.18.1 has no tickChunks boolean; the scoped adapter suppresses only simulation.
             com.atsukimc.anticrash.recovery.VersionChunkLifecycle.advance(world.getChunkSource());
-        *///?}
-        //? if (>=1.18.2 && <=26.3) {
-        {
+            *///?} else {
             // No chunk is ticked (second argument); this only advances tickets and chunk loading.
 
             world.getChunkSource().tick(() -> true, false);
-        //?}
+            //?}
 
         }
         return true;
     }
 
+    /**
+     * ServerLevel#tick is canceled during a recovery freeze, and with it the entity manager tick
+     * that attaches entity sections read from disk. Attach them while frozen (nothing ticks) so the
+     * first resumed tick sees the same entities as the checkpoint instead of adding them one tick
+     * late.
+     */
     private void pumpEntityLoading(MinecraftServer server) {
-
-        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels()) {
+        for (ServerLevel world : server.getAllLevels()) {
             try {
-                ((com.atsukimc.anticrash.mixin.ServerWorldAccessorMixin) world)
-                        .anticrash$getEntityManager()
-                        .tick();
+                ((ServerWorldAccessorMixin) world).anticrash$getEntityManager().tick();
             } catch (RuntimeException exception) {
                 logger.verboseKey(
                         "recovery.entity_load_pump_failed",
@@ -1359,27 +1344,20 @@ public final class AntiCrashController {
      * and players who joined meanwhile are entities too, and tickets age while frozen.
      */
     private void restoreRuntimeOrderBeforeFirstTick() {
-        com.atsukimc.anticrash.runtime.RuntimeCapsule capsule = pendingRuntimeCapsule;
+        RuntimeCapsule capsule = pendingRuntimeCapsule;
         if (capsule == null || server == null) return;
         boolean strict = "STRICT".equalsIgnoreCase(config.recovery.fidelity);
         try {
-
-            java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds =
-                    com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.worlds(
-                            server.getAllLevels());
+            Map<String, ServerLevel> worlds = RuntimeOrderRestorer.worlds(server.getAllLevels());
 
             int tickers = 0, tickersUnknown = 0, tickersMissing = 0;
             int entities = 0, entitiesUnknown = 0, entitiesMissing = 0;
             int absentPlayers = 0;
             // STRICT already restored both orders with its own all-or-nothing checks.
 
-            for (java.util.Map.Entry<String, net.minecraft.server.level.ServerLevel> world :
-                    strict
-                            ? java.util.Map.<String, net.minecraft.server.level.ServerLevel>of()
-                                    .entrySet()
-                            : worlds.entrySet()) {
-                java.util.List<com.atsukimc.anticrash.runtime.BlockEntityTickerSnapshot>
-                        tickerOrder = new ArrayList<>();
+            for (Map.Entry<String, ServerLevel> world :
+                    strict ? Map.<String, ServerLevel>of().entrySet() : worlds.entrySet()) {
+                List<BlockEntityTickerSnapshot> tickerOrder = new ArrayList<>();
                 if (capsule.blockEntityTickerOrder != null) {
                     for (var snapshot : capsule.blockEntityTickerOrder) {
                         if (snapshot != null && world.getKey().equals(snapshot.dimension))
@@ -1387,8 +1365,7 @@ public final class AntiCrashController {
                     }
                 }
                 var tickerResult =
-                        com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.blockEntityTickers(
-                                world.getValue(), tickerOrder);
+                        RuntimeOrderRestorer.blockEntityTickers(world.getValue(), tickerOrder);
                 if (tickerResult == null) {
                     degradeRecovery(
                             "BLOCK_ENTITY_TICKERS", world.getKey() + ": duplicate live ticker");
@@ -1397,8 +1374,7 @@ public final class AntiCrashController {
                     tickersUnknown += tickerResult.unknownLive();
                     tickersMissing += tickerResult.missing();
                 }
-                java.util.List<com.atsukimc.anticrash.runtime.EntityRuntimeSnapshot> entityOrder =
-                        new ArrayList<>();
+                List<EntityRuntimeSnapshot> entityOrder = new ArrayList<>();
                 if (capsule.entityOrder != null) {
                     for (var snapshot : capsule.entityOrder) {
                         if (snapshot != null
@@ -1416,9 +1392,7 @@ public final class AntiCrashController {
                         }
                     }
                 }
-                var entityResult =
-                        com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.entities(
-                                world.getValue(), entityOrder);
+                var entityResult = RuntimeOrderRestorer.entities(world.getValue(), entityOrder);
                 if (entityResult == null) {
                     degradeRecovery("ENTITIES", world.getKey() + ": entity list is in use");
                 } else {
@@ -1431,14 +1405,13 @@ public final class AntiCrashController {
             int stray =
                     capsule.ticketLedger == null || capsule.formatVersion < 7
                             ? 0
-                            : com.atsukimc.anticrash.runtime.RuntimeOrderRestorer
-                                    .removeStrayExpiringTickets(worlds, capsule.ticketLedger);
+                            : RuntimeOrderRestorer.removeStrayExpiringTickets(
+                                    worlds, capsule.ticketLedger);
             if (stray > 0) logger.verboseKey("runtime.stray_tickets_removed", stray);
             int expiring =
                     capsule.ticketLedger == null
                             ? 0
-                            : com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.expiringTickets(
-                                    worlds, capsule.ticketLedger);
+                            : RuntimeOrderRestorer.expiringTickets(worlds, capsule.ticketLedger);
             if (!strict) {
                 logger.normalKey(
                         "runtime.order_restored",
@@ -1460,19 +1433,16 @@ public final class AntiCrashController {
             if (capsule.entityIdCounter != null) {
                 // Entities created from now on get ids with the same remainder as they would have.
 
-                //? if (>=1.18 && <=26.1) {
-                /*java.util.concurrent.atomic.AtomicInteger ids =
+                //? if <=26.1 {
+                /*AtomicInteger ids =
                         com.atsukimc.anticrash.mixin.EntityRuntimeAccessorMixin
                                 .anticrash$currentId();
-                *///?}
-                //? if (>=26.2 && <=26.3) {
-                java.util.concurrent.atomic.AtomicInteger ids =
+                *///?} else {
+                AtomicInteger ids =
                         com.atsukimc.anticrash.mixin.ServerEntityIdAccessor.anticrash$currentId();
                 //?}
 
-                ids.set(
-                        com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot.nextEntityId(
-                                ids.get(), capsule.entityIdCounter));
+                ids.set(RuntimeExtensionSnapshot.nextEntityId(ids.get(), capsule.entityIdCounter));
             }
             verifyPistonRuntime(capsule, worlds);
             // AntiCrash's own tickets held the chunks while they were prepared. Left in place for
@@ -1480,7 +1450,7 @@ public final class AntiCrashController {
             // not what the checkpoint's world would have done.
 
             if (capsule.ticketLedger != null
-                    && com.atsukimc.anticrash.runtime.RuntimeOrderRestorer.permanentTicketsCovered(
+                    && RuntimeOrderRestorer.permanentTicketsCovered(
                             server.getAllLevels(), capsule.ticketLedger)) {
                 chunks.releaseNow(server);
                 logger.normalKey("chunk.recovery_tickets_released_at_start");
@@ -1507,9 +1477,8 @@ public final class AntiCrashController {
      * category. A category the checkpoint did not record (an older capsule) is reported as such and
      * never counted as a match.
      */
-    private void verifyRuntimeCategories(com.atsukimc.anticrash.runtime.RuntimeCapsule expected) {
-
-        for (net.minecraft.server.level.ServerLevel world : server.getAllLevels()) {
+    private void verifyRuntimeCategories(RuntimeCapsule expected) {
+        for (ServerLevel world : server.getAllLevels()) {
             // Apply the ticket changes to the chunk holders without ageing any ticket.
 
             world.getChunkSource()
@@ -1517,32 +1486,28 @@ public final class AntiCrashController {
                     .getDistanceManager()
                     .runAllUpdates(world.getChunkSource().chunkMap);
         }
-        com.atsukimc.anticrash.runtime.RuntimeCapsule actual =
-                runtime.captureCurrentForEquivalence(server);
-        java.util.List<String> categories =
+        RuntimeCapsule actual = runtime.captureCurrentForEquivalence(server);
+        List<String> categories =
                 new ArrayList<>(
-                        java.util.List.of(
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.CHUNK_DOMAIN,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.SCHEDULED_TICKS,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.BLOCK_EVENTS,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.MOVING_PISTONS,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory
-                                        .BLOCK_ENTITY_TICKERS,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.REDSTONE_RUNTIME,
-                                com.atsukimc.anticrash.runtime.EquivalenceCategory.WORLD_RUNTIME));
-        categories.addAll(com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot.CATEGORIES);
+                        List.of(
+                                EquivalenceCategory.CHUNK_DOMAIN,
+                                EquivalenceCategory.SCHEDULED_TICKS,
+                                EquivalenceCategory.BLOCK_EVENTS,
+                                EquivalenceCategory.MOVING_PISTONS,
+                                EquivalenceCategory.BLOCK_ENTITY_TICKERS,
+                                EquivalenceCategory.REDSTONE_RUNTIME,
+                                EquivalenceCategory.WORLD_RUNTIME));
+        categories.addAll(RuntimeExtensionSnapshot.CATEGORIES);
         StringBuilder summary = new StringBuilder();
         for (String category : categories) {
             String want = expected.expectedFingerprints.get(category);
             String have = actual.expectedFingerprints.get(category);
             Integer wantCount = expected.runtimeExtensionCounts.get(category);
             Integer haveCount = actual.runtimeExtensionCounts.get(category);
-            String result =
-                    com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot.verdict(
-                            want, have, wantCount, haveCount);
+            String result = RuntimeExtensionSnapshot.verdict(want, have, wantCount, haveCount);
 
-            //? if (>=1.20.3 && <=26.3) {
-            if (category.equals(com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot.NATIVE_TICK)
+            //? if >=1.20.3 {
+            if (category.equals(RuntimeExtensionSnapshot.NATIVE_TICK)
                     && config.recovery.fidelity.equals("STRICT")
                     && (want == null || expected.nativeTickState == null)) {
                 result = "MISMATCH MISSING_FROM_OLD_FORMAT: Vanilla tick-manager state";
@@ -1552,11 +1517,9 @@ public final class AntiCrashController {
             if (result.startsWith("MISMATCH")) {
                 // Name what differs: "MISMATCH" alone cannot be acted on or investigated.
                 String detail =
-                        com.atsukimc.anticrash.runtime.RuntimeDiff.describe(
-                                com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot
-                                        .diagnosticLines(expected, category),
-                                com.atsukimc.anticrash.runtime.RuntimeExtensionSnapshot
-                                        .diagnosticLines(actual, category),
+                        RuntimeDiff.describe(
+                                RuntimeExtensionSnapshot.diagnosticLines(expected, category),
+                                RuntimeExtensionSnapshot.diagnosticLines(actual, category),
                                 3);
                 if (detail.length() > 700) detail = detail.substring(0, 700) + "...";
                 degradeRecovery(category, detail.isEmpty() ? result : result + " (" + detail + ")");
@@ -1590,9 +1553,7 @@ public final class AntiCrashController {
 
     private boolean playerOnline(String uuid) {
         try {
-
-            return uuid != null
-                    && server.getPlayerList().getPlayer(java.util.UUID.fromString(uuid)) != null;
+            return uuid != null && server.getPlayerList().getPlayer(UUID.fromString(uuid)) != null;
 
         } catch (IllegalArgumentException invalid) {
             return false;
@@ -1603,17 +1564,14 @@ public final class AntiCrashController {
     private String lastPistonVerification = "NOT_APPLICABLE";
 
     /** Compares Carpet's rule values with the checkpoint's. */
-    private static String verifyCarpetRules(
-            com.atsukimc.anticrash.runtime.RuntimeCapsule expected) {
+    private static String verifyCarpetRules(RuntimeCapsule expected) {
         if (!CarpetIntegration.isInstalled()) return "NOT_APPLICABLE";
         if (expected.carpetRules == null) return "MISSING_FROM_OLD_FORMAT";
-        java.util.Map<String, java.util.Map<String, String>> now =
-                com.atsukimc.anticrash.integration.carpet.CarpetRules.capture();
+        Map<String, Map<String, String>> now = CarpetRules.capture();
         if (now == null) return "INCOMPLETE";
-        int count =
-                com.atsukimc.anticrash.integration.carpet.CarpetRules.count(expected.carpetRules);
+        int count = CarpetRules.count(expected.carpetRules);
         if (expected.carpetRules.equals(now)) return "MATCH " + count + "/" + count;
-        java.util.List<String> want = new ArrayList<>(), have = new ArrayList<>();
+        List<String> want = new ArrayList<>(), have = new ArrayList<>();
         expected.carpetRules.forEach((manager, rules) ->
                 rules.forEach((rule, value) -> want.add(manager + ":" + rule + "=" + value)));
         now.forEach((manager, rules) ->
@@ -1623,15 +1581,15 @@ public final class AntiCrashController {
                 + "/"
                 + count
                 + " ("
-                + com.atsukimc.anticrash.runtime.RuntimeDiff.describe(want, have, 3)
+                + RuntimeDiff.describe(want, have, 3)
                 + ")";
     }
 
     /** Compares what each restored FakePlayer is doing with an item against the checkpoint. */
     private String verifyFakePlayerUse() {
-        java.util.List<FakePlayerSnapshot> expected = equivalenceExpectedFakePlayers;
+        List<FakePlayerSnapshot> expected = equivalenceExpectedFakePlayers;
         if (expected == null || expected.isEmpty()) return "NOT_APPLICABLE";
-        java.util.Map<String, String> live = new java.util.HashMap<>();
+        Map<String, String> live = new HashMap<>();
         try {
             for (FakePlayerSnapshot snapshot :
                     CarpetIntegration.captureForVerification(server, config, logger)) {
@@ -1662,9 +1620,7 @@ public final class AntiCrashController {
     }
 
     /** Compares every moving piston with the progress the checkpoint recorded for it. */
-    private void verifyPistonRuntime(
-            com.atsukimc.anticrash.runtime.RuntimeCapsule capsule,
-            java.util.Map<String, net.minecraft.server.level.ServerLevel> worlds) {
+    private void verifyPistonRuntime(RuntimeCapsule capsule, Map<String, ServerLevel> worlds) {
         lastPistonVerification = "NOT_APPLICABLE";
         if (capsule.movingPistonTickOrder == null || capsule.movingPistonTickOrder.isEmpty())
             return;
@@ -1677,14 +1633,12 @@ public final class AntiCrashController {
                 continue;
             }
 
-            net.minecraft.server.level.ServerLevel world = worlds.get(snapshot.dimension);
+            ServerLevel world = worlds.get(snapshot.dimension);
 
             if (world != null
-                    && com.atsukimc.anticrash.runtime.BlockEntityTickerSnapshot.loadedBlockEntity(
-                                    world, snapshot.position())
-                            instanceof
-                            net.minecraft.world.level.block.piston.PistonMovingBlockEntity piston) {
-                var accessor = (com.atsukimc.anticrash.mixin.PistonBlockEntityAccessorMixin) piston;
+                    && BlockEntityTickerSnapshot.loadedBlockEntity(world, snapshot.position())
+                            instanceof PistonMovingBlockEntity piston) {
+                var accessor = (PistonBlockEntityAccessorMixin) piston;
                 if (accessor.anticrash$getProgress() == snapshot.progress
                         && accessor.anticrash$getLastProgress() == snapshot.lastProgress) match++;
             }
@@ -1714,7 +1668,7 @@ public final class AntiCrashController {
     /** "CATEGORY: reason; ..." for the last recovery, or an empty string. */
     public String recoveryDegradedSummary() {
         StringBuilder summary = new StringBuilder();
-        for (java.util.Map.Entry<String, String> entry : recoveryDegraded.entrySet()) {
+        for (Map.Entry<String, String> entry : recoveryDegraded.entrySet()) {
             if (summary.length() > 0) summary.append("; ");
             summary.append(entry.getKey()).append(": ").append(entry.getValue());
         }
@@ -1723,8 +1677,7 @@ public final class AntiCrashController {
 
     /** A chat message coloured by {@link com.atsukimc.anticrash.logging.ChatStyle}. */
     public Component chat(String message, ChatFormatting base) {
-        return com.atsukimc.anticrash.logging.ChatStyle.text(
-                message, base, config.logging.chatColor);
+        return ChatStyle.text(message, base, config.logging.chatColor);
     }
 
     public AntiCrashLogger logger() {
@@ -1932,7 +1885,6 @@ public final class AntiCrashController {
                 && config.recovery.lock.allowLogin
                 && playerSnapshots != null
                 && !playerSnapshots.restoreOnJoin(player)) {
-
             failRecoverySetup(
                     new IOException(
                             "Real Player snapshot restore failed for " + player.getStringUUID()));
@@ -2041,7 +1993,7 @@ public final class AntiCrashController {
             } catch (IOException exception) {
                 logger.importantKey("state.process_lock_release_failed", exception.getMessage());
             }
-        // Injected at the return of MinecraftServer.shutdown, so this is the last line AntiCrash
+        // Injected at the return of MinecraftServer.stopServer, so this is the last line AntiCrash
         // can emit before the process ends.
         if (pendingRestore != null) logger.importantKey("recovery.restore_ready_start_server");
     }
@@ -2384,12 +2336,11 @@ public final class AntiCrashController {
     }
 
     /** Reason a start request would be refused right now, or {@code null} when it is accepted. */
-    private com.atsukimc.anticrash.recovery.RecoveryStartGate.Decision evaluateStart(
-            boolean force) {
+    private RecoveryStartGate.Decision evaluateStart(boolean force) {
         if ("STRICT".equalsIgnoreCase(config.recovery.fidelity)
                 && equivalenceExpectedCapsule != null) refreshEquivalenceReport();
         AntiCrashState state = states.get();
-        return com.atsukimc.anticrash.recovery.RecoveryStartGate.evaluate(
+        return RecoveryStartGate.evaluate(
                 state,
                 force,
                 config.recovery.allowStartWithFailedValidation,
@@ -2606,9 +2557,7 @@ public final class AntiCrashController {
         logger.update(config.logging);
         if (checkpoints != null) checkpoints.resetDeadline();
         if (server != null) {
-
             for (ServerPlayer player : server.getPlayerList().getPlayers()) {
-
                 server.getPlayerList().sendPlayerPermissionLevel(player);
             }
         }
@@ -2683,14 +2632,13 @@ public final class AntiCrashController {
             ServerPlayer player,
             String source,
             String destination,
-            net.minecraft.core.BlockPos pos,
-            net.minecraft.world.item.ItemStack stack) {
+            BlockPos pos,
+            ItemStack stack) {
         if (consistency != null)
             consistency.record(type, player, source, destination, pos, stack, server);
     }
 
-    public void registerExternalBridge(
-            com.atsukimc.anticrash.consistency.ExternalPlayerDataBridge bridge) {
+    public void registerExternalBridge(ExternalPlayerDataBridge bridge) {
         if (consistency != null) consistency.registerBridge(bridge);
     }
 
@@ -2717,8 +2665,7 @@ public final class AntiCrashController {
         }
     }
 
-    private record RunContext(
-            com.atsukimc.anticrash.core.RunMarker previous, RecoveryStateData recovery) {}
+    private record RunContext(RunMarker previous, RecoveryStateData recovery) {}
 
     private record DebugDump(
             String state,

@@ -1,6 +1,6 @@
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.18 && <=1.20.6) {
+//? if <=1.20.6 {
 /*import it.unimi.dsi.fastutil.longs.LongSet;
 *///?}
 
@@ -14,30 +14,15 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.gen.Accessor;
 import org.spongepowered.asm.mixin.gen.Invoker;
 
-//? if (>=1.18 && <=1.20.6) {
-/*@Mixin(ChunkMap.class)
-public interface ThreadedAnvilChunkStorageAccessorMixin {
-    @Accessor("entitiesInLevel")
-    LongSet anticrash$getLoadedChunks();
-
-*///?}
-
-//? if (>=1.21 && <=1.21.11) {
-/*@Mixin(ChunkMap.class)
-public interface ThreadedAnvilChunkStorageAccessorMixin {
-*///?}
-    //? if (>=1.18 && <=1.21.11) {
-    /*@Accessor("updatingChunkMap")
-    Long2ObjectLinkedOpenHashMap<ChunkHolder> anticrash$getCurrentChunkHolders();
-
-    *///?}
-//? if (>=26.1 && <=26.3) {
 @Mixin(ChunkMap.class)
 public interface ThreadedAnvilChunkStorageAccessorMixin {
+    //? if <=1.20.6 {
+    /*@Accessor("entitiesInLevel")
+    LongSet anticrash$getLoadedChunks();
+
+    *///?}
     @Accessor("updatingChunkMap")
     Long2ObjectLinkedOpenHashMap<ChunkHolder> anticrash$getCurrentChunkHolders();
-
-//?}
 
     /**
      * Holders already taken out of the live map and waiting for their unload task. Their chunk may

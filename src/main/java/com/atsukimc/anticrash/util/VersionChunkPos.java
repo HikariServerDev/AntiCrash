@@ -14,7 +14,7 @@ public final class VersionChunkPos {
     private VersionChunkPos() {}
 
     public static int x(ChunkPos pos) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return pos.x;
         *///?} else {
         return pos.x();
@@ -22,7 +22,7 @@ public final class VersionChunkPos {
     }
 
     public static int z(ChunkPos pos) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return pos.z;
         *///?} else {
         return pos.z();
@@ -30,7 +30,7 @@ public final class VersionChunkPos {
     }
 
     public static long pack(ChunkPos pos) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return pos.toLong();
         *///?} else {
         return pos.pack();
@@ -38,7 +38,7 @@ public final class VersionChunkPos {
     }
 
     public static long pack(int x, int z) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return ChunkPos.asLong(x, z);
         *///?} else {
         return ChunkPos.pack(x, z);
@@ -46,7 +46,7 @@ public final class VersionChunkPos {
     }
 
     public static ChunkPos unpack(long packed) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return new ChunkPos(packed);
         *///?} else {
         return ChunkPos.unpack(packed);
@@ -55,7 +55,7 @@ public final class VersionChunkPos {
 
     /** The chunk containing a block. */
     public static ChunkPos containing(BlockPos pos) {
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*return new ChunkPos(pos);
         *///?} else {
         return ChunkPos.containing(pos);

@@ -11,8 +11,10 @@ import com.atsukimc.anticrash.logging.AntiCrashLogger;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.FileTime;
 
 class CrashRawManagerTest {
     @TempDir Path temp;
@@ -35,7 +37,7 @@ class CrashRawManagerTest {
         assertTrue(manager.find(raw.getFileName().toString()).equals(raw));
 
         Files.writeString(raw.resolve("world/level.dat"), "corrupt");
-        assertThrows(java.io.IOException.class, () -> manager.find(raw.getFileName().toString()));
+        assertThrows(IOException.class, () -> manager.find(raw.getFileName().toString()));
     }
 
     @Test
@@ -51,9 +53,7 @@ class CrashRawManagerTest {
         Files.createDirectories(raw);
         Files.writeString(raw.resolve("level.dat"), "unverified");
 
-        assertThrows(
-                java.io.IOException.class,
-                () -> manager.find("a57e99da-e16b-48f4-814f-f47c56644ba5"));
+        assertThrows(IOException.class, () -> manager.find("a57e99da-e16b-48f4-814f-f47c56644ba5"));
     }
 
     private CrashRawManager manager() throws Exception {
@@ -75,9 +75,7 @@ class CrashRawManagerTest {
 
     private static void age(Path raw, long minutes) throws Exception {
         Files.setLastModifiedTime(
-                raw,
-                java.nio.file.attribute.FileTime.fromMillis(
-                        System.currentTimeMillis() - minutes * 60_000L));
+                raw, FileTime.fromMillis(System.currentTimeMillis() - minutes * 60_000L));
     }
 
     @Test

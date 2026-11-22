@@ -19,15 +19,6 @@ import java.util.List;
  * Exact runtime representation of one chunk-local scheduled tick.
  *
  * <p>Vanilla 1.18.2 chunk NBT stores the relative delay and priority, but not {@link
- * ScheduledTick#subTickOrder()}. Reconstructing a queue from that NBT can therefore change the order
- * of observer/redstone updates sharing the same trigger tick. Runtime Capsule v3 keeps all ordering
- * fields required to recreate the active queue exactly.
- */
-
-/**
- * Exact runtime representation of one chunk-local scheduled tick.
- *
- * <p>Vanilla 1.18.2 chunk NBT stores the relative delay and priority, but not {@link
  * ScheduledTick#subTickOrder()}. Reconstructing a queue from that NBT can therefore change the
  * order of observer/redstone updates sharing the same trigger tick. Runtime Capsule v3 keeps all
  * ordering fields required to recreate the active queue exactly.
@@ -71,19 +62,16 @@ public final class ScheduledTickSnapshot {
     }
 
     public TickPriority tickPriority() {
-
         return TickPriority.byValue(priority);
     }
 
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Block> blockScheduler(LevelChunk chunk) {
-
         return (LevelChunkTicks<Block>) chunk.getBlockTicks();
     }
 
     @SuppressWarnings("unchecked")
     static LevelChunkTicks<Fluid> fluidScheduler(LevelChunk chunk) {
-
         return (LevelChunkTicks<Fluid>) chunk.getFluidTicks();
     }
 
@@ -93,7 +81,6 @@ public final class ScheduledTickSnapshot {
             String kind,
             LevelChunkTicks<T> scheduler,
             Registry<T> registry) {
-
         scheduler
                 .getAll()
                 .forEach(ordered -> {

@@ -1,9 +1,12 @@
-//? if 26.3 {
+//? if >=26.3 {
 package com.atsukimc.anticrash.mixin;
 
 import com.atsukimc.anticrash.runtime.RuntimeExtensionNbt;
 import com.atsukimc.anticrash.util.VersionIds;
 
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceKey;
+import net.minecraft.world.item.crafting.RecipeManager;
 import net.minecraft.world.level.block.entity.BrewingStandBlockEntity;
 import net.minecraft.world.level.storage.ValueInput;
 import net.minecraft.world.level.storage.ValueOutput;
@@ -18,7 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 /** 26.3 data-driven brewing: preserve the semantic recipe preference, not manager objects. */
 @Mixin(BrewingStandBlockEntity.class)
 public abstract class BrewingRecipeBindingMixin {
-    @Shadow @Final private net.minecraft.world.item.crafting.RecipeManager.CachedCheck quickCheck;
+    @Shadow @Final private RecipeManager.CachedCheck quickCheck;
 
     @Inject(method = "saveAdditional", at = @At("TAIL"))
     private void anticrash$saveRecipe(ValueOutput output, CallbackInfo ci) {
@@ -42,10 +45,7 @@ public abstract class BrewingRecipeBindingMixin {
                         : null;
         ((RecipeMatchGetterAccessorMixin) quickCheck)
                 .anticrash$setRecipeId(
-                        id == null
-                                ? null
-                                : net.minecraft.resources.ResourceKey.create(
-                                        net.minecraft.core.registries.Registries.RECIPE, id));
+                        id == null ? null : ResourceKey.create(Registries.RECIPE, id));
     }
 }
 //?}

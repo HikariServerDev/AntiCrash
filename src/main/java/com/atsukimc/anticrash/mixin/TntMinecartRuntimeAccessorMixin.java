@@ -1,7 +1,7 @@
-//? if (>=1.21.5 && <=26.3) {
+//? if >=1.21.5 {
 package com.atsukimc.anticrash.mixin;
 
-//? if (>=1.21.5 && <=1.21.10) {
+//? if <=1.21.10 {
 /*import net.minecraft.world.entity.vehicle.MinecartTNT;
 *///?} else {
 import net.minecraft.world.entity.vehicle.minecart.MinecartTNT;

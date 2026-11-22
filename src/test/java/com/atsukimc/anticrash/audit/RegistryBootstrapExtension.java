@@ -1,5 +1,8 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.audit;
+
+import net.minecraft.SharedConstants;
+import net.minecraft.server.Bootstrap;
 
 import org.junit.jupiter.api.extension.BeforeAllCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -11,10 +14,9 @@ import org.junit.jupiter.api.extension.ExtensionContext;
 public class RegistryBootstrapExtension implements BeforeAllCallback {
     @Override
     public void beforeAll(ExtensionContext context) {
+        SharedConstants.tryDetectVersion();
 
-        net.minecraft.SharedConstants.tryDetectVersion();
-
-        net.minecraft.server.Bootstrap.bootStrap();
+        Bootstrap.bootStrap();
     }
 }
 //?}

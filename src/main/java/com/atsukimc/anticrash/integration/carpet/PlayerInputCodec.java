@@ -1,4 +1,4 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.integration.carpet;
 
 import net.minecraft.world.entity.player.Input;
@@ -9,7 +9,7 @@ public final class PlayerInputCodec {
 
     /** Since 1.21.6 sneak changes are in this packet, including key release. */
 
-    //? if (>=1.21.6 && <=26.3) {
+    //? if >=1.21.6 {
     public static boolean allowedDuringFreeze(
             Input current, Input next, boolean movement, boolean sneak) {
         int changed = capture(current) ^ capture(next);

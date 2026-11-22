@@ -1,9 +1,11 @@
-//? if (>=1.18 && <=1.18.1) {
+//? if <=1.18.1 {
 /*package com.atsukimc.anticrash.recovery;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicBoolean;
 
 class VersionChunkLifecycleTest {
     @Test
@@ -25,8 +27,7 @@ class VersionChunkLifecycleTest {
     @Test
     void scopeIsThreadLocal() throws InterruptedException {
         VersionChunkLifecycle.withoutSimulation(() -> {
-            java.util.concurrent.atomic.AtomicBoolean observed =
-                    new java.util.concurrent.atomic.AtomicBoolean(true);
+            AtomicBoolean observed = new AtomicBoolean(true);
             Thread other =
                     new Thread(() -> observed.set(VersionChunkLifecycle.simulationDisabled()));
             other.start();

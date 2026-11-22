@@ -23,8 +23,8 @@ public final class RuntimeExtensionNbt {
      * while it stays loaded (a checkpoint, an autosave, the save at shutdown). When Vanilla unloads
      * a chunk or an entity section and loads it again later, losing this state is what Vanilla does
      * in an uninterrupted game, and that must stay as it is. Entity#saveWithoutId and
-     * BlockEntity#saveWithoutId also feed dimension changes, /data, structure blocks and client packets;
-     * none of those get the extension either.
+     * BlockEntity#saveWithoutMetadata also feed dimension changes, /data, structure blocks and
+     * client packets; none of those get the extension either.
      */
     private static final class Scope {
         boolean entitySave;
@@ -32,7 +32,7 @@ public final class RuntimeExtensionNbt {
         boolean loadedChunkSave;
         boolean extensionWritten;
 
-        //? if (>=1.21.6 && <=26.3) {
+        //? if >=1.21.6 {
         final java.util.IdentityHashMap<net.minecraft.world.level.storage.ValueOutput, CompoundTag>
                 viewExtensions = new java.util.IdentityHashMap<>();
         //?}
@@ -44,11 +44,9 @@ public final class RuntimeExtensionNbt {
     private RuntimeExtensionNbt() {}
 
     public static void entitySave(boolean active) {
-
-        //? if (>=1.18 && <=1.21.5) {
+        //? if <=1.21.5 {
         /*SCOPE.get().entitySave = active;
-        *///?}
-        //? if (>=1.21.6 && <=26.3) {
+        *///?} else {
         Scope scope = SCOPE.get();
 
         scope.entitySave = active;
@@ -67,7 +65,7 @@ public final class RuntimeExtensionNbt {
         scope.loadedChunkSave = active;
         if (active) scope.extensionWritten = false;
 
-        //? if (>=1.21.6 && <=26.3) {
+        //? if >=1.21.6 {
         if (!active && !scope.entitySave) scope.viewExtensions.clear();
         //?}
 
@@ -114,28 +112,23 @@ public final class RuntimeExtensionNbt {
 
         CompoundTag extension = VersionNbt.getCompoundOrEmpty(nbt, KEY);
 
-        //? if (>=1.18 && <=1.21.4) {
+        //? if <=1.21.4 {
         /*int version = VersionNbt.getInt(extension, VERSION_KEY);
-        *///?}
-        //? if (>=1.21.5 && <=26.3) {
+        *///?} else {
         int version = extension.getInt(VERSION_KEY).orElse(0);
         //?}
 
         return version >= 1 && version <= VERSION ? extension : null;
     }
 
+    //? if >=1.21.6 {
     /** 1.21.6 views preserve registry/error context; do not cast a mod-provided view to NBT. */
-
-    //? if (>=1.21.6 && <=26.3) {
     public static void write(
             net.minecraft.world.level.storage.ValueOutput view, Consumer<CompoundTag> writer) {
         Scope scope = SCOPE.get();
-    //?}
 
-        // ValueOutput.get creates/replaces the nested compound on every call. Preserve superclass
+        // ValueOutput.child creates/replaces the nested compound on every call. Preserve superclass
         // and subclass extension contributions in one bounded save scope, then discard references.
-
-        //? if (>=1.21.6 && <=26.3) {
         CompoundTag encoded =
                 scope.entitySave || scope.loadedChunkSave
                         ? scope.viewExtensions.computeIfAbsent(view, ignored -> new CompoundTag())
@@ -163,6 +156,6 @@ public final class RuntimeExtensionNbt {
                 })
                 .orElse(null);
     }
-        //?}
+    //?}
 
 }

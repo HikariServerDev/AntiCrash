@@ -1,6 +1,7 @@
 package com.atsukimc.anticrash.snapshot.logical;
 
 import com.atsukimc.anticrash.checkpoint.CheckpointTiming;
+import com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin;
 import com.atsukimc.anticrash.player.NbtCodec;
 import com.atsukimc.anticrash.runtime.VersionStorage;
 import com.atsukimc.anticrash.util.Hashing;
@@ -8,17 +9,19 @@ import com.atsukimc.anticrash.util.VersionChunkPos;
 import com.atsukimc.anticrash.util.VersionIds;
 
 import net.minecraft.SharedConstants;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ChunkHolder;
 import net.minecraft.server.level.ServerLevel;
+import net.minecraft.world.entity.Entity;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.chunk.LevelChunk;
+import net.minecraft.world.level.dimension.DimensionType;
+import net.minecraft.world.level.storage.LevelResource;
 import net.minecraft.world.level.storage.PrimaryLevelData;
 
-//? if (>=1.18 && <=1.21.1) {
+//? if <=1.21.1 {
 /*import net.minecraft.world.level.chunk.storage.ChunkSerializer;
 *///?} else {
 import net.minecraft.world.level.chunk.storage.SerializableChunkData;
@@ -32,10 +35,12 @@ import java.util.ArrayList;
 import java.util.Base64;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 /**
  * Server-thread side of the Exact-Epoch semantic delta engine.
@@ -64,7 +69,7 @@ public final class LogicalDeltaEngine {
     private final Map<String, String> committedChunkHashes = new LinkedHashMap<>();
 
     /** Accessible domain at the last committed epoch, separate from stale generation keys. */
-    private final java.util.Set<String> committedAccessibleChunks = new java.util.HashSet<>();
+    private final Set<String> committedAccessibleChunks = new HashSet<>();
 
     private final Map<String, String> committedEntityChunkHashes = new LinkedHashMap<>();
     private boolean committedBaseline;
@@ -256,7 +261,7 @@ public final class LogicalDeltaEngine {
         long version = mutations.version();
         long phaseStart = System.nanoTime();
         List<WorldChunkRef> refs = accessibleChunks(server);
-        java.util.Set<String> accessibleKeys = new java.util.HashSet<>();
+        Set<String> accessibleKeys = new HashSet<>();
         for (WorldChunkRef ref : refs) accessibleKeys.add(ref.key());
         recordPhase(timing, "delta.chunk_scan", phaseStart);
         Map<String, Long> observedGenerations = mutations.snapshot();
@@ -405,20 +410,16 @@ public final class LogicalDeltaEngine {
      * The semantic path is safe only when these mutable stores are absent or explicitly handled.
      */
     public static boolean hasUnsupportedPersistentFiles(MinecraftServer server) throws IOException {
-
         if (server == null || server.overworld() == null) return true;
 
-        Path root = server.getWorldPath(net.minecraft.world.level.storage.LevelResource.ROOT);
+        Path root = server.getWorldPath(LevelResource.ROOT);
 
         // POI and arbitrary SavedData files have no safe generic in-memory capture API in
         // 1.18.2.  Refuse semantic materialization when they exist instead of carrying an old
         // parent file into a newer epoch. Every dimension keeps its own poi/ and data/.
 
         for (ServerLevel world : server.getAllLevels()) {
-
-            Path dimensionRoot =
-                    net.minecraft.world.level.dimension.DimensionType.getStorageFolder(
-                            world.dimension(), root);
+            Path dimensionRoot = DimensionType.getStorageFolder(world.dimension(), root);
 
             if (hasRegularFiles(dimensionRoot.resolve("poi"))
                     || hasRegularFiles(dimensionRoot.resolve("data"))) return true;
@@ -446,9 +447,9 @@ public final class LogicalDeltaEngine {
             String dimension = VersionIds.dimension(world);
 
             for (Entity entity : world.getAllEntities()) {
-                // Mirror PersistentEntitySectionManager#trySave: players, passengers (saved inside
-                // their
-                // vehicle) and vehicles ridden by a player (saved with the player) never belong to
+                // Mirror PersistentEntitySectionManager#storeChunkSections: players, passengers
+                // (saved inside their vehicle) and vehicles ridden by a player (saved with the
+                // player) never belong to
                 // an entity region.
 
                 if (entity == null || entity.isRemoved() || !entity.shouldBeSaved()) continue;
@@ -496,15 +497,13 @@ public final class LogicalDeltaEngine {
 
             CompoundTag root = new CompoundTag();
 
-            //? if (>=1.18 && <=1.19.3) {
+            //? if <=1.19.3 {
             /*root.putInt("DataVersion", SharedConstants.getCurrentVersion().getWorldVersion());
-            *///?}
-            //? if (>=1.19.4 && <=1.21.5) {
+            *///?} else if <=1.21.5 {
             /*root.putInt(
                     "DataVersion",
                     SharedConstants.getCurrentVersion().getDataVersion().getVersion());
-            *///?}
-            //? if (>=1.21.6 && <=26.3) {
+            *///?} else {
             root.putInt("DataVersion", SharedConstants.getCurrentVersion().dataVersion().version());
             //?}
 
@@ -569,15 +568,14 @@ public final class LogicalDeltaEngine {
 
     private static void captureWorldMetadata(MinecraftServer server, LogicalDelta delta)
             throws IOException {
-
         if (!(server.getWorldData() instanceof PrimaryLevelData properties)) {
             throw new IOException("save_properties_not_level_properties");
         }
-        // Refresh the values MinecraftServer#save and ServerLevel#saveLevel copy into the save
+        // Refresh the values MinecraftServer#save and ServerLevel#saveLevelData copy into the save
         // properties right before writing level.dat. Without this, the world border, custom
         // boss bars and the dragon fight would be restored from the last full save instead.
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if <=1.21.8 {
         /*ServerLevel overworld = server.overworld();
         *///?}
 
@@ -586,17 +584,17 @@ public final class LogicalDeltaEngine {
         // persistent-state support; do not put their legacy fields back in level.dat.
         // Player data remains selective and must not be embedded or rolled back here.
 
-        //? if (>=26.1 && <=26.3) {
+        //? if >=26.1 {
         var profile = server.getSingleplayerProfile();
         //?}
 
-        //? if (>=1.18 && <=1.21.8) {
+        //? if <=1.21.8 {
         /*if (overworld != null) {
             properties.overworldData().setWorldBorder(overworld.getWorldBorder().createSettings());
         }
         *///?}
 
-        //? if (>=1.18 && <=1.20.4) {
+        //? if <=1.20.4 {
         /*properties.setCustomBossEvents(server.getCustomBossEvents().save());
         *///?}
 
@@ -608,25 +606,17 @@ public final class LogicalDeltaEngine {
         /*properties.setCustomBossEvents(server.getCustomBossEvents().save(server.registryAccess()));
         *///?}
 
-        //? if (>=1.18 && <=1.21.11) {
+        //? if <=1.21.11 {
         /*for (ServerLevel world : server.getAllLevels()) {
-            //? if (>=1.18 && <=1.19.4) {
+            //? if <=1.19.4 {
             /^if (world.dragonFight() != null) {
-            ^///?}
-            //? if (>=1.20 && <=1.21.11) {
-            /^if (world.getDragonFight() != null) {
-            ^///?}
-
-        *///?}
-                //? if (>=1.18 && <=1.19.4) {
-                /*properties.setEndDragonFightData(world.dragonFight().saveData());
-                *///?}
-                //? if (>=1.20 && <=1.21.11) {
-                /*properties.setEndDragonFightData(world.getDragonFight().saveData());
-                *///?}
-            //? if (>=1.18 && <=1.21.11) {
-
-            /*}
+                properties.setEndDragonFightData(world.dragonFight().saveData());
+            }
+            ^///?} else {
+            if (world.getDragonFight() != null) {
+                properties.setEndDragonFightData(world.getDragonFight().saveData());
+            }
+            //?}
         }
 
         CompoundTag player = server.getPlayerList().getSingleplayerData();
@@ -634,12 +624,11 @@ public final class LogicalDeltaEngine {
         CompoundTag data =
                 properties.createTag(
                         server.registryAccess(), player == null ? null : player.copy());
-            *///?}
-        //? if (>=26.1 && <=26.3) {
+        *///?} else {
         CompoundTag data = properties.createTag(profile == null ? null : profile.id());
         //?}
 
-        // LevelStorageSource.Session#backupLevelDataFile nests everything under "Data". A bare
+        // LevelStorageSource.LevelStorageAccess#saveDataTag nests everything under "Data". A bare
         // compound is unreadable to LevelStorageSource and falls back to level.dat_old or defaults.
 
         CompoundTag root = new CompoundTag();
@@ -653,11 +642,9 @@ public final class LogicalDeltaEngine {
     }
 
     private static String encodeChunk(ServerLevel world, LevelChunk chunk) throws IOException {
-
-        //? if (>=1.18 && <=1.21.1) {
+        //? if <=1.21.1 {
         /*return NbtCodec.encode(ChunkSerializer.write(world, chunk));
-        *///?}
-        //? if (>=1.21.2 && <=26.3) {
+        *///?} else {
         return NbtCodec.encode(SerializableChunkData.copyOf(world, chunk).write());
         //?}
 
@@ -669,9 +656,7 @@ public final class LogicalDeltaEngine {
         for (ServerLevel world : server.getAllLevels()) {
             String dimension = VersionIds.dimension(world);
 
-            var storage =
-                    (com.atsukimc.anticrash.mixin.ThreadedAnvilChunkStorageAccessorMixin)
-                            world.getChunkSource().chunkMap;
+            var storage = (ThreadedAnvilChunkStorageAccessorMixin) world.getChunkSource().chunkMap;
 
             for (ChunkHolder holder : storage.anticrash$getCurrentChunkHolders().values()) {
                 if (holder == null) continue;
@@ -683,10 +668,9 @@ public final class LogicalDeltaEngine {
                 try {
                     var ready = future.getNow(null);
 
-                    //? if (>=1.18 && <=1.20.4) {
+                    //? if <=1.20.4 {
                     /*LevelChunk chunk = ready == null ? null : ready.left().orElse(null);
-                    *///?}
-                    //? if (>=1.20.5 && <=26.3) {
+                    *///?} else {
                     LevelChunk chunk = ready == null ? null : ready.orElse(null);
                     //?}
 
@@ -711,7 +695,6 @@ public final class LogicalDeltaEngine {
     }
 
     private static void registerSchedulers(MinecraftServer server) {
-
         for (ServerLevel world : server.getAllLevels()) {
             String dimension = VersionIds.dimension(world);
 

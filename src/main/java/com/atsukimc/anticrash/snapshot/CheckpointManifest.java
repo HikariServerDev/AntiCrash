@@ -1,104 +1,21 @@
 package com.atsukimc.anticrash.snapshot;
 
+import com.atsukimc.anticrash.AntiCrashMod;
+
+import net.minecraft.SharedConstants;
+
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 public final class CheckpointManifest {
     /** Version 4 adds the Exact-Epoch semantic delta engine evidence. */
     public int formatVersion = 4;
 
-    public String antiCrashVersion = com.atsukimc.anticrash.AntiCrashMod.VERSION;
+    public String antiCrashVersion = AntiCrashMod.VERSION;
 
-    //? if 1.18.2 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.18.2";
-    *///?}
-    //? if 1.18 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.18";
-    *///?}
-    //? if 1.18.1 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.18.1";
-    *///?}
-    //? if 1.19 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.19";
-    *///?}
-    //? if 1.19.1 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.1";
-    *///?}
-    //? if 1.19.2 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.2";
-    *///?}
-    //? if 1.19.3 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.3";
-    *///?}
-    //? if 1.19.4 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.19.4";
-    *///?}
-    //? if 1.20 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20";
-    *///?}
-    //? if 1.20.1 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.1";
-    *///?}
-    //? if 1.20.2 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.2";
-    *///?}
-    //? if 1.20.3 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.3";
-    *///?}
-    //? if 1.20.4 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.4";
-    *///?}
-    //? if 1.20.5 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.5";
-    *///?}
-    //? if 1.20.6 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.20.6";
-    *///?}
-    //? if 1.21 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21";
-    *///?}
-    //? if 1.21.1 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.1";
-    *///?}
-    //? if 1.21.2 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.2";
-    *///?}
-    //? if 1.21.3 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.3";
-    *///?}
-    //? if 1.21.4 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.4";
-    *///?}
-    //? if 1.21.5 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.5";
-    *///?}
-    //? if 1.21.6 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.6";
-    *///?}
-    //? if 1.21.7 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.7";
-    *///?}
-    //? if 1.21.8 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.8";
-    *///?}
-    //? if 1.21.9 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.9";
-    *///?}
-    //? if 1.21.10 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.10";
-    *///?}
-    //? if 1.21.11 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "1.21.11";
-    *///?}
-    //? if 26.1 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "26.1";
-    *///?}
-    //? if 26.2 {
-    /*public static final String CURRENT_MINECRAFT_VERSION = "26.2";
-    *///?}
-    //? if 26.3 {
-    public static final String CURRENT_MINECRAFT_VERSION = "26.3";
-    //?}
+    public static final String CURRENT_MINECRAFT_VERSION = currentMinecraftVersion();
 
     public String minecraftVersion = CURRENT_MINECRAFT_VERSION;
     public String fabricLoaderVersion;
@@ -138,8 +55,7 @@ public final class CheckpointManifest {
     public int logicalDeltaTombstoneCount;
     public long logicalDeltaPayloadBytes;
     public String logicalDeltaFailureReason;
-    public final java.util.Map<String, String> logicalDeltaComponentStatus =
-            new java.util.LinkedHashMap<>();
+    public final Map<String, String> logicalDeltaComponentStatus = new LinkedHashMap<>();
 
     /** BASE or DELTA. DELTA is a complete materialized view with an authenticated parent. */
     public String generationType = "BASE";
@@ -161,7 +77,7 @@ public final class CheckpointManifest {
     public long snapshotDurationMs;
     public long barrierDurationMs;
     public long finalizationDurationMs;
-    public final java.util.Map<String, Long> phaseDurationsMs = new java.util.LinkedHashMap<>();
+    public final Map<String, Long> phaseDurationsMs = new LinkedHashMap<>();
     public long heapUsedBeforeBytes;
     public long heapUsedAfterBytes;
     public long heapMaxBytes;
@@ -207,4 +123,17 @@ public final class CheckpointManifest {
     public String checksum;
     public boolean clean = true;
     public final List<SnapshotFile> worldFiles = new ArrayList<>();
+
+    /**
+     * Unset until something asks for detection: the dedicated server does so first thing, unit
+     * tests do not. WorldVersion.getId became id in 1.21.6.
+     */
+    private static String currentMinecraftVersion() {
+        SharedConstants.tryDetectVersion();
+        //? if <=1.21.5 {
+        /*return SharedConstants.getCurrentVersion().getId();
+        *///?} else {
+        return SharedConstants.getCurrentVersion().id();
+        //?}
+    }
 }

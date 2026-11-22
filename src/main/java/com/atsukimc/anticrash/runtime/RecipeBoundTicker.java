@@ -1,4 +1,4 @@
-//? if (>=1.21.2 && <=26.3) {
+//? if >=1.21.2 {
 package com.atsukimc.anticrash.runtime;
 
 import com.atsukimc.anticrash.mixin.RecipeMatchGetterAccessorMixin;
@@ -13,7 +13,6 @@ import net.minecraft.world.level.block.entity.BlockEntityTicker;
 public record RecipeBoundTicker<T extends BlockEntity>(
         BlockEntityTicker<T> delegate, RecipeMatchGetterAccessorMixin getter)
         implements BlockEntityTicker<T> {
-
     @Override
     public void tick(Level world, BlockPos pos, BlockState state, T entity) {
         delegate.tick(world, pos, state, entity);

@@ -3,6 +3,10 @@ package com.atsukimc.anticrash.snapshot;
 import com.atsukimc.anticrash.util.Hashing;
 import com.atsukimc.anticrash.util.PathSafety;
 
+import net.minecraft.nbt.NbtIo;
+import net.minecraft.world.level.chunk.storage.RegionFile;
+
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.file.DirectoryStream;
@@ -252,9 +256,9 @@ public final class DetachedGeneration {
         List<QueuedWrite> pending = pendingWrites;
         if (pending.isEmpty()) return;
         try {
-            Map<String, Entry> byPath = new java.util.TreeMap<>();
+            Map<String, Entry> byPath = new TreeMap<>();
             for (Entry entry : entries) byPath.put(entry.path, entry);
-            Map<String, List<QueuedWrite>> byRegion = new java.util.LinkedHashMap<>();
+            Map<String, List<QueuedWrite>> byRegion = new LinkedHashMap<>();
             for (QueuedWrite write : pending) {
                 byRegion.computeIfAbsent(write.regionPath, ignored -> new ArrayList<>()).add(write);
             }
@@ -269,14 +273,11 @@ public final class DetachedGeneration {
                 CheckpointWriteGuard.requireDetached(target);
                 Files.createDirectories(target.getParent());
 
-                //? if (>=1.18 && <=1.20.4) {
-                /*net.minecraft.world.level.chunk.storage.RegionFile file =
-                        new net.minecraft.world.level.chunk.storage.RegionFile(
-                                target, target.getParent(), false);
-                *///?}
-                //? if (>=1.20.5 && <=26.3) {
-                net.minecraft.world.level.chunk.storage.RegionFile file =
-                        new net.minecraft.world.level.chunk.storage.RegionFile(
+                //? if <=1.20.4 {
+                /*RegionFile file = new RegionFile(target, target.getParent(), false);
+                *///?} else {
+                RegionFile file =
+                        new RegionFile(
                                 com.atsukimc.anticrash.snapshot.RegionStorageAdapter.KEY,
                                 target,
                                 target.getParent(),
@@ -287,7 +288,6 @@ public final class DetachedGeneration {
                     for (QueuedWrite queued : region.getValue()) {
                         PendingRegionWrite write = queued.write;
                         if (write.nbt() == null) {
-
                             file.clear(write.pos());
 
                         } else {
@@ -296,24 +296,14 @@ public final class DetachedGeneration {
                                         "Queued chunk data was being modified: " + write.pos());
                             }
 
-                            try (java.io.DataOutputStream output =
+                            try (DataOutputStream output =
                                     file.getChunkDataOutputStream(write.pos())) {
-
-                                //? if (>=1.18 && <=1.21.11) {
-                                /*//? if (>=1.18 && <=1.20.1) {
-                                /^net.minecraft.nbt.NbtIo.write(write.nbt(), output);
-                                ^///?}
-                                //? if 1.20.2 {
-                                /^net.minecraft.nbt.NbtIo.writeUnnamedTag(write.nbt(), output);
-                                ^///?}
-                                //? if (>=1.20.3 && <=1.21.11) {
-                                /^net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(
-                                        write.nbt(), output);
-                                ^///?}
-                                *///?}
-                                //? if (>=26.1 && <=26.3) {
-                                net.minecraft.nbt.NbtIo.writeUnnamedTagWithFallback(
-                                        write.nbt(), output);
+                                //? if <=1.20.1 {
+                                /*NbtIo.write(write.nbt(), output);
+                                *///?} else if <=1.20.2 {
+                                /*NbtIo.writeUnnamedTag(write.nbt(), output);
+                                *///?} else {
+                                NbtIo.writeUnnamedTagWithFallback(write.nbt(), output);
                                 //?}
 
                             }
@@ -349,7 +339,7 @@ public final class DetachedGeneration {
             }
             entries = List.copyOf(byPath.values());
             pendingWrites = List.of();
-        } catch (java.util.ConcurrentModificationException modified) {
+        } catch (ConcurrentModificationException modified) {
             throw new IOException("Queued chunk data was modified while being written", modified);
         } finally {
             SealedNbt.clear();
