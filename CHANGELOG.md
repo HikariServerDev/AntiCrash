@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.0 — simpler multi-version maintenance
+
+- Consolidate Stonecutter version branches and simplify imports across the supported Minecraft versions ([PR #20](https://github.com/HikariServerDev/AntiCrash/pull/20)).
+- Get the checkpoint's Minecraft version from the game and test it against the Mod's declared Minecraft version.
+- Share the FakePlayer fingerprint construction across versions while retaining the version-specific fields and their order.
+
 ## 1.0.10 — consistent side checks
 
 - Use `Level.isClientSide()` directly across supported Minecraft versions, following the review of PR #17.
